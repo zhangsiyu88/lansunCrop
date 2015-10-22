@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_bg"
+    android:orientation="vertical" >
+
+    <include layout="@layout/activity_com" />
+
+    <TextView
+        android:id="@+id/tv_reset_pwd_mobile"
+        style="@style/text_style_nomal_28"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_h_90"
+        android:background="@color/app_white"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/l_r_35"
+        android:paddingRight="@dimen/l_r_35"
+        android:textColor="@color/text_gray1" />
+
+    <View style="@style/line_style_1" />
+
+    <RelativeLayout
+        android:id="@+id/rl_mine_comments"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_h_90"
+        android:background="@color/app_white"
+        android:paddingLeft="@dimen/l_r_35"
+        android:paddingRight="@dimen/l_r_35" >
+
+        <TextView
+            android:id="@+id/textView1"
+            style="@style/text_style_nomal_28"
+            android:layout_centerVertical="true"
+            android:text="@string/new_pwd"
+            android:textColor="@color/text_gray1" />
+
+        <EditText
+            android:id="@+id/et_reset_pwd"
+            style="@style/text_style_nomal_28"
+            android:layout_width="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/l_r_14"
+            android:layout_toRightOf="@id/textView1"
+            android:background="@color/app_white"
+            android:password="true"
+            android:textColor="@color/text_gray1" >
+
+            <requestFocus />
+        </EditText>
+    </RelativeLayout>
+
+    <View style="@style/line_style_1" />
+
+    <RelativeLayout
+        android:id="@+id/rl_mine_comments1"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_h_90"
+        android:background="@color/app_white"
+        android:paddingLeft="@dimen/l_r_35"
+        android:paddingRight="@dimen/l_r_35" >
+
+        <TextView
+            android:id="@+id/textView2"
+            style="@style/text_style_nomal_28"
+            android:layout_centerVertical="true"
+            android:text="@string/re_new_pwd"
+            android:textColor="@color/text_gray1" />
+
+        <EditText
+            android:id="@+id/et_reset_re_pwd"
+            style="@style/text_style_nomal_28"
+            android:layout_width="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/l_r_14"
+            android:layout_toRightOf="@id/textView2"
+            android:background="@color/app_white"
+            android:password="true"
+            android:textColor="@color/text_gray1" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_reset_confirm"
+        style="@style/text_style_big_34"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_menu_h"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35"
+        android:layout_marginTop="@dimen/margin_top_35"
+        android:background="@drawable/tv_style_green"
+        android:gravity="center"
+        android:text="@string/confirm"
+        android:textColor="@color/app_white" />
+
+</LinearLayout>

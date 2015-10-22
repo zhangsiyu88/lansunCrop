@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#fffafafa"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/ll_search_top_menu"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_menu_h"
+        android:background="@color/app_white"
+         > <!-- android:gravity="center_vertical" -->
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            android:id="@+id/iv_activity_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/back" /> 
+		<!-- 
+        <TextView
+            android:id="@+id/tv_gps_cancle"
+            style="@style/text_style_nomal_30"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:text="@string/cancle" /> -->
+
+        <!-- <include
+            android:layout_width="@dimen/search_width"
+            android:layout_height="@dimen/search_height"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            layout="@layout/search_menu" /> -->
+            
+        <TextView
+            android:id="@+id/tv_gps_cancle"
+            style="@style/text_style_big_40"
+            android:textColor="@color/app_green2" 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/changecity" />     
+            
+    </RelativeLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1.0px"
+        android:background="@color/line_bg" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_h_80"
+        android:background="@color/app_white" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center" >
+			<!-- 境内 -->
+            <TextView
+                android:id="@+id/tv_city_all"
+                style="@style/text_style_nomal_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/territory"
+                android:textColor="@color/app_green2" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" >
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="@dimen/line_h_35"
+                android:layout_gravity="center_vertical"
+                android:background="@color/line_bg" />
+			<!-- 海外 -->
+            <TextView
+                android:id="@+id/tv_city_overseas"
+                style="@style/text_style_nomal_30"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/overseas" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1.0px"
+        android:background="@color/line_bg" />
+
+    <FrameLayout 
+       	android:layout_width="fill_parent"
+	    android:layout_height="fill_parent" >
+        
+       
+        
+	    <com.android.pc.ioc.view.AbLetterFilterListView
+	        android:id="@+id/letterView"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent" >
+	
+	       <ListView
+	            android:id="@+id/listView"
+	            android:layout_width="fill_parent"
+	            android:layout_height="fill_parent"
+	            android:layout_gravity="center"
+	            android:cacheColorHint="#00000000"
+	            android:divider="@null"
+	            android:listSelector="@android:color/transparent"
+	            android:scrollbars="none" />
+	    </com.android.pc.ioc.view.AbLetterFilterListView>
+	    
+	     <LinearLayout 
+	         android:layout_width="fill_parent"
+		     android:layout_height="fill_parent"
+		     android:id="@+id/ll_gps_overseas_no" 
+		     android:background="@color/app_bg"
+		     android:orientation="vertical"
+		     android:layout_gravity="center"
+		     android:gravity="center"
+		     android:visibility="gone">
+	       
+	         <ImageView 
+	             style="@style/w_wrap_h_wrap"
+	             android:background="@drawable/overseas_no"
+	             />
+	         
+	         <TextView 
+	              style="@style/w_wrap_h_wrap"
+	              android:text="海外板块即将起航，敬请期待！"
+	             />
+        </LinearLayout>
+    
+    </FrameLayout>
+
+</LinearLayout>

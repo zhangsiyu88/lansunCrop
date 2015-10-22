@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        style="@style/w_h_full"
+        android:layout_marginBottom="@dimen/margin_top_35"
+        android:background="@color/app_white"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/l_r_35"
+        android:paddingRight="@dimen/l_r_35" >
+
+        <RelativeLayout
+            android:id="@+id/rl_comment_activity_name"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_h_90" >
+
+            <TextView
+                android:id="@+id/tv_comment_activity_name"
+                style="@style/text_style_big_33"
+                android:layout_centerVertical="true"
+                android:text="zara中国店"
+                android:textColor="@color/text_gray1" />
+
+            <ImageView
+                style="@style/w_wrap_h_wrap"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/arrow_r" />
+        </RelativeLayout>
+
+        <View style="@style/line_style_1" />
+
+        <TextView
+            android:id="@+id/tv_comment_time"
+            style="@style/text_style_nomal_28"
+            android:layout_marginTop="@dimen/margin_top_20"
+            android:text="点评发表于"
+            android:textColor="@color/text_gray2" />
+
+        <LinearLayout
+            android:id="@+id/ll_comment_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_top_20"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/tv_comment_desc"
+                style="@style/text_style_nomal_28"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="asldkjasldk"
+                android:textColor="@color/text_gray2" />
+
+            <com.android.pc.ioc.image.RecyclingImageView
+                android:id="@+id/iv_comment_more"
+                style="@style/w_wrap_h_wrap"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/more"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_comments_images"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_top_25"
+            android:orientation="horizontal" >
+
+            <com.lansun.qmyo.view.MyGridView
+                android:id="@+id/gv_comment_images"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:horizontalSpacing="@dimen/l_r_10"
+                android:listSelector="@android:color/transparent"
+                android:numColumns="3"
+                android:scrollbars="none" />
+
+            <TextView
+                android:id="@+id/tv_comment_images_count"
+                style="@style/text_style_nomal_20"
+                android:layout_width="@dimen/images_count_w"
+                android:layout_height="@dimen/images_count_h"
+                android:layout_alignBottom="@id/gv_comment_images"
+                android:layout_alignRight="@id/gv_comment_images"
+                android:background="@color/images_counts"
+                android:gravity="center"
+                android:textColor="@color/app_white"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tv_mai_comment_communicate"
+            style="@style/text_style_small_24"
+            android:layout_marginTop="@dimen/margin_top_25"
+            android:text="maiyougoutong" />
+
+        <com.lansun.qmyo.view.MySubListView
+            android:id="@+id/lv_activity_mai_comments"
+            style="@style/w_wrap_h_wrap"
+            android:layout_marginTop="@dimen/margin_top_25"
+            android:background="@color/app_bg"
+            android:cacheColorHint="#00000000"
+            android:divider="@null"
+            android:listSelector="@android:color/transparent"
+            android:scrollbars="none" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/margin_top_25" />
+    </LinearLayout>
+
+</LinearLayout>

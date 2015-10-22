@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/w_h_full"
+    android:background="#EBEBEB"
+    android:orientation="vertical" >
+
+   <!--  <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_menu_h"
+        android:background="@color/app_white" >
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            android:id="@+id/iv_activity_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back" />
+
+        <TextView
+            android:id="@+id/textView1"
+            style="@style/text_style_big_34"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/v16_jiwen"
+            android:textColor="@color/app_green1" />
+
+        <TextView
+            android:id="@+id/tv_jiwen_search"
+            style="@style/text_style_nomal_30"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:text="@string/cancle"
+            android:textColor="#6f6f6f"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/ll_jiwen_search_icon"
+            style="@style/w_wrap_h_wrap"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:background="@drawable/circle_background_gray"
+            android:gravity="center" >
+
+            <ImageView
+                style="@style/w_wrap_h_wrap"
+                android:background="@drawable/search" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_jiwen_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone" >
+
+            <include layout="@layout/search_menu" />
+        </LinearLayout>
+    </RelativeLayout> -->
+
+    
+   <!--  <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/line_bg" /> -->
+
+     <com.lansun.qmyo.view.MyListView
+        
+        android:visibility="gone"
+        
+        android:id="@+id/lv_jiwen_list"
+        style="@style/w_h_full"
+        android:cacheColorHint="#00000000"
+        android:divider="@android:color/transparent"
+        android:listSelector="@android:color/transparent"
+        android:scrollbars="none" /> 
+    
+    <FrameLayout 
+       	 android:layout_width="match_parent"
+         android:layout_height="match_parent">
+      
+        <ImageView 
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:src="@drawable/singlebg"
+         android:background="@color/white"
+         android:scaleType="centerCrop"/>
+
+       <com.android.pc.ioc.image.RecyclingImageView
+           android:id="@+id/iv_jiwen_boom"
+           android:layout_width="110dp"
+           android:layout_height="110dp"
+            android:layout_marginTop="260dp"
+           android:layout_marginLeft="40dp"
+           android:src="@anim/jiwen_boom" />
+        <!--  android:layout_marginTop="@dimen/margin_top_680"  -->
+        
+        
+         <com.android.pc.ioc.image.RecyclingImageView
+            android:id="@+id/iv_activity_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back" />
+        
+    </FrameLayout>
+     
+    
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/line_bg" />
+
+</LinearLayout>

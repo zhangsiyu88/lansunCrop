@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/w_full_h_wrap"
+    android:paddingLeft="@dimen/l_r_35"
+    android:paddingRight="@dimen/l_r_35" >
+
+    <RelativeLayout style="@style/w_full_h_wrap" >
+
+        <com.lansun.qmyo.view.CircularImage
+            android:id="@+id/iv_comment_head"
+            android:layout_width="@dimen/mai_comment_head_w"
+            android:layout_height="@dimen/mai_comment_head_h"
+            android:layout_marginTop="@dimen/margin_top_32" />
+
+        <TextView
+            android:id="@+id/tv_comment_name"
+            style="@style/text_style_nomal_30"
+            android:layout_alignTop="@id/iv_comment_head"
+            android:layout_marginLeft="@dimen/l_r_14"
+            android:layout_toRightOf="@id/iv_comment_head"
+            android:text="幸运星" />
+
+        <ImageView
+            android:id="@+id/iv_comment_card_type"
+            style="@style/w_wrap_h_wrap"
+            android:layout_alignTop="@id/tv_comment_name"
+            android:layout_marginLeft="@dimen/l_r_14"
+            android:layout_toRightOf="@id/tv_comment_name"
+            android:background="@drawable/blackgold" />
+
+        <TextView
+            android:id="@+id/tv_comment_time"
+            style="@style/text_style_small_26"
+            android:layout_below="@id/tv_comment_name"
+            android:layout_marginLeft="@dimen/l_r_14"
+            android:layout_toRightOf="@id/iv_comment_head"
+            android:text="2015-5-15 15:35" />
+
+        <TextView
+            android:id="@+id/tv_comment_desc"
+            style="@style/text_style_small_26"
+            android:layout_below="@id/tv_comment_time"
+            android:layout_marginLeft="@dimen/l_r_14"
+            android:layout_marginTop="@dimen/margin_top_22"
+            android:layout_toRightOf="@id/iv_comment_head"
+            android:maxLines="3"
+            android:text="到店服务很不错，鞋子质量没的说，很喜欢火烈鸟的图案，下次继续去享受优惠。。。" />
+
+        <ImageView
+            android:id="@+id/iv_comment_report"
+            android:layout_width="@dimen/mai_comment_report_w"
+            android:layout_height="@dimen/mai_comment_report_h"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@id/tv_comment_name"
+            android:background="@drawable/report"
+            android:visibility="gone" />
+
+        <com.lansun.qmyo.view.MyGridView
+            android:id="@+id/gv_comment_images"
+            style="@style/w_h_full"
+            android:layout_below="@id/tv_comment_desc"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:layout_marginTop="@dimen/margin_top_32"
+            android:layout_toRightOf="@id/iv_comment_head"
+            android:numColumns="3"
+            android:paddingLeft="@dimen/margin_top_22" />
+
+        <ImageView
+            android:id="@+id/iv_comment_more_images"
+            style="@style/w_wrap_h_wrap"
+            android:layout_below="@id/gv_comment_images"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/margin_top_22"
+            android:layout_marginTop="@dimen/margin_top_22"
+            android:background="@drawable/dowm_more" />
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <RelativeLayout style="@style/w_full_h_wrap" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/app_green1"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/l_r_35" >
+
+            <TextView
+                style="@style/text_style_big_33"
+                android:layout_marginTop="@dimen/margin_top_25"
+                android:text="实用信息"
+                android:textColor="@color/app_white" />
+
+            <TextView
+                style="@style/text_style_nomal_28"
+                android:layout_marginBottom="@dimen/margin_top_25"
+                android:layout_marginTop="@dimen/margin_top_10"
+                android:text="消除"
+                android:textColor="@color/app_white" />
+        </LinearLayout>
+
+        <ImageView
+            style="@style/w_wrap_h_wrap"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:src="@drawable/arrow_white" />
+    </RelativeLayout>
+
+</RelativeLayout>

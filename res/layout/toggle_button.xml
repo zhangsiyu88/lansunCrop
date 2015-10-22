@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/expandtab_view_h"
+    android:layout_weight="1"
+    android:background="@color/app_white" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" >
+
+        <TextView
+            android:id="@+id/tv_expand_name"
+            style="@style/text_style_small_26"
+            android:button="@null"
+            android:ellipsize="end"
+            android:maxLength="5"
+            android:singleLine="true"
+            android:textColor="@color/text_gray3" />
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            android:id="@+id/iv_expand_more"
+            style="@style/w_wrap_h_wrap"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/l_r_10"
+            android:src="@drawable/arrow_down" />
+    </LinearLayout>
+
+    <View
+        style="@style/line_style_1"
+        android:layout_width="1px"
+        android:layout_height="@dimen/line_h_35"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true" />
+
+</RelativeLayout>

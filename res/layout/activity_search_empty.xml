@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_vertical"
+    android:background="#EBEBEB"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <TextView
+        style="@style/text_style_nomal_28"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/margin_top_100"
+        android:text="@string/lv_empty"
+        android:textColor="#AFAFAF" />
+
+    <ImageView
+        android:id="@+id/bt_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_top_30"
+        android:src="@drawable/lv_empty" />
+
+    <TextView
+        android:id="@+id/tv_found_secretary"
+        style="@style/text_style_nomal_28"
+        android:layout_marginBottom="@dimen/margin_top_100"
+        android:layout_marginTop="@dimen/margin_top_20"
+        android:text="@string/found_secretary"
+        android:textColor="@color/app_green1" />
+
+</LinearLayout>

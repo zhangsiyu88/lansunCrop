@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mFooterView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="@dimen/margin_top_50" >
+
+        <ImageView
+            android:id="@+id/mFooterImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/mFooterProgressBar"
+            android:layout_width="40px"
+            android:layout_height="40px"
+            android:indeterminateDrawable="@drawable/progressbar_color" />
+
+        <TextView
+            android:id="@+id/mFooterTextView"
+            style="@style/text_style_nomal_30"
+            android:layout_marginLeft="@dimen/l_r_15"
+            android:layout_toRightOf="@id/mFooterProgressBar"
+            android:text="正在加载..."
+            android:textColor="@color/text_gray2" />
+    </LinearLayout>
+
+</RelativeLayout>

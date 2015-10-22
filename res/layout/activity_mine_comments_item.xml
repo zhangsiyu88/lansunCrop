@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    android:paddingLeft="@dimen/l_r_35"
+        android:paddingRight="@dimen/l_r_35"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+		style="@style/w_full_h_wrap"
+    >
+
+    <RelativeLayout style="@style/w_full_h_wrap" >
+
+        <TextView
+            android:id="@+id/tv_mine_comments_name"
+            style="@style/text_style_big_46"
+            android:text="name"
+            android:layout_marginLeft="@dimen/l_r_14" />
+
+        <TextView
+            android:layout_marginTop="@dimen/t_10"
+            android:id="@+id/tv_mine_comment_time"
+            style="@style/text_style_small_26"
+            android:text="falksjfaslfkj"
+            android:layout_below="@id/tv_mine_comments_name"
+            android:layout_marginLeft="@dimen/l_r_14" />
+
+        <TextView
+            android:id="@+id/tv_mine_comment_desc"
+            style="@style/text_style_nomal_30"
+            android:text="asldjasldkjasd"
+            android:layout_below="@id/tv_mine_comment_time"
+            android:layout_marginLeft="@dimen/l_r_14"
+            android:layout_marginTop="@dimen/margin_top_22"
+            android:maxLines="3" />
+
+        <com.lansun.qmyo.view.MyGridView
+            android:id="@+id/gv_comment2_images"
+            style="@style/w_h_full"
+            android:layout_below="@id/tv_mine_comment_desc"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:layout_marginTop="@dimen/margin_top_32"
+            android:layout_toRightOf="@id/iv_comment_head"
+            android:numColumns="3"
+            android:paddingLeft="@dimen/margin_top_22" />
+
+        <TextView
+            android:id="@+id/tv_mine_comment_shop"
+		style="@style/text_style_nomal_30"
+            android:layout_above="@+id/tv_mine_comment_time"
+            android:layout_alignParentRight="true"
+            android:text="shop  >" />
+
+    </RelativeLayout>
+
+</LinearLayout>

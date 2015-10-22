@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/w_full_h_wrap"
+    android:background="@color/app_white" >
+
+    <TextView
+        android:id="@+id/tv_jiwen_about"
+        style="@style/text_style_big_33"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginTop="@dimen/margin_top_35" />
+
+    <TextView
+        android:id="@+id/tv_look_now"
+        style="@style/text_style_nomal_28"
+        android:layout_below="@id/tv_jiwen_about"
+        android:layout_marginBottom="@dimen/margin_top_35"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginTop="@dimen/margin_top_10"
+        android:text="@string/look_now"
+        android:textColor="#AFAFAF" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_top_35"
+        android:layout_below="@id/tv_look_now"
+        android:background="@color/app_bg" />
+
+</RelativeLayout>

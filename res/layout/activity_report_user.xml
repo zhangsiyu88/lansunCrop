@@ -1,0 +1,147 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_bg"
+    android:orientation="vertical" >
+
+    <include
+        
+        layout="@layout/activity_com" />
+         <!--android:layout_height="match_parent"  -->
+
+    <TextView
+        style="@style/text_style_nomal_28"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginTop="@dimen/margin_top_35"
+        android:text="@string/please_select_one"
+        android:textColor="@color/text_gray2" />
+
+    <com.lansun.qmyo.view.NestRadioGroup
+        android:id="@+id/rg_report_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35"
+        android:layout_marginTop="@dimen/margin_top_25"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/cb1"
+                style="@style/text_style_nomal_28"
+                android:layout_weight="1"
+                android:background="@drawable/likes_checked"
+                android:button="@null"
+                android:drawableLeft="@null"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/political"
+                android:textColor="@color/app_grey5" />
+
+            <RadioButton
+                android:id="@+id/cb2"
+                style="@style/text_style_nomal_28"
+                android:layout_marginLeft="@dimen/l_r_25"
+                android:layout_weight="1"
+                android:background="@drawable/likes_checked"
+                android:button="@null"
+                android:drawableLeft="@null"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/obscene"
+                android:textColor="@color/app_grey5" />
+
+            <RadioButton
+                android:id="@+id/cb3"
+                style="@style/text_style_nomal_28"
+                android:layout_marginLeft="@dimen/l_r_25"
+                android:layout_weight="1"
+                android:background="@drawable/likes_checked"
+                android:button="@null"
+                android:drawableLeft="@null"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/dirty"
+                android:textColor="@color/app_grey5" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_top_25"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/cb4"
+                style="@style/text_style_nomal_28"
+                android:layout_weight="1"
+                android:background="@drawable/likes_checked"
+                android:button="@null"
+                android:drawableLeft="@null"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/privacy"
+                android:textColor="@color/app_grey5" />
+
+            <RadioButton
+                android:id="@+id/cb5"
+                style="@style/text_style_nomal_28"
+                android:layout_marginLeft="@dimen/l_r_25"
+                android:layout_weight="1"
+                android:background="@drawable/likes_checked"
+                android:button="@null"
+                android:drawableLeft="@null"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/advertising"
+                android:textColor="@color/app_grey5" />
+
+            <RadioButton
+                android:id="@+id/cb6"
+                style="@style/text_style_nomal_28"
+                android:layout_marginLeft="@dimen/l_r_25"
+                android:layout_weight="1"
+                android:background="@drawable/likes_checked"
+                android:button="@null"
+                android:drawableLeft="@null"
+                android:gravity="center"
+                android:singleLine="true"
+                android:text="@string/other"
+                android:textColor="@color/app_grey5" />
+        </LinearLayout>
+    </com.lansun.qmyo.view.NestRadioGroup>
+
+    <TextView
+        style="@style/text_style_nomal_28"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginTop="@dimen/margin_top_35"
+        android:text="@string/report_content"
+        android:textColor="@color/text_gray2" />
+
+    <EditText
+        android:id="@+id/et_report_user_content"
+        style="@style/text_style_nomal_28"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/edit_h_200"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35"
+        android:layout_marginTop="@dimen/margin_top_25"
+        android:background="@drawable/tv_style_white"
+        android:gravity="top|left"
+        android:hint="@string/please_enter_content"
+        android:maxLength="100"
+        android:textCursorDrawable="@null" />
+
+    <Button
+        android:id="@+id/btn_report_user_commit"
+        style="@style/btn_style_green"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35"
+        android:layout_marginTop="@dimen/margin_top_35"
+        android:text="@string/commit" />
+
+</LinearLayout>

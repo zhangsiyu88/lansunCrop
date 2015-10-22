@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="str_orange">#fe7b27</string>
+    <string name="basic_action_1">删除</string>
+    <string name="add">添加</string>
+    <string name="basic_action_2">Action_2</string>
+    <string name="app_name">迈界APP</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="home">首页</string>
+    <string name="secretary">私人秘书</string>
+    <string name="found">发现</string>
+    <string name="mine">我的</string>
+    <string name="content_is_loading">内容正在加载...</string>
+    <string name="shopping_carnival">购物狂欢</string>
+    <string name="travel_holiday">旅游度假</string>
+    <string name="dining">美食餐饮</string>
+    <string name="courtesy_car">汽车礼遇</string>
+    <string name="life_service">生活服务</string>
+    <string name="entertainment">休闲娱乐</string>
+    <string name="integral">积分兑换</string>
+    <string name="investment">投资理财</string>
+    <string name="please_enter_search_brand">请输入感兴趣的品牌</string>
+    <string name="home_hot_v16">热门活动推荐</string>
+    <string name="cancle">取消</string>
+    <string name="changecity">城市切换</string>
+    
+    <string name="hot_search">热门搜索</string>
+    <string name="history_search">历史搜索</string>
+    <string name="all_clear">全部清除</string>
+    <string name="no_data">没有数据</string>
+    <string name="lv_empty">没有找到合适的吗？</string>
+    <string name="found_secretary">要不要找一下小秘书  ></string>
+    <string name="activity_detail">活动详情</string>
+    <string name="shop_infor">门店信息</string>
+    <string name="join_activity_shop">参与此活动的分店</string>
+    <string name="mai_comment">迈友评论</string>
+    <string name="i_report">活动不靠谱，我要举报</string>
+    <string name="store_detail">门店详情</string>
+    <string name="hdpz">活动品质</string>
+    <string name="mai_fs">迈友粉丝数：</string>
+    <string name="store_activity_number">当前门店活动</string>
+    <string name="look_mine_yhq">查看我的全部优惠券</string>
+    <string name="all_clear_tip">您确定要全部清除吗？</string>
+    <string name="money_icon">¥ </string>
+    <string name="yhq_money">适用优惠券金额</string>
+    <string name="gz_sucess">关注成功</string>
+    <string name="gz_qx_sucess_content">取消关注成功</string>
+    <string name="gz_qx_faild_content">取消关注失败</string>
+    <string name="sc_sucess">收藏成功</string>
+    <string name="sc_sucess_cancle">取消收藏成功</string>
+    <string name="sc_sucess_content_cancle">您已经成功取消收藏</string>
+    <string name="sc_sucess_cancle_collection">迈界小贴士</string>
+    <string name="sc_sucess_content_cancle_collection">取消收藏</string>
+    <string name="gz_sucess_title">关注成功</string>
+    <string name="gz_sucess_content">您可在“发现/门店关注”中查看\n还可自行设置门店的活动推送功能</string>
+    <string name="gz_sucess_content1">您可在“发现/门店关注”中查看</string>
+    <string name="gz_faild_content">关注失败，请稍后尝试\n</string>
+    <string name="sc_sucess_content">您可在“发现/活动收藏”中查看\n</string>
+    <string name="all_stroes">查看所有分店</string>
+    <string name="check_all">查看所有分店</string>
+    <string name="all_join_stroes">参与此活动的分店</string>
+    <string name="mai_communicate">迈友沟通 （%1$s）</string>
+    <string name="wx_friend">微信好友</string>
+    <string name="friend_c">朋友圈</string>
+    <string name="qq_friend">QQ好友</string>
+    <string name="tx_wb">腾讯微博</string>
+    <string name="xl_wb">新浪微博</string>
+    <string name="tele_address">地址：%1$s</string>
+    <string name="images_count">共%1$s张</string>
+    <string name="tele_address2">办公地址：%1$s</string>
+    <string name="telephone"><Data><![CDATA[<font color="#6F6F6F">联系电话： </font>%1$s]]></Data></string>
+    <string name="telephone2"><Data><![CDATA[<font color="#6F6F6F">电话: </font>%1$s]]></Data></string>
+    <string name="reply_green"><Data><![CDATA[<font color="#9DC14F"> 回复 </font>]]></Data></string>
+    <string name="all_store">查看所有分店</string>
+    <string name="xy_card">银行卡</string>
+    <string name="yhq">优惠券</string>
+    <string name="message_center">消息中心</string>
+    <string name="mine_secretary">我的私人秘书</string>
+    <string name="mine_history">最近浏览</string>
+    <string name="mine_comments">我的评论</string>
+    <string name="about">服务中心</string>
+    <string name="shared_app">分享APP</string>
+    <string name="click_register_login">点击注册/登陆</string>
+    <string name="login">登录</string>
+    <string name="register">注册</string>
+    <string name="dai_use">待使用</string>
+    <string name="used">已使用</string>
+    <string name="failure">已失效</string>
+    <string name="coupon_money">¥</string>
+    <string name="shengyu_day_num">剩余<Data><![CDATA[<font color="#FAD30F">%1$s</font>]]></Data>天</string>
+    <string name="enter_phone">输入手机号</string>
+    <string name="enter_re_code">输入验证码</string>
+    <string name="enter_pwd">输入密码</string>
+    <string name="send_recode">获取验证码</string>
+    <string name="person_info">个人信息</string>
+    <string name="mine_head">头像</string>
+    <string name="mine_nickname">昵称</string>
+    <string name="mine_reset_pwd">重置登录密码</string>
+    <string name="mine_edit_person_info">完善个人信息</string>
+    <string name="mine_qr_code">我的二维码</string>
+    <string name="edit">编辑</string>
+    <string name="activity">活动</string>
+    <string name="maijie">迈界</string>
+    <string name="all">全部</string>
+    <string name="setting">设置</string>
+    <string name="setting_clear_cache">清空缓存</string>
+    <string name="feedback">意见反馈</string>
+    <string name="help_center">帮助中心</string>
+    <string name="tel">拨打</string>
+    <string name="btn_photo_take">照相机</string>
+    <string name="btn_photo_select">相册</string>
+    <string name="save">保存</string>
+    <string name="nickname_tip">好名字可以让你的朋友更容易记住你。</string>
+    <string name="edit_nick_name">更改昵称</string>
+    <string name="commit">提交</string>
+    <string name="reset_pwd">重置登录密码</string>
+    <string name="new_pwd">新密码 ：</string>
+    <string name="re_new_pwd">确认新密码 ：</string>
+    <string name="confirm">确认</string>
+    <string name="email">邮箱</string>
+    <string name="truname">姓名</string>
+    <string name="address">地址</string>
+    <string name="edit_user_address">地址：</string>
+    <string name="job">职业</string>
+    <string name="position">职位</string>
+    <string name="degrees">学历</string>
+    <string name="like">爱好</string>
+    <string name="income">收入</string>
+    <string name="edit_person_info">完善个人信息</string>
+    <string name="exit_login">退出登录</string>
+    <string name="replay">回复</string>
+    <string name="store">门店</string>
+    <string name="qmyo_version">迈界 V1.0.1</string>
+    <string name="qmyo_desc">收集世界各地惊喜\n伴随迈友走遍世界</string>
+    <string name="qmyo_wx">迈界微信公众号： qmyoclub</string>
+    <string name="qmyo_net">迈界官网：<Data><![CDATA[<font color="#9DC14F">www.qmyo.com</font>]]></Data></string>
+    <string name="qmyo_jianjie">迈界简介</string>
+    <string name="feedback_desc">欢迎你提出宝贵的意见与建议，收到您的反馈以后，我们将尽快3-7个工作日内回复您，届时请您查看“我的”信息信箱</string>
+    <string name="hd_feedback">活动反馈</string>
+    <string name="sh_feedback">商户反馈</string>
+    <string name="yhk_feedback">银行卡问题反馈</string>
+    <string name="js_feedback">技术反馈</string>
+    <string name="qt_feedback">其他反馈</string>
+    <string name="feedback_tip">\u3000亲爱的迈友，您的意见对迈界非常重要，\n是我们一直致力于开发体验感最强平台的动力。</string>
+    <string name="please_enter_feedback">请输入您的反馈建议（500字以内）</string>
+    <string name="store_detail_count"><Data><![CDATA[<font color="#939393">%1$s</font>/%2$s]]></Data></string>
+    <string name="cache_size">%1$sM</string>
+    <string name="tip">提示</string>
+     <string name="tip_attentionstore">总裁大大，想要关注门店得先登录哟</string>
+     <string name="tip_activittiescollection">总裁大大，想要收藏活动得先登录哟</string>
+    <string name="tip5">登录中... </string>
+     <string name="tip4">总裁大大，迈界欢迎您</string>
+    <string name="tip1">关注成功哟</string>
+    <string name="tip2">迈界小贴士</string>
+     <string name="tip3">手机号或密码错误</string>
+     <string name="tip_pswnotenter">密码未输入</string>
+     <string name="tip_phonenotenter">手机号未输入</string>
+     
+     <string name="tip_setcodeerror">验证码不正确哦</string>
+     <string name="tip_setpwderror">密码设置不正确哦</string>
+    <string name="logintocomplain">总裁大大，投诉要登录的哟</string>
+    <string name="logintocollectactivity">总裁大大，想要收藏得先登录哟</string>
+    
+     <string name="logintofllow">汝若心愿成粉，还请速速登录哟</string>
+    <string name="remove_cache_tip">您确定要清空缓存？</string>
+    <string name="publish">发表</string>
+    <string name="new_comment_tip">亲爱的迈友您好，请简单评论下您此次参与活动的感受，店员服务满意吗？活动是否对您有帮助？</string>
+    <string name="upload_photo">上传图片</string>
+    <string name="navigation">导航</string>
+    <string name="currentCard">当前信用卡</string>
+    <string name="otherCard">其他银行卡</string>
+    <string name="forget_password">忘记密码 ?</string>
+    <string name="gender">性别</string>
+    <string name="like_desc">可多选</string>
+    <string name="ok">确定</string>
+    <string name="wheelview_text">省名</string>
+
+    <string-array name="likes">
+        <item>度假旅游</item>
+        <item>时尚潮流</item>
+        <item>数码电子</item>
+        <item>美食烹饪</item>
+        <item>文化艺术</item>
+        <item>电影</item>
+        <item>音乐</item>
+        <item>书籍阅读</item>
+        <item>运动</item>
+        <item>DIY手工</item>
+        <item>汽车</item>
+        <item>互联网</item>
+        <item>公益事业</item>
+        <item>投资</item>
+        <item>收藏</item>
+    </string-array>
+
+    <string name="city">省/市/区</string>
+    <string name="please_enter_address">请输入详细地址</string>
+    <string name="current_city"><Data><![CDATA[<font color="#939393">当前网络定位的城市： </font>%1$s]]></Data></string>
+    <string name="recent_visit">近期访问</string>
+    <string name="hot_city">热门城市</string>
+    <string name="overseas">海外</string>
+    <string name="loading_city">正在定位当前城市...</string>
+    <string name="select_city">选择城市</string>
+    <string name="maijie_tip">迈界小贴士</string>
+    <string name="search_card_tip">在您的银行卡正面左上角印有所持卡的全称，\n \t\t 也可以输入相关银行卡名称搜索筛选</string>
+    <string name="search">搜索</string>
+    <string name="add_bankCard">您是否要添加该银行卡？</string>
+    <string name="delete_success">删除成功</string>
+    <string name="delete_faild">删除失败</string>
+    <string name="loading_faild">加载失败</string>
+    <string name="card_desc">卡片简介</string>
+    <string name="banli_tiaojian">办理条件</string>
+    <string name="shoufei_bz">收费标准</string>
+    <string name="jb_fuwu">基本服务</string>
+    <!-- <string name="please_enter_phone_pwd">请正确填写手机号或密码</string> -->
+     <string name="please_enter_phone_pwd">小迈希望您仔细填写哦</string>
+      <string name="please_enter_correct_pwd">请您设置6-16位数字或字母的密码</string>
+      <string name="please_enter_correct_code">请您输入正确的验证码哦</string>
+    <string name="search_city">中文/拼音搜索城市</string>
+    <string name="none">暂无</string>
+    <string name="activity_detail_info">活动详情</string>
+    <string name="maijie_tigong">迈界推荐您体验</string>
+    <string name="experience_now">开始玩转</string>
+    <string name="re_login">重新登入？</string>
+    <string name="tiyan_cuccess">体验成功</string>
+      <string name="tiyan_cuccess_welcome">小迈在此恭候多时咯</string>
+     <string name="tiyan_cuccess_getcard">Get it！</string>
+     
+    <string name="activity_collection">活动收藏</string>
+    <string name="store_gz">门店关注</string>
+    <string name="gz_store">关注门店</string>
+    <string name="v16_collection">V16收藏</string>
+    <string name="experience_ambassador">迈界体验大使</string>
+    <string name="global_tour">环球游</string>
+    <string name="jiwen">极文</string>
+    <string name="v16_jiwen">V16极文</string>
+    <string name="bangdan">榜单</string>
+    <string name="yuanchuang">原创</string>
+    <string name="secretary_tip">%1$s，请选择一个类别事项，让我快速帮您解决吧</string>
+    <string name="new_shopping">新品购物</string>
+    <string name="shengyan_part">盛宴狂欢</string>
+    <string name="gaozhi_life">高质生活</string>
+    <string name="studybroad">留学服务</string>
+    <string name="licai_touzi">理财投资</string>
+    <string name="handlecard">办卡推荐</string>
+    <string name="switch_city">您上次城市与此次城市不同是否切换为当前城市？</string>
+    <string name="select_bank_card_faild">选取银行卡失败，请重新尝试</string>
+    <string name="select_bank_card_success">选取银行卡成功</string>
+    <string name="click_me_change_head">点我替换头像</string>
+    <string name="secretary_summary">Hello，亲爱的迈友您好\n 我就是您的私人秘书</string>
+    <string name="take_secretary_name">先给我取个好玩的名字吧</string>
+    <string name="territory">境内</string>
+    <string name="hope_call_you">希望我对您的称呼是？</string>
+    <string name="please_enter_secretary_name">请给您的小秘书起个名字吧!</string>
+    <string name="please_enter_hope_call_you">您希望小秘书怎么称呼您呢？</string>
+    <string name="save_secretary_success">保存小秘书信息成功</string>
+    <string name="store_report">门店不靠谱，我要投诉</string>
+    <string name="is_exit">是否退出迈界？</string>
+    <string name="please_registerorlogin">总裁大大,请您先行注册登录哦</string>
+    
+    
+    <string name="please_registerorlogin_title">总裁大大,请您先行注册登录哦~\n 即刻拥有您专属的私人秘书</string>
+    
+    <string name="take_question_form">提问表单：</string>
+    <string name="take_question_hint">您或许想要咨询以下问题： \n asdasd</string>
+    <string name="secretary_renwu">任务指派</string>
+    <string name="please_login">请先登录</string>
+    <string name="please_login_secretary">请先登录，您的私人秘书\n将立即接受您的任务指派</string>
+    <string name="login_now">立即登录</string>
+    <string name="please_enter_task">请输入任务内容</string>
+    <string name="task_faild">任务指派失败</string>
+    <string name="task_success">任务指派成功</string>
+    <string name="search_all_hint">请输入您感兴趣的品牌</string>
+     <string name="search_interest_card">请输入您感兴趣的银行卡</string>
+    <string name="url">网址：%1$s</string>
+    <string name="business_hours">营业时间：%1$s</string>
+    <string name="playday">休息日：%1$s</string>
+    <string name="gz_cancle">您已关注门店，是否取消对当前门店的关注？</string>
+    <string name="institution">关联服务机构</string>
+    <string name="new_exposure">新品曝光</string>
+    <string name="please_enter_activity_comment">请填写对该活动的评价！</string>
+    <string name="comment_success">评论成功</string>
+    <string name="report_content">举报内容(0~100字)</string>
+    <string name="report_store_content">投诉内容(0~100字)</string>
+    <string name="report_activity">活动举报</string>
+    <string name="report_store">门店投诉</string>
+    <string name="please_enter_content">请输入内容</string>
+    <string name="report_success">举报成功</string>
+    <string name="delete">删除</string>
+    <string name="max_add_eight">最多只能添加9张图片 </string>
+    <string name="reply">回复</string>
+    <string name="replay_success">回复成功</string>
+    <string name="experience">体验</string>
+    <string name="current">当前</string>
+    <string name="send">发送</string>
+    <string name="search_card_tip2_1">如果您暂时想选择自己的银行卡</string>
+     <string name="search_card_tip2_2">也可以先行体验迈界为您推荐的银行卡哟</string>
+    <string name="experience_jump_now">先行体验</string>
+    <string name="jiwen_about">共有%1$s篇文章与<Data><![CDATA[<font color="#9DC14F">%2$s</font>]]></Data>有关</string>
+    <string name="look_now">立即查看</string>
+    <string name="search_tip">搜索并添加您所拥有的银行卡\n\t让迈界更好地为您服务</string>
+    <string name="is_switch_card">是否替换当前信用卡？</string>
+    <string name="please_select_one">请选择一项</string>
+    <string name="doing">进行中</string>
+    <string name="expired">已过期</string>
+    <string name="has_activity">有活动</string>
+    <string name="no_activity">无活动</string>
+    <string name="only_select_one">只能选一个</string>
+    <string name="please_scanning">请商户扫描以下二维码</string>
+    <string name="jump">跳过</string>
+    <string name="promote_detail">极文详情</string>
+    <string name="shared_app_desc">邀请好友直接扫描二维码下载迈界APP</string>
+    <string name="shared_comtent">迈界有你</string>
+    <string name="v16_bd">V16榜单</string>
+    <string name="net_error_refresh">网络获取失败，点击重新获取</string>
+    <string name="net_error_check_net">网络数据获取失败,请检查网络</string>
+    <string name="use_city">是否使用当前AGPS定位城市？</string>
+    <string name="mine_coupons">我的优惠券</string>
+    <string name="up_dataing">上传数据中...</string>
+    <string name="go_look">去看看吧</string>
+    <string name="max_photos">最多9张图片，请确认！！！</string>
+    <string name="common_problem">常见问题</string>
+    <string name="user_agreement">用户协议</string>
+    <string name="v16">V16</string>
+    <string name="please_enter_card">搜索/添加银行卡</string>
+    <string name="change_email">更改电子邮箱</string>
+    <string name="email_faild">邮箱格式错误</string>
+    <string name="change_truename">更改真实姓名</string>
+    <string name="code_faild">验证码错误</string>
+    <string name="edit_address">完善地址</string>
+
+    <string-array name="help_title">
+        <item>一、账号信息</item>
+        <item>二、银行卡添加</item>
+        <item>三、惊喜相关</item>
+        <item>四、私人秘书使用说明</item>
+        <item>五、评价类</item>
+        <item>六、想跟我们聊聊？</item>
+    </string-array>
+    <string-array name="help_q_a">
+        <item><Data><![CDATA[<font color="#9DC14F">Q1: 不注册是否可以找到惊喜？</font><br>]]></Data>A：当然可以，哗哗滴惊喜等着你挖掘。在你开启迈界APP以后，输入银行卡的界面下面有体验键，你可以通过点击通过迈界随机选择的卡探索迈界的惊喜世界。<Data><![CDATA[<br><br><font color="#9DC14F">Q2： 我可以忽略个人信息中心那些要填的资料吗？</font><br>]]></Data>A：完全可以。不过如果完整的填写并且提交那些个人资料，有更多的惊喜将会源源不绝的找上你哦！例如免费吃吃米其林或者国际新品的优先试用等等。</item>
+        <item><Data><![CDATA[<font color="#9DC14F">Q1：你们把整个银行的所有活动都搬来了吗？ </font><br>]]></Data>\nA：基本上只要是卡库里有的各大银行卡，你都可以进行添加和关注活动。当然有些银行卡的活动是需要到现场通过消费相应的卡参与活动的，请你注意相关的活动规则。\n<Data><![CDATA[<br><br><font color="#9DC14F">Q2：为哈隔壁小红有那个活动但是我没有呢？ </font><br>]]></Data>\n
+A：这种情况的发生是因为你加的关注的银行卡与别人不一样所导致。\n<Data><![CDATA[<br><br><font color="#9DC14F">Q3：兜儿里的卡还有那些活动都在哪里查看啊？ </font><br>]]></Data>\n
+A：你可以在首页的右上角点击查看你的卡包或者通过点击“我的”里面的银行卡进行查看。在你登陆迈界APP以后，你可以通过右上角的加卡按钮进行添加常用银行卡，然后点击底栏“活动”即可查看你添加所有银行卡当时有效的活动，并且通过LBS定位，你说看到的活动会根据地理位置由近至远为你展示。</item>
+        <item><Data><![CDATA[<font color="#9DC14F">Q1： 啥是惊喜？ </font><br>]]></Data>A：就是又惊又喜！迈界通过自身强大的渠道资源，汇集全球各地高品质服务商的活动。迈界的所有惊喜将会让你的音量从正常瞬间提高十倍！<Data><![CDATA[<br><br><font color="#9DC14F">Q2：如何搜索一个活动？</font><br>]]></Data>A：你可以通过在搜索栏搜索活动的关键词，或者通过分类的筛选来找到符合你需求的活动。<Data><![CDATA[<br><br><font color="#9DC14F">Q3：为啥我找不到XX店？ </font><br>]]></Data>A：有几种可能。第一，你所找的商户目前没有活动或者尚未上传活动；第二，你所找的商户暂时不符合迈界对于商户制定的上线标准；第三，你所找的商户因为违规操作被录入黑名单；第四，你的定位可能不在该商户所在城市。如非以上情况，你可以通过意见反馈（链接）与我们联系。<Data><![CDATA[<br><br><font color="#9DC14F">Q4： 我最喜欢XX家了，怎么才能及时收到他们的消息呢？ </font><br>]]></Data>A：首先选择你最喜欢的那XX家，然后在门店详情页右上角点击关注，并且选择是否接收该门店的消息。之后你可以在你的个人中心自动收到该门店活动的信息，帮助你随时收到该店的惊喜。<Data><![CDATA[<br><br><font color="#9DC14F">Q5：如果商户脑袋被门夹了，欺骗消费者咋办？</font><br>]]></Data>A：别担心！我们立马叫人！（开玩笑）我们都是斯文人，还是要冷静的处理。你可以通过活动举报或者评论投诉，对该商户进行投诉，若商户在3天内不予以回应或者该事情最终没有解决得当，你可以对我们进行反馈。迈界始终作为第三方监督立场帮助商户与迈友进行双方的行为监督，在核查为事实以后，咱肯定得召唤个容嬷嬷来处理。</item>
+        <item><Data><![CDATA[<font color="#9DC14F">Q1：什么是私人秘书？</font><br>A：迈界的“私人秘书”通过将迈友的需求与优质服务商的连接和匹配，在最短时间内根据迈友的需求，帮助迈友解决信息筛选、优质服务商挑选与需求匹配为主等一系列以往只有在社会精英阶层才能享受的服务。帮助迈友充分利用碎片化时间解决自己生活上的需求与节省时间、金钱等，将他们最需要的惊喜和幸运直接送至面前。<br><br><font color="#9DC14F">Q2：怎么使用？</font><br>A：神简单！首先迈友需要从左侧的栏目中挑选问题类型，根据问题类型填写相应的表单，48小时内可以在APP“我的”消息箱里查看相关的回复。<br><br><font color="#9DC14F">Q3：使用私人秘书有什么好处？</font><br>A：迈界的私人秘书能够根据你的需求，在信息爆炸的时代，以最快的效率帮助你进行需求匹配，为你提供最合适的优质信息或者服务商渠道，帮助你利用碎片化时间解决日常生活中的重要需求，为你带来生活中的惊喜。<br><br><font color="#9DC14F">Q4：私人秘书如何匹配我的需求与信息？</font><br>A：你可以根据需求进行提问，当然当你的需求描述的越清楚的时候，私人秘书的回复将会越贴合你的需求点。例如在旅游度假版块：如果你咨询：“我打算去泰国3-4天，帮忙安排一下线路”或者“我打算在4月去泰国曼谷3-4天，帮忙安排一下线路”。前者的回答将会为客户推荐泰国最佳出行月份里面，最佳和最热门的旅游地点的线路；后者的回答将会为客户在路线安排里加入4月曼谷最佳体验活动，尽可能贴近客户的需求。<br><br><font color="#9DC14F">Q5：你们都不睡觉的吗？啥时候都能找你们唠唠嗑？</font><br>A：我们有固定的工作时间，7天<br><br><font color="#9DC14F">Q6：私人秘书的总部在哪里？</font><br>A：总部在一个你肯定想不到的地方。因为那里汇聚了最优质的服务群体，因此我们为你提高最高智慧的回复。<br><br><font color="#9DC14F">Q7：私人秘书是付费项目吗？</font><br>A：信息类完全免费。如果你需要选择精英专享定制服务，私人秘书团队需要收取一定的服务费用。<br><br><font color="#9DC14F">Q8：在这里可以询问关于系统的问题吗？</font><br>A：如果需要反馈关于商户、门店等与APP相关的问题，你可以到“我的”——设置——意见反馈里面提意见。]]></Data></item>
+        <item><![CDATA[<font color="#9DC14F">Q1：我对这个商户的服务态度十分不爽，怎么发评价？</font><br>A：你可以在消费后再门店下面进行活动的评价与评论<br><br><font color="#9DC14F">Q2：之前好像是我误会他们了，可以修改评论吗？</font><br>A：为了保证公平性，迈界平台上一切的评论都是不可修改的，但是可以追加。因此请你在评论之前尽可能客观、真实的进行评论。<br><br><font color="#9DC14F">Q3：为什么看不到我的评价？</font><br>A：为了防范非法信息，评价需要审核。如果你的评价中含非法、广告、恶意、人身攻击等内容，将依法被禁止展示。<br><br><font color="#9DC14F">Q4：为啥我发不出评价？</font><br>A：有几种可能。第一，请检查你的手机网络是否畅通；第二，如果你之前曾有因为违规评论的屏蔽，满了三次以后你将在三个月内无法再进行评论。<font>]]><Data></Data></item>
+        <item>亲爱的迈友，请在这里直接填写你遇到的问题或意见建议，你的意见对迈界非常重要，是我们一直致力于开发体验感最强平台的动力。收到反馈以后，我们会尽快回复你。</item>
+    </string-array>
+
+    <string name="user_protocol">用户协议</string>
+
+    <string-array name="protocol_title">
+        <item>一、相关定义：</item>
+        <item>二、用户资格及帐户：</item>
+        <item>三、用户信息安全</item>
+        <item>四、 迈界服务规则</item>
+        <item>五、 服务条款修改</item>
+        <item>六、 争议解决规则</item>
+        <item>七、 用户的权利与义务</item>
+        <item>八、 迈界的权利与义务</item>
+        <item>九、 知识产权与版权声明</item>
+        <item>十、拒绝担保和免责</item>
+        <item>十一、 法律声明及其他</item>
+    </string-array>
+    <string-array name="protocol_content">
+        <item><Data><![CDATA[1.1迈界：指迈界APP服务平台（以下简称“迈界”）的经营者上海朗信文化传媒有限公司。迈界服务指迈界基于互联网及移动网向用户提供的相关服务。迈界包括基于互联网的网站（域名：qmyo.com）及基于移动网的相关应用、服务等。<br/><br/>1.2用户： 指完成迈界注册程序，获得可以登陆迈界用户系统权限的正式注册用户。<br/><br/>1.3商户/门店： 指通过迈界发布活动信息，向用户提供活动商品或服务的自然人、法人或其他组织。<br/><br/>1.4活动信息：商户/门店通过迈界发布的，在迈界页面展示的商品/服务信息，包括但不限于互动商品/服务的名称、种类、数量、质量、价格、有效期、预约时间、售后服务等内容。活动信息在法律上构成商户/门店就活动商品/服务向用户发出的要约。<br/><br/>1.5私人秘书服务：指迈界服务平台向用户提供“办卡推荐”、“旅游度假”、“新品购物”、“宴会派对”、“品质生活”、“移民留学”、“投资理财”七大类下需求与服务信息匹配的服务。并在“精英专享”版块提供收取一定服务费的全定制服务等。<br/><br/>1.6体验大使活动：指商户/门店以自身营销为目的提供商品/服务等作为有偿体验名额，给予具有体验大使资格的用户申请与体验。]]></Data></item>
+        <item><Data><![CDATA[2.1.用户承诺：用户具有完全民事权利能力和行为能力或虽不具有完全民事权利能力和行为能力但经其法定代理人同意并由其法定代理人注册及应用迈界服务。同时，用户须提供详尽、准确的个人资料，且经常更新注册资料以符合用户实际情况。<br/><br/>2.2.用户使用迈界提供的互联网/移动网平台服务，必须：<br/><br/>a)自行配备上网的所需设备，包括个人电脑、调制解调器或其他必备上网装置；<br/><br/>b)自行负担个人上网所支付的与此服务有关的电话费用、网络费用。<br/><br/>c)用户在使用迈界服务前，应检查其软硬件设备，保证其处于安全使用状态。<br/><br/>2.3.用户点击“同意以下协议并注册”按钮，将视为用户同意本协议的所有条款，且具有浏览迈界平台相关信息、提交订单、发表评价等使用迈界服务的相应权利能力和行为能力，并可以对自己的行为承担法律责任。<br/><br/>完成注册程序并成功注册之后，您可使用您的Email和密码，登录到您在迈界平台的帐号（下称“帐号”）。保护您的帐号安全，是您的责任。 您应对所有使用您的密码及帐号的活动负完全的责任。您同意：<br><br>a)  您的迈界注册帐号遭到未获授权的使用，或者发生其它任何安全问题时，您将立即通知迈界； <br><br>b)如果您未保管好自己的帐号和密码，因此而产生的任何损失或损害，迈界无法也不承担任何责任；<br><br>c)每个用户都要对其帐号中的所有行为和事件负全责。如果您未保管好自己的帐号和密码而对您、迈界或第三方造成的损害，您将负全部责任。<br><br>]]></Data></item>
+        <item><Data>
+<![CDATA[尊重注册用户的隐私是迈界的基本政策。我们不会在未经用户授权时公开、编辑或透露其注册资料，或将客户名单出售、转售或租借给第三方。但为便于提供服务，我们有时会将信息提供给为我们工作的其他公司，并与该类公司签署详细的保密协议以保证用户个人隐私的安全。
+下列相关事宜的发生，迈界不承担任何法律责任：<br/><br/>3.1由于您将用户密码告知他人或与他人共享注册帐户，由此导致的任何个人信息的泄露，或其他非因迈界原因导致的个人信息的泄露。<br/><br/>3.2迈界根据法律规定或政府相关政策要求提供您的个人信息。<br/><br/>3.3任何第三方根据QmyO迈界各服务条款及声明中所列明的情况使用您的个人信息，由此所产生的纠纷。<br/><br/>3.4任何由于黑客攻击、电脑病毒侵入或政府管制而造成的暂时性互联网平台或者移动网平台关闭。<br/><br/>3.5因不可抗力导致的任何后果。]]>
+            </Data></item>
+        <item><Data><![CDATA[4.1用户可根据本协议及迈界公布的相关使用规则，查阅在迈界平台上发布的活动信息，通过迈界平台参与商户/门店发布的活动、优惠等，发布活动评价信息，邀请关注好友，参加迈界组织的有关活动（如有），及迈界现有及将来可能提供的其他服务。<br/><br/>4.2用户在使用迈界提供的上述服务时，应遵守本协议及迈界的相关使用规则，遵守自愿、平等、公平及诚实信用原则，不利用迈界平台侵犯他人合法权益及谋取不正当利益，不扰乱网上交易的正常秩序。<br/><br/>4.3用户可以在迈界平台发布对商品或服务的购买体验、评价等信息，但不可对其进行修改、删除，以及不得在迈界平台发布包含以下内容的言论：<br/><br/>a) 反对宪法所确定的基本原则，煽动、抗拒、破坏宪法和法律、行政法规实施的；<br/><br/>b) 煽动颠覆国家政权，推翻社会主义制度，煽动、分裂国家，破坏国家统一的；<br/><br/>c) 损害国家荣誉和利益的；<br><br>d) 煽动民族仇恨、民族歧视，破坏民族团结的；<br><br>e) 任何包含对种族、性别、宗教、地域内容等歧视的；<br><br>f) 捏造或者歪曲事实，散布谣言，扰乱社会秩序的；<br><br>g) 宣扬封建迷信、邪教、淫秽、色情、赌博、暴力、凶杀、恐怖、教唆犯罪的；<br><br>h) 公然侮辱他人或者捏造事实诽谤他人的，或者进行其他恶意攻击的；<br><br>j) 其他违反宪法和法律行政法规的。<br><br>4.4用户在迈界平台发布的信息，均代表用户的观点，与迈界无关，用户须对其言论独立承担完全的法律责任。<br><br>4.5 用户在使用迈界提供的服务时，不得有下列行为：<br><br>a) 利用迈界平台从事洗钱、窃取商业秘密、窃取个人信息等违法犯罪活动；<br><br>b) 将有关干扰、破坏或限制任何计算机软件、硬件或通讯设备功能的软件病毒或其他计算机代码、档案和程序之资料，加以上载、发布、发送电子邮件或以其他方式传送；<br><br>c) 干扰迈界平台正常运行，非法入侵迈界服务器、篡改迈界代码或其他损害迈界系统的行为；<br><br>d) 企图规避迈界平台的安全设置或网络系统，包括获取用户不应获取的数据，登录未经明确授权的服务器或帐户，或采用运行端口扫描等方式窥探其他网络的安全措施；<br><br>e) 以导致迈界的计算机系统或设施承受不合理负载的方式获取迈界提供的服务或网站信息，或进行可能导致此类情况出现的行为；<br><br>f) 实施任何形式的网络监控，从而截取与自身无关的信息；<br><br>g) 利用迈界平台从事与活动参与无关或不是以购物为目的的活动，试图扰乱正常购物秩序，谋取不正当利益的行为；<br><br>h) 注册多个帐户，通过自我邀请、相互邀请或利用多个手机或邮箱注册等不正当手段获取优惠券、抵用券或任何经济利益；<br><br>i) 大量购买商品或服务后又大量退货或囤积牟利，损害商户或迈界利益的行为；<br><br>j) 其他损害他人或迈界合法权益的行为。<br><br>一经发现用户提供虚假信息或有上述禁止的言论或行为的，迈界有权采取暂停提供服务、删除违法违规信息、限制用户购买、禁止用户发言、锁定用户帐户等处理措施。若因用户的上述言论或行为给他人或百度糯米造成损失的，用户还应承担赔偿责任。<br><br>4.7若国家相关机关向迈界发出命令、指示、裁决等法律文书或第三人向迈界投诉并提供相关证据材料，要求冻结、关闭用户帐号及交易的，迈界有权对相关帐号及交易进行冻结或取消，同时对违反本协议及迈界相关服务规则的用户，迈界有权封停其帐号。迈界采取上述措施的，将通过用户注册时提交的联系信息通知用户。<br><br>4.8用户应遵守本协议及迈界公示的各项服务规则的内容，若因用户违反本协议及服务规则造成损失的，用户应予以赔偿。]]></Data></item>
+        <item><Data><![CDATA[迈界有权不定期的制定、修改本协议及/或相关服务规则，一旦条款及服务内容、规则产生变动，迈界将会以网站公告的方式进行公示。迈界有权不定期的制定、修改本协议及/或相关服务规则，一旦条款及服务内容、规则产生变动，迈界将会以网站公告的方式进行公示。]]></Data></item>
+        <item><Data><![CDATA[如用户与商家因优惠或者活动的履行发生任何争议，包括但不限于对活动商品/服务的数量、质量、价格、有效期、预约时间、商家地址、配送方式、退换货方式、退款条件、售后服务等问题发生争议的，用户应与商家根据商户协议与用户协议的约定确定用户与商家各自的权利义务，承担各自的责任，解决争议。迈界可协助用户与商家之间争议的协商调解。]]></Data></item>
+        <item><Data><![CDATA[7.1用户有权按照本协议约定接受迈界提供的迈界平台服务。<br/><br/>7.2用户有权在注册时选择是否订阅迈界发送的关于活动信息的电子邮件或推送消息，并在注册成功后有权随时订阅或退订迈界该等信息。<br/><br/>7.3如用户要求获得迈界商品/服务的发票、其他付款凭证、购货凭证或服务单据，有权且应当在对活动等商品/服务进行消费时向商家提出，发票金额以实际支付的活动价款为准。<br/><br/>7.4用户在消费活动等商品/服务的过程中，如发现活动等商品/服务与订单内容不符或存在质量、服务态度等其他问题的，应与商家采取协商或其他方式予以解决，迈界可向用户提供商家的真实网站登记信息并积极协助用户与商家解决争议。<br/><br/>7.5用户有权随时终止使用迈界平台服务。<br/><br/>7.6用户应保证其在注册时和参与活动时所提供的姓名、联系方式、联系地址等全部信息真实、完整、准确，并当上述信息发生变更时及时进行更新提供给迈界的信息。<br><br>7.7用户在迈界平台上参与活动等形式时不得恶意干扰活动的正常进行、破坏迈界平台秩序。<br><br>7.8用户不得以任何技术手段或其他方式干扰迈界平台的正常运行或干扰其他用户对迈界平台服务的使用。<br><br>7.9用户不得以虚构事实等方式恶意诋毁迈界平台或商户/门店的商誉。<br><br>7.10用户在参与活动成功后应配合接收商户/门店货物或活动参与的凭证。<br><br>7.11用户不得对商户/门店活动的商品/服务进行虚假评价或虚假投诉。<br><br>7.12用户在参与商户/门店活动等形式时应该主动出示唯一并变化的个人验证二维码进行身份验证。<br><br>7.13用户在使用迈界“私人秘书”版块服务时，应该自主遵守不传播、制作、复制下列信息：<br><br>a)煽动抗拒、破坏宪法和法律、行政法规实施的<br><br>b)煽动颠覆国家政权，推翻社会主义制度的<br><br>c)煽动分裂国家、破坏国家统一的<br><br>d)煽动民族仇恨、民族歧视，破坏民族团结的<br><br>e)捏造或者歪曲事实，散布谣言，扰乱社会秩序的<br><br>f)宣扬封建迷信、淫秽、色情、赌博、暴力、凶杀、恐怖、教唆犯罪的<br><br>g)公然侮辱他人或者捏造事实诽谤他人的，或者进行其他恶意攻击的<br><br>h)损害国家机关信誉的<br><br>i)其他违反宪法和法律行政法规的<br><br>j)进行商业广告行为的<br><br>7.14用户在参与迈界“体验大使”版块活动时，应该自主遵守以下原则：<br><br>a)用户需要保证所提交必要的个人信息包含但不限于地址、名字、电话、公司名称、职位等资料与事实一致。如迈界审核申请时发现资料与现实不符，有权驳回体验大使申请。<br><br>b)在通过体验大使审核，并且成为体验大使以后，用户需要保证在一个月最少参与申请一个体验活动。否则迈界保留对于不活跃用户（为履行每个月至少参与申请一个体验活动）免除体验大使资格的权利。<br><br>c)用户在参与体验大使的体验活动以后，必须按照要求在10天内提交客观、真实的相关体验详细评价/反馈。如逾期或者提交的评价不符合体验大使评价反馈标准，迈界将保留对于此类用户免除体验大使资格的权利。<br><br>d)如果确认体验活动与体验大使匹配成功，但是由于体验大使个人原因无法参与体验，且不通知商户/门店以及迈界的人。迈界将保留对于此类用户追究违约责任以及免除体验大使资格的权利。<br><br>7.15用户不得通过任何手段恶意注册迈界帐号，包括但不限于以牟利、炒作、套现、获奖等为目的多个账号注册。用户亦不得盗用其他用户帐号。如用户违反上述规定，则迈界有权直接采取一切必要的措施，包括但不限于删除用户发布的内容、取消用户在迈界平台获得的星级、荣誉以及虚拟财富，暂停或查封用户帐号，取消因违规所获利益，乃至通过诉讼形式追究用户法律责任等。<br><br>用户需维护迈界平台上评论的客观性，不得利用迈界用户身份进行违反诚信的任何行为，包括但不限于：炒作商户，并向商户收取费用或获取利益；为获得利益或好处，参与或组织撰写及发布虚假点评；以差评威胁，要求商户提供额外的利益或好处；进行其他其它影响点评客观、干扰扰乱网站正常秩序的违规行为等。如用户违反上述规定，则迈界有权采取一切必要的措施，包括但不限于：删除用户发布的内容、取消用户在网站获得的星级、荣誉以及虚拟财富，暂停或查封用户帐号，取消因违规所获利益，乃至通过诉讼形式追究用户法律责任等。<br><br>7.17禁止用户将迈界以任何形式作为从事各种非法活动的场所、平台或媒介。未经迈界的授权或许可，用户不得借用本平台的名义从事任何商业活动，也不得以任何形式将迈界作为从事商业活动的场所、平台或媒介。<br><br>7.18用户在迈界以各种形式发布的一切信息，均应符合国家法律法规等相关规定及网站相关规定，符合社会公序良俗，并不侵犯任何第三方主体的合法权益，否则用户自行承担因此产生的一切法律后果，且朗信文化传媒因此受到的损失，有权向用户追偿。]]></Data></item>
+        <item><Data><![CDATA[8.1如用户不具备本协议约定的注册资格，则迈界有权拒绝用户进行注册，对已注册的用户有权注销其迈界用户账号，迈界因此而遭受损失的有权向前述用户或其法定代理人主张赔偿。同时，迈界保留其他任何情况下决定是否接受用户注册的权利。<br/><br/>8.2迈界发现账户使用者并非账户初始注册人时，有权中止该账户的使用。<br/><br/>8.3迈界通过技术检测、人工抽检等检测方式合理怀疑用户提供的信息错误、不实、失效或不完整时，有权通知用户更正、更新信息或中止、终止为其提供迈界服务。<br/><br/>8.4迈界有权在发现迈界上显示的任何信息存在明显错误时，对信息予以更正。<br/><br/>8.5迈界保留修改、中止或终止迈界服务的权利，迈界行使前述权利将按照法律规定的程序及方式告知用户。<br/><br/>8.6迈界应当采取必要的技术手段和管理措施保障迈界的正常运行，维护迈界平台秩序。<br><br>8.7如用户连续一年未使用迈界用户账号和密码登录迈界，则迈界有权注销用户的迈界账号。账号注销后，迈界有权将相应的用户名开放给其他用户注册使用。<br><br>8.8迈界有权在本协议履行期间及本协议终止后保留用户的注册信息及用户应用迈界服务期间的全部交易信息，但不得非法使用该等信息。<br><br>8.9迈界有权随时删除迈界网站内各类不符合国家法律法规、规范性文件或迈界网站规定的用户评价等内容信息，迈界行使该等权利不需提前通知用户。]]></Data></item>
+        <item><Data><![CDATA[9.1迈界所包含的全部智力成果包括但不限于数据库、网站设计、文字和图表、软件、照片、录像、音乐、声音及其前述组合，软件编译、相关源代码和软件 (包括小应用程序和脚本) 的知识产权权利均归迈界所有。用户不得为商业目的复制、更改、拷贝、发送或使用前述任何材料或内容。<br/><br/>9.2迈界名称中包含的所有权利 (包括商誉和商标) 均归迈界所有。<br/><br/>9.3用户接受本协议即视为用户主动将其在迈界发表的任何形式的信息的著作权，包括但不限于：复制权、发行权、出租权、展览权、表演权、放映权、广播权、信息网络传播权、摄制权、改编权、翻译权、汇编权以及应当由著作权人享有的其他可转让权利无偿独家转让给迈界所有，迈界有权利就任何主体侵权单独提起诉讼并获得全部赔偿。本协议属于《中华人民共和国著作权法》第二十五条规定的书面协议，其效力及于用户在迈界发布的任何受著作权法保护的作品内容，无论该内容形成于本协议签订前还是本协议签订后。<br/><br/>9.4用户在使用迈界服务过程中不得非法使用或处分迈界或他人的知识产权权利。用户不得将已发表于迈界的信息以任何形式发布或授权其它网站（及媒体）使用。]]></Data></item>
+        <item><Data><![CDATA[10.1迈界作为“网络服务提供者”的第三方平台，不担保平台上的信息及服务能充分满足用户的需求。对于用户在接受迈界的服务过程中可能遇到的错误、侮辱、诽谤、不作为、淫秽、色情或亵渎事件，迈界不承担法律责任。<br/><br/>10.2基于互联网、移动网络等的特殊性，迈界也不担保服务不会受中断，对服务的及时性、安全性都不作担保，不承担非因迈界导致的责任。<br/><br/>10.3迈界力图使用户能对本网站进行安全访问和使用，但迈界不声明也不保证本网站或其服务器是不含病毒或其它潜在有害因素的；因此用户应使用业界公认的软件查杀任何自迈界下载文件中的病毒。<br/><br/>10.4迈界不对用户所发布信息的保存、修改、删除或储存失败负责。对网站上的非因迈界故意所导致的排字错误、疏忽等不承担责任。<br/><br/>10.5迈界有权但无义务，改善或更正本平台任何部分之疏漏、错误。<br/><br/>10.6除非迈界以书面形式明确约定，迈界对于用户以任何方式（包括但不限于包含、经由、连接或下载）从本网站所获得的任何内容信息，包括但不限于广告、商户信息、点评内容等，不保证其准确性、完整性、可靠性；对于用户因本网站上的内容信息而购买、获取的任何产品、服务、信息或资料，迈界不承担责任。<br><br>10.7用户自行承担使用本网站信息内容所导致的风险。<br><br>10.8迈界内所有用户所发表的用户点评，仅代表用户个人观点，并不表示本网站赞同其观点或证实其描述，本网站不承担用户点评引发的任何法律责任。<br><br>10.9迈界有权删除迈界站内各类不符合法律或协议规定的评论字句等，而保留不通知用户的权利。<br><br>10.10所有发给用户的通告，迈界都将通过正式的页面公告、站内信、电子邮件、客服电话、手机短信或常规的信件送达。任何非经迈界正规渠道获得的中奖、优惠等活动或信息，迈界不承担法律责任。]]></Data></item>
+        <item><Data><![CDATA[11.1本服务条款受约于中华人民共和国国家法律，注册用户和本网站须一致同意服从中华人民共和国法院管辖。如发生用户注册条款与中华人民共和国法律相抵触时，则这些条款将完全按法律规定重新解释，而其它条款则依旧保持对注册用户产生法律效力和影响。<br/><br/>11.2迈界平台中的帮助信息、栏目的相关介绍及注意事项为本协议的附件，作为解释本协议的具体依据。]]></Data></item>
+    </string-array>
+    <string-array name="secretary_title">
+        <item>%1$s 根据您的出行时间、目的地、预算、天数等其他必要需求，提供关于旅游度假相关酒店、机票、签证保险、游玩项目、地接、商旅、目的地实用信息等专业对接人联系人或资讯。</item>
+        <item>%1$s 根据您提出的品牌、产品类型、型号、预算等其他必要需求，提供关于购物相关境内外产品购买渠道、限量藏品资讯、造型买手服务等专业对接人联系人或资讯。</item>
+        <item>%1$s 根据您提出的预算、场地需求、举办时间、氛围环境等其他必要需求，提供关于盛宴相关餐厅、派对/年会/婚宴策划等专业对接人联系人或资讯。</item>
+        <item>%1$s 根据您提出的预算、需求/兴趣点、时间等其他必要需求，提供关于生活娱乐相关生活兴趣课堂、周末娱乐消遣、家政服务、私人医生保健等专业对接人联系人或资讯。</item>
+        <item>%1$s 根据您提出的预算、留学/移民国家、时间等其他必要需求，提供关于留学移民相关留学移民国别资讯、政策、服务等专业对接人联系人或资讯。</item>
+        <item>%1$s 根据您提出的预算、投资理财、金额、银行意向需求等其他必要需求，提供关于投资理财相关理财产品、境内外房产投资、服务等专业对接人联系人或资讯。</item>
+        <item>%1$s 根据您提出的银行、银行卡等级、额度、年费、用途等其他必要需求，提供关于办卡相关银行卡信息，以及专业对接人联系人的联络方式。</item>
+    </string-array>
+    <string-array name="secretary_hint">
+        <item>9月份去日本玩，东京入大阪出，哪里预订机票最划算？\r\n曼谷有没有性价比比较高的酒店？但是要有点当地特色的\r\n去美国旅游需要准备什么签证材料？\r\n想要了解一下去希腊可以玩些什么？主要是雅典和圣托里尼\r\n推荐几家巴黎的特色餐厅，吃法国菜\r\n公司10月要去德国看展顺便进行行业考察，推荐一下对接的旅行社\r\n怎么去巴黎附近的那个打折村？</item>
+        <item>我在XX，现在XX鞋已经卖断货了，我想知道还有哪里有吗？\r\n我的XX表有点坏了，能告诉我哪里能修复吗？\r\n我想买一个国外的牌子XX的XX产品，不知道国内目前哪里有得卖？\r\n我想收藏一支82年的拉菲，介绍一下渠道\r\n下个月我要参加一个很重要的宴会，需要有人帮我进行搭配，能否推荐一下？</item>
+        <item>孩子要举办个周岁宴，推荐一两家策划公司或者场地，预算3万左右\r\n我们教师节要请老师吃饭，办个谢师宴，人均200左右，推荐个适合的酒家\r\n公司想要在年中的时候到上海的郊区租个别墅搞派对，预算1万左右，推荐个地方呗\r\n年末要结婚了，预算20万左右，推荐个适合的策划公司吧。</item>
+        <item>周末想去周边泡个温泉，推荐一些比较好的温泉度假村\r\n希望能够找到一个周末授教的法语兴趣班\r\n请推荐一下广州周边适合郊游的地方，当日来回\r\n小孩3岁，想报个智力开发的班，有什么推荐？坐标北京\r\n最近想学习插画，上海哪里有插花课堂呢？\r\n</item>
+        <item>移民去美国大概要花多少钱呢？投资多少钱起?\r\n现在欧洲哪个国家的移民政策比较好？\r\n想问一下澳洲143签证需要注意些什么吗？\r\n现在想要移民去英国有什么需要注意的吗？推荐一下广州的机构</item>
+        <item>小迈，现在XX行有什么理财产品是比较好的？预算5万元左右\r\n我想了解一下XX理财产品的年利率？还有没有类似的其他产品可以推荐一下？\r\n我想了解一下投资美国房产的事宜\r\n我想了解一下目前市面上，交行的理财产品有哪些</item>
+        <item>招行有哪些免年费的信用卡？\r\n经常出差，推荐个中行信用卡，希望额度是在3W以上\r\n如何办理工行的卡种升级？目前是金卡，希望升到白金级</item>
+    </string-array>
+
+    <string name="click_look_more">点击查看更多惊喜</string>
+
+    <item name="tag_show" type="id"></item>
+
+    <string name="political">政治内容</string>
+    <string name="obscene">淫秽色情</string>
+    <string name="dirty">粗话脏话</string>
+    <string name="privacy">泄露隐私</string>
+    <string name="advertising">恶意广告</string>
+    <string name="other">其他原因</string>
+    <string name="has_sensitive">请注意您的用语</string>
+    <string name="coupons_remainder">剩余可用人数：%1$s</string>
+    <string name="bank_empty_title">抱歉,小迈没有找到您的银行卡</string>
+     <string name="get_back">银行卡问题反馈  ></string>
+     <string name="registeror_login">总裁大大,想要添加多张银行卡请先登录哟</string>
+     <string name="login_to_report">总裁大大,举报要登录的哟</string>
+     <string name="login_to_comment">总裁大大,请先登录再发表高见哟</string>
+     <string name="login_to_getmessage">总裁大大,登录才可接收消息哟</string>
+
+</resources>

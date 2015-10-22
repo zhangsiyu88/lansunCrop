@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_top_35" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/app_white"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <com.android.pc.ioc.image.RecyclingImageView
+                    android:id="@+id/iv_jiwen_item_head"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/activity_home_hot_jiwen_item_h"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/home_jiwen" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_top_314" >
+
+                    <com.android.pc.ioc.image.RecyclingImageView
+                        android:id="@+id/iv_jiwen_item_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="@dimen/l_r_35" />
+
+                    <TextView
+                        android:id="@+id/tv_jiwen_item_type_desc"
+                        style="@style/text_style_small_26"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginLeft="@dimen/l_r_10"
+                        android:layout_marginTop="@dimen/margin_top_20"
+                        android:layout_toRightOf="@+id/iv_jiwen_item_type"
+                        android:text="更多旅游度假"
+                        android:textColor="@color/text_gray2" />
+
+                    <TextView
+                        android:id="@+id/tv_jiwen_item_time"
+                        style="@style/text_style_small_24"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="@dimen/l_r_35"
+                        android:text="2015/8/8"
+                        android:textColor="@color/text_gray2" />
+                </RelativeLayout>
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_jiwen_item_desc"
+                style="@style/text_style_big_32"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="@dimen/margin_top_35"
+                android:layout_marginLeft="@dimen/l_r_35"
+                android:layout_marginRight="@dimen/l_r_35"
+                android:layout_marginTop="@dimen/margin_top_20"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="游遍东南亚：10个城市，20家酒店，599元2晚住宿！"
+                android:textColor="#6F6F6F" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

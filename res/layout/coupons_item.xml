@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_top_35"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35" >
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            android:id="@+id/iv_coupons_bg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/platinum_coupons" />
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            android:id="@+id/iv_coupons_qr_code"
+            style="@style/w_wrap_h_wrap"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:src="@drawable/qr_code" />
+
+        <LinearLayout
+            android:id="@+id/rl_coupons_money"
+            style="@style/w_wrap_h_wrap"
+            android:layout_marginLeft="@dimen/l_r_35"
+            android:layout_marginTop="@dimen/margin_top_10" >
+
+            <TextView
+                android:id="@+id/tv_coupons_icon"
+                style="@style/text_style_nomal_30"
+                android:text="@string/coupon_money"
+                android:textColor="@color/app_white" />
+
+            <TextView
+                android:id="@+id/tv_coupons_money"
+                style="@style/text_style_big_90"
+                android:layout_marginLeft="@dimen/l_r_14"
+                android:text="100万"
+                android:textColor="@color/app_white" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_coupons_time"
+            style="@style/text_style_nomal_28"
+            android:layout_alignLeft="@+id/rl_coupons_money"
+            android:layout_below="@+id/rl_coupons_money"
+            android:text="有效期至 2015-12-31"
+            android:textColor="@color/app_white" />
+
+        <TextView
+            android:id="@+id/tv_coupons_shengyu_day_num"
+            style="@style/text_style_nomal_28"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/tv_coupons_time"
+            android:layout_marginLeft="@dimen/l_r_35"
+            android:layout_toRightOf="@id/tv_coupons_time"
+            android:text="@string/shengyu_day_num"
+            android:textColor="@color/app_white" />
+    </RelativeLayout>
+
+</LinearLayout>

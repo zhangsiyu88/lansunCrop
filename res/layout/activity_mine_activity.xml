@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@color/app_bg">
+
+    <include layout="@layout/activity_com" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/app_white"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/expandtab_view_h"
+            android:orientation="horizontal" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <TextView
+                    android:id="@+id/tv_activity_doing"
+                    style="@style/text_style_nomal_30"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:text="@string/doing"
+                    android:textColor="@color/app_green1" />
+
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="@dimen/expand_line_h"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/line_bg" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <TextView
+                    android:id="@+id/tv_activity_expired"
+                    style="@style/text_style_nomal_30"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:text="@string/expired" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <View
+            style="@style/line_style_3"
+          />
+    </LinearLayout>
+
+    
+    
+    
+    
+    
+    
+    <FrameLayout 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/app_bg">
+        
+	   <com.lansun.qmyo.view.MyListView
+        android:id="@+id/lv_mine_activity"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:cacheColorHint="#00000000"
+        android:divider="@null"
+        android:listSelector="@android:color/transparent"
+        android:scrollbars="none"
+        android:background="@color/app_bg" />
+	
+		     <RelativeLayout 
+		         android:id="@+id/rl_no_postdelay_activity"
+		          android:layout_width="match_parent"
+		          android:layout_height="match_parent"
+		          android:background="@color/app_bg"
+		          android:visibility="gone"
+		          >
+	            
+		         <LinearLayout 
+		             android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:orientation="vertical"
+		            android:gravity="center"
+		            android:layout_centerInParent="true">
+                
+				        <ImageView 
+				            android:layout_width="wrap_content"
+				            android:layout_height="wrap_content"
+				            android:src="@drawable/lv_empty"/>
+				        <TextView 
+				            android:layout_marginTop="10dp"
+				            android:layout_width="wrap_content"
+				            android:layout_height="wrap_content"
+				            android:text="您收藏的活动中暂无已过期活动"/>
+				        
+		         </LinearLayout>
+		    </RelativeLayout>
+	     </FrameLayout>
+
+</LinearLayout>

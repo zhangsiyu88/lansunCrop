@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_white"
+    android:orientation="vertical" >
+
+    <include layout="@layout/activity_com" />
+
+    <RelativeLayout
+        android:id="@+id/rl_person_center_head"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/person_info_head_h"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35"
+        android:background="@color/app_white"
+        android:textColor="@color/text_gray1" >
+
+        <TextView
+            android:id="@+id/textView1"
+            style="@style/text_style_nomal_28"
+            android:layout_centerVertical="true"
+            android:text="@string/mine_head"
+            android:textColor="@color/text_gray1" />
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            android:id="@+id/iv_arrow_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/arrow_r" />
+
+        <RelativeLayout
+            style="@style/w_wrap_h_wrap"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/l_r_25"
+            android:layout_toLeftOf="@id/iv_arrow_1" >
+
+            <ImageView
+                style="@style/w_wrap_h_wrap"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/portrait_personal" />
+
+            <com.lansun.qmyo.view.CircularImage
+                android:id="@+id/iv_person_center_head"
+                style="@style/user_head_small"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/l_r_35"
+                android:background="@drawable/person_center_default_head" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <View style="@style/line_style_1" />
+
+    <RelativeLayout
+        android:id="@+id/iv_person_center_nickname"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_menu_h"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35"
+        android:background="@color/app_white" >
+
+        <TextView
+            style="@style/text_style_nomal_28"
+            android:layout_centerVertical="true"
+            android:text="@string/mine_nickname"
+            android:textColor="@color/text_gray1" />
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            android:id="@+id/iv_person_nickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/arrow_r" />
+
+        <TextView
+            android:id="@+id/tv_person_center_nickname"
+            style="@style/text_style_nomal_28"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:layout_toLeftOf="@id/iv_person_nickname"
+            android:text="我的昵称" />
+    </RelativeLayout>
+
+    <View style="@style/line_style_1" />
+
+    <RelativeLayout
+        android:id="@+id/iv_person_center_reset_pwd"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_menu_h"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35"
+        android:background="@color/app_white" >
+
+        <TextView
+            style="@style/text_style_nomal_28"
+            android:layout_centerVertical="true"
+            android:text="@string/mine_reset_pwd"
+            android:textColor="@color/text_gray1" />
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/arrow_r" />
+    </RelativeLayout>
+
+    <View style="@style/line_style_1" />
+
+    <RelativeLayout
+        android:id="@+id/iv_person_center_edit_person_info"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_menu_h"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35"
+        android:background="@color/app_white" >
+
+        <TextView
+            style="@style/text_style_nomal_28"
+            android:layout_centerVertical="true"
+            android:text="@string/mine_edit_person_info"
+            android:textColor="@color/text_gray1" />
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/arrow_r" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/app_bg"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/tv_person_center_exit"
+            style="@style/w_full_h_wrap"
+            android:layout_height="@dimen/bottom_menu_h"
+            android:layout_marginLeft="@dimen/l_r_35"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:layout_marginTop="@dimen/margin_top_35"
+            android:background="@drawable/tv_style_green"
+            android:gravity="center"
+            android:text="@string/exit_login"
+            android:textColor="@color/app_white" />
+    </LinearLayout>
+
+</LinearLayout>

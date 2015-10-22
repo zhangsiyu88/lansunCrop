@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/home_item_h" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_top_35"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35"
+        android:background="@color/app_white"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            android:id="@+id/iv_home_item_head"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/activity_home_hot_jiwen_item_h"
+            android:background="@drawable/default_article"
+            android:scaleType="fitXY" />
+
+        <TextView
+            android:id="@+id/tv_home_item_desc"
+            style="@style/text_style_big_32"
+            android:layout_marginTop="@dimen/margin_top_30"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:paddingLeft="@dimen/l_r_30"
+            android:paddingRight="@dimen/l_r_30"
+            android:text="游遍东南亚：10个城市，20家酒店，599元2晚住宿！"
+            android:textColor="#6F6F6F" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginLeft="@dimen/l_r_35"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:layout_marginTop="@dimen/margin_top_20"
+            android:background="@color/line_bg2"
+            android:paddingLeft="@dimen/l_r_35"
+            android:paddingRight="@dimen/l_r_35" />
+
+        <LinearLayout
+            style="@style/w_wrap_h_wrap"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_top_22"
+            android:layout_marginTop="@dimen/margin_top_22"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="@dimen/l_r_35"
+            android:paddingRight="@dimen/l_r_35" >
+
+            <com.android.pc.ioc.image.RecyclingImageView
+                style="@style/w_wrap_h_wrap"
+                android:background="@drawable/detail_arrown"
+                android:scaleType="fitXY" />
+
+            <TextView
+                android:id="@+id/tv_home_item_title"
+                style="@style/text_style_small_24"
+                android:layout_marginLeft="@dimen/l_r_15"
+                android:text="游遍东南亚" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

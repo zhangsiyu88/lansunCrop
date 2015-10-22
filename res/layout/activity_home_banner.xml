@@ -1,0 +1,150 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/w_h_full"
+    android:orientation="vertical" >
+
+    <FrameLayout
+        android:id="@+id/fl_banner"
+        style="@style/w_full_h_wrap" >
+
+        <RelativeLayout style="@style/w_full_h_wrap" >
+
+            <com.android.pc.ioc.image.RecyclingImageView
+                android:id="@+id/iv_home_ad"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/home_ad_h"
+                android:scaleType="fitXY"
+                android:src="@drawable/default_home" />
+
+            <LinearLayout
+                android:id="@+id/rl_vp"
+                style="@style/w_full_h_wrap"
+                android:layout_below="@id/iv_home_ad"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="vertical" >
+
+                <com.lansun.qmyo.view.MyViewPager
+                    android:id="@+id/vp_home_pager"
+                    style="@style/w_full_h_wrap"
+                    android:layout_height="@dimen/home_pager_h"
+                    android:layout_gravity="center_vertical"
+                    android:paddingTop="@dimen/home_pager_item_margin_top" />
+
+                <LinearLayout
+                    style="@style/w_full_h_wrap"
+                    android:layout_marginBottom="@dimen/margin_top_30"
+                    android:layout_marginTop="@dimen/margin_top_20"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal" >
+
+                    <com.android.pc.ioc.image.RecyclingImageView
+                        android:id="@+id/iv_point"
+                        style="@style/point_style"
+                        android:background="@drawable/oval_select" />
+
+                    <com.android.pc.ioc.image.RecyclingImageView
+                        android:id="@+id/iv_point2"
+                        style="@style/point_style"
+                        android:background="@drawable/oval_nomal" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/ll_search"
+                android:layout_width="@dimen/search_width"
+                android:layout_height="@dimen/search_height"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="@dimen/l_r_35"
+                android:layout_marginTop="@dimen/activity_home_banner_search_margin_top"
+                android:background="@drawable/circle_edit_background"
+                android:gravity="center"
+             	>
+                <ImageView
+                    android:id="@+id/iv"
+                    style="@style/w_wrap_h_wrap"
+                    android:src="@drawable/search" />
+                <TextView
+                    android:layout_toRightOf="@id/iv"
+                    android:id="@+id/tv_home_search"
+                    style="@style/text_style_small_26"
+                    android:layout_marginLeft="5dp"
+                    android:background="@null"
+                    android:maxLines="1"
+                    android:text="@string/please_enter_search_brand"
+                    android:textColor="@color/app_white" />
+            </RelativeLayout>
+        </RelativeLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_home_type"
+        style="@style/w_full_h_wrap"
+        android:layout_marginTop="@dimen/margin_top_32"
+        android:background="@color/app_white"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            style="@style/w_h_full"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                style="@style/w_h_full"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="@dimen/margin_top_30"
+                android:layout_marginLeft="@dimen/l_r_35"
+                android:layout_marginRight="@dimen/l_r_35"
+                android:layout_marginTop="@dimen/margin_top_30"
+                android:gravity="center_horizontal" >
+
+                <LinearLayout
+                    android:id="@+id/ll_activity_home_new"
+                    style="@style/w_wrap_h_wrap"
+                    android:layout_weight="1"
+                    android:background="@drawable/new_1"
+                    android:gravity="center" >
+
+                    <ImageView
+                        style="@style/w_wrap_h_wrap"
+                        android:src="@drawable/recommend_1_icon" />
+
+                    <TextView
+                        style="@style/text_style_nomal_30"
+                        android:layout_marginLeft="@dimen/l_r_14"
+                        android:text="@string/new_exposure"
+                        android:textColor="@color/app_white" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_activity_home_yhq"
+                    style="@style/w_wrap_h_wrap"
+                    android:layout_weight="1"
+                    android:background="@drawable/coupons_2"
+                    android:gravity="center" >
+
+                    <ImageView
+                        style="@style/w_wrap_h_wrap"
+                        android:src="@drawable/recommend_2_icon" />
+
+                    <TextView
+                        style="@style/text_style_nomal_30"
+                        android:layout_marginLeft="@dimen/l_r_14"
+                        android:text="@string/yhq"
+                        android:textColor="@color/app_white" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        style="@style/text_style_nomal_30"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/margin_top_35"
+        android:layout_marginTop="@dimen/margin_top_30"
+        android:text="@string/home_hot_v16"
+        android:textColor="@color/text_gray2" />
+
+</LinearLayout>

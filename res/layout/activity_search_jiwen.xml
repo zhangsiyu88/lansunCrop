@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/w_full_h_wrap"
+    android:background="@color/app_bg"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/ll_search_top_menu"
+        style="@style/w_full_h_wrap" >
+
+        <include layout="@layout/activity_search_top_menu" />
+    </LinearLayout>
+
+    <View style="@style/line_style_1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/expandtab_view_h"
+        android:background="@color/app_white"
+        android:orientation="horizontal" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/tv_activity_doing"
+                style="@style/text_style_nomal_30"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:text="@string/v16_jiwen"
+                android:textColor="@color/app_green1" />
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="@dimen/expand_line_h"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@color/line_bg" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/tv_activity_expired"
+                style="@style/text_style_nomal_30"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:text="@string/v16_bd" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <View style="@style/line_style_1" />
+
+    <com.lansun.qmyo.view.MyListView
+        android:id="@+id/lv_jiwen_search_content"
+        style="@style/w_h_full"
+        android:layout_marginTop="@dimen/margin_top_35"
+        android:cacheColorHint="#00000000"
+        android:divider="@null"
+        android:listSelector="@android:color/transparent"
+        android:scrollbars="none" />
+
+</LinearLayout>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:id="@+id/city_all_title"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/bottom_menu_h"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/city_letter"
+			style="@style/text_style_big_34"
+            android:layout_centerVertical="true"
+            android:textColor="@color/app_green2"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_alignParentBottom="true"
+            android:layout_width="fill_parent"
+            android:layout_height="1.0px"
+            android:background="#C9C9C9" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_width="fill_parent"
+         android:layout_height="@dimen/bottom_menu_h"
+         >
+
+        <TextView
+            android:layout_centerVertical="true"
+            android:id="@+id/city_name"
+            style="@style/text_style_nomal_30"
+             />
+        <View
+            android:layout_alignParentBottom="true"
+            android:layout_width="fill_parent"
+            android:layout_height="1.0px"
+            android:background="#C9C9C9" />
+    </RelativeLayout>
+
+</LinearLayout>

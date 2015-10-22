@@ -1,0 +1,62 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_white"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/tv_city_accomplish"
+                style="@style/text_style_nomal_30"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/margin_top_15"
+                android:layout_marginRight="@dimen/margin_top_35"
+                android:layout_marginTop="@dimen/margin_top_15"
+                android:gravity="center_vertical"
+                android:text="@string/commit" />
+        </LinearLayout>
+
+        <View style="@style/line_style_1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <com.android.pc.ioc.view.WheelView
+                android:id="@+id/wv_wheelcity_country"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:paddingLeft="5dp" />
+
+            <com.android.pc.ioc.view.WheelView
+                android:id="@+id/wv_wheelcity_city"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1" />
+
+            <com.android.pc.ioc.view.WheelView
+                android:id="@+id/wv_wheelcity_ccity"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

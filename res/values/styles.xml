@@ -1,0 +1,93 @@
+<resources>
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="AppBaseTheme" parent="android:Theme.Light"></style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="PopupWindowAnimation">
+        <item name="android:windowEnterAnimation">@anim/popshow_anim</item>
+        <item name="android:windowExitAnimation">@anim/pophidden_anim</item>
+    </style>
+
+    <style name="mypopwindow_anim_style" parent="@android:style/Theme.Holo.Light">
+        <item name="android:windowEnterAnimation">@anim/shared_popshow_anim</item>
+        <!-- 指定显示的动画xml -->
+
+        <item name="android:windowExitAnimation">@anim/shared_pophidden_anim</item>
+        <!-- 指定消失的动画xml -->
+    </style>
+
+    <style name="myDialogStyle" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/custom_dialog_bg</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="Theme.UMDialog" parent="android:style/Theme.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="user_head">
+        <item name="android:layout_width">@dimen/user_head_w_125</item>
+        <item name="android:layout_height">@dimen/user_head_h_125</item>
+    </style>
+
+    <style name="user_head_small">
+        <item name="android:layout_width">@dimen/user_head_w_95</item>
+        <item name="android:layout_height">@dimen/user_head_h_95</item>
+    </style>
+
+    <style name="user_head_big">
+        <item name="android:layout_width">@dimen/user_head_w_230</item>
+        <item name="android:layout_height">@dimen/user_head_h_230</item>
+    </style>
+
+    <style name="secretary_head_small">
+        <item name="android:layout_width">@dimen/secretary_head_w_155</item>
+        <item name="android:layout_height">@dimen/secretary_head_h_155</item>
+    </style>
+
+    <style name="secretary_head_small_80">
+        <item name="android:layout_width">@dimen/secretary_head_w_80</item>
+        <item name="android:layout_height">@dimen/secretary_head_h_80</item>
+    </style>
+
+    <style name="secretary_head_big">
+        <item name="android:layout_width">@dimen/secretary_head_w_235</item>
+        <item name="android:layout_height">@dimen/secretary_head_h_235</item>
+    </style>
+
+    <style name="line_style_1">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1px</item>
+        <item name="android:background">@color/line_bg</item>
+    </style>
+
+    <style name="line_style_2">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1px</item>
+        <item name="android:background">@color/line_bg2</item>
+    </style>
+
+    <style name="line_style_3">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1px</item>
+        <item name="android:background">#D1D1D1</item>
+    </style>
+
+
+</resources>

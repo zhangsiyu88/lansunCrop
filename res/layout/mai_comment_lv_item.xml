@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/w_full_h_wrap"
+    android:background="@color/app_white"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/rl_comment_item_content"
+        style="@style/w_full_h_wrap"
+        android:paddingLeft="@dimen/l_r_35"
+        android:paddingRight="@dimen/l_r_35" >
+
+        <com.lansun.qmyo.view.CircularImage
+            android:id="@+id/iv_comment_head"
+            android:layout_width="@dimen/mai_comment_head_w"
+            android:layout_height="@dimen/mai_comment_head_h"
+            android:layout_marginTop="@dimen/margin_top_35" />
+
+        <TextView
+            android:id="@+id/tv_comment_name"
+            style="@style/text_style_nomal_30"
+            android:layout_marginLeft="@dimen/l_r_25"
+            android:layout_marginTop="@dimen/margin_top_42"
+            android:layout_toRightOf="@id/iv_comment_head"
+            android:textColor="#6F6F6F" />
+
+        <TextView
+            android:id="@+id/tv_comment_time"
+            style="@style/text_style_small_24"
+            android:layout_below="@id/tv_comment_name"
+            android:layout_marginLeft="@dimen/l_r_25"
+            android:layout_toRightOf="@id/iv_comment_head"
+            android:textColor="#AFAFAF" />
+
+        <LinearLayout
+            android:id="@+id/ll_comment_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_comment_time"
+            android:layout_marginLeft="@dimen/l_r_25"
+            android:layout_marginTop="@dimen/margin_top_10"
+            android:layout_toRightOf="@id/iv_comment_head"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/tv_comment_desc"
+                style="@style/text_style_nomal_28"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="#6F6F6F" />
+
+            <com.android.pc.ioc.image.RecyclingImageView
+                android:id="@+id/iv_comment_more"
+                style="@style/w_wrap_h_wrap"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/arrow_down"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            android:id="@+id/iv_comment_report"
+            style="@style/w_wrap_h_wrap"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@id/tv_comment_name"
+            android:background="@drawable/report_user_icon" />
+
+        <RelativeLayout
+            android:id="@+id/rl_gv_comment_images"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ll_comment_desc"
+            android:layout_marginLeft="@dimen/l_r_25"
+            android:layout_marginTop="@dimen/margin_top_25"
+            android:layout_toRightOf="@id/iv_comment_head"
+            android:orientation="horizontal" >
+
+            <com.lansun.qmyo.view.MyGridView
+                android:id="@+id/gv_comment_images"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:horizontalSpacing="@dimen/l_r_10"
+                android:listSelector="@android:color/transparent"
+                android:numColumns="3"
+                android:scrollbars="none" />
+
+            <TextView
+                android:id="@+id/tv_mai_images_count"
+                style="@style/text_style_nomal_20"
+                android:layout_width="@dimen/images_count_w"
+                android:layout_height="@dimen/images_count_h"
+                android:layout_alignBottom="@id/gv_comment_images"
+                android:layout_alignRight="@id/gv_comment_images"
+                android:background="@color/images_counts"
+                android:gravity="center"
+                android:textColor="@color/app_white"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tv_mai_comment_communicate"
+            style="@style/text_style_small_24"
+            android:layout_alignLeft="@id/ll_comment_desc"
+            android:layout_below="@id/rl_gv_comment_images"
+            android:layout_marginTop="@dimen/margin_top_25"
+            android:textColor="#AFAFAF" />
+
+        <com.lansun.qmyo.view.MySubListView
+            android:id="@+id/lv_activity_mai_comments"
+            style="@style/w_wrap_h_wrap"
+            android:layout_alignLeft="@id/tv_mai_comment_communicate"
+            android:layout_below="@id/tv_mai_comment_communicate"
+            android:layout_marginTop="@dimen/margin_top_25"
+            android:background="#EBEBEB"
+            android:cacheColorHint="#00000000"
+            android:divider="@null"
+            android:listSelector="@android:color/transparent"
+            android:scrollbars="none"
+            android:visibility="gone" />
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            android:id="@+id/iv_comment_reply"
+            style="@style/w_wrap_h_wrap"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@id/tv_mai_comment_communicate"
+            android:src="@drawable/mai_reply_icon" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_top_35" />
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35"
+        android:background="@color/line_bg2" />
+
+</LinearLayout>

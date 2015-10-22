@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_bg" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <include layout="@layout/activity_com" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/expandtab_view_h"
+            android:background="@color/app_white"
+            android:orientation="horizontal" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <TextView
+                    android:id="@+id/tv_mine_comments_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:text="@string/all"
+                    android:textColor="@color/app_green1" />
+
+                <View
+                    style="@style/line_style_3"
+                    android:layout_width="1px"
+                    android:layout_height="@dimen/line_h_50"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <TextView
+                    android:id="@+id/tv_mine_comments_replay"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/replay" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <View style="@style/line_style_3" />
+
+        <com.lansun.qmyo.view.MyListView
+            android:id="@+id/lv_comments_list"
+            style="@style/w_h_full"
+            android:cacheColorHint="#00000000"
+            android:divider="@null"
+            android:listSelector="@android:color/transparent"
+            android:scrollbars="none" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_mai_comment_reply"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/reply_h"
+        android:layout_alignParentBottom="true"
+        android:background="#DBDBDB"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone" >
+
+        <EditText
+            android:id="@+id/et_mai_comment_reply_content"
+            style="@style/text_style_nomal_28"
+            android:layout_width="@dimen/et_reply_w"
+            android:layout_height="@dimen/et_reply_h"
+            android:layout_marginLeft="@dimen/l_r_25"
+            android:background="@drawable/tv_style_white"
+            android:focusable="true"
+            android:hint="@string/reply"
+            android:imeOptions="actionDone"
+            android:paddingLeft="@dimen/l_r_25"
+            android:textColor="#6F6F6F"
+            android:textCursorDrawable="@null" />
+
+        <Button
+            android:id="@+id/btn_mai_comment_reply_commit"
+            style="@style/text_style_nomal_28"
+            android:layout_width="@dimen/btn_reply_w"
+            android:layout_height="@dimen/btn_reply_h"
+            android:layout_marginLeft="@dimen/l_r_10"
+            android:layout_marginRight="@dimen/l_r_25"
+            android:background="@drawable/tv_style_green"
+            android:text="@string/send"
+            android:textColor="@color/app_white" />
+    </LinearLayout>
+
+</RelativeLayout>

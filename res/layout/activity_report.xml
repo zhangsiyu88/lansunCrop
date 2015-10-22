@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EBEBEB"
+    android:orientation="vertical" >
+
+    <include layout="@layout/activity_com" />
+
+    <TextView
+        android:id="@+id/textView1"
+        style="@style/text_style_nomal_30"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35"
+        android:layout_marginTop="@dimen/margin_top_35"
+        android:text="@string/report_content" />
+
+    <EditText
+        android:id="@+id/et_activity_report_content"
+        style="@style/text_style_nomal_28"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/edit_h_330"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35"
+        android:layout_marginTop="@dimen/margin_top_20"
+        android:background="@drawable/tv_style_white"
+        android:ems="10"
+        android:gravity="top|left"
+        android:paddingLeft="@dimen/l_r_20"
+        android:textCursorDrawable="@null" >
+
+        <requestFocus />
+    </EditText>
+
+    <Button
+        android:id="@+id/btn_activity_report_commit"
+        style="@style/text_style_nomal_28"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35"
+        android:layout_marginTop="@dimen/margin_top_35"
+        android:background="@drawable/tv_style_green"
+        android:text="@string/commit"
+        android:textColor="@color/app_white" />
+
+</LinearLayout>

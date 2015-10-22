@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/w_match_h_match"
+    android:orientation="vertical" 
+    android:background="@color/app_bg"
+    >
+
+    <LinearLayout
+        android:id="@+id/ll_search_top_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <include layout="@layout/activity_search_top_menu" />
+        
+    </LinearLayout>
+	
+	<FrameLayout 
+	    android:id="@+id/search_conten"
+	    style="@style/w_match_h_match"
+	    android:background="@color/app_bg">
+	</FrameLayout>
+	
+</LinearLayout>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/w_full_h_wrap"
+    android:background="@color/app_white"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        style="@style/w_h_full"
+        android:layout_marginTop="@dimen/margin_top_32"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:id="@+id/ll_shared_wx_friend"
+            style="@style/w_wrap_h_wrap"
+            android:layout_marginLeft="@dimen/l_r_35"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <com.android.pc.ioc.image.RecyclingImageView
+                style="@style/w_wrap_h_wrap"
+                android:scaleType="fitXY"
+                android:src="@drawable/wx_friend" />
+
+            <TextView
+                style="@style/text_style_small_24"
+                android:layout_marginTop="@dimen/margin_top_22"
+                android:singleLine="true"
+                android:text="@string/wx_friend" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rl_shared_friend"
+            style="@style/w_wrap_h_wrap"
+            android:layout_marginLeft="@dimen/l_r_14"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <com.android.pc.ioc.image.RecyclingImageView
+                style="@style/w_wrap_h_wrap"
+                android:scaleType="fitXY"
+                android:src="@drawable/wx_friend_c" />
+
+            <TextView
+                style="@style/text_style_small_24"
+                android:layout_marginTop="@dimen/margin_top_22"
+                android:singleLine="true"
+                android:text="@string/friend_c" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_shared_tx_wb"
+            style="@style/w_wrap_h_wrap"
+            android:layout_marginLeft="@dimen/l_r_14"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <com.android.pc.ioc.image.RecyclingImageView
+                style="@style/w_wrap_h_wrap"
+                android:scaleType="fitXY"
+                android:src="@drawable/tx_wb" />
+
+            <TextView
+                style="@style/text_style_small_24"
+                android:layout_marginTop="@dimen/margin_top_22"
+                android:singleLine="true"
+                android:text="@string/tx_wb" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_shared_sina_wb"
+            style="@style/w_wrap_h_wrap"
+            android:layout_marginLeft="@dimen/l_r_14"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <com.android.pc.ioc.image.RecyclingImageView
+                style="@style/w_wrap_h_wrap"
+                android:scaleType="fitXY"
+                android:src="@drawable/xl_wb" />
+
+            <TextView
+                style="@style/text_style_small_24"
+                android:layout_marginTop="@dimen/margin_top_22"
+                android:singleLine="true"
+                android:text="@string/xl_wb" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginTop="@dimen/margin_top_32"
+        android:background="@color/app_grey5" />
+
+    <TextView
+        android:id="@+id/tv_shared_cancle"
+        style="@style/text_style_big_34"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="@dimen/margin_top_32"
+        android:layout_marginTop="@dimen/margin_top_32"
+        android:gravity="center"
+        android:text="@string/cancle" />
+
+</LinearLayout>

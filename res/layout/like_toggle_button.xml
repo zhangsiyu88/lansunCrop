@@ -1,0 +1,11 @@
+<CheckBox xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/text_style_nomal_28"
+    android:layout_weight="1"
+    android:background="@drawable/likes_checked"
+    android:button="@null"
+    android:drawableLeft="@null"
+    android:gravity="center"
+    android:singleLine="true"
+    android:textColor="@color/app_grey5" >
+
+</CheckBox>

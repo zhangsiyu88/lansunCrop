@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.lansun.qmyo.view.MySubListView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lv_activity_mai_comments"
+            style="@style/w_wrap_h_wrap"
+            android:divider="@null"
+            android:cacheColorHint="#00000000"
+            android:background="@color/app_grey3"
+            android:listSelector="@android:color/transparent"
+            android:scrollbars="none" />

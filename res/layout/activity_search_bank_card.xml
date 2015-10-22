@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/w_h_full"
+    android:background="#EBEBEB"
+    android:orientation="vertical" >
+
+    <!-- 搜索栏  -->
+    <RelativeLayout
+        android:id="@+id/ll_search_top_menu"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_menu_h"
+        android:background="@color/app_white"
+        android:gravity="center_vertical" >
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            android:id="@+id/iv_activity_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/back" />
+
+        <TextView
+            android:id="@+id/tv_search_cancle"
+            style="@style/text_style_nomal_30"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:text="@string/cancle" />
+
+        <include
+            android:layout_width="@dimen/search_width"
+            android:layout_height="@dimen/search_height"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            layout="@layout/search_menu" />
+    </RelativeLayout>
+	<View style="@style/line_style_1"/>
+	
+	
+<!-- 	<LinearLayout 
+	      android:id="@+id/ll_allin"
+	      style="@style/w_match_h_match"
+	      android:orientation="vertical"
+	    > -->
+	
+    
+    <!-- 模糊搜索层的内容 -->
+     <RelativeLayout
+        android:id="@+id/puzz_floor"
+        style="@style/w_match_h_match"
+        android:padding="10dp"
+        android:background="#EBEBEB"
+        android:visibility="gone"
+        android:orientation="vertical" >
+        <android.support.v7.widget.RecyclerView
+            android:layout_below="@id/line"
+            android:id="@+id/band_puzzy_recycle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </RelativeLayout>
+    <View style="@style/line_style_2" />
+    
+    <FrameLayout 
+        style="@style/w_match_h_match"
+        >
+        
+        
+    <!-- listView 银行卡的展示 -->
+    <com.lansun.qmyo.view.MyListView
+        android:id="@+id/lv_search_bank_card"
+        style="@style/w_h_full"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35"
+        android:layout_marginTop="@dimen/margin_top_35"
+        android:cacheColorHint="#00000000"
+        android:background="#EBEBEB"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="@dimen/margin_top_35"
+        android:listSelector="@android:color/transparent"
+        android:paddingBottom="@dimen/margin_top_35"
+        android:scrollbars="vertical"
+        android:visibility="gone"
+         />
+    
+    <!-- 搜索栏内容为空的时候的布局展示 -->
+    <LinearLayout
+        
+        android:id="@+id/ll_bank_card_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical" 
+        android:background="@color/app_bg"
+        >
+
+        <TextView
+            style="@style/text_style_small_26"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/margin_top_32"
+            android:text="@string/maijie_tip"
+            android:textColor="@color/app_green2" />
+
+        <View
+            style="@style/line_style_2"
+            android:layout_marginTop="@dimen/margin_top_22"
+            android:background="@color/line_bg2" />
+
+        <TextView
+            android:id="@+id/textView1"
+            style="@style/text_style_small_26"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/margin_top_22"
+            android:lineSpacingExtra="6px"
+            android:text="@string/search_card_tip" />
+
+        <View
+            style="@style/line_style_2"
+            android:layout_marginTop="@dimen/margin_top_22"
+            android:background="@color/line_bg" />
+    </LinearLayout>
+    
+    
+
+    
+    </FrameLayout>
+    
+	
+    
+<!--  </LinearLayout>  --> 
+ 
+    
+</LinearLayout>

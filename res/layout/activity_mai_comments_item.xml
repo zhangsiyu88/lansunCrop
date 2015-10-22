@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/w_h_full" >
+
+    <com.lansun.qmyo.view.CircularImage
+        android:id="@+id/iv_comment_head"
+        android:layout_width="@dimen/mai_comment_lv_head_w"
+        android:layout_height="@dimen/mai_comment_lv_head_h"
+        android:layout_marginLeft="@dimen/l_r_25"
+        android:layout_marginTop="@dimen/margin_top_25" />
+
+    <TextView
+        android:id="@+id/tv_comment_desc"
+        style="@style/text_style_nomal_28"
+        android:layout_alignTop="@id/iv_comment_head"
+        android:layout_marginLeft="@dimen/l_r_14"
+        android:layout_marginRight="@dimen/l_r_14"
+        android:layout_toRightOf="@id/iv_comment_head"
+        android:textColor="@color/text_gray1" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_top_25"
+        android:layout_below="@id/tv_comment_desc" />
+
+    <View
+        android:id="@+id/line"
+        style="@style/line_style_2"
+        android:layout_alignLeft="@id/iv_comment_head"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="@dimen/l_r_25" />
+
+</RelativeLayout>

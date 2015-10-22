@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <ImageView
+            android:id="@+id/iv_activity_back"
+            style="@style/w_wrap_h_wrap"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/back" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" >
+
+            <TextView
+                android:id="@+id/store_detail2_num"
+                style="@style/text_style_nomal_30"
+                android:textColor="@color/app_green1" />
+
+            <TextView
+                style="@style/text_style_nomal_30"
+                android:text="/"
+                android:textColor="@color/app_green1" />
+
+            <TextView
+                android:id="@+id/store_detail2_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/app_green1" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_dialog_delete"
+            style="@style/text_style_nomal_30"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:text="@string/delete"
+            android:textColor="@color/app_green1" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_dialog_gallery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/dialog_gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/fl_progress_bg"
+    android:layout_height="match_parent"
+    android:background="@color/app_white"
+     >
+
+    <!-- 底下这一层 -->
+    <LinearLayout
+        android:id="@+id/progress_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#EBEBEB"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <com.android.pc.ioc.view.GifMovieView
+            android:id="@+id/loading_gif"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:background="#EBEBEB"/>
+
+        <TextView
+            android:id="@+id/progress_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dip"
+            android:singleLine="true"
+            android:text="@string/content_is_loading"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </LinearLayout>
+
+    <!-- 上面这一层 -->
+    <FrameLayout
+        android:id="@+id/content_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <TextView
+            android:id="@android:id/empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+    </FrameLayout>
+
+</FrameLayout>

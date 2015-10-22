@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/w_match_h_match"
+    android:orientation="vertical" >
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/puzzy_search_list"
+        android:padding="10dp"
+        style="@style/w_match_h_match" />
+</LinearLayout>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/bank_card_detail_w"
+    android:layout_height="@dimen/bank_card_detail_h" >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none" >
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/app_white"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/l_r_25"
+            android:paddingRight="@dimen/l_r_25" >
+
+            <LinearLayout
+                android:id="@+id/list_display_view_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top_25"
+                android:background="@color/app_white" >
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" >
+
+                    <com.android.pc.ioc.image.RecyclingImageView
+                        android:id="@+id/iv_bank_card_head"
+                        android:layout_width="@dimen/search_bank_card_w"
+                        android:layout_height="@dimen/search_bank_card_h"
+                        android:src="@drawable/default_card" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/l_r_20"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/tv_bank_card_name"
+                        style="@style/text_style_nomal_28"
+                        android:layout_gravity="center_horizontal" />
+
+                    <com.android.pc.ioc.image.RecyclingImageView
+                        android:id="@+id/iv_bank_card_close"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/bt_close" />
+
+                    <View
+                        android:id="@+id/name_line"
+                        style="@style/line_style_1"
+                        android:layout_below="@id/tv_bank_card_name"
+                        android:layout_marginTop="@dimen/margin_top_10" />
+
+                    <TextView
+                        android:id="@+id/tv_bank_card_desc"
+                        style="@style/text_style_nomal_30"
+                        android:layout_below="@id/name_line"
+                        android:layout_marginTop="@dimen/margin_top_10"
+                        android:textColor="#6F6F6F" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_bankcard_detail_title"
+                style="@style/text_style_small_24"
+                android:layout_below="@+id/list_display_view_container"
+                android:layout_marginTop="@dimen/l_r_35"
+                android:background="@drawable/bg_small"
+                android:gravity="center"
+                android:text="@string/card_desc"
+                android:textColor="@color/app_white" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_bankcard_detail_title"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/tv_bankcard_detail_desc"
+                    style="@style/text_style_small_26"
+                    android:layout_marginTop="@dimen/margin_top_25"
+                    android:lineSpacingExtra="3dp"
+                    android:textColor="#6F6F6F" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_marginTop="@dimen/margin_top_25"
+                    android:background="@color/line_bg" />
+
+                <TextView
+                    style="@style/text_style_small_24"
+                    android:layout_marginTop="@dimen/margin_top_25"
+                    android:background="@drawable/bg_small"
+                    android:gravity="center"
+                    android:text="@string/banli_tiaojian"
+                    android:textColor="@color/app_white" />
+
+                <TextView
+                    android:id="@+id/tv_bankcard_detail_bltj"
+                    style="@style/text_style_small_26"
+                    android:layout_marginTop="@dimen/margin_top_25"
+                    android:lineSpacingExtra="3dp"
+                    android:textColor="#6F6F6F" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/line_bg" />
+
+                <TextView
+                    style="@style/text_style_small_24"
+                    android:layout_marginTop="@dimen/margin_top_25"
+                    android:background="@drawable/bg_small"
+                    android:gravity="center"
+                    android:text="@string/shoufei_bz"
+                    android:textColor="@color/app_white" />
+
+                <TextView
+                    android:id="@+id/tv_bankcard_detail_sfbj"
+                    style="@style/text_style_small_26"
+                    android:lineSpacingExtra="3dp"
+                    android:layout_marginTop="@dimen/margin_top_25"
+                    android:textColor="#6F6F6F" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/line_bg" />
+
+                <TextView
+                    style="@style/text_style_small_24"
+                    android:layout_marginTop="@dimen/margin_top_25"
+                    android:background="@drawable/bg_small"
+                    android:gravity="center"
+                    android:text="@string/jb_fuwu"
+                    android:textColor="@color/app_white" />
+
+                <TextView
+                    android:id="@+id/tv_bankcard_detail_jbfw"
+                    style="@style/text_style_small_26"
+                    android:layout_marginTop="@dimen/margin_top_25"
+                    android:lineSpacingExtra="3dp"
+                    android:textColor="#6F6F6F" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/line_bg" />
+            </LinearLayout>
+        </RelativeLayout>
+    </ScrollView>
+
+</LinearLayout>

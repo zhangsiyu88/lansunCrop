@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_bg" >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <FrameLayout
+                android:id="@+id/fl_found_bg"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/home_ad_h" >
+
+                <com.android.pc.ioc.image.RecyclingImageView
+                    android:id="@+id/iv_found_bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/found_bg"
+                   /><!--  android:scaleType="fitXY"  -->
+            </FrameLayout>
+
+            <LinearLayout
+                style="@style/w_h_full"
+                android:layout_height="wrap_content"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <LinearLayout
+                    style="@style/w_h_full"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginBottom="@dimen/margin_top_30"
+                    android:layout_marginLeft="@dimen/l_r_35"
+                    android:layout_marginRight="@dimen/l_r_35"
+                    android:layout_marginTop="@dimen/margin_top_30"
+                    android:gravity="center_horizontal" >
+
+                    <LinearLayout
+                        android:id="@+id/ll_found_v16"
+                        style="@style/w_wrap_h_wrap"
+                        android:layout_weight="1"
+                        android:background="@drawable/v16article_bg"
+                        android:gravity="center" >
+
+                        <com.android.pc.ioc.image.RecyclingImageView
+                            style="@style/w_wrap_h_wrap"
+                            android:src="@drawable/v16logo_big" />
+
+                        <TextView
+                            style="@style/text_style_nomal_30"
+                            android:layout_marginLeft="@dimen/l_r_14"
+                            android:text="@string/jiwen"
+                            android:textColor="@color/app_white" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_found_bangdan"
+                        style="@style/w_wrap_h_wrap"
+                        android:layout_weight="1"
+                        android:background="@drawable/v16list_bg"
+                        android:gravity="center" >
+
+                        <com.android.pc.ioc.image.RecyclingImageView
+                            style="@style/w_wrap_h_wrap"
+                            android:src="@drawable/v16logo_big" />
+
+                        <TextView
+                            style="@style/text_style_nomal_30"
+                            android:layout_marginLeft="@dimen/l_r_14"
+                            android:text="@string/bangdan"
+                            android:textColor="@color/app_white" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_top_35"
+                android:background="@color/app_white" >
+
+                <RelativeLayout
+                    android:id="@+id/rl_found_activity"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/item_h_90"
+                    android:layout_marginLeft="@dimen/l_r_35"
+                    android:layout_marginRight="@dimen/l_r_35" >
+
+                    <com.android.pc.ioc.image.RecyclingImageView
+                        android:id="@+id/mine_secretary_icon"
+                        style="@style/w_wrap_h_wrap"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/found_collection_1" />
+
+                    <TextView
+                        style="@style/text_style_nomal_28"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/l_r_14"
+                        android:layout_toRightOf="@id/mine_secretary_icon"
+                        android:text="@string/activity_collection"
+                        android:textColor="@color/text_gray1" />
+
+                    <RelativeLayout style="@style/w_wrap_h_wrap" >
+                    </RelativeLayout>
+                </RelativeLayout>
+            </LinearLayout>
+
+            <View style="@style/line_style_1" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/app_white" >
+
+                <RelativeLayout
+                    android:id="@+id/rl_found_store"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/item_h_90"
+                    android:layout_marginLeft="@dimen/l_r_35"
+                    android:layout_marginRight="@dimen/l_r_35" >
+
+                    <com.android.pc.ioc.image.RecyclingImageView
+                        android:id="@+id/mine_secretary_icon1"
+                        style="@style/w_wrap_h_wrap"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/found_focusshop_1" />
+
+                    <TextView
+                        style="@style/text_style_nomal_28"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/l_r_14"
+                        android:layout_toRightOf="@id/mine_secretary_icon1"
+                        android:text="@string/store_gz"
+                        android:textColor="@color/text_gray1" />
+
+                    <RelativeLayout style="@style/w_wrap_h_wrap" >
+                    </RelativeLayout>
+                </RelativeLayout>
+            </LinearLayout>
+
+            <!-- <View style="@style/line_style_1" /> -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/app_white" 
+                android:visibility="gone">
+
+                <RelativeLayout
+                    android:id="@+id/rl_found_v16"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/item_h_90"
+                    android:layout_marginLeft="@dimen/l_r_35"
+                    android:layout_marginRight="@dimen/l_r_35" >
+
+                    <com.android.pc.ioc.image.RecyclingImageView
+                        android:id="@+id/mine_secretary_icon2"
+                        style="@style/w_wrap_h_wrap"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/found_collectarticle_1" />
+
+                    <TextView
+                        style="@style/text_style_nomal_28"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/l_r_14"
+                        android:layout_toRightOf="@id/mine_secretary_icon2"
+                        android:text="@string/v16_collection"
+                        android:textColor="@color/text_gray1" />
+
+                    <RelativeLayout style="@style/w_wrap_h_wrap" >
+                    </RelativeLayout>
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <include layout="@layout/bottom_menu" />
+
+</RelativeLayout>

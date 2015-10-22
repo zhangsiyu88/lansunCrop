@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_bg"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/app_white"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_menu_h"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <com.android.pc.ioc.image.RecyclingImageView
+                    android:id="@+id/iv_activity_back"
+                    style="@style/w_wrap_h_wrap"
+                    android:layout_gravity="center"
+                    android:src="@drawable/back" />
+
+                <TextView
+                    android:id="@+id/tv_edit_title"
+                    style="@style/text_style_big_40"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:text="@string/edit_person_info"
+                    android:textColor="@color/app_green2" />
+            </RelativeLayout>
+
+            <View style="@style/line_style_1" />
+
+            <RelativeLayout
+                android:id="@+id/rl_edit_user_email"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_menu_h"
+                android:layout_marginLeft="@dimen/l_r_35"
+                android:layout_marginRight="@dimen/l_r_35"
+                android:background="@color/app_white" >
+
+                <TextView
+                    android:id="@+id/textView3"
+                    style="@style/text_style_nomal_28"
+                    android:layout_centerVertical="true"
+                    android:text="@string/email"
+                    android:textColor="@color/text_gray1" />
+
+                <com.android.pc.ioc.image.RecyclingImageView
+                    android:id="@+id/iv_edit_user_email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/arrow_r" />
+
+                <TextView
+                    android:id="@+id/tv_edit_user_email"
+                    style="@style/text_style_nomal_28"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/textView3"
+                    android:layout_marginRight="@dimen/l_r_50"
+                    android:layout_toLeftOf="@id/iv_edit_user_email" />
+            </RelativeLayout>
+
+            <View style="@style/line_style_1" />
+
+            <RelativeLayout
+                android:id="@+id/rl_edit_user_truname"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_menu_h"
+                android:layout_marginLeft="@dimen/l_r_35"
+                android:layout_marginRight="@dimen/l_r_35"
+                android:background="@color/app_white" >
+
+                <TextView
+                    android:id="@+id/textView1"
+                    style="@style/text_style_nomal_28"
+                    android:layout_centerVertical="true"
+                    android:text="@string/truname"
+                    android:textColor="@color/text_gray1" />
+
+                <com.android.pc.ioc.image.RecyclingImageView
+                    android:id="@+id/iv_edit_user_truname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/arrow_r" />
+
+                <TextView
+                    android:id="@+id/tv_edit_user_name"
+                    style="@style/text_style_nomal_28"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/textView1"
+                    android:layout_marginRight="@dimen/l_r_50"
+                    android:layout_toLeftOf="@id/iv_edit_user_truname" />
+            </RelativeLayout>
+
+            <View style="@style/line_style_1" />
+
+            <RelativeLayout
+                android:id="@+id/rl_edit_user_gender"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_menu_h"
+                android:layout_marginLeft="@dimen/l_r_35"
+                android:layout_marginRight="@dimen/l_r_35"
+                android:background="@color/app_white" >
+
+                <TextView
+                    android:id="@+id/textView4"
+                    style="@style/text_style_nomal_28"
+                    android:layout_centerVertical="true"
+                    android:text="@string/gender"
+                    android:textColor="@color/text_gray1" />
+
+                <com.android.pc.ioc.image.RecyclingImageView
+                    android:id="@+id/iv_edit_user_gender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/arrow_r" />
+
+                <TextView
+                    android:id="@+id/tv_edit_user_gender"
+                    style="@style/text_style_nomal_28"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/textView4"
+                    android:layout_marginRight="@dimen/l_r_50"
+                    android:layout_toLeftOf="@id/iv_edit_user_gender" />
+            </RelativeLayout>
+
+            <View style="@style/line_style_1" />
+
+            <RelativeLayout
+                android:id="@+id/rl_edit_user_address"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_menu_h"
+                android:layout_marginLeft="@dimen/l_r_35"
+                android:layout_marginRight="@dimen/l_r_35"
+                android:background="@color/app_white" >
+
+                <TextView
+                    android:id="@+id/textView5"
+                    style="@style/text_style_nomal_28"
+                    android:layout_centerVertical="true"
+                    android:text="@string/address"
+                    android:textColor="@color/text_gray1" />
+
+                <com.android.pc.ioc.image.RecyclingImageView
+                    android:id="@+id/iv_edit_user_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/arrow_r" />
+
+                <TextView
+                    android:id="@+id/tv_edit_user_address"
+                    style="@style/text_style_nomal_28"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/textView5"
+                    android:layout_marginRight="@dimen/l_r_50"
+                    android:layout_toLeftOf="@id/iv_edit_user_address" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/margin_top_35"
+                android:background="@color/app_bg" />
+
+            <RelativeLayout
+                android:id="@+id/rl_edit_user_job"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_menu_h"
+                android:layout_marginLeft="@dimen/l_r_35"
+                android:layout_marginRight="@dimen/l_r_35"
+                android:background="@color/app_white" >
+
+                <TextView
+                    android:id="@+id/textView6"
+                    style="@style/text_style_nomal_28"
+                    android:layout_centerVertical="true"
+                    android:text="@string/job"
+                    android:textColor="@color/text_gray1" />
+
+                <com.android.pc.ioc.image.RecyclingImageView
+                    android:id="@+id/iv_edit_user_job"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/arrow_r" />
+
+                <TextView
+                    android:id="@+id/tv_edit_user_job"
+                    style="@style/text_style_nomal_28"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/textView6"
+                    android:layout_marginRight="@dimen/l_r_50"
+                    android:layout_toLeftOf="@id/iv_edit_user_job" />
+            </RelativeLayout>
+
+            <View style="@style/line_style_1" />
+
+            <RelativeLayout
+                android:id="@+id/rl_edit_user_position"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_menu_h"
+                android:layout_marginLeft="@dimen/l_r_35"
+                android:layout_marginRight="@dimen/l_r_35"
+                android:background="@color/app_white" >
+
+                <TextView
+                    android:id="@+id/textView7"
+                    style="@style/text_style_nomal_28"
+                    android:layout_centerVertical="true"
+                    android:text="@string/position"
+                    android:textColor="@color/text_gray1" />
+
+                <com.android.pc.ioc.image.RecyclingImageView
+                    android:id="@+id/iv_edit_user_position"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/arrow_r" />
+
+                <TextView
+                    android:id="@+id/tv_edit_user_position"
+                    style="@style/text_style_nomal_28"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/textView7"
+                    android:layout_marginRight="@dimen/l_r_50"
+                    android:layout_toLeftOf="@id/iv_edit_user_position" />
+            </RelativeLayout>
+
+            <View style="@style/line_style_1" />
+
+            <RelativeLayout
+                android:id="@+id/rl_edit_user_degress"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_menu_h"
+                android:layout_marginLeft="@dimen/l_r_35"
+                android:layout_marginRight="@dimen/l_r_35"
+                android:background="@color/app_white" >
+
+                <TextView
+                    android:id="@+id/textView8"
+                    style="@style/text_style_nomal_28"
+                    android:layout_centerVertical="true"
+                    android:text="@string/degrees"
+                    android:textColor="@color/text_gray1" />
+
+                <com.android.pc.ioc.image.RecyclingImageView
+                    android:id="@+id/iv_edit_user_degress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/arrow_r" />
+
+                <TextView
+                    android:id="@+id/tv_edit_user_degress"
+                    style="@style/text_style_nomal_28"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/textView8"
+                    android:layout_marginRight="@dimen/l_r_50"
+                    android:layout_toLeftOf="@id/iv_edit_user_degress" />
+            </RelativeLayout>
+
+            <View style="@style/line_style_1" />
+
+            <RelativeLayout
+                android:id="@+id/rl_edit_user_like"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_menu_h"
+                android:layout_marginLeft="@dimen/l_r_35"
+                android:layout_marginRight="@dimen/l_r_35"
+                android:background="@color/app_white" >
+
+                <TextView
+                    android:id="@+id/textView9"
+                    style="@style/text_style_nomal_28"
+                    android:layout_centerVertical="true"
+                    android:text="@string/like"
+                    android:textColor="@color/text_gray1" />
+
+                <com.android.pc.ioc.image.RecyclingImageView
+                    android:id="@+id/iv_edit_user_like"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/arrow_r" />
+
+                <TextView
+                    android:id="@+id/tv_edit_user_like"
+                    style="@style/text_style_nomal_28"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/textView9"
+                    android:layout_marginLeft="@dimen/l_r_90"
+                    android:layout_marginRight="@dimen/l_r_50"
+                    android:layout_toLeftOf="@id/iv_edit_user_like"
+                    android:layout_toRightOf="@id/textView9"
+                    android:ellipsize="end"
+                    android:gravity="right"
+                    android:singleLine="true" />
+            </RelativeLayout>
+
+            <View style="@style/line_style_1" />
+
+            <RelativeLayout
+                android:id="@+id/rl_edit_user_income"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_menu_h"
+                android:layout_marginLeft="@dimen/l_r_35"
+                android:layout_marginRight="@dimen/l_r_35"
+                android:background="@color/app_white" >
+
+                <TextView
+                    android:id="@+id/textView10"
+                    style="@style/text_style_nomal_28"
+                    android:layout_centerVertical="true"
+                    android:text="@string/income"
+                    android:textColor="@color/text_gray1" />
+
+                <com.android.pc.ioc.image.RecyclingImageView
+                    android:id="@+id/iv_edit_user_income"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/arrow_r" />
+
+                <TextView
+                    android:id="@+id/tv_edit_user_income"
+                    style="@style/text_style_nomal_28"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/textView10"
+                    android:layout_marginRight="@dimen/l_r_50"
+                    android:layout_toLeftOf="@id/iv_edit_user_income" />
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

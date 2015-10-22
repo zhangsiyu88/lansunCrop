@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_activity_detail_report"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#EBEBEB"
+    android:gravity="center"
+    android:orientation="horizontal" >
+
+    <com.android.pc.ioc.image.RecyclingImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_top_50"
+        android:layout_marginTop="@dimen/margin_top_50"
+        android:background="@drawable/report" />
+
+    <TextView
+        android:id="@+id/tv_report_content"
+        style="@style/text_style_small_24"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="@dimen/l_r_15"
+        android:text="@string/i_report"
+        android:textColor="#6F6F6F" />
+
+</LinearLayout>

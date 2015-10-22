@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EBEBEB"
+    android:orientation="vertical" >
+
+    <!-- 头部的两行栏 -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_menu_h"
+        android:background="@color/app_white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <RelativeLayout
+            android:id="@+id/rl_bg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:layout_marginTop="@dimen/margin_top_12"
+            android:background="@drawable/home_card" >
+
+            <com.android.pc.ioc.image.RecyclingImageView
+                android:id="@+id/iv_card"
+                style="@style/w_wrap_h_wrap"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/switch_credit_1" />
+
+            <TextView
+                android:id="@+id/tv_home_experience"
+                style="@style/text_style_small_24"
+                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
+                android:layout_centerVertical="true"
+                android:text="@string/experience"
+                android:textColor="@color/app_white"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <!-- 把标题换一换！ -->
+        <TextView
+            android:id="@+id/tv_activity_title"
+            style="@style/text_style_big_40"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:textColor="@color/app_green2" />
+
+        <ImageView
+            android:id="@+id/iv_activity_back"
+            style="@style/w_wrap_h_wrap"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/back" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/line_bg" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:visibility="visible">
+
+            <com.lansun.qmyo.view.ExpandTabView
+                android:id="@+id/expandtab_view"
+                style="@style/w_full_h_wrap"
+                android:layout_height="@dimen/expandtab_view_h" />
+            <View
+                android:id="@+id/expandTabViewButtomLine"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/line_bg" 
+                android:visibility="visible"/>
+    </LinearLayout>
+    	  
+    
+     <com.lansun.qmyo.view.MyListView
+                android:id="@+id/lv_activity_list"
+                android:layout_width="match_parent"
+        		android:layout_height="match_parent"
+                android:cacheColorHint="#00000000"
+                android:divider="@null"
+                android:listSelector="@android:color/transparent"
+                android:scrollbars="vertical"
+                
+                android:scrollbarFadeDuration="1000"
+                />
+   				<!-- android:fastScrollEnabled="true" -->
+     			<!-- style="@style/w_h_full" -->
+
+</LinearLayout>

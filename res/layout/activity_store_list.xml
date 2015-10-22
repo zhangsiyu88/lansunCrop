@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ebebeb"
+    android:orientation="vertical" >
+
+    <include layout="@layout/activity_com" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <com.lansun.qmyo.view.ExpandTabView
+                android:id="@+id/expandtab_view"
+                style="@style/w_full_h_wrap"
+                android:layout_height="@dimen/expandtab_view_h" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/line_bg" />
+
+            <com.lansun.qmyo.view.MyListView
+                android:id="@+id/lv_stores_content"
+                style="@style/w_h_full"
+                android:cacheColorHint="#00000000"
+                android:divider="@null"
+                android:listSelector="@android:color/transparent"
+                android:scrollbars="none" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

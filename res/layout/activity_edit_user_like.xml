@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_bg"
+    android:orientation="vertical" >
+
+    <include layout="@layout/activity_com" />
+
+    <TextView
+        style="@style/text_style_nomal_28"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/margin_top_22"
+        android:text="@string/like_desc" />
+
+    <GridView
+        android:id="@+id/gv_edit_user_lick"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35"
+        android:layout_marginTop="@dimen/margin_top_22"
+        android:cacheColorHint="@android:color/transparent"
+        android:horizontalSpacing="@dimen/l_r_25"
+        android:numColumns="3"
+        android:verticalSpacing="@dimen/margin_top_25" >
+    </GridView>
+
+    <TextView
+        android:id="@+id/tv_edit_user_like_commit"
+        style="@style/text_style_nomal_28"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_menu_h"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35"
+        android:layout_marginTop="@dimen/margin_top_35"
+        android:background="@drawable/tv_style_green"
+        android:gravity="center"
+        android:text="@string/commit"
+        android:textColor="@color/app_white" />
+
+</LinearLayout>

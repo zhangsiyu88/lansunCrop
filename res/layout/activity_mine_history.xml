@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_bg"
+    android:orientation="vertical" >
+
+    <include layout="@layout/activity_com" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/expandtab_view_h"
+        android:background="@color/app_white"
+        android:orientation="horizontal" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/tv_mine_history_activity"
+                style="@style/text_style_nomal_30"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:text="@string/activity"
+                android:textColor="@color/app_green2" />
+
+            <View
+                style="@style/line_style_1"
+                android:layout_width="1px"
+                android:layout_height="@dimen/line_h_50"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/tv_mine_history_store"
+                style="@style/text_style_nomal_30"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="@string/store"
+                android:textColor="@color/text_gray3" />
+
+            <View
+                style="@style/line_style_1"
+                android:layout_width="1px"
+                android:layout_height="@dimen/line_h_50"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/tv_mine_history_v16"
+                style="@style/text_style_nomal_30"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:text="@string/v16"
+                android:textColor="@color/text_gray3" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <View style="@style/line_style_1" />
+
+    <com.lansun.qmyo.view.MyListView
+        android:id="@+id/lv_mine_history_list"
+        style="@style/w_h_full"
+        android:cacheColorHint="#00000000"
+        android:divider="@null"
+        android:listSelector="@android:color/transparent"
+        android:scrollbars="none" />
+
+</LinearLayout>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_white"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/l_r_35"
+    android:paddingRight="@dimen/l_r_35" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:background="@color/app_white">
+
+        <LinearLayout
+            android:id="@+id/ll_experience_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="@dimen/margin_top_12"
+            android:background="@drawable/circle_background_green"
+            android:gravity="center" >
+
+            <TextView
+                style="@style/text_style_small_20"
+                android:text="@string/login"
+                android:textColor="@color/app_white" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/margin_top_35"
+            android:layout_marginTop="@dimen/margin_top_90"
+            android:background="@drawable/search_1" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_experience_search_card"
+        android:layout_width="@dimen/search_width"
+        android:layout_height="@dimen/search_height"
+        android:layout_marginTop="@dimen/margin_top_35"
+        android:background="@drawable/circle_edit_background" >
+
+        <LinearLayout
+            style="@style/w_wrap_h_wrap"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" >
+
+            <ImageView
+                style="@style/w_wrap_h_wrap"
+                android:src="@drawable/search" />
+
+            <TextView
+                android:layout_marginLeft="10dp"
+                android:id="@+id/tv_search_card"
+                style="@style/text_style_nomal_28"
+                android:text="@string/please_enter_card"
+                android:textColor="@color/app_white" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_bank_card_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/margin_top_130"
+        android:orientation="vertical" >
+
+        <TextView
+            style="@style/text_style_small_26"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/maijie_tip"
+            android:textColor="@color/app_green2" />
+
+        <View
+            style="@style/line_style_2"
+            android:layout_marginTop="@dimen/margin_top_22" />
+
+        <TextView
+            android:id="@+id/textView1"
+            style="@style/text_style_small_26"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/margin_top_22"
+            android:text="@string/search_card_tip2_1" />
+        <TextView
+            android:id="@+id/textView2"
+            style="@style/text_style_small_26"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/margin_top_6"
+            android:text="@string/search_card_tip2_2" />
+
+        <View
+            style="@style/line_style_2"
+            android:layout_marginTop="@dimen/margin_top_22" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_experience_jump"
+        style="@style/text_style_small_24"
+        android:layout_width="@dimen/btn_w_255"
+        android:layout_height="@dimen/btn_h_60"
+        android:layout_marginTop="@dimen/margin_top_60"
+        android:layout_marginBottom="25dp"
+        android:background="@drawable/input"
+        android:gravity="center"
+        android:text="@string/experience_jump_now" />
+
+</LinearLayout>

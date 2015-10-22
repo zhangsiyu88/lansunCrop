@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/w_h_full"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/l_r_35"
+    android:paddingRight="@dimen/l_r_35" >
+
+    <RelativeLayout style="@style/w_full_h_wrap" >
+
+        <com.lansun.qmyo.view.CircularImage
+            android:id="@+id/iv_comment2_head"
+            android:layout_width="@dimen/mai_comment_head_w"
+            android:layout_height="@dimen/mai_comment_head_h"
+            android:layout_marginTop="@dimen/margin_top_35" />
+
+        <TextView
+            android:id="@+id/tv_comment2_name"
+            style="@style/text_style_nomal_30"
+            android:layout_marginLeft="@dimen/l_r_25"
+            android:layout_marginTop="@dimen/margin_top_40"
+            android:layout_toRightOf="@id/iv_comment2_head"
+            android:singleLine="true"
+            android:textColor="#6F6F6F" />
+
+        <TextView
+            android:id="@+id/tv_comment2_time"
+            style="@style/text_style_small_24"
+            android:layout_below="@id/tv_comment2_name"
+            android:layout_marginLeft="@dimen/l_r_25"
+            android:layout_toRightOf="@id/iv_comment2_head"
+            android:textColor="#AFAFAF" />
+
+        <LinearLayout
+            android:id="@+id/ll_comment_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_comment2_time"
+            android:layout_toRightOf="@id/iv_comment2_head"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/tv_comment2_desc"
+                style="@style/text_style_nomal_28"
+                android:layout_marginLeft="@dimen/l_r_25"
+                android:layout_marginTop="@dimen/margin_top_10"
+                android:ellipsize="end"
+                android:textColor="#6F6F6F" />
+
+            <com.android.pc.ioc.image.RecyclingImageView
+                android:id="@+id/iv_comment2_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/margin_top_25"
+                android:src="@drawable/arrow_down" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_gv_comment_images"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ll_comment_desc"
+            android:layout_marginLeft="@dimen/l_r_25"
+            android:layout_marginTop="@dimen/margin_top_25"
+            android:layout_toRightOf="@id/iv_comment2_head" >
+
+            <com.lansun.qmyo.view.MyGridView
+                android:id="@+id/gv_comment2_images"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:horizontalSpacing="@dimen/l_r_10"
+                android:listSelector="@android:color/transparent"
+                android:numColumns="3"
+                android:scrollbars="none" />
+
+            <TextView
+                android:id="@+id/tv_mai_images_count"
+                style="@style/text_style_nomal_20"
+                android:layout_width="@dimen/images_count_w"
+                android:layout_height="@dimen/images_count_h"
+                android:layout_alignBottom="@id/gv_comment2_images"
+                android:layout_alignRight="@id/gv_comment2_images"
+                android:background="@color/images_counts"
+                android:gravity="center"
+                android:textColor="@color/app_white"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_top_35" />
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/line_bg" />
+
+</LinearLayout>

@@ -1,0 +1,12 @@
+<com.lansun.qmyo.view.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    style="@style/w_h_full" >
+
+    <RelativeLayout style="@style/w_h_full" >
+
+        <FrameLayout
+            android:id="@+id/content_frame"
+            style="@style/w_h_full" />
+    </RelativeLayout>
+
+</com.lansun.qmyo.view.DrawerLayout>

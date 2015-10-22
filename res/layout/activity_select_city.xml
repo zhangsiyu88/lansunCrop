@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_grey3"
+    android:orientation="vertical" >
+
+	 <include layout="@layout/activity_com" />
+
+    <GridView
+        android:id="@+id/gv_select_city"
+        style="@style/w_wrap_h_wrap"
+        android:layout_marginTop="@dimen/margin_top_32"
+		android:layout_marginLeft="@dimen/l_r_35"
+		android:layout_marginRight="@dimen/l_r_35"
+        android:horizontalSpacing="@dimen/margin_top_22"
+        android:numColumns="3"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="@dimen/margin_top_22" />
+        
+        
+</LinearLayout>

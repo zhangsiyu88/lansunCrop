@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
+    android:background="@color/app_bg"
+    android:orientation="vertical" >
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/activity_com" />
+
+    <LinearLayout
+        android:id="@+id/ll_bank_currentCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/app_white" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_top_35"
+            android:layout_marginLeft="@dimen/l_r_35"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:layout_marginTop="@dimen/margin_top_35"
+            android:background="@drawable/rectangle_background_green" >
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/margin_top_25"
+                android:layout_marginLeft="@dimen/l_r_25"
+                android:layout_marginTop="@dimen/margin_top_25" >
+
+                <com.android.pc.ioc.image.RecyclingImageView
+                    android:id="@+id/iv_ban_card_head"
+                    android:layout_width="@dimen/search_bank_card_w"
+                    android:layout_height="@dimen/search_bank_card_h"
+                    android:src="@drawable/default_card" />
+
+                <com.android.pc.ioc.image.RecyclingImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/crecard_detail" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/l_r_25"
+                android:layout_marginRight="@dimen/l_r_25"
+                android:orientation="vertical" >
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_top_15" >
+
+                    <TextView
+                        android:id="@+id/tv_bank_card_name"
+                        style="@style/text_style_nomal_28" />
+
+                    <TextView
+                        android:id="@+id/tv_bank_card_exp"
+                        style="@style/text_style_small_20"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/tv_style_green"
+                        android:text="体验"
+                        android:textColor="@color/app_white" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_marginTop="@dimen/margin_top_10"
+                    android:background="@color/line_bg2" />
+
+                <TextView
+                    android:id="@+id/tv_bank_card_desc"
+                    style="@style/text_style_nomal_28"
+                    android:layout_marginTop="@dimen/margin_top_10"
+                    android:textColor="#6F6F6F" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_bank_card_other"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <TextView
+            style="@style/text_style_nomal_28"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/margin_top_35"
+            android:text="@string/otherCard" />
+
+        <com.lansun.qmyo.view.MyListView
+            android:id="@+id/lv_ban_card_other"
+            style="@style/w_h_full"
+            android:layout_marginLeft="@dimen/l_r_35"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:layout_marginTop="@dimen/margin_top_35"
+            android:cacheColorHint="#00000000"
+            android:divider="@null"
+            android:dividerHeight="@dimen/margin_top_35"
+            android:scrollbars="none" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_bank_card_exp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_top_50"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            android:id="@+id/iv_search1"
+            style="@style/w_wrap_h_wrap"
+            android:src="@drawable/search_1" />
+
+        <TextView
+            style="@style/text_style_nomal_28"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/search_tip"
+            android:textColor="#6F6F6F" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/margin_top_50" />
+
+        <include
+            android:id="@+id/search_click"
+            layout="@layout/search_menu" />
+       <!--  android:layout_gravity="center_horizontal" -->
+    </LinearLayout>
+
+</LinearLayout>

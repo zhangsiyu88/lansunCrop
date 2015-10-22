@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:background="@color/white">
+
+    <com.android.pc.ioc.image.RecyclingImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/listbg"
+        android:scaleType="fitXY" />
+
+    <com.android.pc.ioc.image.RecyclingImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/listbg" />
+
+    <com.android.pc.ioc.image.RecyclingImageView
+        android:id="@+id/iv_activity_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/back" />
+
+    <com.android.pc.ioc.image.RecyclingImageView
+        android:id="@+id/iv_bd_boom"
+        style="@style/w_wrap_h_wrap"
+        android:layout_marginTop="@dimen/margin_top_680"
+        android:src="@anim/bd_boom" />
+
+    <com.android.pc.ioc.image.RecyclingImageView
+        android:id="@+id/iv_bd_lr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_top_610"
+        android:scaleType="matrix"
+        android:scrollX="@dimen/bd_l_r_45"
+        android:src="@drawable/listowl" />
+
+</RelativeLayout>

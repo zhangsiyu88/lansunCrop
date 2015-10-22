@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <RelativeLayout 
+         android:layout_width="match_parent"
+   		 android:layout_height="match_parent"
+   		 android:background="@drawable/coupons_bg">
+   		 
+    <ImageView
+        android:id="@+id/iv_activity_back"
+        style="@style/w_wrap_h_wrap"
+        android:src="@drawable/back" />
+
+    <ImageView
+        android:id="@+id/iv_coupons_move"
+        style="@style/w_wrap_h_wrap"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/margin_top_440"
+        android:src="@drawable/coupons_floating" />
+
+    <ImageView
+        style="@style/w_wrap_h_wrap"
+        android:layout_marginTop="@dimen/margin_top_640"
+        android:src="@drawable/coupons_top" />
+
+    </RelativeLayout>
+</RelativeLayout>
