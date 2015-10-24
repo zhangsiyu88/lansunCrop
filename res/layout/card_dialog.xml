@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView 
+    style="@style/w_match_h_match" 
+    android:scrollbars="none"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <LinearLayout
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+        <ImageView
+            style="@style/w_match_h_wrap"
+            android:src="@drawable/details_card01" />
+
+        <ImageView
+            style="@style/w_match_h_wrap"
+            android:src="@drawable/details_cannot" />
+    </LinearLayout>
+</ScrollView>

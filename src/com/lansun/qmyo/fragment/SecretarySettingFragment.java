@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -20,12 +21,17 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -37,6 +43,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.pc.ioc.event.EventBus;
+import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
@@ -51,10 +58,14 @@ import com.android.pc.util.Handler_Json;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.Secretary;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CircularImage;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.R;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 /**
  * 私人秘书保存界面
@@ -62,7 +73,7 @@ import com.lansun.qmyo.R;
  * @author bhxx
  * 
  */
-public class SecretarySettingFragment extends BaseFragment {
+public class SecretarySettingFragment extends BaseFragment implements TextWatcher,OnFocusChangeListener{
 
 	@InjectAll
 	Views v;
@@ -72,10 +83,28 @@ public class SecretarySettingFragment extends BaseFragment {
 	private Button carema;
 	private Button album;
 	private Button give_up;
-
+	private RecyclingImageView iv_activity_del,iv_activity_del_hope;
 	protected static final int ACTION_IMAGE_CAPTURE = 2;
 	protected static final int ACTION_IMAGE_PICK = 1;
-
+	private Handler handlerOkHandler=new Handler(){
+		public void handleMessage(android.os.Message msg) {
+			switch (msg.what) {
+			case 0:
+				CustomToast.show(activity, R.string.tip,
+						R.string.save_secretary_success);
+				App.app.setData("secretary_name", secretaryName);
+				EventBus bus = EventBus.getDefault();
+				FragmentEntity entity = new FragmentEntity();
+				Fragment fragment=new SecretaryFragment();
+				entity.setFragment(fragment);
+				bus.post(entity);
+				break;
+			case 1:
+				CustomToast.show(activity, R.string.tip,"提交失败");
+				break;
+			}
+		};
+	};
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private View btn_secretary_save;
@@ -89,9 +118,22 @@ public class SecretarySettingFragment extends BaseFragment {
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.fragment_secretary_edit,
-				null);
+				container,false);
 		Handler_Inject.injectFragment(this, rootView);
+		initView(rootView);
+		CustomToast.show(activity, "请先设置您的私人秘书哦","体验最强虚拟在线真人小秘书");
 		return rootView;
+	}
+
+	private void initView(View rootView) {
+		iv_activity_del=(RecyclingImageView)rootView.findViewById(R.id.iv_activity_del);
+		iv_activity_del_hope=(RecyclingImageView)rootView.findViewById(R.id.iv_activity_del_hope);
+
+		v.et_secretary_name.addTextChangedListener(this);
+		v.et_hope_call_you.addTextChangedListener(this);
+
+		v.et_hope_call_you.setOnFocusChangeListener(this);
+		v.et_secretary_name.setOnFocusChangeListener(this);
 	}
 
 	@InjectInit
@@ -131,6 +173,14 @@ public class SecretarySettingFragment extends BaseFragment {
 		case R.id.btn_secretary_save:
 			String secretary_name = v.et_secretary_name.getText().toString();
 			String hope_call_you = v.et_hope_call_you.getText().toString();
+			if (TextUtils.isEmpty(secretary_name)) {
+				CustomToast.show(activity, "提示","总裁大大，给起个名字吧");
+				return;
+			}
+			if (TextUtils.isEmpty(hope_call_you)) {
+				CustomToast.show(activity, "提示","总裁大大，您希望小迈怎么称呼您啊");
+				return;
+			}
 			InternetConfig config = new InternetConfig();
 			config.setKey(0);
 			HashMap<String, Object> head = new HashMap<>();
@@ -147,11 +197,64 @@ public class SecretarySettingFragment extends BaseFragment {
 			FastHttpHander.ajaxForm(GlobalValue.URL_SECRETARY_SAVE, params,
 					files, config, this);
 			break;
+			//			//			InternetConfig config = new InternetConfig();
+			//			//			config.setKey(0);
+			//			//			HashMap<String, Object> head = new HashMap<>();
+			//			//			head.put("Authorization",
+			//			//					"Bearer " + App.app.getData("access_token"));
+			//			//			config.setHead(head);
+			//
+			//						Map<String, String> params = new HashMap<>();
+			//						params.put("name", secretary_name);
+			//						params.put("owner", hope_call_you);
+			//			//			params.put("avatar", currentHeadPath);
+			//			//			HashMap<String, File> files = new HashMap<>();
+			//			//			if (!TextUtils.isEmpty(currentHeadPath)) {
+			//			//				files.put("avatar", new File(currentHeadPath));
+			//			//			}
+			//						File file=new File(currentHeadPath);
+			//						OkHttp.asyncPost(GlobalValue.URL_SECRETARY_SAVE,params, file, new Callback() {
+			//							@Override
+			//							public void onResponse(Response response) throws IOException {
+			//								if (response.isSuccessful()) {
+			//									String result=response.body().string();
+			//									Log.e("secretary",result);
+			//			//						Secretary secretary = Handler_Json.JsonToBean(Secretary.class,
+			//			//								response.body().string());
+			//			//						if (secretary != null) {
+			//			//							secretaryName=secretary.getName();
+			//			//							handlerOkHandler.sendEmptyMessage(0);
+			//			//							Log.e("success", currentHeadPath);
+			//			//						}
+			//								}else {
+			//									handlerOkHandler.sendEmptyMessage(1);
+			//								}
+			//							}
+			//							@Override
+			//							public void onFailure(Request arg0, IOException arg1) {
+			//			
+			//							}
+			//						});
+			//			OkHttp.asyncPost(GlobalValue.URL_SECRETARY_SAVE, params, new Callback() {
+			//			@Override
+			//			public void onResponse(Response response) throws IOException {
+			//				Log.e("currentHeadPath", currentHeadPath);
+			//				Log.e("secretary",response.body().string());
+			//			}
+			//			
+			//			@Override
+			//			public void onFailure(Request arg0, IOException arg1) {
+			//				
+			//			}
+			//		});
+			//						FastHttpHander.ajaxForm(GlobalValue.URL_SECRETARY_SAVE, params,
+			//								files, config, this);
+//			break;
 		}
-		if (fragment != null) {
-			entity.setFragment(fragment);
-			bus.post(entity);
-		}
+		//		if (fragment != null) {
+		//			entity.setFragment(fragment);
+		//			bus.post(entity);
+		//		}
 	}
 
 	@InjectHttp
@@ -401,5 +504,50 @@ public class SecretarySettingFragment extends BaseFragment {
 		}
 		return null;
 	}
+	@Override
+	public void afterTextChanged(Editable s) {
 
+	}
+	@Override
+	public void beforeTextChanged(CharSequence s, int start, int count,
+			int after) {
+
+	}
+	@Override
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
+		if (TextUtils.isEmpty(s.toString())) {
+			iv_activity_del_hope.setVisibility(View.INVISIBLE);
+			iv_activity_del.setVisibility(View.INVISIBLE);
+		}else {
+			iv_activity_del_hope.setVisibility(View.VISIBLE);
+			iv_activity_del.setVisibility(View.VISIBLE);
+		}
+	}
+
+	@Override
+	public void onFocusChange(View view, boolean hasFocus) {
+		if (hasFocus) {
+			switch (view.getId()) {
+			case R.id.et_secretary_hope_call_you:
+				v.et_hope_call_you.setHint("请设置2-12位字符");
+				v.et_hope_call_you.setHintTextColor(getResources().getColor(R.color.translate_gray));
+				break;
+			case R.id.et_secretary_name:
+				v.et_secretary_name.setHint("请设置2-12位字符");
+				v.et_secretary_name.setHintTextColor(getResources().getColor(R.color.translate_gray));
+				break;
+			}
+		}else {
+			switch (view.getId()) {
+			case R.id.et_secretary_hope_call_you:
+				v.et_hope_call_you.setHint("给我设置个昵称吧");
+				v.et_hope_call_you.setHintTextColor(getResources().getColor(R.color.app_white));
+				break;
+			case R.id.et_secretary_name:
+				v.et_secretary_name.setHint("请问如何称呼您");
+				v.et_secretary_name.setHintTextColor(getResources().getColor(R.color.app_white));
+				break;
+			}
+		}
+	}
 }

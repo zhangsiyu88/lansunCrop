@@ -130,15 +130,12 @@ public class QuestionDetailFragment extends BaseFragment {
 					}
 				}
 				if (adapter == null) {
-					adapter = new QuestionDetailAdapter(
-							lv_mine_secretary_quetions_detail, dataList,
+					adapter = new QuestionDetailAdapter(lv_mine_secretary_quetions_detail, dataList,
 							R.layout.activity_secretary_question_detail_item);
 					lv_mine_secretary_quetions_detail.setAdapter(adapter);
 				} else {
-					PullToRefreshManager.getInstance()
-							.onHeaderRefreshComplete();
-					PullToRefreshManager.getInstance()
-							.onFooterRefreshComplete();
+					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					adapter.notifyDataSetChanged();
 				}
 				break;
@@ -146,8 +143,7 @@ public class QuestionDetailFragment extends BaseFragment {
 				if ("true".equals(r.getContentAsString())) {
 					pd.dismiss();
 					adapter = null;
-					refreshCurrentList(refreshUrl, null, 0,
-							lv_mine_secretary_quetions_detail);
+					refreshCurrentList(refreshUrl, null, 0,lv_mine_secretary_quetions_detail);
 				}
 
 				break;

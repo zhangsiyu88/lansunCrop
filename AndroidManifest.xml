@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.lansun.qmyo"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.1" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -13,7 +13,6 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
- 
 
     <application
         android:name="com.lansun.qmyo.app.App"
@@ -42,15 +41,23 @@
        
        
         <!--  包名为com.lansun.qmyo 本人(Yeun's LansunCorp  PC上)申请开发模式下的高德地图的key -->
-       <meta-data
+       <!-- <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="e5b6027255bb77d1aa285e5cec53c134" />
+            android:value="e5b6027255bb77d1aa285e5cec53c134" /> -->
        
          <!--  包名为com.lansun.qmyo 本人(Yeun's  PC上)申请开发模式下的高德地图的key -->
       <!--  <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="" />
         -->
+        
+        
+         <!--  包名为com.lansun.qmyo     申请    发布版本模式下的高德地图的key -->
+	       <meta-data
+	            android:name="com.amap.api.v2.apikey"
+	            android:value="a81d22502d5958d33c95c7e32f97c656" />
+	        
+	        
        
         <!-- 友盟的元数据 -->
         <meta-data

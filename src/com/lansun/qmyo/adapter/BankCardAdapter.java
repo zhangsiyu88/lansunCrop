@@ -59,6 +59,8 @@ public class BankCardAdapter extends
 
 	private Fragment activity;
 	private DisplayImageOptions options;
+	private boolean isEmbarrassingStatue;
+	public static String selectCardId;
 	
 	public void setActivity(Fragment activity) {
 		this.activity = activity;
@@ -133,6 +135,8 @@ public class BankCardAdapter extends
 				}else if(!TextUtils.isEmpty(App.app.getData("secret"))&&!TextUtils.isEmpty(App.app.getData("access_token"))){//登录状态下
 					DialogUtil.createTipAlertDialog(context,R.string.add_bankCard,
 							new TipAlertDialogCallBack() {
+								
+
 								@Override
 								public void onPositiveButtonClick(
 										DialogInterface dialog, int which) {
@@ -145,6 +149,7 @@ public class BankCardAdapter extends
 									LinkedHashMap<String, String> params = new LinkedHashMap<>();
 									params.put("bankcard_id", cardId);
 									
+								
 									/*FastHttpHander.ajaxForm(GlobalValue.URL_BANKCARD_ADD,params, null, config,BankCardAdapter.this);*/
 									FastHttpHander.ajax(GlobalValue.URL_BANKCARD_ADD,  params, config, BankCardAdapter.this);
 									Log.i("警报警报！！","添加进来的卡的id为： "+ cardId);
@@ -204,7 +209,8 @@ public class BankCardAdapter extends
 				}*/
 				else if (TextUtils.isEmpty(App.app.getData("exp_secret"))
 						&& TextUtils.isEmpty(App.app.getData("secret"))
-						&& GlobalValue.isFirst){//通过搜索卡页第一次进来，即从入口处进入的内容
+						&& GlobalValue.isFirst
+						&& GlobalValue.user == null){//通过搜索卡页第一次进来，即从入口处进入的内容
 					
 				/*	Boolean isFirstEnter = true;
 					ExperienceDialog dialog = new ExperienceDialog(cardId,head,desc,isFirstEnter);//这么个体验的对话框，需要单独在其内部设置点击响应事件
@@ -218,20 +224,16 @@ public class BankCardAdapter extends
 //							v.tv_top_home_experience.setVisibility(View.VISIBLE);
 //							v.iv_card.setVisibility(View.GONE);
 //							v.iv_top_card.setVisibility(View.GONE);
-							
 						}
 					});
-					
 					dialog.show(activity.getFragmentManager() , "experience");*/
 					
-					
-					
 					//弹出对话框进行设
-					DialogUtil.createTipAlertDialog(context,R.string.add_bankCard,
-							new TipAlertDialogCallBack() {
+					DialogUtil.createTipAlertDialog(context,R.string.add_bankCard,new TipAlertDialogCallBack() {
 								@Override
 								public void onPositiveButtonClick(DialogInterface dialog, int which) {
 									
+									selectCardId = cardId;
 									InternetConfig config = new InternetConfig();
 									config.setKey(2);
 									/*FastHttpHander.ajaxForm(GlobalValue.URL_AUTH_TEMPORARY, config,this);*/
@@ -248,7 +250,56 @@ public class BankCardAdapter extends
 							});
 					
 					
+				}else if(TextUtils.isEmpty(App.app.getData("exp_secret"))
+						&& !TextUtils.isEmpty(App.app.getData("secret"))
+						&& !TextUtils.isEmpty(App.app.getData("access_token"))
+						&& !TextUtils.isEmpty(App.app.getData("access_token"))
+						&& GlobalValue.isFirst
+						&& GlobalValue.user != null){               
+				
+					/*
+					 * 刚退出登录时：
+					 * GlobalValue.user = null;
+					   GlobalValue.isFirst = true;//即为三无状态，那么就需要成为是第一次进入的用户状态，也就会是需要自己加卡那个页面
+					   clearTokenAndSercet();
+					   
+					     注册并登陆成功后：
+					         拥有了secret，access_token 和 user对象 ，并且非第一次进入程序GlobalValue.user != null 
+					 */
+					
+					DialogUtil.createTipAlertDialog(context,R.string.add_bankCard,new TipAlertDialogCallBack() {
+						
+						@Override
+						public void onPositiveButtonClick(DialogInterface dialog, int which) {
+							
+							InternetConfig config = new InternetConfig();
+							config.setKey(0);
+							HashMap<String, Object> head = new HashMap<>();
+							head.put("Authorization", "Bearer "
+									+ App.app.getData("access_token"));
+							config.setHead(head);
+							LinkedHashMap<String, String> params = new LinkedHashMap<>();
+							params.put("bankcard_id", cardId);
+							
+							/*FastHttpHander.ajaxForm(GlobalValue.URL_BANKCARD_ADD,params, null, config,BankCardAdapter.this);*/
+							FastHttpHander.ajax(GlobalValue.URL_BANKCARD_ADD,  params, config, BankCardAdapter.this);
+							Log.i("警报警报！！","添加进来的卡的id为： "+ cardId);
+							
+							Handler_Inject.injectFragment(BankCardAdapter.this, null);
+							 
+							isEmbarrassingStatue = true;
+							dialog.dismiss();
+						}
+
+						@Override
+						public void onNegativeButtonClick(DialogInterface dialog, int which) {
+								dialog.dismiss();
+						}
+					});
+					
 				}
+				
+				
 			}
 		});
 	}
@@ -262,6 +313,13 @@ public class BankCardAdapter extends
 					CustomToast.show(context, context.getString(R.string.tip),"添加成功");
 					/*BackEntity event = new BackEntity();
 					EventBus.getDefault().post(event);*/
+					if(isEmbarrassingStatue){
+						HomeFragment fragment = new HomeFragment();
+						FragmentEntity event = new FragmentEntity();
+						event.setFragment(fragment);
+						EventBus.getDefault().post(event);
+						return;
+					}
 					MineBankcardFragment fragment = new MineBankcardFragment();
 					FragmentEntity event = new FragmentEntity();
 					event.setFragment(fragment);
@@ -296,12 +354,10 @@ public class BankCardAdapter extends
 				InternetConfig config2 = new InternetConfig();
 				config2.setKey(4);
 				HashMap<String, Object> head = new HashMap<>();
-				head.put("Authorization",
-						"Bearer " + App.app.getData("access_token"));
+				head.put("Authorization","Bearer " + App.app.getData("access_token"));
 				config2.setHead(head);
 				LinkedHashMap<String, String> params = new LinkedHashMap<>();
 			
-				
 				/*Log.i("从选卡页进入首页后随机分配的银行卡的ID为：","进入首页后随机分配的银行卡的ID为："+	mCardId);
 				if(cardId==0){
 					cardId = Integer.valueOf(mCardId);
@@ -310,7 +366,7 @@ public class BankCardAdapter extends
 				/*Log.i("作为体验用户实际提交上去的银行卡的ID为：","作为体验用户实际提交上去的银行卡的ID为："+cardId);*/
 			
 				
-				params.put("bankcard_id", "暂时停掉");
+				params.put("bankcard_id", selectCardId);//这个selectCardId是点击选中的时候传递过来的
 				
 				/*FastHttpHander.ajaxForm(GlobalValue.URL_BANKCARD_ADD, params,
 						null, config2, this);*/

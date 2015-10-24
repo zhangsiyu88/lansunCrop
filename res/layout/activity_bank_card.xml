@@ -127,7 +127,7 @@
 
         <TextView
             style="@style/text_style_nomal_28"
-            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
             android:text="@string/search_tip"
             android:textColor="#6F6F6F" />
 

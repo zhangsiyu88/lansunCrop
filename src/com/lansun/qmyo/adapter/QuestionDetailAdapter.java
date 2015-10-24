@@ -19,6 +19,7 @@ import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectView;
 import com.lansun.qmyo.adapter.QuestionDetailAdapter.ViewHolder;
 import com.lansun.qmyo.view.CircularImage;
+import com.lansun.qmyo.view.TextPage;
 
 public class QuestionDetailAdapter extends
 		LazyAdapter<HashMap<String, String>, ViewHolder> {
@@ -67,6 +68,6 @@ public class QuestionDetailAdapter extends
 		@InjectView
 		private View rl_secretary_answer;
 		@InjectView
-		private TextView tv_user_question, tv_secretary_answer;
+		private TextPage tv_user_question, tv_secretary_answer;
 	}
 }

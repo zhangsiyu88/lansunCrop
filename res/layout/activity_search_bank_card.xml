@@ -81,7 +81,7 @@
         android:dividerHeight="@dimen/margin_top_35"
         android:listSelector="@android:color/transparent"
         android:paddingBottom="@dimen/margin_top_35"
-        android:scrollbars="vertical"
+        android:scrollbars="none"
         android:visibility="gone"
          />
     

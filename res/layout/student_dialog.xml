@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/w_match_h_match"
+    android:scrollbars="none" >
+    <LinearLayout
+        android:id="@+id/student"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+        <ImageView
+            style="@style/w_match_h_wrap"
+            android:src="@drawable/details_abroad01" />
+
+        <ImageView
+            style="@style/w_match_h_wrap"
+            android:src="@drawable/details_abroad02" />
+
+        <ImageView
+            style="@style/w_match_h_wrap"
+            android:src="@drawable/details_cannot" />
+    </LinearLayout>
+
+</ScrollView>

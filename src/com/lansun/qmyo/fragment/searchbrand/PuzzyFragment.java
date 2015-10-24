@@ -112,6 +112,8 @@ public class PuzzyFragment extends Fragment implements PuzzyItemClickCallBack{
 		}
 		callBack.onPuzzCallBack(backString);
 	}
+	
+	
 	private class MyBroadCastReceiver extends BroadcastReceiver{
 		@Override
 		public void onReceive(Context context, Intent intent) {

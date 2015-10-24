@@ -3,6 +3,7 @@ package com.lansun.qmyo.fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -151,7 +152,11 @@ public class FoundFragment extends BaseFragment {
 			fragment = new MineStoreFragment();
 			break;
 		case R.id.bottom_secretary:
-			fragment = new SecretaryFragment();
+			if (TextUtils.isEmpty(App.app.getData("secretary_name"))) {
+			    fragment=new SecretarySettingFragment();
+			   }else {
+			    fragment = new SecretaryFragment();
+			   }
 			break;
 		case R.id.bottom_mine:
 			fragment = new MineFragment();

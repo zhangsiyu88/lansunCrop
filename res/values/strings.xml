@@ -300,7 +300,7 @@
     <string name="experience_jump_now">先行体验</string>
     <string name="jiwen_about">共有%1$s篇文章与<Data><![CDATA[<font color="#9DC14F">%2$s</font>]]></Data>有关</string>
     <string name="look_now">立即查看</string>
-    <string name="search_tip">搜索并添加您所拥有的银行卡\n\t让迈界更好地为您服务</string>
+    <string name="search_tip">搜索并添加您所拥有的银行卡\n让迈界更好地为您服务</string>
     <string name="is_switch_card">是否替换当前信用卡？</string>
     <string name="please_select_one">请选择一项</string>
     <string name="doing">进行中</string>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView style="@style/w_match_h_match" 
+    android:scrollbars="none"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <LinearLayout
+        android:id="@+id/travel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <ImageView
+            style="@style/w_match_h_wrap"
+            android:src="@drawable/details_figure01" />
+
+        <ImageView
+            style="@style/w_match_h_wrap"
+            android:src="@drawable/details_figure02" />
+
+        <ImageView
+            style="@style/w_match_h_wrap"
+            android:src="@drawable/details_figure03" />
+
+        <ImageView
+            style="@style/w_match_h_wrap"
+            android:src="@drawable/details_figure04" />
+
+        <ImageView
+            style="@style/w_match_h_wrap"
+            android:src="@drawable/details_figure05" />
+
+        <ImageView
+            style="@style/w_match_h_wrap"
+            android:src="@drawable/details_cannot" />
+    </LinearLayout>
+
+</ScrollView>

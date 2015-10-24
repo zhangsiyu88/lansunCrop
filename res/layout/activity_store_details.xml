@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EBEBEB"
@@ -57,7 +57,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/rl_title"
-        android:background="@color/app_white" >
+        android:background="@color/app_white" 
+        android:scrollbars="none">
 
         <LinearLayout
             style="@style/w_full_h_wrap"
@@ -154,35 +155,50 @@
                     android:background="#EBEBEB"
                     android:orientation="horizontal" />
 
-                <RelativeLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="@dimen/details_item_h_110" >
-
-                    <TextView
-                        android:id="@+id/textView2"
-                        style="@style/text_style_nomal_28"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="@dimen/l_r_35"
-                        android:text="@string/mai_fs"
-                        android:textColor="@color/text_gray1" />
-
-                    <TextView
-                        android:id="@+id/tv_store_fans_num"
-                        style="@style/text_style_big_46"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="@dimen/l_r_15"
-                        android:layout_toRightOf="@+id/textView2"
+                
+                <!-- 底下包括 ： 粉丝数 和关注状态 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/details_item_h_110" 
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:weightSum="4"
+                    >
+                    
+                    <LinearLayout 
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/details_item_h_110"
                         android:gravity="center_vertical"
-                        android:textColor="#AFAFAF" />
-
-                    <com.android.pc.ioc.image.RecyclingImageView
-                        android:id="@+id/iv_store_detail_gz_store"
-                        style="@style/w_wrap_h_wrap"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginRight="@dimen/l_r_130"
-                        android:background="@drawable/gz_store" />
-                </RelativeLayout>
+                        android:layout_weight="1"
+                        android:paddingLeft="@dimen/l_r_35"
+                        android:orientation="horizontal"
+                        >
+	                    <TextView
+	                        android:id="@+id/textView2"
+	                        style="@style/text_style_nomal_28"
+	                        android:text="@string/mai_fs"
+	                        android:textColor="@color/text_gray1" />
+	                    
+	                    <TextView
+	                        android:id="@+id/tv_store_fans_num"
+	                        style="@style/text_style_big_46"
+	                        android:gravity="center_vertical"
+	                        android:textColor="#AFAFAF" />
+                    </LinearLayout>
+                    
+                    <LinearLayout 
+                        android:layout_width="match_parent"
+                        android:layout_weight="3"
+                        android:layout_height="@dimen/details_item_h_110"
+                        android:gravity="center"
+                        >
+                         <com.android.pc.ioc.image.RecyclingImageView
+	                        android:id="@+id/iv_store_detail_gz_store"
+	                        android:layout_width="wrap_content"
+	                        android:layout_height="wrap_content"
+	                        android:background="@drawable/gz_store" />
+                    </LinearLayout>
+                </LinearLayout>
 
                 <View
                     android:layout_width="fill_parent"
@@ -190,24 +206,30 @@
                     android:background="#EBEBEB"
                     android:orientation="horizontal" />
 
+               
+                
+                
+                <!-- 底下包含  地址和定位 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
+                    android:orientation="horizontal" 
+                    >
 
                     <LinearLayout
                         android:id="@+id/ll_information"
-                        style="@style/w_wrap_h_wrap"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="@dimen/margin_top_32"
-                        android:layout_weight="3"
+                        android:layout_weight="1"
                         android:orientation="horizontal" >
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/margin_top_35"
-                            android:orientation="vertical" >
+                            android:orientation="vertical" 
+                             android:layout_marginLeft="@dimen/margin_top_32">
 
                             <TextView
                                 android:id="@+id/tv_store_details_address"
@@ -227,19 +249,20 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <View
+    				
+    				  <View
                         android:layout_width="1px"
                         android:layout_height="match_parent"
                         android:layout_marginBottom="@dimen/margin_top_32"
-                        android:layout_marginLeft="@dimen/l_r_35"
                         android:layout_marginTop="@dimen/margin_top_32"
-                        android:background="@color/line_bg" />
-
+                        android:background="@color/line_bg" /><!--   android:layout_marginLeft="@dimen/l_r_35" -->
+    				 
+                    <!--android:layout_width="@dimen/activity_detail_map_w"  -->
                     <LinearLayout
                         android:id="@+id/iv_store_detail_map"
-                        android:layout_width="@dimen/activity_detail_map_w"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
+                        android:layout_weight="3"
                         android:gravity="center"
                         android:orientation="horizontal" >
 
@@ -248,8 +271,15 @@
                             android:layout_height="wrap_content"
                             android:background="@drawable/map_icon" />
                     </LinearLayout>
+                    
                 </LinearLayout>
 
+                
+                
+                
+                
+                
+                
                 <RelativeLayout
                     android:id="@+id/rl_store_business_hours"
                     style="@style/w_full_h_wrap"
@@ -327,8 +357,16 @@
                 <include
                     layout="@layout/report" />
                 
-            </LinearLayout>
+            </LinearLayout>       
         </LinearLayout>
     </ScrollView>
+    
+	<LinearLayout 
+	     
+         android:layout_width="match_parent"
+         android:layout_height= "0dp"
+         android:background="@color/app_bg"
+         android:orientation="vertical">
+    </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,11 +69,23 @@ public class MineFragment extends BaseFragment {
 				//加载头像上去
 				loadPhoto(avatar, v.iv_mine_head);
 			}
+			
 			if (!TextUtils.isEmpty(GlobalValue.user.getNickname())) {
-				v.tv_mine_nickname.setText(GlobalValue.user.getNickname());
+				
+				
+				if(GlobalValue.user.getNickname() == null||GlobalValue.user.getNickname() =="null"||GlobalValue.user.getNickname().contains("null")){
+					v.tv_mine_nickname.setText("请设置昵称");
+					Log.i("Tag：nickName","NickName应该为设置昵称");
+					
+				}else{
+					Log.i("Tag：nickName","NickName有值："+GlobalValue.user.getNickname());
+					v.tv_mine_nickname.setText(GlobalValue.user.getNickname());
+				}
 			}else{
 				v.tv_mine_nickname.setText("请注册或登陆");
 			}
+		}else{
+			CustomToast.show(activity, "GlobalValue.user为空", "同上");
 		}
 
 		refreshCurrentList(GlobalValue.URL_USER_MESSAGE, null, 0, null);//去刷新消息
@@ -89,6 +102,15 @@ public class MineFragment extends BaseFragment {
 			}
 			if (!TextUtils.isEmpty(GlobalValue.user.getNickname())) {
 				v.tv_mine_nickname.setText(GlobalValue.user.getNickname());
+				Log.i("Tag：nickName","在init之后起作用");
+				
+				if(GlobalValue.user.getNickname() == null||GlobalValue.user.getNickname() =="null"||GlobalValue.user.getNickname().contains("null")){
+					v.tv_mine_nickname.setText("请设置昵称");
+				}else{
+					v.tv_mine_nickname.setText(GlobalValue.user.getNickname());
+				}
+		  }else{
+				v.tv_mine_nickname.setText("请注册或登陆");
 			}
 		}
 		super.onResume();
@@ -136,12 +158,14 @@ public class MineFragment extends BaseFragment {
 			}
 			break;
 		case R.id.ll_mine_xy_card:// 信用卡
-			if (GlobalValue.user == null) {
+			
+		/*	if (GlobalValue.user == null) {
 				return;
 			}
 			if (isExperience()) {
 				fragment = new RegisterFragment();
 			} else
+				*/
 				fragment = new MineBankcardFragment();
 			break;
 		case R.id.ll_mine_yhq:// TODO 优惠券
@@ -188,7 +212,11 @@ public class MineFragment extends BaseFragment {
 			fragment = new HomeFragment();
 			break;
 		case R.id.bottom_secretary:
-			fragment = new SecretaryFragment();
+			if (TextUtils.isEmpty(App.app.getData("secretary_name"))) {
+			    fragment=new SecretarySettingFragment();
+			   }else {
+			    fragment = new SecretaryFragment();
+			   }
 			break;
 		case R.id.bottom_found:
 			fragment = new FoundFragment();

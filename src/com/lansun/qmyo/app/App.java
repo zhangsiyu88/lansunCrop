@@ -63,10 +63,7 @@ public class App extends Application {
 		 
 		super.onCreate();
 		initHistory();
-		
 		initImageLoader(getApplicationContext());
-		
-		
 		
 		app = this;
 		// JPushInterface.init(this);

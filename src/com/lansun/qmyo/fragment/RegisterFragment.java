@@ -3,6 +3,8 @@ package com.lansun.qmyo.fragment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,9 +44,12 @@ import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CloudView;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.R;
+
+import android.app.ProgressDialog;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.SpannedString;
@@ -122,6 +127,7 @@ public class RegisterFragment extends BaseFragment {
 		v.tv_register_send_code.setAfterBg(R.drawable.button_validation);//这是TimeButton对象设置前后背景中
 		v.tv_register_send_code.setBeforBg(R.drawable.button);
 		
+		//去获取传递进来的args值，下面对应作出判断和回应
 		if (getArguments() != null) {
 			boolean isReset = getArguments().getBoolean("isReset");
 			boolean isJustLogin = getArguments().getBoolean("isJustLogin");
@@ -253,9 +259,22 @@ public class RegisterFragment extends BaseFragment {
 					return;
 				}
 				
-				
-				this.pd.setMessage(getString(R.string.tip5));
-	            this.pd.show();
+				pd = new ProgressDialog(activity);
+				pd.setMessage(getString(R.string.tip5));
+	            pd.show();
+	            
+	      
+	            Handler myHandler = new Handler(); 
+                myHandler.postDelayed(new Runnable() { 
+                    public void run() { 
+                    	if(pd!= null){
+                    		pd.cancel(); 
+                    		CustomToast.show(activity, "登录失败", "服务器睡着了...");
+                    	}
+                    } 
+                }, 5000);
+	            
+	            
 				params.put("mobile", phone);
 				params.put("password", pwd);
 				config.setCharset("utf-8");
@@ -362,7 +381,7 @@ public class RegisterFragment extends BaseFragment {
 				v.btn_register_reg_login.setText(getString(R.string.commit));
 				v.tv_register_reg_login.setVisibility(View.GONE);
 				isReset = true;
-				break;
+			break;
 		}
 	}
 
@@ -395,6 +414,9 @@ public class RegisterFragment extends BaseFragment {
 					return;
 				}
 				
+				//一旦注册就已经拿到了user对象，那么如果此时就将user中的secret写入本地中，
+				//那么就在此时立即退出程序，下次进入时肯定会自动进入登陆后的状态了
+				
 				GlobalValue.user = Handler_Json.JsonToBean(User.class,r.getContentAsString());//-------------------------> 注册成功后，便拿到了返回的 user信息 
 				Log.i("点击注册之后，服务器会返回什么鬼给我",r.getContentAsString());
 				if (GlobalValue.user != null) {
@@ -404,7 +426,9 @@ public class RegisterFragment extends BaseFragment {
 					CustomToast.show(activity, "恭喜你注册成功哟", "小迈在此恭候多时，请您立即登录哟~");
 					pushToken(GlobalValue.user.getMobile());//---------------------------------------------->注册成功（或者登陆成功）后才会进行上传RegisterId的操作
 				}
-				App.app.setData("secret", GlobalValue.user.getSecret());
+				
+				
+				/*App.app.setData("secret", GlobalValue.user.getSecret());*/             //------>是否在一注册成功就进行写入secret的操作？这一步是去是留待考虑
 				
 				//点击注册成功后，立即跳转至登录页
 				v.fl_register_pwd.setVisibility(View.VISIBLE);
@@ -423,8 +447,11 @@ public class RegisterFragment extends BaseFragment {
 					
 					/*CustomToast.show(activity, R.string.tip, errorInfo.getError());*/
 					CustomToast.show(activity, "手机号或密码错误", "小迈希望您仔细填写哦");
+					pd.dismiss();
+					pd = null;
 					return;
 				}
+				
 				GlobalValue.user = Handler_Json.JsonToBean(User.class,r.getContentAsString());//----> 登录成功后，便拿到了返回的 user信息 
 				Log.i("打出包含secret的返回信息内容",r.getContentAsString());
 				if (GlobalValue.user != null) {
@@ -444,8 +471,7 @@ public class RegisterFragment extends BaseFragment {
 				}
 				break;
 			case 3:// 拿到了token，燥起来
-				Token token = Handler_Json.JsonToBean(Token.class,
-						r.getContentAsString());
+				Token token = Handler_Json.JsonToBean(Token.class,r.getContentAsString());
 				// InternetConfig config = new InternetConfig();
 				// config.setKey(4);
 				// HashMap<String, Object> head = new HashMap<>();
@@ -456,26 +482,25 @@ public class RegisterFragment extends BaseFragment {
 				App.app.setData("access_token", token.getToken());
 			    /*back();*/
 				
-				this.pd.dismiss();
+				pd.dismiss();
+				pd = null;
+				
 				/*back();*///先于弹窗提醒之前,将界面跳转至上一页(由体验用户去登陆时)
 			
 				
-				if(isHasExpSecretWhenClickToRegister){//点击注册时是拥有临时secret的 ,那么即直接可跳转至首页展示活动
-					HomeFragment homeFragment = new HomeFragment();
+				if(isHasExpSecretWhenClickToRegister){//点击注册时是拥有临时secret的 ,说明是在体验状态下试图去实现登录用户的操作，那么需要登录成功后进入之前跳入的那一页
+			      /*HomeFragment homeFragment = new HomeFragment();
 					FragmentEntity fEntity = new FragmentEntity();
 					fEntity.setFragment(homeFragment);
-					EventBus.getDefault().post(fEntity);
+					EventBus.getDefault().post(fEntity);*/
+					back();
+					
 				}else{//点击注册时是不曾    拥有临时secret的 ,那么需跳转至银行卡搜索页添加一张卡后，再跳入首页
 					SearchBankCardFragment homeFragment = new SearchBankCardFragment();
 					FragmentEntity fEntity = new FragmentEntity();
 					fEntity.setFragment(homeFragment);
 					EventBus.getDefault().post(fEntity);
 				}
-				
-				
-				
-				
-				
 				
 				/*backandinitMine();//跳转并刷新MineFragemnt*/				
 				break;
@@ -520,10 +545,9 @@ public class RegisterFragment extends BaseFragment {
 		
 		Log.i("我拿到的registration_id为： ",JPushInterface.getRegistrationID(activity));
 		
-		/*FastHttpHander.ajaxForm(GlobalValue.URL_PUSH_TOKEN, params, null,
-				config, this);*/
-		FastHttpHander.ajax(GlobalValue.URL_PUSH_TOKEN, params, 
-				config, this);
+		/*FastHttpHander.ajaxForm(GlobalValue.URL_PUSH_TOKEN, params, null,config, this);*/
+		
+		FastHttpHander.ajax(GlobalValue.URL_PUSH_TOKEN, params, config, this);
 	}
 	
 	@Override

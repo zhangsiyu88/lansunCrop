@@ -13,6 +13,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -71,6 +72,7 @@ public class MineBankcardFragment extends BaseFragment {
 		fl_comments_right_iv, ll_bank_card_other, ll_bank_card_exp;
 		private TextView tv_bank_card_name, tv_bank_card_desc,
 		tv_activity_title, tv_bank_card_exp;
+		private LinearLayout search_click;
 		private RecyclingImageView iv_ban_card_head;
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private TextView tv_activity_shared;
@@ -109,9 +111,9 @@ public class MineBankcardFragment extends BaseFragment {
 
 			/*View search_click = v.ll_bank_card_exp.findViewById(R.id.search_click);*/
 
-
+			//整个大块头的点击事件，暂给取消掉
 			View search_click = v.ll_bank_card_exp.findViewById(R.id.search_click);
-			search_click.setOnClickListener(new OnClickListener() {
+			/*search_click.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					SearchBankCardFragment fragment = new SearchBankCardFragment();
@@ -119,13 +121,37 @@ public class MineBankcardFragment extends BaseFragment {
 					entity.setFragment(fragment);
 					EventBus.getDefault().post(entity);
 				}
-			});
+			});*/
+			
+			//区域过小！ 当点击EditText以外的数据时，会出现点击进入卡片搜索页的问题
 			EditText et_home_search = (EditText) search_click.findViewById(R.id.et_home_search);
-			et_home_search.setHint("输入点啥呢?你说");
+			et_home_search.setHint("搜索/添加银行卡");
 			et_home_search.setFocusable(false);
 			et_home_search.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					
+					if(App.app.getData("isExperience").equals("true")){
+						DialogUtil.createTipAlertDialog(getActivity(),
+								R.string.registeror_login, new TipAlertDialogCallBack() {
+							@Override
+							public void onPositiveButtonClick(
+									DialogInterface dialog, int which) {
+								dialog.dismiss();
+								RegisterFragment fragment = new RegisterFragment();
+								FragmentEntity event = new FragmentEntity();
+								event.setFragment(fragment);
+								EventBus.getDefault().post(event);
+
+							}
+							@Override
+							public void onNegativeButtonClick(DialogInterface dialog, int which) {
+								dialog.dismiss();
+							}
+						});
+						return;
+					}
+					
 					SearchBankCardFragment fragment = new SearchBankCardFragment();
 					FragmentEntity entity = new FragmentEntity();
 					entity.setFragment(fragment);

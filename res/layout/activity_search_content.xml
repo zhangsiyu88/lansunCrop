@@ -38,7 +38,7 @@
 
         <com.lansun.qmyo.view.MyListView
             android:id="@+id/lv_search_content"
-            style="@style/w_match_h_wrap"
+            style="@style/w_match_h_match"
             android:background="@color/app_bg"
             android:cacheColorHint="#00000000"
             android:divider="@null"

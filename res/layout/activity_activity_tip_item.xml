@@ -10,7 +10,8 @@
         style="@style/text_style_small_27"
         android:layout_marginLeft="@dimen/l_r_35"
         android:layout_marginTop="@dimen/l_r_35"
-        android:textColor="#9DC14F" /><!--style="@style/text_style_small_24"  -->
+        android:textColor="#9DC14F" 
+        android:lineSpacingExtra="3dp"/><!--style="@style/text_style_small_24"  -->
 
     <TextView
         android:id="@+id/tv_activity_content_mx_content"
@@ -18,7 +19,8 @@
         android:layout_marginLeft="@dimen/l_r_35"
         android:layout_marginRight="@dimen/l_r_35"
         android:layout_marginTop="@dimen/margin_top_15"
-        android:textColor="#6F6F6F" />
+        android:textColor="#6F6F6F" 
+        android:lineSpacingExtra="3dp"/>
 
     <View
         android:id="@+id/line"

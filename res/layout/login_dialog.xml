@@ -1,42 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/login_dialog_h"
-    android:background="@drawable/tv_style_white" >
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    style="@style/Translucent_NoTitle"
+     >
+    <LinearLayout
+        android:id="@+id/tishi"
+        style="@style/w_wrap_h_wrap"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical" 
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:background="@drawable/tv_style_white"
+        >
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/login_dialog" />
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/bt_close"
-        android:src="@drawable/login_dialog" />
-
-    <ImageView
-        android:id="@+id/bt_close"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@id/imageView2"
-        android:layout_marginTop="@dimen/margin_top_25"
-        android:background="@drawable/bt_close" />
-
-    <Button
-        android:id="@+id/btn_login"
-        style="@style/text_style_nomal_28"
-        android:layout_width="match_parent"
-        android:layout_below="@+id/textView1"
-        android:layout_marginBottom="@dimen/margin_top_35"
-        android:layout_marginLeft="@dimen/l_r_25"
-        android:layout_marginRight="@dimen/l_r_25"
-        android:layout_marginTop="@dimen/margin_top_35"
-        android:background="@drawable/button"
-        android:text="@string/login_now"
-        android:textColor="@color/app_white" />
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            android:lineSpacingExtra="4dp"
+            android:text="@string/please_login_secretary" />
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/textView1"
-        style="@style/text_style_nomal_28"
-        android:layout_below="@+id/imageView2"
+        android:id="@+id/btn_login"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/tishi"
+        android:layout_marginTop="@dimen/margin_top_45"
+        android:background="@drawable/buton_shape"
+        android:gravity="center"
         android:layout_centerHorizontal="true"
-        android:text="@string/please_login_secretary" />
+        android:text="@string/login_now"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/app_white" />
 
 </RelativeLayout>

@@ -199,6 +199,8 @@ public class MainActivity extends FragmentActivity {
 				fragment.getClass().getName()).commitAllowingStateLoss();*/
 	}
 
+	
+	//将重写的方法onBackPressed的方法给禁掉
 	@Override
 	public void onBackPressed() {
 		
@@ -217,9 +219,20 @@ public class MainActivity extends FragmentActivity {
 		}else{
 			super.onBackPressed();
 		}
-	}
+		/*else if(fragment.getClass().getName().equals(getSupportFragmentManager().findFragmentByTag("experience"))){
+			if(GlobalValue.user==null && !GlobalValue.isFirst){//在首页，且还没有拿到体验用户的那张卡，那么需要将物理返回键去除掉，强行要求进行填卡操作者，避免三无状态有机会存在
+				//DoNothing !!！
+				Log.i("物理的back键", "首页界面里的  物理返回键的返回操作被转出的换效果");
+				ExperienceSearchFragment experienceFragment = new ExperienceSearchFragment();
+				FragmentEntity entity = new FragmentEntity();
+				entity.setFragment(experienceFragment);
+				EventBus.getDefault().post(entity);
+			}
+		}*/
+			
+	 }
 	
-	
+	//此方法是重写了Activity(Fragment)的
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
@@ -250,8 +263,7 @@ public class MainActivity extends FragmentActivity {
 					.equals(MineFragment.class.getName())||fragment.getClass().getName()
 					.equals(SecretaryFragment.class.getName())) {
 
-				DialogUtil.createTipAlertDialog(MainActivity.this,
-						R.string.is_exit, new TipAlertDialogCallBack() {
+				DialogUtil.createTipAlertDialog(MainActivity.this,R.string.is_exit, new TipAlertDialogCallBack() {
 
 							@Override
 							public void onPositiveButtonClick(
@@ -272,17 +284,23 @@ public class MainActivity extends FragmentActivity {
 						});
 
 				return true;
-			}else if(fragment.getClass().getName()
+			}/*else if(fragment.getClass().getName()
 					.equals(ExperienceDialog.class.getName())){//当Fragment为ExperienceDialog时，取消返回键效果
 				return true;
-			}
+			}*/
 		}
-		return super.onKeyDown(keyCode, event);
+		  return super.onKeyDown(keyCode, event);
 	}
 
+	
+	/**主线程的开启fragment事件
+	 *
+	 */
 	public void onEventMainThread(FragmentEntity event) {
 		startFragmentAdd(event.getFragment());
 	}
+	
+
 	
 	@Override
 	protected void onDestroy() {
@@ -296,12 +314,9 @@ public class MainActivity extends FragmentActivity {
 		EventBus eventBus = EventBus.getDefault();
 		eventBus.unregister(this);
 		
-		
 		if(App.app.getData("isExperience")=="true"){
 			System.out.println("走到了onDestory!");
 			App.app.setData("access_token", "");
-			
-			
 			
 		/* App.app.setData("exp_secret","dypesq1zsn");*/
 			//GlobalValue.isFirst = false;
@@ -313,7 +328,7 @@ public class MainActivity extends FragmentActivity {
 		super.onDestroy();
 	}
 
-	//下面是极光的广播接收者
+	//下面是极光的广播接收者!!!
 	//for receive customer msg from jpush server
 		private MessageReceiver mMessageReceiver;
 		public static final String MESSAGE_RECEIVED_ACTION = "com.qmyo.activity.MESSAGE_RECEIVED_ACTION";

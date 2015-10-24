@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.FragmentManager.BackStackEntry;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -108,7 +109,12 @@ public class BaseFragment extends Fragment implements OnTouchListener{
 
 				@Override
 				public void onClick(View arg0) {
-					refreshCurrentList(refreshUrl, refreshParams, refreshKey,loadView);
+					try{
+						refreshCurrentList(refreshUrl, refreshParams, refreshKey,loadView);
+					}catch(Exception e){
+						App.app.startActivity(new Intent(App.app,MainActivity.class));
+					}
+					
 				}
 			});
 			GifMovieView loading_gif = (GifMovieView) progress.findViewById(R.id.loading_gif);
@@ -287,7 +293,7 @@ public class BaseFragment extends Fragment implements OnTouchListener{
 		App.app.setData("access_token", "");
 	}
 
-	public void clearTokenAndSercet() {
+	public static void clearTokenAndSercet() {
 		App.app.setData("secret", "");
 		App.app.setData("access_token", "");
 	}

@@ -254,12 +254,10 @@ public class MineSecretaryFragment extends BaseFragment {
 		case InjectView.PULL:
 			if (list != null) {
 				if (TextUtils.isEmpty(list.getNext_page_url())) {
-					PullToRefreshManager.getInstance()
-							.onFooterRefreshComplete();
+					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					CustomToast.show(activity, "加载进度", "目前所有内容都已经加载完成");
 				} else {
-					refreshCurrentList(list.getNext_page_url(), null, 0,
-							lv_secretary_list);
+					refreshCurrentList(list.getNext_page_url(), null, 0,lv_secretary_list);
 				}
 			}
 			break;

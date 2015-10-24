@@ -647,7 +647,11 @@ public class HomeFragment extends BaseFragment {
 		FragmentEntity entity = new FragmentEntity();
 		switch (v.getId()) {
 		case R.id.bottom_secretary:
-			fragment = new SecretaryFragment();
+			if (TextUtils.isEmpty(App.app.getData("secretary_name"))) {
+			    fragment=new SecretarySettingFragment();
+			   }else {
+			    fragment = new SecretaryFragment();
+			   }
 			break;
 		case R.id.bottom_found:
 			fragment = new FoundFragment();

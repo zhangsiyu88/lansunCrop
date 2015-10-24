@@ -190,15 +190,22 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 	 * 搜索为空的时候添加
 	 */
 	public void setEmptityView(Boolean isFirst,int visiable){
+		
 		if (isFirst) {
 			emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.bank_search_empty, null);
-			emptyView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
-					LayoutParams.MATCH_PARENT));
+			emptyView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
+			
 		}
 		if (visiable==1) {
+			
+			/*
+			 * 重点关注下面的代码变化
+			 */
 			((ViewGroup) lv_search_bank_card.getParent()).addView(emptyView,2);
-//			v.lv_search_bank_card.addView(emptyView);
-			if (App.app.getData("isExperience").equals("false")) {
+			
+			//v.lv_search_bank_card.addView(emptyView);
+			
+			if (App.app.getData("isExperience").equals("false")) {                                      //如果是登录的正式用户
 				emptyView.findViewById(R.id.tv_found_secretary).setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View arg0) {
@@ -212,16 +219,20 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 						EventBus.getDefault().post(event);
 					}
 				});
-			}else {
-				emptyView.findViewById(R.id.tv_found_secretary).setVisibility(View.GONE);
+			}else {                                                                                    //-->注册用户
+				emptyView.findViewById(R.id.tv_found_secretary).setVisibility(View.GONE);//让下面的绿色小字去除掉
 			}
-		}else {
+		}else {//visible 为 0时，将emptyView从ListView的父布局中去除掉
 			((ViewGroup) lv_search_bank_card.getParent()).removeView(emptyView);
 		}
 	}
+	
+	
+	
 	private void getPuzzyData(String query) {
 		lv_search_bank_card.setVisibility(View.GONE);
 		v.puzz_floor.setVisibility(View.VISIBLE);
+		
 		OkHttp.asyncGet(GlobalValue.URL_BANKCARD_PUZZY+"search="+query, "Authorization", "Bearer"+App.app.getData("access_token"), null, new Callback() {
 			@Override
 			public void onResponse(Response response) throws IOException {
@@ -275,6 +286,11 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 				et_home_search.clearFocus();
 				lv_search_bank_card.setVisibility(View.VISIBLE);//listView展示出来
 				v.puzz_floor.setVisibility(View.GONE);//模糊搜素的内容去除掉
+				
+				//强制隐藏掉键盘
+				InputMethodManager imm = (InputMethodManager) activity
+						.getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 				
 			/*	dataList.clear();
 				bankcardAdapter.notifyDataSetChanged();*/
@@ -337,23 +353,31 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 			switch (r.getKey()) {
 			case 0:
 				/*v.ll_bank_card_tip.setVisibility(View.GONE);*/
-				bankList = Handler_Json.JsonToBean(BankCardList.class, r.getContentAsString());
 				
+				
+				
+				Log.i("","拿到返回的银行卡值"+ r.getContentAsString());
+				
+				Gson gson = new Gson();
+				bankList = gson.fromJson(r.getContentAsString(), BankCardList.class);	
+				
+				/*bankList = 	Handler_Json.JsonToBean(BankCardList.class, r.getContentAsString());*/
+				//TODO
 				if(isPull){
 					isPull = false;
 				}else{
 					dataList = new ArrayList<>();
 				}
 				
-				if (bankList.getData() != null) {
-					isFirst=false;
-					setEmptityView(isFirst, 0);
+				if (bankList.getData() != null) {//服务器返回了值
+					isFirst = false;
+					setEmptityView(isFirst, 0);//将isFirst置为空                -->不填充 emptyView（为空图片），且将其从ListView的父布局中去除掉
 					
-					Log.e("bankList", "！=null");
+					Log.e("bankList", bankList.getData().toString());
+					
 					for (BankCardData data : bankList.getData()) {
 						HashMap<String, String> map = new HashMap<>();
-						map.put("iv_bank_card_head", data.getBankcard()
-								.getPhoto());
+						map.put("iv_bank_card_head", data.getBankcard().getPhoto());
 						map.put("tv_bank_card_name", data.getBank().getName());
 						map.put("tv_bank_card_desc", data.getBankcard().getName());
 						map.put("id", data.getBankcard().getId() + "");
@@ -368,24 +392,27 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 						lv_search_bank_card.setVisibility(View.VISIBLE);
 					}else{
 						bankcardAdapter.notifyDataSetChanged();
-						/*bankcardAdapter.setActivity(this);
-						lv_search_bank_card.setAdapter(bankcardAdapter);
-						lv_search_bank_card.setVisibility(View.VISIBLE);*/
+						bankcardAdapter.setActivity(this);
+						//lv_search_bank_card.setAdapter(bankcardAdapter);
+						lv_search_bank_card.setVisibility(View.VISIBLE);
 					}
 					
 				}else {
-					Log.e("bankList", "==null");
+					Log.e("bankList", "bankList为空");
 					isFirst=true;
 					dataList.clear();
-					lv_search_bank_card.setVisibility(View.GONE);
-					v.ll_bank_card_tip.setVisibility(View.GONE);
-					setEmptityView(isFirst, 1);//搜索卡名无果，需要进行添上emptyView
+					lv_search_bank_card.setVisibility(View.GONE);   //listView去掉
+					v.ll_bank_card_tip.setVisibility(View.GONE);    //填卡提示页也被gone掉
+					setEmptityView(isFirst, 1);//搜索卡名无果，需要进行添上emptyView    将emptyView充起来，并且在ListView的父控件中addView进去这个emptyView
 				}
 				break;
 			}
+			
+			
 		}
 		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 		PullToRefreshManager.getInstance().onFooterRefreshComplete();
+		
 	}
 
 	@Override
@@ -456,12 +483,13 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 			if (bankList != null) {
 				/*if (TextUtils.isEmpty(activityList.getNext_page_url())) {//下一页为空的时候，加上footerview*/
 				  if (bankList.getNext_page_url()== "null"||TextUtils.isEmpty(bankList.getNext_page_url())) {
-					  Log.i("检测： ","下一页已经消失！");
+					 Log.i("检测： ","下一页已经消失！");
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
 					CustomToast.show(activity, "到底啦！", "该关键字下的银行卡暂时只有这么多");
 					
 				} else {
+					//TODO
 					String next_page_url = bankList.getNext_page_url();
 					int from = next_page_url.indexOf("[");
 					int to = next_page_url.indexOf("]");
@@ -471,12 +499,17 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 					
 					Log.i("下一页的地址为：","第一部分："+firstString);
 					Log.i("下一页的地址为：","第二部分："+lastString);
-					Log.i("下一页的地址为：","下一页的地址为："+next_page_url);
 					
 					
+					Log.i("下一页的地址为：","下一页合并好的银行卡地址为："+next_page_url);
+					
+					isPull = true;
 					//更新当前页面的下一个页面时,前面的数据不应该被取消掉,应该拼接在后面
 					refreshCurrentList(next_page_url,null, 0, lv_search_bank_card);
 					
+					Log.i("","上拉去获取新的一次银行卡列表的值");
+					
+					Log.i("检测： ","走的是刷新列表的操作！");
 					
 					
 					/*InternetConfig config = new InternetConfig();
@@ -502,21 +535,11 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 						e.printStackTrace();
 					}*/
 					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					isPull = true;
-					Log.i("检测： ","走的是刷新列表的操作！");
 				}
+			}else{
+				CustomToast.show(activity, "bankList = null", "BankList为空！");
+				PullToRefreshManager.getInstance().onFooterRefreshComplete();
+				
 			}
 			
 			break;

@@ -47,15 +47,72 @@ public class SharedDialog implements OnClickListener {
 	private PopupWindow window;
 
 	/*
-	 * 以构造函数的形式将其传递进来，以便进行分享
+	 * 以构造函数的形式将其传递进来，以便进行分享--------------------------------------此构造函数，不带有当前活动分享的url
 	 */
 	public void showPopwindow(View v, final Activity activity, String title,
 			String content, String imageUrl) {
 		this.activity = activity;
+		configPlatforms();
+		setShareContent(title, content, imageUrl,null);//分享的内容
+		
+		// 利用layoutInflater获得View
+		LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		
+		View view = inflater.inflate(R.layout.dialog_shared, null);
+		view.findViewById(R.id.ll_shared_wx_friend).setOnClickListener(this);
+		view.findViewById(R.id.rl_shared_friend).setOnClickListener(this);
+		view.findViewById(R.id.ll_shared_tx_wb).setOnClickListener(this);
+		view.findViewById(R.id.ll_shared_sina_wb).setOnClickListener(this);
+		view.findViewById(R.id.tv_shared_cancle).setOnClickListener(this);
+
+		// 下面是两种方法得到宽度和高度 getWindow().getDecorView().getWidth()
+
+		window = new PopupWindow(view, WindowManager.LayoutParams.MATCH_PARENT,
+				WindowManager.LayoutParams.WRAP_CONTENT);
+		WindowManager.LayoutParams params = activity.getWindow()
+				.getAttributes();
+		params.alpha = 0.7f;
+		window.setOutsideTouchable(false);
+		window.update();
+
+		activity.getWindow().setAttributes(params);
+
+		// 设置popWindow弹出窗体可点击，这句话必须添加，并且是true
+		window.setFocusable(true);
+
+		window.setAnimationStyle(R.style.mypopwindow_anim_style);
+		// 实例化一个ColorDrawable颜色为半透明
+		ColorDrawable dw = new ColorDrawable(0xb0000000);
+		window.setBackgroundDrawable(dw);
+
+		// 在底部显示
+		window.showAtLocation(v, Gravity.BOTTOM, 0, 0);
+
+		window.setOnDismissListener(new OnDismissListener() {
+
+			@Override
+			public void onDismiss() {
+				WindowManager.LayoutParams params = activity.getWindow()
+						.getAttributes();
+				params.alpha = 1f;
+				activity.getWindow().setAttributes(params);
+			}
+		});
+	}
+	
+	
+	
+	
+	/*
+	 * 以构造函数的形式将其传递进来，以便进行分享
+	 */
+	public void showPopwindow(View v, final Activity activity, String title,
+			String content, String imageUrl, String currentActivityUrl) {
+		this.activity = activity;
 		
 		configPlatforms();
 		
-		setShareContent(title, content, imageUrl);//分享的内容
+		setShareContent(title, content, imageUrl,currentActivityUrl);//分享的内容
 		
 		// 利用layoutInflater获得View
 		LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -149,33 +206,44 @@ public class SharedDialog implements OnClickListener {
 	/**
 	 * 设置分享内容
 	 */
-	private void setShareContent(String title, String content, String imageUrl) {
+	private void setShareContent(String title, String content, String imageUrl,String currentActivityUrl) {
 		/**
-		 * 微信朋友圈
+		 * 微信个人分享
 		 */
 		WeiXinShareContent weixinContent = new WeiXinShareContent();
 		weixinContent.setShareContent(content);
 		weixinContent.setTitle(title);
-		weixinContent.setTargetUrl(GlobalValue.TARGET_URL);
+		/*weixinContent.setTargetUrl(GlobalValue.TARGET_URL);*/
+		weixinContent.setTargetUrl(currentActivityUrl);
+		
 		if (!TextUtils.isEmpty(imageUrl)) {
 			UMImage urlImage = new UMImage(activity, imageUrl);
 			weixinContent.setShareMedia(urlImage);
 		}
 		mController.setShareMedia(weixinContent);
-
+		
+		
+		/**
+		 * 朋友圈分享
+		 */
 		CircleShareContent circleMedia = new CircleShareContent();
 		circleMedia.setShareContent(content);
 		circleMedia.setTitle(title);
+		/*circleMedia.setTargetUrl(GlobalValue.TARGET_URL);*/
+		circleMedia.setTargetUrl(currentActivityUrl);
+		
 		if (!TextUtils.isEmpty(imageUrl)) {
 			UMImage urlImage = new UMImage(activity, imageUrl);
-			weixinContent.setShareMedia(urlImage);
+			circleMedia.setShareMedia(urlImage);
 		}
 		// circleMedia.setShareMedia(uMusic);
 		// circleMedia.setShareMedia(video);
-		circleMedia.setTargetUrl(GlobalValue.TARGET_URL);
+		
 		mController.setShareMedia(circleMedia);
 
-		// 设置QQ空间分享内容
+		/**
+		 * 设置QQ空间分享内容
+		 */
 		QZoneShareContent qzone = new QZoneShareContent();
 		qzone.setShareContent(content);
 		qzone.setTargetUrl(GlobalValue.TARGET_URL);
@@ -190,7 +258,10 @@ public class SharedDialog implements OnClickListener {
 		// video.setThumb(new UMImage(getActivity(),
 		// BitmapFactory.decodeResource(
 		// getResources(), R.drawable.device)));
-
+		
+		/**
+		 * 设置QQ分享
+		 */
 		QQShareContent qqShareContent = new QQShareContent();
 		qqShareContent.setShareContent(content);
 		qqShareContent.setTitle(title);
@@ -240,7 +311,7 @@ public class SharedDialog implements OnClickListener {
 				} else {
 					showText += "平台分享失败";
 				}
-				Toast.makeText(activity, showText, Toast.LENGTH_SHORT).show();
+				/*Toast.makeText(activity, showText, Toast.LENGTH_SHORT).show();*/
 			}
 		});
 	}

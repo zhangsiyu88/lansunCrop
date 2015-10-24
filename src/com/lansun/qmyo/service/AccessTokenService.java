@@ -108,6 +108,14 @@ public class AccessTokenService extends Service {
 		
 		if(r.getContentAsString().contains("false") ||r.getContentAsString().equals(false)||r.getContentAsString()=="false"){
 			Toast.makeText(App.app,"来自启动自服务的提示 ：您的临时用户身份已被清掉！请重新体验，或注册登录！", Toast.LENGTH_LONG).show();
+			
+			/**
+			 * 一旦发现临时用户的secret去访问获取token失败，那么需要立即将secret和token全部清除掉，以便于后面前去生成新的体验用户
+			 */
+			BaseFragment.clearTempTokenAndSercet();
+			BaseFragment.clearTokenAndSercet();
+			
+			
 			ExperienceSearchFragment fragment = new ExperienceSearchFragment();
 			FragmentEntity entity = new FragmentEntity();
 			entity.setFragment(fragment);

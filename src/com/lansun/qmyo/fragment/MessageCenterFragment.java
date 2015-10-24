@@ -106,13 +106,11 @@ public class MessageCenterFragment extends BaseFragment {
 		adapter = null;
 		switch (view.getId()) {
 		case R.id.tv_message_activity:// TODO 活动
-			refreshUrl = GlobalValue.URL_USER_MESSAGE_LIST
-					+ GlobalValue.MESSAGE.activity;
+			refreshUrl = GlobalValue.URL_USER_MESSAGE_LIST+ GlobalValue.MESSAGE.activity;
 			changeTextColor(v.tv_message_activity);
 			break;
 		case R.id.tv_message_maijie:// TODO 迈界
-			refreshUrl = GlobalValue.URL_USER_MESSAGE_LIST
-					+ GlobalValue.MESSAGE.maijie;
+			refreshUrl = GlobalValue.URL_USER_MESSAGE_LIST+ GlobalValue.MESSAGE.maijie;
 			changeTextColor(v.tv_message_maijie);
 			break;
 
@@ -161,8 +159,7 @@ public class MessageCenterFragment extends BaseFragment {
 					}
 
 					if (adapter == null) {
-						adapter = new MessageAdapter(lv_message_list, dataList,
-								R.layout.manager_group_list_item_parent);
+						adapter = new MessageAdapter(lv_message_list, dataList,R.layout.manager_group_list_item_parent);
 						lv_message_list.setAdapter(adapter);
 					} else {
 						adapter.notifyDataSetChanged();

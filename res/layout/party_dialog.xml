@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/w_match_h_match"
+    android:scrollbars="none" >
+    <LinearLayout
+        android:id="@+id/party"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <ImageView
+            style="@style/w_match_h_wrap"
+            android:src="@drawable/details_party01" />
+
+        <ImageView
+            style="@style/w_match_h_wrap"
+            android:src="@drawable/details_party02" />
+
+        <ImageView
+            style="@style/w_match_h_wrap"
+            android:src="@drawable/details_party03" />
+
+        <ImageView
+            style="@style/w_match_h_wrap"
+            android:src="@drawable/details_party04" />
+
+        <ImageView
+            style="@style/w_match_h_wrap"
+            android:src="@drawable/details_cannot" />
+    </LinearLayout>
+
+</ScrollView>

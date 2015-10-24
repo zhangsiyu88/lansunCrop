@@ -152,8 +152,7 @@ public class ActivityDetailFragment extends BaseFragment {
 	}
 
 	private void initData() {
-		refreshUrl = String.format(GlobalValue.URL_ACTIVITY_SHOP, activityId
-				+ "", shopId + "");
+		refreshUrl = String.format(GlobalValue.URL_ACTIVITY_SHOP, activityId+ "", shopId + "");
 		
 		refreshCurrentList(refreshUrl, null, 0, v.sc_activity_detail);//获取活动详情
 		
@@ -250,11 +249,9 @@ public class ActivityDetailFragment extends BaseFragment {
 						StringBuilder sb = new StringBuilder();
 						for (int i = 0; i < data1.getContent().size(); i++) {
 							if (i == data1.getContent().size()) {
-								sb.append("\u2022  "
-										+ data1.getContent().get(i));
+								sb.append("\u2022  "+ data1.getContent().get(i));
 							} else {
-								sb.append("\u2022  "
-										+ data1.getContent().get(i) + "\r\n");
+								sb.append("\u2022  "+ data1.getContent().get(i) + "\r\n");
 							}
 						}
 						map.put("tv_activity_content_mx_content", sb.toString());
@@ -267,7 +264,6 @@ public class ActivityDetailFragment extends BaseFragment {
 				}
 				
 				switchIcon(icons);
-				
 				v.tv_activity_tag.setText(tag);
 				ActivityDetailPagerAdapter pagerAdapter = new ActivityDetailPagerAdapter(
 						activity, data.getActivity().getPhotos());
@@ -452,7 +448,6 @@ public class ActivityDetailFragment extends BaseFragment {
 					entity.setFragment(fragment);
 					bus.post(entity);
 				}
-				
 			}
 			break;
 		case R.id.rl_activity_detail_institution:// 服务机构
@@ -512,7 +507,7 @@ public class ActivityDetailFragment extends BaseFragment {
 			
 			if(App.app.getData("isExperience")=="true"){
 				DialogUtil.createTipAlertDialog(getActivity(),
-						R.string.logintocomplain, new TipAlertDialogCallBack() {
+						R.string.logintocollectactivity, new TipAlertDialogCallBack() {
 					@Override
 					public void onPositiveButtonClick(
 							DialogInterface dialog, int which) {
@@ -552,8 +547,7 @@ public class ActivityDetailFragment extends BaseFragment {
 				InternetConfig config = new InternetConfig();
 				config.setKey(3);
 				HashMap<String, Object> head = new HashMap<>();
-				head.put("Authorization",
-						"Bearer " + App.app.getData("access_token"));
+				head.put("Authorization","Bearer " + App.app.getData("access_token"));
 				config.setHead(head);
 				config.setRequest_type(InternetConfig.request_delete);
 				config.setMethod("DELETE");
@@ -657,12 +651,20 @@ public class ActivityDetailFragment extends BaseFragment {
 		}
 	}
 
-	private void showDialog() {
+/*	private void showDialog() {
 		new SharedDialog().showPopwindow(rootView, getActivity(), data
 				.getShop().getName(), data.getShop().getName() + "举办"
 				+ data.getActivity().getName(), data.getActivity().getPhotos()
-				.get(0));
-	}
+				.get(0),data.getActivity().getShare_url());
+	}*/
+	
+	//去除掉xxx（店名）举办xxx（活动）中的前半部分
+	private void showDialog() {
+			new SharedDialog().showPopwindow(rootView, getActivity(), data
+			.getShop().getName(), data.getActivity().getName(), data.getActivity().getPhotos()
+			.get(0),data.getActivity().getShare_url());
+}
+	
 
 	/*
 	 * page的页面改变监听器

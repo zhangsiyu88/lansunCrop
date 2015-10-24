@@ -47,13 +47,13 @@ public class NetWorkChangeBroadcastReceiver extends BroadcastReceiver {
 		
 		if (connectivityManager != null) {
 			NetworkInfo[] networkInfos = connectivityManager.getAllNetworkInfo();
-			
-			Log.i("第一种网络",networkInfos[0].toString());
+	
+			/*	Log.i("第一种网络",networkInfos[0].toString());
 			Log.i("第二种网络",networkInfos[1].toString());
 			Log.i("第三种网络",networkInfos[1].toString());
 			Log.i("第四种网络",networkInfos[1].toString());
 			Log.i("第五种网络",networkInfos[1].toString());
-			Log.i("第六种网络",networkInfos[1].toString());
+			Log.i("第六种网络",networkInfos[1].toString());*/
 			
 			
 			Log.i("网络1的Type",networkInfos[0].getType()+"");
@@ -116,6 +116,13 @@ public class NetWorkChangeBroadcastReceiver extends BroadcastReceiver {
 		Log.i("NetWorkChangeBroadcast中的r返回回来的值为： ",r.getContentAsString());
 		if(r.getContentAsString().contains("false") ||r.getContentAsString().equals(false)||r.getContentAsString()=="false"){
 			Toast.makeText(App.app,"来自网络监听端的提示 ：您的临时用户身份已被清掉！请重新体验，或注册登录！", Toast.LENGTH_LONG).show();
+			
+			/**
+			 * 一旦发现临时用户的secret去访问获取token失败，那么需要立即将secret和token全部清除掉，以便于后面前去生成新的体验用户
+			 */
+			BaseFragment.clearTempTokenAndSercet();
+			BaseFragment.clearTokenAndSercet();
+			
 			/*ExperienceSearchFragment fragment = new ExperienceSearchFragment();
 			FragmentEntity entity = new FragmentEntity();
 			entity.setFragment(fragment);

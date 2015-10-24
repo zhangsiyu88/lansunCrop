@@ -125,10 +125,14 @@ public class PersonCenterFragment extends BaseFragment {
 			fragment = new EditUserFragment();
 			break;
 		case R.id.tv_person_center_exit://点击退出登录时，要求跳至  登录页_Dick语
+			fragment = new RegisterFragment();
 			GlobalValue.user = null;
 			GlobalValue.isFirst = true;//即为三无状态，那么就需要成为是第一次进入的用户状态，也就会是需要自己加卡那个页面
 			clearTokenAndSercet();
-			fragment = new RegisterFragment();
+			Boolean isJustLogin = true;
+			Bundle bundle = new Bundle();
+			bundle.putBoolean("isJustLogin", isJustLogin);
+			fragment.setArguments(bundle);
 			
 			/*back();此处无需back，因为主动跳往登录界面*/
 			break;

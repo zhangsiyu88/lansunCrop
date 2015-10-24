@@ -42,6 +42,7 @@ import com.lansun.qmyo.fragment.searchbrand.HotAddHistoryFragment.OnCallBack;
 import com.lansun.qmyo.fragment.searchbrand.PuzzyFragment;
 import com.lansun.qmyo.fragment.searchbrand.PuzzyFragment.OnPuzzyClickCallBack;
 import com.lansun.qmyo.fragment.searchbrand.SearchBranListOkHttpFragment;
+import com.lansun.qmyo.fragment.searchbrand.SearchBrandListOkHttpFragment;
 import com.lansun.qmyo.utils.AnimUtils;
 import com.lansun.qmyo.utils.GlobalValue;
 /**
@@ -71,9 +72,10 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_search, container,false);
-		activity.getWindow().setSoftInputMode(
-				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+		
+		/*一进来就已经将键盘收齐
+		 * activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);*/
+		
 		Handler_Inject.injectFragment(this, rootView);
 		initView(rootView);
 		return rootView;
@@ -91,11 +93,14 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 
 	private void initView(View root) {
 		del_search_content=(ImageView)root.findViewById(R.id.del_search_content);
+		
+		
+		//
 		et_home_search=(EditText)root.findViewById(R.id.et_home_search);
 		et_home_search.requestFocus();
-		
 		et_home_search.setCursorVisible(true);
 		et_home_search.addTextChangedListener(this);
+		
 		if (!TextUtils.isEmpty(query)) {
 			et_home_search.setText(query);
 			et_home_search.setSelection(query.length());
@@ -123,11 +128,13 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 	 */
 	private void changeText(CharSequence s, int start, int before, int count) {
 		Log.e("change", s.toString());
+		
 		if (TextUtils.isEmpty(s)) {
 			v.search_tv_cancle.setText(R.string.cancle);
 			v.search_tv_cancle.setTextColor(Color.parseColor("#939393"));
-			setFragmentChose(new HotAddHistoryFragment(this));//输入框为空，则进入HotAddHistoryFragment部分
+			setFragmentChose(new HotAddHistoryFragment(this));//输入框为空，则进入HotAddHistoryFragment部分                   setFragmentChose切换页面的数据
 			del_search_content.setVisibility(View.GONE);
+			
 			isPuzzy=false;
 		} else {
 			del_search_content.setVisibility(View.VISIBLE);
@@ -177,7 +184,7 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 	private void click(View view) {
 		switch (view.getId()) {
 		case R.id.search_tv_cancle:
-			if (getString(R.string.cancle).equals(v.search_tv_cancle.getText())) {
+			if (getString(R.string.cancle).equals(v.search_tv_cancle.getText())) {//字为“取消”
 				EventBus bus = EventBus.getDefault();
 				FragmentEntity entity = new FragmentEntity();
 				entity.setFragment(new HomeFragment());
@@ -185,10 +192,14 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 				InputMethodManager imm = (InputMethodManager) activity
 						.getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(view.getWindowToken(), 0); // 强制隐藏键盘
-			} else {
+			} else {//内容为“搜索”二字时
+				
 				String search_value=et_home_search.getText().toString().trim();
-				postQuery(search_value);
-				startSearch(search_value);
+				
+				postQuery(search_value);//去查
+				
+				startSearch(search_value);//开始搜索
+				
 				for (String li:App.search_list_history) {
 					if (search_value.equals(li)) {
 						return;
@@ -218,11 +229,16 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 		App.app.initHistory();
 	}
 	private void startSearch(String query) {
+		
+		/*InputMethodManager imm = (InputMethodManager) getActivity()
+				.getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);*/
+		
 		et_home_search.setText("");
 		isPuzzy=false;
 //		SearchBrandListFragment fragment = new SearchBrandListFragment();
 //		SearchContentFragment fragment = new SearchContentFragment();
-		SearchBranListOkHttpFragment fragment = new SearchBranListOkHttpFragment();
+		SearchBrandListOkHttpFragment fragment = new SearchBrandListOkHttpFragment();
 		Bundle args = new Bundle();
 		args.putString("query", query);
 		fragment.setArguments(args);
@@ -239,14 +255,12 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 		config.setHead(head);
 		LinkedHashMap<String, String> params = new LinkedHashMap<>();
 		params.put("key", querya);
-		FastHttpHander.ajaxForm(GlobalValue.URL_USER_USER_QUERY, params, null,
-				config, this);
+		FastHttpHander.ajaxForm(GlobalValue.URL_USER_USER_QUERY, params, null,config, this);
 	}
 
 	private void startSearchOutAnim(final Context activity, View view,
 			long duration) {
-		Animation search_top_out = AnimationUtils.loadAnimation(activity,
-				R.anim.search_top_out);
+		Animation search_top_out = AnimationUtils.loadAnimation(activity,R.anim.search_top_out);
 		search_top_out.setDuration(duration);
 		search_top_out.setAnimationListener(new AnimationListener() {
 			@Override
@@ -272,6 +286,11 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 		switch (view.getId()) {
 		case R.id.tv_search_hot_ad:
 			String search_name=((TextView)view).getText().toString();
+			
+			InputMethodManager imm = (InputMethodManager) getActivity()
+					.getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+			
 			startSearch(search_name);
 			postQuery(search_name);
 			for (String li:App.search_list_history) {
@@ -282,11 +301,17 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 			addSearchHistory(search_name);
 			break;
 		case R.id.history_tv:
+			
+			InputMethodManager imm1 = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+	        imm1.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+	
 			startSearch(((TextView)view).getText().toString());
 			
 			break;
 		}
 	}
+	
+	//实现了PuzzyFragemnt中的 interface OnPuzzyClickCallBack
 	@Override
 	public void onPuzzCallBack(String sel_name) {
 		if (!isTrue) {

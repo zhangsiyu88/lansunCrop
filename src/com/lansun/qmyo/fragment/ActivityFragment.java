@@ -680,7 +680,6 @@ public class ActivityFragment extends BaseFragment {
 								shopDataList, R.layout.activity_search_item);
 						
 						lv_activity_list.setAdapter(activityAdapter);
-						
 						expandTabViewButtomLine.setVisibility(View.VISIBLE);//当拿到数据加载到ListView上后，再将下面的Line线条展示出来
 						
 						Log.i("烦死了", "分明能走到setAdapter这儿啊!!!");
@@ -802,7 +801,10 @@ public class ActivityFragment extends BaseFragment {
 				refreshParams.put("service", HODLER_TYPE);
 				
 				isDownChange = true;//下拉更新的标志
-				refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_activity_list);
+				
+				lv_activity_list.removeFooterView(emptyView);
+				refreshCurrentList(refreshUrl, refreshParams, 4,lv_activity_list);
+				PullToRefreshManager.getInstance().footerEnable();
 				
 				/*lv_activity_list.removeView(emptyView);//不能忘了去除底部的emptyView
 				lv_activity_list.invalidate();*/

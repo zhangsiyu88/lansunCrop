@@ -30,6 +30,16 @@ public class Activity implements Serializable {
 	private boolean my_attention;
 	private String collection_time;
 	private ArrayList<CouponsData> coupons;
+	private String share_url ;
+	
+
+	public String getShare_url() {
+		return share_url;
+	}
+
+	public void setShare_url(String share_url) {
+		this.share_url = share_url;
+	}
 
 	public ArrayList<CouponsData> getCoupons() {
 		return coupons;
