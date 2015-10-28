@@ -24,6 +24,8 @@ import com.umeng.socialize.controller.UMSocialService;
 import com.umeng.socialize.controller.listener.SocializeListeners.SnsPostListener;
 import com.umeng.socialize.media.QQShareContent;
 import com.umeng.socialize.media.QZoneShareContent;
+import com.umeng.socialize.media.SinaShareContent;
+import com.umeng.socialize.media.TencentWbShareContent;
 import com.umeng.socialize.media.UMImage;
 import com.umeng.socialize.sso.QZoneSsoHandler;
 import com.umeng.socialize.sso.SinaSsoHandler;
@@ -204,7 +206,7 @@ public class SharedDialog implements OnClickListener {
 		qZoneSsoHandler.addToSocialSDK();
 	}
 	/**
-	 * 设置分享内容
+	 * 设置四大板块的分享内容
 	 */
 	private void setShareContent(String title, String content, String imageUrl,String currentActivityUrl) {
 		/**
@@ -238,13 +240,12 @@ public class SharedDialog implements OnClickListener {
 		}
 		// circleMedia.setShareMedia(uMusic);
 		// circleMedia.setShareMedia(video);
-		
 		mController.setShareMedia(circleMedia);
 
 		/**
 		 * 设置QQ空间分享内容
 		 */
-		QZoneShareContent qzone = new QZoneShareContent();
+/*		QZoneShareContent qzone = new QZoneShareContent();
 		qzone.setShareContent(content);
 		qzone.setTargetUrl(GlobalValue.TARGET_URL);
 		qzone.setTitle(title);
@@ -253,7 +254,7 @@ public class SharedDialog implements OnClickListener {
 			weixinContent.setShareMedia(urlImage);
 		}
 		// qzone.setShareMedia(uMusic);
-		mController.setShareMedia(qzone);
+		mController.setShareMedia(qzone);*/
 
 		// video.setThumb(new UMImage(getActivity(),
 		// BitmapFactory.decodeResource(
@@ -262,12 +263,37 @@ public class SharedDialog implements OnClickListener {
 		/**
 		 * 设置QQ分享
 		 */
-		QQShareContent qqShareContent = new QQShareContent();
+/*		QQShareContent qqShareContent = new QQShareContent();
 		qqShareContent.setShareContent(content);
 		qqShareContent.setTitle(title);
 		// qqShareContent.setShareMedia(image);
 		qqShareContent.setTargetUrl(GlobalValue.TARGET_URL);
-		mController.setShareMedia(qqShareContent);
+		mController.setShareMedia(qqShareContent);*/
+		
+		
+		/**
+		 * 网页版腾讯微博的分享
+		 */
+	    TencentWbShareContent tencentWbShareContent = new TencentWbShareContent();
+	    tencentWbShareContent.setTitle(title);
+	    tencentWbShareContent.setShareContent(content);
+	    if (!TextUtils.isEmpty(imageUrl))
+	    	tencentWbShareContent.setShareImage(new UMImage(this.activity, imageUrl));
+	    tencentWbShareContent.setTargetUrl(currentActivityUrl);//腾讯微博分享的活动链接
+	    this.mController.setShareMedia(tencentWbShareContent);
+	    
+	    
+	    /**
+	     * 网页版新浪微博的分享
+	     */
+	    SinaShareContent sinaShareContent = new SinaShareContent();
+	    sinaShareContent.setTitle(title);
+	    sinaShareContent.setShareContent(content);
+	    if (!TextUtils.isEmpty(imageUrl))
+	    	sinaShareContent.setShareImage(new UMImage(this.activity, imageUrl));
+	    
+	    sinaShareContent.setTargetUrl(currentActivityUrl);//新浪微博分享的活动链接
+	    this.mController.setShareMedia(sinaShareContent);
 	}
 
 	@Override

@@ -33,12 +33,13 @@ public class SecretaryLifeShowFragment extends BaseFragment{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		event = new FragmentEntity();
-		owner_name=App.app.getData("secretary_owner_name")==null?"总裁大人":App.app.getData("secretary_owner_name");
 	}
 	private void initData() {
-		if (App.app.getData("secretary_avatar")!=null) {
-			Log.e("secretary_avatar", App.app.getData("secretary_avatar"));
-			loadPhoto(App.app.getData("secretary_avatar"), iv_secretary_head);
+		if (GlobalValue.mySecretary!=null) {
+			loadPhoto(GlobalValue.mySecretary.getAvatar(), iv_secretary_head);
+			owner_name=GlobalValue.mySecretary.getOwner_name();
+		}else {
+			owner_name="总裁大人";
 		}
 		tv_secretary_answer.setText(owner_name+","+tv_secretary_answer.getText().toString());
 	}

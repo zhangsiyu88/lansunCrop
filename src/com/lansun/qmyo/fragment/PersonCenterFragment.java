@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +21,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -35,6 +38,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.pc.ioc.event.EventBus;
+import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
@@ -50,14 +54,18 @@ import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.HistoryActivity;
 import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CircularImage;
 import com.lansun.qmyo.view.CustomToast;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import com.lansun.qmyo.R;
 
 public class PersonCenterFragment extends BaseFragment {
-
+	private RecyclingImageView iv_activity_back;
 	@InjectAll
 	Views v;
 	private Button carema;
@@ -76,16 +84,34 @@ public class PersonCenterFragment extends BaseFragment {
 
 	protected static final int ACTION_IMAGE_CAPTURE = 2;
 	protected static final int ACTION_IMAGE_PICK = 1;
-
+	private Handler handleOKhttp=new Handler(){
+		public void handleMessage(android.os.Message msg) {
+			switch (msg.what) {
+			case 0:
+				if (dialogpg!=null) {
+					dialogpg.dismiss();
+				}
+				CustomToast.show(activity,"提示", "头像修改成功");
+				break;
+			case 1:
+				if (dialogpg!=null) {
+					dialogpg.dismiss();
+				}
+				CustomToast.show(activity,"提示", "头像修改失败");
+				break;
+			}
+		};
+	};
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_person_cent, null);
+		iv_activity_back=(RecyclingImageView)rootView.findViewById(R.id.iv_activity_back);
 		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
-
+	
 	@InjectInit
 	private void init() {
 		v.fl_comments_right_iv.setVisibility(View.GONE);
@@ -97,7 +123,15 @@ public class PersonCenterFragment extends BaseFragment {
 			loadPhoto(GlobalValue.user.getAvatar(), v.iv_person_center_head);
 		}
 		initTitle(v.tv_activity_title, R.string.person_info, null, 0);
-		
+		iv_activity_back.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				FragmentEntity entity=new FragmentEntity();
+				Fragment fragment=new MineFragment();
+				entity.setFragment(fragment);
+				EventBus.getDefault().post(entity);
+			}
+		});
 	}
 
 	private void click(View view) {
@@ -125,14 +159,14 @@ public class PersonCenterFragment extends BaseFragment {
 			fragment = new EditUserFragment();
 			break;
 		case R.id.tv_person_center_exit://点击退出登录时，要求跳至  登录页_Dick语
-			fragment = new RegisterFragment();
 			GlobalValue.user = null;
 			GlobalValue.isFirst = true;//即为三无状态，那么就需要成为是第一次进入的用户状态，也就会是需要自己加卡那个页面
 			clearTokenAndSercet();
-			Boolean isJustLogin = true;
-			Bundle bundle = new Bundle();
-			bundle.putBoolean("isJustLogin", isJustLogin);
-			fragment.setArguments(bundle);
+			/**
+			 * 2015-10-24修改退出时清楚信息
+			 */
+			GlobalValue.mySecretary=null;
+			fragment = new RegisterFragment();
 			
 			/*back();此处无需back，因为主动跳往登录界面*/
 			break;
@@ -143,7 +177,7 @@ public class PersonCenterFragment extends BaseFragment {
 	}
 
 	private Uri imageUri;
-
+	private ProgressDialog dialogpg;
 	public void upDataHead() {
 		View view = inflater.inflate(R.layout.photo_choose_dialog, null);
 		carema = (Button) view.findViewById(R.id.camera);
@@ -228,22 +262,13 @@ public class PersonCenterFragment extends BaseFragment {
 	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		String path=null;
 		switch (requestCode) {
 		case ACTION_IMAGE_CAPTURE:
 			if (new File(getPath(activity, imageUri)).length() == 0) {
 				return;
 			}
-			String path1 = getPath(activity, imageUri);
-			InternetConfig config = new InternetConfig();
-			config.setKey(0);
-			HashMap<String, Object> head = new HashMap<>();
-			head.put("Authorization",
-					"Bearer " + App.app.getData("access_token"));
-			config.setHead(head);
-			HashMap<String, File> files = new HashMap<>();
-			files.put("avatar", new File(path1));
-			FastHttpHander.ajaxForm(GlobalValue.URL_USER_SAVE, null, files,
-					config, this);
+			path = getPath(activity, imageUri);
 			ImageLoader.getInstance().displayImage(imageUri.toString(),
 					v.iv_person_center_head);
 			break;
@@ -255,40 +280,31 @@ public class PersonCenterFragment extends BaseFragment {
 			if (uri == null) {
 				return;
 			}
-			String path = getPath(activity, uri);
-			InternetConfig config1 = new InternetConfig();
-			config1.setKey(0);
-			HashMap<String, Object> head1 = new HashMap<>();
-			head1.put("Authorization",
-					"Bearer " + App.app.getData("access_token"));
-			config1.setHead(head1);
-			HashMap<String, File> files1 = new HashMap<>();
-			files1.put("avatar", new File(path));
-			FastHttpHander.ajaxForm(GlobalValue.URL_USER_SAVE, null, files1,
-					config1, this);
+			path = getPath(activity, uri);
 			ImageLoader.getInstance().displayImage(uri.toString(),
 					v.iv_person_center_head);
 			break;
 		}
+		File file=new File(path);
+		dialogpg = new ProgressDialog(activity);
+		dialogpg.setMessage("图片上传中...");
+		dialogpg.show();
+		Map<String, String> paramas=new HashMap<>();
+		OkHttp.asyncPost(GlobalValue.URL_USER_SAVE, paramas, file, new Callback() {
+			@Override
+			public void onResponse(Response arg0) throws IOException {
+				if (arg0.isSuccessful()) {
+					GlobalValue.user = Handler_Json.JsonToBean(User.class,arg0.body().string());
+					handleOKhttp.sendEmptyMessage(0);
+				}
+			}
+			@Override
+			public void onFailure(Request arg0, IOException arg1) {
+				handleOKhttp.sendEmptyMessage(1);
+			}
+		});
 		super.onActivityResult(requestCode, resultCode, data);
 	}
-
-	@InjectHttp
-	private void result(ResponseEntity r) {
-		if (r.getStatus() == FastHttp.result_ok) {
-			switch (r.getKey()) {
-			case 0:// 上传成功
-				GlobalValue.user = Handler_Json.JsonToBean(User.class,
-						r.getContentAsString());
-				CustomToast.show(activity, getString(R.string.tip), "头像上传成功");
-				break;
-			}
-		} else {
-			CustomToast.show(activity, "网络故障", "网络错误");
-		}
-
-	}
-
 	/**
 	 * 检测相机是否可用
 	 * 

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.zip.Inflater;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 
 import com.android.pc.ioc.adapter.AbstractWheelTextAdapter;
 import com.android.pc.ioc.adapter.ArrayWheelAdapter;
+
 import com.android.pc.ioc.adapter.WheelViewAdapter;
 import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.db.sqlite.Selector;
@@ -91,9 +93,24 @@ public class EditUserAddressFragment extends BaseFragment {
 		v.fl_comments_right_iv.setVisibility(View.GONE);
 		v.tv_activity_shared.setVisibility(View.GONE);
 		initTitle(v.tv_activity_title, R.string.edit_address, null, 0);
-	
-		// 加载城市信息
+	   
+		pd.show();
+		
 		loadCity();
+		
+		// 加载城市信息
+		/*new Thread(new Runnable() {
+			public void run() {
+				try{
+					//初始化省市区
+					loadCity();
+				}catch(Exception e){
+					CustomToast.show(activity, "初始化省市区出现异常", "异常已被抓住");
+					e.printStackTrace();
+				}
+			}
+		}).start();*/
+	    
 	}
 	
 
@@ -116,9 +133,6 @@ public class EditUserAddressFragment extends BaseFragment {
 		List<Address> province = Ioc.getIoc()
 				.getDb(activity.getCacheDir().getPath(), "province")
 				.findAll(provinceSelector);
-		if(province==null){
-			System.out.println("没拿到全是空的!!!");
-		}
 		
 		List<Address2> city = Ioc.getIoc()
 				.getDb(activity.getCacheDir().getPath(), "city")
@@ -127,24 +141,32 @@ public class EditUserAddressFragment extends BaseFragment {
 				.getDb(activity.getCacheDir().getPath(), "area")
 				.findAll(areaSelector);
 		
-		//初始化省市区
 		initCityData(province, city, area);
+		
+	/*	try{
+			//初始化省市区
+			initCityData(province, city, area);
+		}catch(Exception e){
+			CustomToast.show(activity, "初始化省市区出现异常", "异常已被抓住");
+			e.printStackTrace();
+		}*/
 	}
 
 	/**
 	 * 初始化省
 	 * @param province
 	 */
-	private void initCityData(List<Address> province, List<Address2> city,
-			List<Address3> area) {
+	private void initCityData(List<Address> province, List<Address2> city,List<Address3> area) {
+		Log.i("", "走到了InitCityData()这个方法");
 		provinces = new String[province.size()];
 		for (int i = 0; i < province.size(); i++) {
 			if (cityEnd != city.size()) {
-				initCity(province.get(i).getName(), i, province.get(i)
-						.getCityCount(), city, area);
+				initCity(province.get(i).getName(), i, province.get(i).getCityCount(), city, area);
 			}
 			provinces[i] = province.get(i).getName();
 		}
+		
+		
 	}
 
 	/**
@@ -155,6 +177,8 @@ public class EditUserAddressFragment extends BaseFragment {
 	 */
 	private void initCity(String pName, int index, int size,
 			List<Address2> city, List<Address3> area) {
+		
+		Log.i("", "走到了InitCity()这个方法");
 		if (city != null) {
 			ArrayList<String> citys = new ArrayList<String>();
 			for (int i = 0; i < size; i++) {
@@ -176,6 +200,7 @@ public class EditUserAddressFragment extends BaseFragment {
 	 */
 	private void initArea(String cityName, int pIndex, int cIndex, int size,
 			List<Address3> area) {
+		Log.i("", "走到了InitCityArea()这个方法");
 		if (area != null) {
 			ArrayList<String> areas = new ArrayList<String>();
 			for (int i = 0; i < size; i++) {
@@ -185,8 +210,12 @@ public class EditUserAddressFragment extends BaseFragment {
 			}
 			areaMaps.put(cityName, areas);
 		}
+		
+		this.pd.dismiss();
 	}
 
+	
+	
 	private void click(View view) {
 		switch (view.getId()) {
 		case R.id.rl_select_city:
@@ -242,17 +271,26 @@ public class EditUserAddressFragment extends BaseFragment {
 	private String cityTxt = "";
 	private Dialog dialog;
 
+	
+	//弹出城市选择框
 	public void selectCity() {
-
+		CustomToast.show(activity, "证明点击进入城市选择的模块", "城市选择进行");
+		/*inflater = LayoutInflater.from(activity);*/
+		
 		View view = inflater.inflate(R.layout.city_choose_dialog, null);
-		wv_wheelcity_country = (WheelView) view
-				.findViewById(R.id.wv_wheelcity_country);
-		wv_wheelcity_city = (WheelView) view
-				.findViewById(R.id.wv_wheelcity_city);
-		wv_wheelcity_ccity = (WheelView) view
-				.findViewById(R.id.wv_wheelcity_ccity);
-		tv_city_accomplish = (TextView) view
-				.findViewById(R.id.tv_city_accomplish);
+		
+		
+		Log.i("TAGTAGTAGTAGTAG","findViewbyId之前");
+		
+		//下面三个WheelView的对象已经findView到了
+		wv_wheelcity_country = (WheelView) view.findViewById(R.id.wv_wheelcity_country);
+		wv_wheelcity_city = (WheelView) view.findViewById(R.id.wv_wheelcity_city);
+		wv_wheelcity_ccity = (WheelView) view.findViewById(R.id.wv_wheelcity_ccity);
+		Log.i("TAGTAGTAGTAGTAG","findViewbyId之后");
+		
+		
+		tv_city_accomplish = (TextView) view.findViewById(R.id.tv_city_accomplish);//提交二字
+		
 		tv_city_accomplish.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -261,6 +299,8 @@ public class EditUserAddressFragment extends BaseFragment {
 				dialog.dismiss();
 			}
 		});
+		
+		Log.i("TAGTAGTAGTAGTAG","wheelCity内容展现之前");
 		wv_wheelcity_country.setVisibleItems(3);
 		wv_wheelcity_country.setViewAdapter(new CountryAdapter(activity));
 		wv_wheelcity_city.setVisibleItems(3);
@@ -365,10 +405,12 @@ public class EditUserAddressFragment extends BaseFragment {
 		if (cityMaps.get(pName) != null && cityMaps.get(pName).size() > 0) {
 			String[] array = new String[cityMaps.get(pName).size()];
 			cityMaps.get(pName).toArray(array);
-			ArrayWheelAdapter<String> adapter = new ArrayWheelAdapter<String>(
-					activity, array);
-			//adapter.setTextSize(18);
-			city.setViewAdapter((WheelViewAdapter) adapter);
+			
+			ArrayWheelAdapter<String> adapter = new ArrayWheelAdapter<String>(activity, array);
+			
+			adapter.setTextSize(18);
+			city.setViewAdapter(adapter);
+			
 			city.setCurrentItem(0);
 			cityMaps.get(pName);
 		} else {
@@ -383,10 +425,11 @@ public class EditUserAddressFragment extends BaseFragment {
 		if (areaMaps.get(cName) != null && areaMaps.get(cName).size() > 0) {
 			String[] array = new String[areaMaps.get(cName).size()];
 			areaMaps.get(cName).toArray(array);
-			ArrayWheelAdapter<String> adapter = new ArrayWheelAdapter<String>(
-					activity, array);
-			//adapter.setTextSize(18);
-			city.setViewAdapter((WheelViewAdapter) adapter);
+			ArrayWheelAdapter<String> adapter = new ArrayWheelAdapter<String>(activity, array);
+			
+		    adapter.setTextSize(18);
+			city.setViewAdapter(adapter);
+			
 			city.setCurrentItem(0);
 		} else {
 			city.setViewAdapter(null);

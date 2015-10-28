@@ -83,6 +83,16 @@ public class RegisterFragment extends BaseFragment {
 	private ErrorInfo errorInfo;
 	private ErrorInfo errorInfo2;
 	private boolean isHasExpSecretWhenClickToRegister = true;
+	private boolean isJustLogin;
+	private boolean isFromMyBankcardFragToRigisterFrag = false;
+	
+	
+	private boolean mIsFromHome = false;
+	private boolean mIsFromEightPart = false;
+	private boolean mIsFromNewPart = false;
+	private boolean mIsFromRigisterFragToMyBankcardFrag = false;
+	private int type;
+	private int mInitType;
 
 	class Views {
 		private View fl_register_recode, rl_register_dialog, fl_register_pwd;
@@ -110,9 +120,12 @@ public class RegisterFragment extends BaseFragment {
 		View rootView = inflater.inflate(R.layout.activity_register, null);
 		Handler_Inject.injectFragment(this, rootView);
 		
-		activity.getWindow().setSoftInputMode(
+		/*activity.getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
-						| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+						| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);*/
+		
+		activity.getWindow().setSoftInputMode(
+				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 		
 		/*SpannableString ss = new SpannableString("输入密码");
 		AbsoluteSizeSpan ass = new AbsoluteSizeSpan(7,true);
@@ -130,8 +143,23 @@ public class RegisterFragment extends BaseFragment {
 		//去获取传递进来的args值，下面对应作出判断和回应
 		if (getArguments() != null) {
 			boolean isReset = getArguments().getBoolean("isReset");
-			boolean isJustLogin = getArguments().getBoolean("isJustLogin");
+			isJustLogin = getArguments().getBoolean("isJustLogin");
 			boolean isResetPsw = getArguments().getBoolean("isResetPsw");
+			isFromMyBankcardFragToRigisterFrag  = getArguments().getBoolean("isFromMyBankcardFragToRigisterFrag");
+		
+			
+			boolean isFromHome = getArguments().getBoolean("isFromHome");
+			boolean isFromEightPart = getArguments().getBoolean("isFromEightPart");
+			boolean isFromNewPart = getArguments().getBoolean("isFromNewPart");
+			boolean isFromRigisterFragToMyBankcardFrag = getArguments().getBoolean("isFromRigisterFragToMyBankcardFrag");
+			int initType = getArguments().getInt("type");
+			
+			mIsFromHome = isFromHome;
+			mIsFromEightPart = isFromEightPart;
+			mIsFromNewPart = isFromNewPart;
+			mInitType = initType;
+			
+			
 			if (isReset) {
 				v.fl_register_pwd.setVisibility(View.GONE);
 				v.fl_register_recode.setVisibility(View.VISIBLE);
@@ -161,6 +189,7 @@ public class RegisterFragment extends BaseFragment {
 			}
 			
 			
+			
 			/*SpannableString ss = new SpannableString("输入密码");
 			AbsoluteSizeSpan ass = new AbsoluteSizeSpan(7,true);
 			ss.setSpan(ass, 0, ss.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -174,6 +203,31 @@ public class RegisterFragment extends BaseFragment {
 	 */
 	/*@InjectMethod(value = { @InjectListener(ids = { R.id.iv_activity_back }, listeners = { OnClick.class }) })*/
 	protected void back() {
+		
+		if(isFromMyBankcardFragToRigisterFrag){
+			MineBankcardFragment fragment = new MineBankcardFragment();
+			Bundle bundle = new Bundle();
+	
+			if(mIsFromHome){                                                //从HomeFrag--->MineBankcardFrag--->RegisterFrag ,带上需要的isFromHomeFragment
+				bundle.putBoolean("isFromHome", mIsFromHome);
+			}else if(mIsFromEightPart){                                     //从EightPartsFrag--->MineBankcardFrag--->RegisterFrag 
+				bundle.putBoolean("isFromEightPart", mIsFromEightPart);
+				bundle.putInt("type", mInitType);
+			}else if(mIsFromNewPart){                                       //从NewPartsFrag--->MineBankcardFrag--->RegisterFrag 
+				bundle.putBoolean("isFromNewPart", mIsFromNewPart);
+				bundle.putBoolean("IsNew", true);
+				bundle.putInt("type", R.string.new_exposure);
+			}
+			bundle.putBoolean("isFromRigisterFragToMyBankcardFrag", true);
+			
+			fragment.setArguments(bundle);
+			FragmentEntity entity = new FragmentEntity();
+			entity.setFragment(fragment);
+			EventBus.getDefault().post(entity);
+			return;
+		}
+		
+		
 		if(GlobalValue.user==null && GlobalValue.isFirst){
 			ExperienceSearchFragment fragment = new ExperienceSearchFragment();
 			FragmentEntity entity = new FragmentEntity();
@@ -482,33 +536,24 @@ public class RegisterFragment extends BaseFragment {
 				App.app.setData("access_token", token.getToken());
 			    /*back();*/
 				
-				pd.dismiss();
-				pd = null;
-				
-				/*back();*///先于弹窗提醒之前,将界面跳转至上一页(由体验用户去登陆时)
 			
 				
-				if(isHasExpSecretWhenClickToRegister){//点击注册时是拥有临时secret的 ,说明是在体验状态下试图去实现登录用户的操作，那么需要登录成功后进入之前跳入的那一页
-			      /*HomeFragment homeFragment = new HomeFragment();
-					FragmentEntity fEntity = new FragmentEntity();
-					fEntity.setFragment(homeFragment);
-					EventBus.getDefault().post(fEntity);*/
-					back();
-					
-				}else{//点击注册时是不曾    拥有临时secret的 ,那么需跳转至银行卡搜索页添加一张卡后，再跳入首页
-					SearchBankCardFragment homeFragment = new SearchBankCardFragment();
-					FragmentEntity fEntity = new FragmentEntity();
-					fEntity.setFragment(homeFragment);
-					EventBus.getDefault().post(fEntity);
-				}
+				InternetConfig config1 = new InternetConfig();
+				config1.setKey(6);
+				HashMap<String, Object> head = new HashMap<>();
+				head.put("Authorization", "Bearer " + token.getToken());
+				config1.setHead(head);
+				FastHttpHander.ajaxGet(GlobalValue.URL_FRESHEN_USER, config1, this);
+				//App.app.setData("access_token", token.getToken());
+				
+				/*back();*///先于弹窗提醒之前,将界面跳转至上一页(由体验用户去登陆时)
+
 				
 				/*backandinitMine();//跳转并刷新MineFragemnt*/				
 				break;
 			case 4:
-				// GlobalValue.user = Handler_Json.JsonToBean(User.class,
-				// r.getContentAsString());
+				// GlobalValue.user = Handler_Json.JsonToBean(User.class,r.getContentAsString());
 				if(r.getContentAsString().contains("true")){
-					
 					CustomToast.show(activity, "已绑定推送服务","小迈会为您提供更多惊喜哦");
 				}
 				break;
@@ -526,6 +571,35 @@ public class RegisterFragment extends BaseFragment {
 					CustomToast.show(activity, R.string.tip,R.string.code_faild);
 				}
 
+				break;
+			case 6:
+				GlobalValue.user = Handler_Json.JsonToBean(User.class,r.getContentAsString());
+				pd.dismiss();
+				pd = null;
+				
+				if(isHasExpSecretWhenClickToRegister){//点击注册时是拥有临时secret的 ,说明是在体验状态下试图去实现登录用户的操作，那么需要登录成功后进入之前跳入的那一页
+				       if(isJustLogin){
+				    	   try{
+				    		    HomeFragment homeFragment = new HomeFragment();
+								FragmentEntity fEntity = new FragmentEntity();
+								fEntity.setFragment(homeFragment);
+								EventBus.getDefault().post(fEntity);
+				    	   }catch(Exception e){
+				    		   CustomToast.show(activity, "抓异常啦!", "异常已被清除!");
+				    		   HomeFragment homeFragment = new HomeFragment();
+								FragmentEntity fEntity = new FragmentEntity();
+								fEntity.setFragment(homeFragment);
+								EventBus.getDefault().post(fEntity);
+				    	   }
+				       }else{
+				    		back();
+				       }
+					}else{//点击注册时是不曾    拥有临时secret的 ,那么需跳转至银行卡搜索页添加一张卡后，再跳入首页
+						SearchBankCardFragment homeFragment = new SearchBankCardFragment();
+						FragmentEntity fEntity = new FragmentEntity();
+						fEntity.setFragment(homeFragment);
+						EventBus.getDefault().post(fEntity);
+					}
 				break;
 			}
 		}

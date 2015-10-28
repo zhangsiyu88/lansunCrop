@@ -3,19 +3,26 @@ package com.lansun.qmyo.fragment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.zip.Inflater;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ScrollingView;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,8 +39,11 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +64,11 @@ import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.ioc.view.listener.OnItemClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnPullEventListener;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.State;
+import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
 import com.lansun.qmyo.adapter.HomeListAdapter;
 import com.lansun.qmyo.adapter.HomePagerAdapter;
 import com.lansun.qmyo.adapter.SearchAdapter;
@@ -74,10 +89,10 @@ import com.lansun.qmyo.R;
 /**
  * 主界面
  * 
- * @author 李东
+ * @author Yeun
  * 
  */
-public class HomeFragment extends BaseFragment {
+@SuppressLint("InflateParams") public class HomeFragment extends BaseFragment {
 
 	@InjectAll
 	Views v;
@@ -89,20 +104,36 @@ public class HomeFragment extends BaseFragment {
 	private boolean isChina = true;
 	public boolean mFromBankCardFragment = false;
 
-	@InjectView(binders = { @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick") }, pull = true)
+	/**
+	 * LoonAndroid框架规定，上拉和下拉刷新只能针对ListView进行设置，其他的View类型不可识别
+	 */
+	@InjectView(binders = { @InjectBinder(listeners ={ OnItemClick.class }, method = "itemClick")})  //, pull = true
 	private ListView lv_home_list;
+	
+   /* @InjectView(pull = true)
+	private ScrollView  sv_homefrag;*/
+    
+    
+    
+    @InjectView
+	private PullToRefreshScrollView sv_homefrag;
+	
+	/*@InjectView(pull = true)
+	private  LinearLayout ll_homefrag;*/
+	
+	
 
 	class Views {
 		@InjectBinder(method = "click", listeners = OnClick.class)
 		private RelativeLayout fl_home_top_menu, rl_top_r_top_menu, rl_bg,
-				rl_top_bg;
+		rl_top_bg;
 		@InjectBinder(method = "click", listeners = OnClick.class)
 		private View bottom_secretary, bottom_found, bottom_mine,
-				iv_home_location, iv_top_location, ll_search;
+		iv_home_location, iv_top_location, ll_search;
 		private TextView tv_home_location, tv_home_top_location;
 		private RecyclingImageView iv_home_icon;
 		private TextView tv_home_icon, tv_home_experience,
-				tv_top_home_experience;
+		tv_top_home_experience;
 		private View iv_card, iv_top_card;
 		@InjectBinder(method = "click", listeners = OnClick.class)
 		private EditText et_home_search;
@@ -119,7 +150,7 @@ public class HomeFragment extends BaseFragment {
 	}
 
 	public HomeFragment() {
-		
+
 	}
 
 	@Override
@@ -129,7 +160,7 @@ public class HomeFragment extends BaseFragment {
 		v.iv_home_icon.setPressed(true);//底部的首页定位button
 		isPlay = false;
 		v.tv_home_icon.setTextColor(getResources().getColor(R.color.app_green1));
-		
+
 		/*v.rl_bg.setPressed(true);
 		v.rl_top_bg.setPressed(true);*/
 		super.onResume();
@@ -147,7 +178,7 @@ public class HomeFragment extends BaseFragment {
 		isPlay = false;
 		v.iv_home_icon.setPressed(true);
 		v.tv_home_icon.setTextColor(getResources().getColor(R.color.app_green1));
-		
+
 		/*v.rl_bg.setPressed(true);
 		v.rl_top_bg.setPressed(true);*/
 	}
@@ -161,21 +192,24 @@ public class HomeFragment extends BaseFragment {
 	 * @param arg3
 	 */
 	private void itemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {//args2 == position
-		
+
 		Fragment fragment;
 		if (isChina) {//--> 选择是中国的地域情况下,打开活动详情页面
-			HashMap<String, Object> data = shopDataList.get(arg2 - 1);
+			/*HashMap<String, Object> data = shopDataList.get(arg2 - 1);*/
+			//arg2的参数应为position，上步故意将位置向下偏移
+			HashMap<String, Object> data = shopDataList.get(arg2);
+			
 			fragment = new ActivityDetailFragment();
 			Bundle args = new Bundle();
 			args.putString("shopId", data.get("shopId").toString());
 			args.putString("activityId", data.get("activityId").toString());
-			
+
 			String  shopId = args.getString("shopId");
 			String  activityId = args.getString("activityId");
 			Log.i("你点的位置上的Item","门店Id: "+shopId +"活动Id: "+activityId );
 			fragment.setArguments(args);
 		} else {
-			HomePromoteData data = promoteList.getData().get(arg2 - 1);
+			HomePromoteData data = promoteList.getData().get(arg2 - 1);//----------------------这儿也需要注意，将来位置需要替换
 			fragment = new PromoteDetailFragment();
 			Bundle args = new Bundle();
 			args.putSerializable("promote", data);
@@ -188,6 +222,37 @@ public class HomeFragment extends BaseFragment {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		LayoutInflater inflater  = LayoutInflater.from(activity);
+		//TODO
+		rootView = inflater.inflate(R.layout.activity_home, null, false);
+		head =  rootView.findViewById(R.id.head_banner);
+		Handler_Inject.injectFragment(this, rootView);//当前的fragment里面使用 自动去注入组件
+		
+		sv_homefrag = (PullToRefreshScrollView) rootView.findViewById(R.id.sv_homefrag);
+		sv_homefrag.scrollTo(0, 0);
+		/*sv_homefrag.setPullToRefreshEnabled(false);*/
+		/*sv_homefrag.setOnRefreshListener(new OnRefreshListener<ScrollView>() {
+			@Override
+			public void onRefresh(PullToRefreshBase<ScrollView> refreshView) {
+				new GetDataTask().execute();				
+			}
+		});*/
+		sv_homefrag.setOnPullEventListener(new OnPullEventListener<ScrollView>(){
+
+
+			@Override
+			public void onPullEvent(PullToRefreshBase<ScrollView> refreshView,
+					State state, Mode direction) {
+				new GetDataTask().execute();
+			}
+			
+		});
+
+		mScrollView = sv_homefrag.getRefreshableView();
+		
+		
+		
+		
 		
 		
 		if (TextUtils.isEmpty(App.app.getData("exp_secret"))
@@ -214,13 +279,17 @@ public class HomeFragment extends BaseFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		this.inflater = inflater;
-		View rootView = inflater.inflate(R.layout.activity_home, null, false);
-		Handler_Inject.injectFragment(this, rootView);
-		activity.getWindow().setSoftInputMode(
-				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-						| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+		//TODO
+		
+		/*this.inflater = inflater;
+		rootView = inflater.inflate(R.layout.activity_home, null, false);
+		head =  rootView.findViewById(R.id.head_banner);*/
+		/*Handler_Inject.injectFragment(this, rootView);*/
+		
+		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 		v.tv_home_icon.setTextColor(getResources().getColor(R.color.app_green2));
+		
 		if(mFromBankCardFragment){
 			v.rl_bg.setPressed(true);//这是“体验”二字后面的背景绿色和灰色选择器，那么为了取消点击效果，则在此将选择器设置为  点击和非点击都为 统一效果
 			v.rl_top_bg.setPressed(true);
@@ -230,6 +299,34 @@ public class HomeFragment extends BaseFragment {
 			v.iv_top_card.setVisibility(View.GONE);
 			mFromBankCardFragment = false;//使者用完后，要马上清除
 		}
+		
+		
+		/*final SwipeRefreshLayout refreshlayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
+		//初始化刷新头
+		final TextView tv = (TextView)refreshlayout.findViewById(R.id.textView1);
+		
+		Log.i("", refreshlayout==null?"为空":"不为空");
+        //设置刷新时动画的颜色，可以设置4个
+		refreshlayout.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
+		refreshlayout.setOnRefreshListener(new OnRefreshListener() {
+            
+            @Override
+            public void onRefresh() {
+                tv.setText("正在刷新");
+                
+                new Handler().postDelayed(new Runnable() {
+                    
+                    @Override
+                    public void run() {
+                        tv.setText("刷新完成");
+                        refreshlayout.setRefreshing(false);
+                    }
+                }, 6000);
+            }
+        });*/
+		
+		
+		
 		return rootView;
 	}
 	boolean canscoll = false;
@@ -245,23 +342,23 @@ public class HomeFragment extends BaseFragment {
 			event.setFragment(fragment);
 			EventBus.getDefault().post(event);
 			return;
-			
+
 		} else {//可能我有access_token,可能我不是第一次进来
 			v.et_home_search.setHint(R.string.please_enter_search_brand);
 			if ("true".equals(App.app.getData("isExperience"))) {//我拿到了exp_sercret并且也拿到了转换后的access_token ,而且又添加了某张银行卡，那么我就成为了体验用户
 				Log.i("是不是体验用户？",App.app.getData("isExperience"));
 				v.rl_bg.setPressed(true);
 				v.rl_top_bg.setPressed(true);
-				
+
 				//强行将体验字体后面的背景设置为 绿色！
 				v.rl_bg.setBackgroundResource(R.drawable.circle_background_green);
 				v.rl_top_bg.setBackgroundResource(R.drawable.circle_background_green);
-				
+
 				v.tv_home_experience.setVisibility(View.VISIBLE);
 				v.tv_top_home_experience.setVisibility(View.VISIBLE);
 				v.iv_card.setVisibility(View.GONE);
 				v.iv_top_card.setVisibility(View.GONE);
-				
+
 			} else {//如果不是体验用户,即我已是注册登录用户
 				v.iv_card.setVisibility(View.VISIBLE);//原本右边银行卡可见
 				v.iv_top_card.setVisibility(View.VISIBLE);//滑动出现的右边银行卡可见
@@ -275,12 +372,19 @@ public class HomeFragment extends BaseFragment {
 				v.tv_home_location.setText(getSelectCity()[1]);
 				v.tv_home_top_location.setText(getSelectCity()[1]);
 			}
+
+			/*head = inflater.inflate(R.layout.activity_home_banner, null);*/
 			
-			head = inflater.inflate(R.layout.activity_home_banner, null);
-		
+
 			/*尝试在head被充起来的瞬间就将其放到ListView的头上*/
-			lv_home_list.addHeaderView(head, null, true);
+			/*lv_home_list.addHeaderView(head, null, true);*/
 			
+			
+			
+			
+			Log.i("","head的值为： "+head.toString());
+			
+
 			ViewTreeObserver vto = head.getViewTreeObserver();
 			vto.addOnScrollChangedListener(new OnScrollChangedListener() {
 
@@ -291,7 +395,11 @@ public class HomeFragment extends BaseFragment {
 					v.iv_home_location.getLocationInWindow(location);
 					int hiddenY = location[1] + v.iv_home_location.getHeight();
 
-					View searchView = lv_home_list.findViewById(R.id.ll_search);
+					/**
+					 * View searchView = lv_home_list.findViewById(R.id.ll_search);
+					 * */
+					
+					View searchView = head.findViewById(R.id.ll_search);//在head这个View中拿到对应的搜索栏对象
 					searchView.setOnClickListener(new OnClickListener() {
 
 						@Override
@@ -311,7 +419,7 @@ public class HomeFragment extends BaseFragment {
 							isPlay = false;
 							Animation search_top_in = AnimationUtils.loadAnimation(activity, R.anim.home_top_in);
 							AnimUtils.startTopInAnim(activity,v.fl_home_top_menu);
-							
+
 							v.rl_top_r_top_menu.setVisibility(View.GONE);
 						}
 					} else {
@@ -323,9 +431,9 @@ public class HomeFragment extends BaseFragment {
 					}
 				}
 			});
-			
-			
-			
+
+
+
 			/* 优惠券的点击监听
 			 */
 			ll_activity_home_yhq = head.findViewById(R.id.ll_activity_home_yhq);
@@ -365,10 +473,10 @@ public class HomeFragment extends BaseFragment {
 					EventBus.getDefault().post(event);
 				}
 			});
-			
-			
+
+
 			iv_home_ad = (ImageView) head.findViewById(R.id.iv_home_ad);
-			
+
 			/* search栏的点击监听
 			 */
 			tv_home_search = head.findViewById(R.id.tv_home_search);
@@ -382,40 +490,42 @@ public class HomeFragment extends BaseFragment {
 					EventBus.getDefault().post(event);
 				}
 			});
-			
-			
+
+
 			InternetConfig config = new InternetConfig();
 			config.setKey(0);
 			/**
 			 * 去获取数据内容,暂关闭依据定位地点获取数据的方法
 			 FastHttpHander.ajaxGet(GlobalValue.URL_HOME_AD + getSelectCity()[0], config, this);*/
+			Log.i("TAGTAGTAGTAGTAG", "准备向服务器发起请求，等待回执");
 			FastHttpHander.ajaxGet(GlobalValue.URL_HOME_AD + 310000, config, this);//已去访问头部的数据
+			Log.i("TAGTAGTAGTAGTAG", "已经向服务器发起请求，等待回执");
 			//定值去访问页面顶头上的图
-			
-			
+
+
 			refreshParams = new LinkedHashMap<String, String>();
-			
+
 			if (Character.isLetter(getSelectCity()[0].charAt(0))) {//-->目前是走不到的
 				isChina = false;
 				refreshParams = null;
-				
+
 				/*暂时关闭依据定位地点刷新底部列表的操作
 				 * refreshUrl = String.format(GlobalValue.URL_ARTICLE_PROMOTE,getSelectCity()[0]);*/
 				refreshUrl = String.format(GlobalValue.URL_ARTICLE_PROMOTE,310000);
 				//当是极文的时候,需要加入个footerView
 				View footView = inflater.inflate(R.layout.home_item_bottom,null);
 				lv_home_list.addFooterView(footView);
-				
+
 			} else {
 				refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
 				// TODO 默认上海 开发板
-				
+
 				/*refreshParams.put("location", "31.293688,121.524448");*/
 				refreshParams.put("location", String.valueOf(GlobalValue.gps.getWgLat()+","+ GlobalValue.gps.getWgLon()));
 				/* refreshParams.put("site", getSelectCity()[0]);*/
 				//-----注意：我在这个地方手动设置了刷新列表的地点参数，需要注意在后面将其改回来
 				/*refreshParams.put("site", "310000");*/ 
-				
+
 				refreshParams.put("site", getSelectCity()[0]);
 				/*refreshParams.put("intelligent", "recommend");*/
 				refreshParams.put("intelligent", "home");
@@ -427,12 +537,19 @@ public class HomeFragment extends BaseFragment {
 
 			/*移至head从xml被填充后就立马addHeaderView进去
 			 *lv_home_list.addHeaderView(head, null, true);*/
+
+			/**
+			 * 下面两个点获取不正常
+			 */
+			/*iv_point = (ImageView) lv_home_list.findViewById(R.id.iv_point);
+			iv_point2 = (ImageView) lv_home_list.findViewById(R.id.iv_point2);*/
 			
-			iv_point = (ImageView) lv_home_list.findViewById(R.id.iv_point);
-			iv_point2 = (ImageView) lv_home_list.findViewById(R.id.iv_point2);
+			iv_point = (ImageView) head.findViewById(R.id.iv_point);
+			iv_point2 = (ImageView) head.findViewById(R.id.iv_point2);
 
 			//放了个ViewPager的头在ListView上面
-			final ViewPager banner = (ViewPager) lv_home_list.findViewById(R.id.vp_home_pager);
+			/*final ViewPager banner = (ViewPager) lv_home_list.findViewById(R.id.vp_home_pager);*/
+			final ViewPager banner = (ViewPager) head.findViewById(R.id.vp_home_pager);
 
 			// banner.setOnTouchListener(new OnTouchListener() {
 			// @Override
@@ -454,8 +571,8 @@ public class HomeFragment extends BaseFragment {
 			// return canscoll;
 			// }
 			// });
-			
-			
+
+
 			/*
 			 * 这个HomePagerAdapter真是别有洞天啊！里面设计了一系列的点击跳转操作和事件的监听
 			 */
@@ -504,6 +621,8 @@ public class HomeFragment extends BaseFragment {
 	private HomeListAdapter promoteAdapter;
 	private String photoUrl;
 	private boolean isFirstRequest = true;
+	private View rootView;
+	private ScrollView mScrollView;
 
 	public int getLocation(View v) {
 		int[] loc = new int[4];
@@ -527,11 +646,11 @@ public class HomeFragment extends BaseFragment {
 
 	@InjectHttp
 	private void result(ResponseEntity r) {
-		
+
 		/*PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 		PullToRefreshManager.getInstance().onFooterRefreshComplete();*/
-		
-		
+
+
 		if (r.getStatus() == FastHttp.result_ok) {
 			endProgress();
 			switch (r.getKey()) {
@@ -541,32 +660,34 @@ public class HomeFragment extends BaseFragment {
 					//在init中发送了个请求,先将listView的头部加载出来显示,实际上这里的shopDataList中是空数据
 					//防止fragment回来时被发现shopDataList中还有值,那么会先出现刚刚回来展示的数据居然还多于后面刷新后的数据列表
 					//shopDataList.clear();
-					
+
+					Log.i("TAGTAGTAGTAGTAG", "前去服务器已经拿回了值");
 					JSONObject obj = new JSONObject(r.getContentAsString());
 					photoUrl = obj.get("photo").toString();
 					//loadPhoto(photoUrl, iv_home_ad);
-					for(HashMap<String, Object> shopData: shopDataList){
+					
+				/*	for(HashMap<String, Object> shopData: shopDataList){
 						System.out.println(shopData.toString());
 					}
-					
+
 					adapter = new SearchAdapter(lv_home_list, shopDataList, R.layout.activity_search_item);
-			        lv_home_list.setAdapter(adapter);
-			        adapter = null;
-			        
-				   //}
+					lv_home_list.setAdapter(adapter);
+					adapter = null;*/
+
+					//}
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 				loadPhoto(photoUrl, iv_home_ad);
-				
-				
-				
+
+
+
 				break;
 			case 1:// 极文列表
-				
+
 				if (!isChina) {
 					promoteList = Handler_Json.JsonToBean(HomePromote.class,r.getContentAsString());
-					
+
 					if (promoteList.getData() != null) {
 						ArrayList<HashMap<String, String>> dataList = new ArrayList<HashMap<String, String>>();
 						for (HomePromoteData data : promoteList.getData()) {
@@ -583,11 +704,11 @@ public class HomeFragment extends BaseFragment {
 						if (promoteAdapter == null) {//第一次进入,Adapter为null,将其设置到ListView对象上去
 							promoteAdapter = new HomeListAdapter(lv_home_list,
 									dataList, R.layout.home_item);
-							
+
 							lv_home_list.setAdapter(promoteAdapter);
-							
+
 						} else {
-							
+
 							PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 							PullToRefreshManager.getInstance().onFooterRefreshComplete();
 							promoteAdapter.notifyDataSetChanged();
@@ -599,39 +720,68 @@ public class HomeFragment extends BaseFragment {
 				} else {//如果选择的城市是China的城市,换句话说,常规进来的界面是走下面的代码的
 
 					list = Handler_Json.JsonToBean(ActivityList.class,r.getContentAsString());
-					
+
 					if (list.getData() != null) {
 						for (ActivityListData data : list.getData()) {
 							HashMap<String, Object> map = new HashMap<String, Object>();
-							
+
 							map.put("tv_search_activity_name", data.getShop().getName());
-							
+
 							map.put("tv_search_activity_distance", data.getShop().getDistance());
-							
+
 							map.put("tv_search_activity_desc", data.getActivity().getName());
-							
+
 							map.put("iv_search_activity_head", data.getActivity().getPhoto());
-							
+
 							map.put("activityId", data.getActivity().getId());
 							map.put("shopId", data.getShop().getId());
 							map.put("tv_search_tag", data.getActivity().getTag());
-							
+
 							map.put("icons", data.getActivity().getCategory());//拿到category的icons列表
-							
+
 							shopDataList.add(map);//店铺的数据源List
 						}
 						if (adapter == null) {
 							adapter = new SearchAdapter(lv_home_list,shopDataList, R.layout.activity_search_item);
 							lv_home_list.setAdapter(adapter);
+							
+							setListViewHeightBasedOnChildren(lv_home_list);   
+							
+							/* public void setListViewHeightBasedOnChildren(ListView listView) {   
+							        // 获取ListView对应的Adapter   
+							        ListAdapter listAdapter = listView.getAdapter();   
+							        if (listAdapter == null) {   
+							            return;   
+							        }   
+							   
+							        int totalHeight = 0;   
+							        for (int i = 0, len = listAdapter.getCount(); i < len; i++) {   
+							            // listAdapter.getCount()返回数据项的数目   
+							            View listItem = listAdapter.getView(i, null, listView);   
+							            // 计算子项View 的宽高   
+							            listItem.measure(0, 0);    
+							            // 统计所有子项的总高度   
+							            totalHeight += listItem.getMeasuredHeight();    
+							        }   
+							   
+							        ViewGroup.LayoutParams params = listView.getLayoutParams();   
+							        params.height = totalHeight+ (listView.getDividerHeight() * (listAdapter.getCount() - 1));   
+							        // listView.getDividerHeight()获取子项间分隔符占用的高度   
+							        // params.height最后得到整个ListView完整显示需要的高度   
+							        listView.setLayoutParams(params);   
+							    }   */
 						} else {
 							adapter.notifyDataSetChanged();
+							lv_home_list.setAdapter(adapter);
+							setListViewHeightBasedOnChildren(lv_home_list);  
 						}
 						//上面的图还是要加载上去的
 						loadPhoto(photoUrl, iv_home_ad);
 						isFirstRequest = false;
+						//TODO
 						PullToRefreshManager.getInstance().onFooterRefreshComplete();
-						PullToRefreshManager.getInstance().footerEnable();
-						
+						PullToRefreshManager.getInstance().footerUnable();
+
 					}
 				}
 				break;
@@ -641,17 +791,42 @@ public class HomeFragment extends BaseFragment {
 		}
 	}
 
+	/**
+	 * 动态自动测量ListView的高度
+	 * @param listView
+	 */
+	private void setListViewHeightBasedOnChildren(ListView listView ) {
+		
+		ListAdapter lAdapter = listView.getAdapter(); 
+		// 获取ListView对应的Adapter  
+	        if (lAdapter == null) {   
+	            return;   
+	        }   
+	   
+	        int totalHeight = 0;   
+	        for (int i = 0, len = lAdapter.getCount(); i < len; i++) {   
+	            // listAdapter.getCount()返回数据项的数目   
+	            View listItem = lAdapter.getView(i, null, listView);   
+	            // 计算子项View 的宽高   
+	            listItem.measure(0, 0);    
+	            // 统计所有子项的总高度   
+	            totalHeight += listItem.getMeasuredHeight();    
+	        }   
+	   
+	        ViewGroup.LayoutParams params = listView.getLayoutParams();   
+	        params.height = totalHeight+ (listView.getDividerHeight() * (lAdapter.getCount() - 1));   
+	        // listView.getDividerHeight()获取子项间分隔符占用的高度   
+	        // params.height最后得到整个ListView完整显示需要的高度   
+	        listView.setLayoutParams(params);  
+	}
+
 	public void click(View v) {
 		EventBus bus = EventBus.getDefault();
 		Fragment fragment = null;
 		FragmentEntity entity = new FragmentEntity();
 		switch (v.getId()) {
 		case R.id.bottom_secretary:
-			if (TextUtils.isEmpty(App.app.getData("secretary_name"))) {
-			    fragment=new SecretarySettingFragment();
-			   }else {
-			    fragment = new SecretaryFragment();
-			   }
+			fragment = new SecretaryFragment();
 			break;
 		case R.id.bottom_found:
 			fragment = new FoundFragment();
@@ -670,10 +845,19 @@ public class HomeFragment extends BaseFragment {
 			if ("true".equals(App.app.getData("isExperience"))) {
 				v.setBackgroundResource(R.drawable.circle_background_green);
 			}
-			
+			boolean isFromHome1 = true;
+			Bundle bundle1 = new Bundle();
+			bundle1.putBoolean("isFromHome", isFromHome1);
+			fragment.setArguments(bundle1);
 			break;
+
 		case R.id.rl_bg:// 进入我的银行卡
 			fragment = new MineBankcardFragment();
+			boolean isFromHome2 = true;
+			Bundle bundle2 = new Bundle();
+			bundle2.putBoolean("isFromHome", isFromHome2);
+			fragment.setArguments(bundle2);
+
 			if ("true".equals(App.app.getData("isExperience"))) {
 				v.setBackgroundResource(R.drawable.circle_background_green);
 			}
@@ -694,14 +878,14 @@ public class HomeFragment extends BaseFragment {
 			entity.setFragment(fragment);
 			bus.post(entity);
 		}
-		
+
 	}
 
 	/**
 	 * 
 	 * @param type
 	 */
-	@InjectPullRefresh
+/*	@InjectPullRefresh
 	public void call(int type) {
 		// 首页是没有下拉加载的
 		switch (type) {
@@ -711,7 +895,7 @@ public class HomeFragment extends BaseFragment {
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					PullToRefreshManager.getInstance().footerUnable();
 					CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
-					
+
 				} else {
 					refreshParams = new LinkedHashMap<>();
 					if (isChina) {//如果是国内活动，需要进行刷新操作
@@ -730,12 +914,68 @@ public class HomeFragment extends BaseFragment {
 				refreshParams.put("site", getSelectCity()[0]);
 				refreshParams.put("intelligent", "home");
 				refreshCurrentList(refreshUrl, refreshParams,1, lv_home_list);
-				
-				/*PullToRefreshManager.getInstance().onFooterRefreshComplete();*/
-				
+
+				PullToRefreshManager.getInstance().onFooterRefreshComplete();
+
 			}
 			break;
 		}
 	}
+*/
+	
+	private class GetDataTask extends AsyncTask<Void, Void, String[]> {
 
+		@Override
+		protected String[] doInBackground(Void... params) {
+			// Simulates a background job.
+			try {
+				
+				
+				Thread.sleep(4000);
+				
+				
+			} catch (InterruptedException e) {
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String[] result) {
+			// Do some stuff here
+			if (list != null) {
+				if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url()=="null") {
+				/*	PullToRefreshManager.getInstance().onFooterRefreshComplete();
+					PullToRefreshManager.getInstance().footerUnable();*/
+					CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
+					sv_homefrag.setPullToRefreshEnabled(false);
+					sv_homefrag.setPullToRefreshOverScrollEnabled(false);
+					sv_homefrag.setOnPullEventListener(null);
+
+				} else {
+					refreshParams = new LinkedHashMap<>();
+					if (isChina) {//如果是国内活动，需要进行刷新操作
+						refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
+						refreshParams.put("site", getSelectCity()[0]);
+						refreshParams.put("intelligent", "home");
+					} else {
+						refreshParams = null;
+						refreshUrl = String.format(GlobalValue.URL_ARTICLE_PROMOTE,getSelectCity()[0]);
+					}
+					refreshCurrentList(list.getNext_page_url(), refreshParams,1, lv_home_list);
+				}
+			}else{//针对第一次进来用户急于去刷新操作，但此时的list对象是为空的
+				CustomToast.show(activity, "让网速飞一会儿，biu~biu~", "总裁大大，请给我一首歌的时间");
+				refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
+				refreshParams.put("site", getSelectCity()[0]);
+				refreshParams.put("intelligent", "home");
+				refreshCurrentList(refreshUrl, refreshParams,1, lv_home_list);
+
+				/*PullToRefreshManager.getInstance().onFooterRefreshComplete();*/
+			}
+			// Call onRefreshComplete when the list has been refreshed.
+			sv_homefrag.onRefreshComplete();
+
+			super.onPostExecute(result);
+		}
+	}
 }

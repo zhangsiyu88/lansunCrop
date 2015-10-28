@@ -1,15 +1,22 @@
 package com.lansun.qmyo.fragment;
+import java.io.IOException;
+
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
@@ -20,9 +27,12 @@ import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
+import com.google.gson.Gson;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.domain.MySecretary;
 import com.lansun.qmyo.domain.Secretary;
+import com.lansun.qmyo.domain.information.InformationCount;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryCardShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryInvestmentShowFragment;
@@ -31,13 +41,18 @@ import com.lansun.qmyo.fragment.secretary_detail.SecretaryPartyShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryShoppingShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryStudentShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryTravelShowFragment;
+import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.override.CircleImageView;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.view.CustomToast;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 public class SecretaryFragment extends BaseFragment {
+	private String secretary_size;
 	private CircleImageView iv_secretary_head;
 	private LinearLayout ll_secretary_setting;
 	@InjectAll
@@ -48,7 +63,7 @@ public class SecretaryFragment extends BaseFragment {
 		ll_shengyan_part, ll_gaozhi_life, ll_studybroad,
 		ll_licai_touzi, ll_handlecard, ll_secretary_help;
 		private ImageView iv_secretary_icon;
-		private TextView tv_secretary_icon, tv_secretary_name,tv_secretary_tip1;
+		private TextView tv_secretary_icon, tv_secretary_name,tv_secretary_tip1,have_information;
 	}
 	private String[] secretaryTitle;
 	private String[] secretaryhint;
@@ -71,6 +86,54 @@ public class SecretaryFragment extends BaseFragment {
 									R.drawable.details_cannot },
 									{ R.drawable.details_card01, R.drawable.details_cannot } };
 	private Fragment fragment;
+	private Handler handleOk=new Handler(){
+		public void handleMessage(android.os.Message msg) {
+			switch (msg.what) {
+			case 0:
+				if (isExperience()) {
+					setSecretaryInformation();
+				}else {
+					if ("false".equals(GlobalValue.mySecretary.getHas())) {
+						final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
+						dialog.show();
+						dialog.setContentView(R.layout.dialog_setting_secretary);
+						Window window = dialog.getWindow();
+						window.findViewById(R.id.setting_now).setOnClickListener(new OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								dialog.dismiss();
+								FragmentEntity entity=new FragmentEntity();
+								Fragment fragment=new SecretarySettingFragment();
+								entity.setFragment(fragment);
+								EventBus.getDefault().post(entity);
+							}
+						});
+					}else {
+						setSecretaryInformation();
+					}
+				}
+				break;
+			case 1:
+				CustomToast.show(activity, "提示", "信息获取失败,请重试");
+				break;
+			case 2:
+				CustomToast.show(activity, "提示", "网络异常,请刷新后重试");
+				break;
+			case 5:
+				if("1".equals(secretary_size)){
+					v.have_information.setVisibility(View.VISIBLE);
+				}else{
+					v.have_information.setVisibility(View.GONE);
+				}
+				break;
+			}
+		}
+	};
+	private void setSecretaryInformation() {
+		v.tv_secretary_name.setText(GlobalValue.mySecretary.getName());
+		loadPhoto(GlobalValue.mySecretary.getAvatar(),
+				iv_secretary_head);
+	};
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -82,16 +145,40 @@ public class SecretaryFragment extends BaseFragment {
 		setListener();
 		return rootView;
 	}
-
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
 	private void setListener() {
 		iv_secretary_head.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				EventBus bus = EventBus.getDefault();
-				FragmentEntity entity = new FragmentEntity();
-				Fragment fragment = new SecretarySettingFragment();
-				entity.setFragment(fragment);
-				bus.post(entity);
+				if (GlobalValue.user == null || isExperience()) {
+					DialogUtil.createTipAlertDialog(activity,R.string.please_registerorlogin_title,
+							new TipAlertDialogCallBack() {
+						@Override
+						public void onPositiveButtonClick(DialogInterface dialog, int which) {
+							EventBus bus = EventBus.getDefault();
+							FragmentEntity entity = new FragmentEntity();
+							Fragment fragment=new RegisterFragment();
+							entity.setFragment(fragment);
+							bus.post(entity);
+							dialog.dismiss();
+						}
+						@Override
+						public void onNegativeButtonClick(
+								DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					});
+				} else{
+					EventBus bus = EventBus.getDefault();
+					FragmentEntity entity = new FragmentEntity();
+					Fragment fragment = new SecretarySettingFragment();
+					entity.setFragment(fragment);
+					bus.post(entity);
+				}
+
 			}
 		});
 		ll_secretary_setting.setOnClickListener(new OnClickListener() {
@@ -100,21 +187,21 @@ public class SecretaryFragment extends BaseFragment {
 				if (GlobalValue.user == null || isExperience()) {
 					DialogUtil.createTipAlertDialog(activity,R.string.please_registerorlogin_title,
 							new TipAlertDialogCallBack() {
-								@Override
-								public void onPositiveButtonClick(DialogInterface dialog, int which) {
-									EventBus bus = EventBus.getDefault();
-									FragmentEntity entity = new FragmentEntity();
-									Fragment fragment=new RegisterFragment();
-									entity.setFragment(fragment);
-									bus.post(entity);
-									dialog.dismiss();
-								}
-								@Override
-								public void onNegativeButtonClick(
-										DialogInterface dialog, int which) {
-										dialog.dismiss();
-								}
-							});
+						@Override
+						public void onPositiveButtonClick(DialogInterface dialog, int which) {
+							EventBus bus = EventBus.getDefault();
+							FragmentEntity entity = new FragmentEntity();
+							Fragment fragment=new RegisterFragment();
+							entity.setFragment(fragment);
+							bus.post(entity);
+							dialog.dismiss();
+						}
+						@Override
+						public void onNegativeButtonClick(
+								DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					});
 				} else{
 					EventBus bus = EventBus.getDefault();
 					FragmentEntity entity = new FragmentEntity();
@@ -130,6 +217,41 @@ public class SecretaryFragment extends BaseFragment {
 	private void initView(View view) {
 		iv_secretary_head=(CircleImageView)view.findViewById(R.id.iv_secretary_head);
 		ll_secretary_setting=(LinearLayout)view.findViewById(R.id.ll_secretary_setting);
+		if (!isExperience()) {
+			OkHttp.asyncGet(GlobalValue.URL_SECRETARY_SAVE, "Authorization","Bearer "+App.app.getData("access_token"), null, new Callback() {
+				@Override
+				public void onResponse(Response response) throws IOException {
+					if (response.isSuccessful()) {
+						Gson gson=new Gson();
+						String json=response.body().string();
+						GlobalValue.mySecretary=gson.fromJson(json,MySecretary.class);
+						handleOk.sendEmptyMessage(0);
+					}else {
+						handleOk.sendEmptyMessage(1);
+					}
+				}
+				@Override
+				public void onFailure(Request arg0, IOException arg1) {
+					handleOk.sendEmptyMessage(2);
+				}
+			});
+			OkHttp.asyncGet(GlobalValue.URL_USER_MESSAGE, "Authorization", "Bearer "+App.app.getData("access_token"), null, new Callback() {
+				@Override
+				public void onResponse(Response response) throws IOException {
+					if (response.isSuccessful()) {
+						Gson gson=new Gson();
+						String json=response.body().string();
+						InformationCount iCount=gson.fromJson(json, InformationCount.class);
+						secretary_size = String.valueOf(iCount.getSecretary());
+						handleOk.sendEmptyMessage(5);
+					}
+				}
+				@Override
+				public void onFailure(Request arg0, IOException arg1) {
+
+				}
+			});
+		}
 	}
 
 	@InjectInit
@@ -140,8 +262,6 @@ public class SecretaryFragment extends BaseFragment {
 		v.tv_secretary_icon.setTextColor(getResources().getColor(
 				R.color.app_green2));
 
-		//获取小秘书
-		refreshCurrentList(GlobalValue.URL_SECRETARY, null, 0, null);
 	}
 
 	@Override
@@ -196,33 +316,8 @@ public class SecretaryFragment extends BaseFragment {
 			fragment = new SecretaryCardShowFragment();
 			break;
 		}
-		
+
 		entity.setFragment(fragment);
 		bus.post(entity);
-	}
-
-	@InjectHttp
-	private void result(ResponseEntity r) {
-		if (r.getStatus() == FastHttp.result_ok) {
-			switch (r.getKey()) {
-			case 0:
-				GlobalValue.secretary = Handler_Json.JsonToBean(
-						Secretary.class, r.getContentAsString());
-				v.tv_secretary_name.setText(GlobalValue.secretary.getName());
-				loadPhoto(GlobalValue.secretary.getAvatar(),
-						iv_secretary_head);
-				if (!TextUtils.isEmpty(GlobalValue.secretary.getOwner_name())) {
-					v.tv_secretary_tip1.setText(String.format(
-							getString(R.string.secretary_tip),
-							GlobalValue.secretary.getOwner_name()));
-				} else {
-					v.tv_secretary_tip1.setText(String.format(
-							getString(R.string.secretary_tip), "亲爱的大大"));
-				}
-				break;
-			}
-		}else {
-			CustomToast.show(activity, "提示", "网络异常,请先检查网络状态");
-		} 
 	}
 }

@@ -89,16 +89,16 @@ public class EditUserFragment extends BaseFragment {
 	 * 数据的回显
 	 */
 	private void initData() {
-		v.tv_edit_user_income.setText(GlobalValue.user.getIncome());
-		v.tv_edit_user_like.setText(GlobalValue.user.getHobby());
-		v.tv_edit_user_degress.setText(GlobalValue.user.getDegrees());
-		v.tv_edit_user_position.setText(GlobalValue.user.getPosition());
-		v.tv_edit_user_job.setText(GlobalValue.user.getJob());
-		v.tv_edit_user_address.setText(GlobalValue.user.getAddress());
-		v.tv_edit_user_name.setText(GlobalValue.user.getName());
-		v.tv_edit_user_email.setText(GlobalValue.user.getEmail());
-		v.tv_edit_user_gender.setText(GlobalValue.user.getGender());
-		v.tv_edit_user_name.setText(GlobalValue.user.getTruename());
+		v.tv_edit_user_income.setText(GlobalValue.user.getIncome()=="null"?"":GlobalValue.user.getIncome());
+		v.tv_edit_user_like.setText(GlobalValue.user.getHobby()=="null"?"":GlobalValue.user.getHobby());
+		v.tv_edit_user_degress.setText(GlobalValue.user.getDegrees()=="null"?"":GlobalValue.user.getDegrees());
+		v.tv_edit_user_position.setText(GlobalValue.user.getPosition()=="null"?"":GlobalValue.user.getPosition());
+		v.tv_edit_user_job.setText(GlobalValue.user.getJob()=="null"?"":GlobalValue.user.getJob());
+		v.tv_edit_user_address.setText(GlobalValue.user.getAddress()=="null"?"":GlobalValue.user.getAddress());
+		v.tv_edit_user_name.setText(GlobalValue.user.getName()=="null"?"":GlobalValue.user.getName());
+		v.tv_edit_user_email.setText(GlobalValue.user.getEmail()=="null"?"":GlobalValue.user.getEmail());
+		v.tv_edit_user_gender.setText(GlobalValue.user.getGender()=="null"?"":GlobalValue.user.getGender());
+		v.tv_edit_user_name.setText(GlobalValue.user.getTruename()=="null"?"":GlobalValue.user.getTruename());
 	}
 
 	private void click(View view) {

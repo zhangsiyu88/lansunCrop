@@ -24,7 +24,7 @@
                 android:gravity="center_vertical"
                 android:orientation="vertical" >
 
-                <com.lansun.qmyo.view.MyViewPager
+              <com.lansun.qmyo.view.MyViewPager 
                     android:id="@+id/vp_home_pager"
                     style="@style/w_full_h_wrap"
                     android:layout_height="@dimen/home_pager_h"

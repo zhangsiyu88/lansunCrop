@@ -5,7 +5,7 @@
     <string name="basic_action_1">删除</string>
     <string name="add">添加</string>
     <string name="basic_action_2">Action_2</string>
-    <string name="app_name">迈界APP</string>
+    <string name="app_name">迈界</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="home">首页</string>
@@ -313,6 +313,7 @@
     <string name="promote_detail">极文详情</string>
     <string name="shared_app_desc">邀请好友直接扫描二维码下载迈界APP</string>
     <string name="shared_comtent">迈界有你</string>
+    <string name="the_new_shared_comtent">迈界-自动匹配你最想要的品牌活动神器，搭配最强虚拟在线真人小秘书，享乐犹如神助</string>
     <string name="v16_bd">V16榜单</string>
     <string name="net_error_refresh">网络获取失败，点击重新获取</string>
     <string name="net_error_check_net">网络数据获取失败,请检查网络</string>

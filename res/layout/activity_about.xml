@@ -211,7 +211,7 @@
                         android:textColor="@color/text_gray1" />
 
                     <ImageView
-                        android:id="@+id/iv_setting_clear_cache"
+                        android:id="@+id/iv_setting_clear_cache6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"

@@ -6,6 +6,7 @@
     android:orientation="vertical" >
 
     <!-- 头部的两行栏 -->
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_menu_h"
@@ -41,6 +42,7 @@
         </RelativeLayout>
 
         <!-- 把标题换一换！ -->
+
         <TextView
             android:id="@+id/tv_activity_title"
             style="@style/text_style_big_40"
@@ -63,36 +65,27 @@
         android:layout_height="1px"
         android:background="@color/line_bg" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:visibility="visible">
+    <com.lansun.qmyo.view.ExpandTabView
+        android:id="@+id/expandtab_view"
+        style="@style/w_full_h_wrap"
+        android:layout_height="@dimen/expandtab_view_h" />
 
-            <com.lansun.qmyo.view.ExpandTabView
-                android:id="@+id/expandtab_view"
-                style="@style/w_full_h_wrap"
-                android:layout_height="@dimen/expandtab_view_h" />
-            <View
-                android:id="@+id/expandTabViewButtomLine"
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/line_bg" 
-                android:visibility="visible"/>
-    </LinearLayout>
-    	  
-    
-     <com.lansun.qmyo.view.MyListView
-                android:id="@+id/lv_activity_list"
-                android:layout_width="match_parent"
-        		android:layout_height="match_parent"
-                android:cacheColorHint="#00000000"
-                android:divider="@null"
-                android:listSelector="@android:color/transparent"
-                android:scrollbars="vertical"
-                
-                android:scrollbarFadeDuration="1000"
-                />
-   				<!-- android:fastScrollEnabled="true" -->
-     			<!-- style="@style/w_h_full" -->
+    <View
+        android:id="@+id/expandTabViewButtomLine"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/line_bg" />
+
+    <com.lansun.qmyo.view.MyListView
+        android:id="@+id/lv_activity_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:cacheColorHint="#00000000"
+        android:divider="@null"
+        android:listSelector="@android:color/transparent"
+        android:scrollbarFadeDuration="1000"
+        android:scrollbars="vertical" />
+    <!-- android:fastScrollEnabled="true" -->
+    <!-- style="@style/w_h_full" -->
 
 </LinearLayout>

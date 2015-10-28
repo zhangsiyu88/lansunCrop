@@ -37,13 +37,13 @@ public class MineFragment extends BaseFragment {
 
 	class Views {
 		private TextView tv_mine_nickname, tv_mine_icon,
-				tv_mine_message_center, tv_mine_secretary_message,
-				tv_mine_comment_message;
+		tv_mine_message_center, tv_mine_secretary_message,
+		tv_mine_comment_message;
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private View bottom_home, bottom_secretary, bottom_found,
-				ll_mine_register_login, rl_mine_secretary, rl_mine_comments,
-				rl_mine_history, ll_mine_xy_card, ll_mine_yhq, ll_mine_message,
-				rl_mine_about, rl_mine_shared, sc_mine;
+		ll_mine_register_login, rl_mine_secretary, rl_mine_comments,
+		rl_mine_history, ll_mine_xy_card, ll_mine_yhq, ll_mine_message,
+		rl_mine_about, rl_mine_shared, sc_mine;
 		private RecyclingImageView iv_mine_icon;
 		private CircularImage iv_mine_head;
 	}
@@ -62,21 +62,21 @@ public class MineFragment extends BaseFragment {
 	private void init() {
 		v.iv_mine_icon.setPressed(true);
 		v.tv_mine_icon.setTextColor(getResources().getColor(R.color.app_green2));
-		
+
 		if (GlobalValue.user != null) {
 			String avatar = GlobalValue.user.getAvatar();
 			if (!TextUtils.isEmpty(avatar)) {
 				//加载头像上去
 				loadPhoto(avatar, v.iv_mine_head);
 			}
-			
+
 			if (!TextUtils.isEmpty(GlobalValue.user.getNickname())) {
-				
-				
+
+
 				if(GlobalValue.user.getNickname() == null||GlobalValue.user.getNickname() =="null"||GlobalValue.user.getNickname().contains("null")){
 					v.tv_mine_nickname.setText("请设置昵称");
 					Log.i("Tag：nickName","NickName应该为设置昵称");
-					
+
 				}else{
 					Log.i("Tag：nickName","NickName有值："+GlobalValue.user.getNickname());
 					v.tv_mine_nickname.setText(GlobalValue.user.getNickname());
@@ -85,7 +85,7 @@ public class MineFragment extends BaseFragment {
 				v.tv_mine_nickname.setText("请注册或登陆");
 			}
 		}else{
-			CustomToast.show(activity, "GlobalValue.user为空", "同上");
+			/*CustomToast.show(activity, "GlobalValue.user为空", "同上");*/
 		}
 
 		refreshCurrentList(GlobalValue.URL_USER_MESSAGE, null, 0, null);//去刷新消息
@@ -103,13 +103,13 @@ public class MineFragment extends BaseFragment {
 			if (!TextUtils.isEmpty(GlobalValue.user.getNickname())) {
 				v.tv_mine_nickname.setText(GlobalValue.user.getNickname());
 				Log.i("Tag：nickName","在init之后起作用");
-				
+
 				if(GlobalValue.user.getNickname() == null||GlobalValue.user.getNickname() =="null"||GlobalValue.user.getNickname().contains("null")){
 					v.tv_mine_nickname.setText("请设置昵称");
 				}else{
 					v.tv_mine_nickname.setText(GlobalValue.user.getNickname());
 				}
-		  }else{
+			}else{
 				v.tv_mine_nickname.setText("请注册或登陆");
 			}
 		}
@@ -158,15 +158,15 @@ public class MineFragment extends BaseFragment {
 			}
 			break;
 		case R.id.ll_mine_xy_card:// 信用卡
-			
-		/*	if (GlobalValue.user == null) {
+
+			/*	if (GlobalValue.user == null) {
 				return;
 			}
 			if (isExperience()) {
 				fragment = new RegisterFragment();
 			} else
-				*/
-				fragment = new MineBankcardFragment();
+			 */
+			fragment = new MineBankcardFragment();
 			break;
 		case R.id.ll_mine_yhq:// TODO 优惠券
 			if (GlobalValue.user == null || isExperience()) {
@@ -175,7 +175,7 @@ public class MineFragment extends BaseFragment {
 				fragment = new MineCouponsFragment();
 			break;
 		case R.id.ll_mine_message:// TODO 消息中心
-			
+
 			if(App.app.getData("isExperience")=="true"){
 				DialogUtil.createTipAlertDialog(getActivity(),
 						R.string.login_to_getmessage, new TipAlertDialogCallBack() {
@@ -196,10 +196,10 @@ public class MineFragment extends BaseFragment {
 			}else{
 				fragment = new MessageCenterFragment();
 			}
-			
-			
+
+
 			/*fragment = new MessageCenterFragment();*/
-			
+
 			break;
 		case R.id.rl_mine_about:
 			fragment = new AboutFragment();
@@ -212,11 +212,7 @@ public class MineFragment extends BaseFragment {
 			fragment = new HomeFragment();
 			break;
 		case R.id.bottom_secretary:
-			if (TextUtils.isEmpty(App.app.getData("secretary_name"))) {
-			    fragment=new SecretarySettingFragment();
-			   }else {
-			    fragment = new SecretaryFragment();
-			   }
+			fragment = new SecretaryFragment();
 			break;
 		case R.id.bottom_found:
 			fragment = new FoundFragment();

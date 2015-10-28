@@ -41,6 +41,7 @@ import com.lansun.qmyo.fragment.IntroductionPageFragment;
 import com.lansun.qmyo.fragment.MessageCenterFragment;
 import com.lansun.qmyo.fragment.MineFragment;
 import com.lansun.qmyo.fragment.NewCommentFragment;
+import com.lansun.qmyo.fragment.PersonCenterFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
 import com.lansun.qmyo.service.AccessTokenService;
@@ -126,7 +127,8 @@ public class MainActivity extends FragmentActivity {
 		if (TextUtils.isEmpty(App.app.getData("isFirst"))) {
 			startFragmentAdd(new IntroductionPageFragment());
 		} else {
-			startFragmentAdd(new HomeFragment());
+			/*startFragmentAdd(new HomeFragment());*/
+			startFragmentAdd(new PersonCenterFragment());
 			getTokenService();
 		}
 		

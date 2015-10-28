@@ -133,8 +133,7 @@ public class AccessTokenService extends Service {
 				HashMap<String, Object> head = new HashMap<>();
 				head.put("Authorization", "Bearer " + token.getToken());
 				config.setHead(head);
-				FastHttpHander.ajaxGet(GlobalValue.URL_FRESHEN_USER, config,
-						this);
+				FastHttpHander.ajaxGet(GlobalValue.URL_FRESHEN_USER, config,this);
 				App.app.setData("access_token", token.getToken());
 				break;
 			case 1:

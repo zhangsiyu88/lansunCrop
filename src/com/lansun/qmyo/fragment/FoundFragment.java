@@ -45,8 +45,8 @@ public class FoundFragment extends BaseFragment {
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private View bottom_home, bottom_secretary, bottom_mine, ll_found_v16,
-				ll_found_bangdan, rl_found_activity, rl_found_store,
-				rl_found_v16, rl_found_maijie;
+		ll_found_bangdan, rl_found_activity, rl_found_store,
+		rl_found_v16, rl_found_maijie;
 		private RecyclingImageView iv_found_icon, iv_found_bg;
 		private TextView tv_found_icon;
 	}
@@ -68,11 +68,11 @@ public class FoundFragment extends BaseFragment {
 		v.iv_found_icon.setPressed(true);
 		v.tv_found_icon.setTextColor(getResources()
 				.getColor(R.color.app_green2));
-		
+
 		//拿图的网络访问暂时停掉，先从本地拿到手
 		/*refreshCurrentList(GlobalValue.URL_ARTICLE_POSTER + getSelectCity()[0],null, 0, null);*/
-		
-		
+
+
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class FoundFragment extends BaseFragment {
 		/*v.tv_found_icon.setTextColor(getResources().getColor(R.color.text_nomal));*/
 		super.onPause();
 	}
-	
+
 	@Override
 	public void onResume() {//在resume中重新设置了底部icon设置的按压状态
 		v.iv_found_icon.setPressed(true);
@@ -102,61 +102,57 @@ public class FoundFragment extends BaseFragment {
 				DialogUtil.createTipAlertDialog(activity,
 						R.string.tip_activittiescollection, new TipAlertDialogCallBack() {
 
-							@Override
-							public void onPositiveButtonClick(
-									DialogInterface dialog, int which) {
-								
-								dialog.dismiss();
-								RegisterFragment fragment = new RegisterFragment();
-								FragmentEntity entity = new FragmentEntity();
-								entity.setFragment(fragment);
-								EventBus.getDefault().post(entity);
-							
-							}
+					@Override
+					public void onPositiveButtonClick(
+							DialogInterface dialog, int which) {
 
-							@Override
-							public void onNegativeButtonClick(DialogInterface dialog, int which) {
-								dialog.dismiss();
-							}
-						});
+						dialog.dismiss();
+						RegisterFragment fragment = new RegisterFragment();
+						FragmentEntity entity = new FragmentEntity();
+						entity.setFragment(fragment);
+						EventBus.getDefault().post(entity);
+
+					}
+
+					@Override
+					public void onNegativeButtonClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
 				return;
 			}
-			
+
 			fragment = new MineActivityFragment();
 			break;
 		case R.id.rl_found_store:// 关注门店
 			if(App.app.getData("isExperience").equals("true")||App.app.getData("isExperience").contains("true")){
 				/*CustomToast.show(getActivity(), "迈界小贴士", "总裁大大，要登陆的哟~");*/
-			
+
 				DialogUtil.createTipAlertDialog(activity,
 						R.string.tip_attentionstore, new TipAlertDialogCallBack() {
 
-							@Override
-							public void onPositiveButtonClick(
-									DialogInterface dialog, int which) {
-								
-								dialog.dismiss();
-								RegisterFragment fragment = new RegisterFragment();
-								FragmentEntity entity = new FragmentEntity();
-								entity.setFragment(fragment);
-								EventBus.getDefault().post(entity);
-							}
+					@Override
+					public void onPositiveButtonClick(
+							DialogInterface dialog, int which) {
 
-							@Override
-							public void onNegativeButtonClick(DialogInterface dialog, int which) {
-								dialog.dismiss();
-							}
-						});
+						dialog.dismiss();
+						RegisterFragment fragment = new RegisterFragment();
+						FragmentEntity entity = new FragmentEntity();
+						entity.setFragment(fragment);
+						EventBus.getDefault().post(entity);
+					}
+
+					@Override
+					public void onNegativeButtonClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
 				return;
 			}
 			fragment = new MineStoreFragment();
 			break;
 		case R.id.bottom_secretary:
-			if (TextUtils.isEmpty(App.app.getData("secretary_name"))) {
-			    fragment=new SecretarySettingFragment();
-			   }else {
-			    fragment = new SecretaryFragment();
-			   }
+			fragment = new SecretaryFragment();
 			break;
 		case R.id.bottom_mine:
 			fragment = new MineFragment();
@@ -171,7 +167,7 @@ public class FoundFragment extends BaseFragment {
 			fragment = new MineV16Fragment();
 			break;
 		}
-		
+
 		entity.setFragment(fragment);
 		bus.post(entity);
 	}
@@ -189,7 +185,7 @@ public class FoundFragment extends BaseFragment {
 			String imageUrl = "http://7xn0y5.com2.z0.glb.qiniucdn.com/201509101040_144185284148?imageView2/1/w/960/h/720/format/jpg";
 			loadPhoto(imageUrl, v.iv_found_bg);
 		}
-		
+
 	}
 
 }

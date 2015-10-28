@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +28,6 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
@@ -39,24 +38,16 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
-import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
-import com.android.pc.ioc.internet.FastHttp;
-import com.android.pc.ioc.internet.FastHttpHander;
-import com.android.pc.ioc.internet.InternetConfig;
-import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
-import com.lansun.qmyo.app.App;
-import com.lansun.qmyo.domain.Secretary;
+import com.lansun.qmyo.domain.MySecretary;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
@@ -73,8 +64,7 @@ import com.squareup.okhttp.Response;
  * @author bhxx
  * 
  */
-public class SecretarySettingFragment extends BaseFragment implements TextWatcher,OnFocusChangeListener{
-
+public class SecretarySettingFragment extends BaseFragment implements OnClickListener{
 	@InjectAll
 	Views v;
 	private String currentHeadPath;
@@ -86,25 +76,38 @@ public class SecretarySettingFragment extends BaseFragment implements TextWatche
 	private RecyclingImageView iv_activity_del,iv_activity_del_hope;
 	protected static final int ACTION_IMAGE_CAPTURE = 2;
 	protected static final int ACTION_IMAGE_PICK = 1;
+	
+	EventBus bus = EventBus.getDefault();
+	FragmentEntity entity = new FragmentEntity();
+	Fragment fragment;
 	private Handler handlerOkHandler=new Handler(){
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
 			case 0:
+				if (dialogpg!=null) {
+					dialogpg.dismiss();
+				}
 				CustomToast.show(activity, R.string.tip,
 						R.string.save_secretary_success);
-				App.app.setData("secretary_name", secretaryName);
-				EventBus bus = EventBus.getDefault();
-				FragmentEntity entity = new FragmentEntity();
-				Fragment fragment=new SecretaryFragment();
-				entity.setFragment(fragment);
-				bus.post(entity);
+				fragment=new SecretaryFragment();
+				
 				break;
 			case 1:
+				if (dialogpg!=null) {
+					dialogpg.dismiss();
+				}
 				CustomToast.show(activity, R.string.tip,"提交失败");
+				fragment=new SecretaryFragment();
+				break;
+			case 2:
+				CustomToast.show(activity,"提示","数据异常，请检查网络。");
 				break;
 			}
+			entity.setFragment(fragment);
+			bus.post(entity);
 		};
 	};
+	private ProgressDialog dialogpg;
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private View btn_secretary_save;
@@ -121,27 +124,106 @@ public class SecretarySettingFragment extends BaseFragment implements TextWatche
 				container,false);
 		Handler_Inject.injectFragment(this, rootView);
 		initView(rootView);
-		CustomToast.show(activity, "请先设置您的私人秘书哦","体验最强虚拟在线真人小秘书");
 		return rootView;
 	}
 
 	private void initView(View rootView) {
+		v.btn_secretary_save.setOnClickListener(this);
+		v.iv_secretary_head.setOnClickListener(this);
 		iv_activity_del=(RecyclingImageView)rootView.findViewById(R.id.iv_activity_del);
 		iv_activity_del_hope=(RecyclingImageView)rootView.findViewById(R.id.iv_activity_del_hope);
-
-		v.et_secretary_name.addTextChangedListener(this);
-		v.et_hope_call_you.addTextChangedListener(this);
-
-		v.et_hope_call_you.setOnFocusChangeListener(this);
-		v.et_secretary_name.setOnFocusChangeListener(this);
+		v.et_secretary_name.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				if (TextUtils.isEmpty(s.toString())) {
+					iv_activity_del.setVisibility(View.INVISIBLE);
+				}else {
+					iv_activity_del.setVisibility(View.VISIBLE);
+					iv_activity_del.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View view) {
+							v.et_secretary_name.setText("");
+						}
+					});
+				}
+			}
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				
+			}
+			@Override
+			public void afterTextChanged(Editable s) {
+				
+			}
+		});
+		v.et_hope_call_you.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				if (TextUtils.isEmpty(s.toString())) {
+					iv_activity_del_hope.setVisibility(View.INVISIBLE);
+				}else {
+					iv_activity_del_hope.setVisibility(View.VISIBLE);
+					iv_activity_del_hope.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View view) {
+							v.et_hope_call_you.setText("");
+						}
+					});
+				}
+			}
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				
+			}
+			@Override
+			public void afterTextChanged(Editable s) {
+				
+			}
+		});
+		v.et_hope_call_you.setOnFocusChangeListener(new OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View view, boolean hasFocus) {
+				if (hasFocus) {
+					if (TextUtils.isEmpty(v.et_hope_call_you.getText().toString())) {
+						v.et_hope_call_you.setHint("请设置2-8位字符");
+						v.et_hope_call_you.setHintTextColor(getResources().getColor(R.color.translate_gray));
+					}
+				}else {
+					if (TextUtils.isEmpty(v.et_hope_call_you.getText().toString())) {
+						v.et_hope_call_you.setHint("请问如何称呼您");
+						v.et_hope_call_you.setHintTextColor(getResources().getColor(R.color.app_white));
+					}
+				}	
+			}
+		});
+		v.et_secretary_name.setOnFocusChangeListener(new OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View view, boolean hasFocus) {
+				if (hasFocus) {
+					if (TextUtils.isEmpty(v.et_secretary_name.getText().toString())) {
+						v.et_secretary_name.setHint("请设置2-8位字符");
+						v.et_secretary_name.setHintTextColor(getResources().getColor(R.color.translate_gray));
+					}
+				}else {
+					if (TextUtils.isEmpty(v.et_secretary_name.getText().toString())) {
+						v.et_secretary_name.setHint("给我设置个昵称吧");
+						v.et_secretary_name.setHintTextColor(getResources().getColor(R.color.app_white));
+					}
+				}	
+			}
+		});
 	}
 
 	@InjectInit
 	private void init() {
-		v.et_secretary_name.setText(GlobalValue.secretary.getName());
-		v.et_hope_call_you.setText(GlobalValue.secretary.getOwner_name());
-		if (!TextUtils.isEmpty(GlobalValue.secretary.getAvatar())) {
-			loadPhoto(GlobalValue.secretary.getAvatar(), v.iv_secretary_head);
+		if (GlobalValue.mySecretary!=null) {
+			v.et_secretary_name.setText(GlobalValue.mySecretary.getName());
+			v.et_hope_call_you.setText(GlobalValue.mySecretary.getOwner_name());
+			loadPhoto(GlobalValue.mySecretary.getAvatar(), v.iv_secretary_head);
+		}else {
+			v.iv_secretary_head.setImageResource(R.drawable.secretary_default_avatar);
 		}
 		Bundle arguments = getArguments();
 		if (arguments != null) {
@@ -153,7 +235,6 @@ public class SecretarySettingFragment extends BaseFragment implements TextWatche
 			v.et_secretary_name.setText(secretaryName);
 			Bitmap decodeFile = BitmapFactory.decodeFile(currentHeadPath);
 			v.iv_secretary_head.setImageBitmap(decodeFile);
-
 		}
 	}
 
@@ -161,121 +242,7 @@ public class SecretarySettingFragment extends BaseFragment implements TextWatche
 	public void onPause() {
 		super.onPause();
 	}
-
-	private void click(View view) {
-		EventBus bus = EventBus.getDefault();
-		FragmentEntity entity = new FragmentEntity();
-		Fragment fragment = null;
-		switch (view.getId()) {
-		case R.id.iv_secretary_head:
-			upDataHead();
-			break;
-		case R.id.btn_secretary_save:
-			String secretary_name = v.et_secretary_name.getText().toString();
-			String hope_call_you = v.et_hope_call_you.getText().toString();
-			if (TextUtils.isEmpty(secretary_name)) {
-				CustomToast.show(activity, "提示","总裁大大，给起个名字吧");
-				return;
-			}
-			if (TextUtils.isEmpty(hope_call_you)) {
-				CustomToast.show(activity, "提示","总裁大大，您希望小迈怎么称呼您啊");
-				return;
-			}
-			InternetConfig config = new InternetConfig();
-			config.setKey(0);
-			HashMap<String, Object> head = new HashMap<>();
-			head.put("Authorization",
-					"Bearer " + App.app.getData("access_token"));
-			config.setHead(head);
-			LinkedHashMap<String, String> params = new LinkedHashMap<>();
-			params.put("name", secretary_name);
-			params.put("owner", hope_call_you);
-			HashMap<String, File> files = new HashMap<>();
-			if (!TextUtils.isEmpty(currentHeadPath)) {
-				files.put("avatar", new File(currentHeadPath));
-			}
-			FastHttpHander.ajaxForm(GlobalValue.URL_SECRETARY_SAVE, params,
-					files, config, this);
-			break;
-			//			//			InternetConfig config = new InternetConfig();
-			//			//			config.setKey(0);
-			//			//			HashMap<String, Object> head = new HashMap<>();
-			//			//			head.put("Authorization",
-			//			//					"Bearer " + App.app.getData("access_token"));
-			//			//			config.setHead(head);
-			//
-			//						Map<String, String> params = new HashMap<>();
-			//						params.put("name", secretary_name);
-			//						params.put("owner", hope_call_you);
-			//			//			params.put("avatar", currentHeadPath);
-			//			//			HashMap<String, File> files = new HashMap<>();
-			//			//			if (!TextUtils.isEmpty(currentHeadPath)) {
-			//			//				files.put("avatar", new File(currentHeadPath));
-			//			//			}
-			//						File file=new File(currentHeadPath);
-			//						OkHttp.asyncPost(GlobalValue.URL_SECRETARY_SAVE,params, file, new Callback() {
-			//							@Override
-			//							public void onResponse(Response response) throws IOException {
-			//								if (response.isSuccessful()) {
-			//									String result=response.body().string();
-			//									Log.e("secretary",result);
-			//			//						Secretary secretary = Handler_Json.JsonToBean(Secretary.class,
-			//			//								response.body().string());
-			//			//						if (secretary != null) {
-			//			//							secretaryName=secretary.getName();
-			//			//							handlerOkHandler.sendEmptyMessage(0);
-			//			//							Log.e("success", currentHeadPath);
-			//			//						}
-			//								}else {
-			//									handlerOkHandler.sendEmptyMessage(1);
-			//								}
-			//							}
-			//							@Override
-			//							public void onFailure(Request arg0, IOException arg1) {
-			//			
-			//							}
-			//						});
-			//			OkHttp.asyncPost(GlobalValue.URL_SECRETARY_SAVE, params, new Callback() {
-			//			@Override
-			//			public void onResponse(Response response) throws IOException {
-			//				Log.e("currentHeadPath", currentHeadPath);
-			//				Log.e("secretary",response.body().string());
-			//			}
-			//			
-			//			@Override
-			//			public void onFailure(Request arg0, IOException arg1) {
-			//				
-			//			}
-			//		});
-			//						FastHttpHander.ajaxForm(GlobalValue.URL_SECRETARY_SAVE, params,
-			//								files, config, this);
-//			break;
-		}
-		//		if (fragment != null) {
-		//			entity.setFragment(fragment);
-		//			bus.post(entity);
-		//		}
-	}
-
-	@InjectHttp
-	private void result(ResponseEntity r) {
-		if (r.getStatus() == FastHttp.result_ok) {
-			switch (r.getKey()) {
-			case 0:
-				Secretary secretary = Handler_Json.JsonToBean(Secretary.class,
-						r.getContentAsString());
-				if (secretary != null) {
-					CustomToast.show(activity, R.string.tip,
-							R.string.save_secretary_success);
-					back();
-				}
-				break;
-			}
-		}
-	}
-
 	private Uri imageUri;
-
 	public void upDataHead() {
 		View view = inflater.inflate(R.layout.photo_choose_dialog, null);
 		carema = (Button) view.findViewById(R.id.camera);
@@ -300,7 +267,6 @@ public class SecretarySettingFragment extends BaseFragment implements TextWatche
 		dialog.setCanceledOnTouchOutside(true);
 
 		carema.setOnClickListener(new OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
@@ -505,49 +471,52 @@ public class SecretarySettingFragment extends BaseFragment implements TextWatche
 		return null;
 	}
 	@Override
-	public void afterTextChanged(Editable s) {
-
-	}
-	@Override
-	public void beforeTextChanged(CharSequence s, int start, int count,
-			int after) {
-
-	}
-	@Override
-	public void onTextChanged(CharSequence s, int start, int before, int count) {
-		if (TextUtils.isEmpty(s.toString())) {
-			iv_activity_del_hope.setVisibility(View.INVISIBLE);
-			iv_activity_del.setVisibility(View.INVISIBLE);
-		}else {
-			iv_activity_del_hope.setVisibility(View.VISIBLE);
-			iv_activity_del.setVisibility(View.VISIBLE);
-		}
-	}
-
-	@Override
-	public void onFocusChange(View view, boolean hasFocus) {
-		if (hasFocus) {
-			switch (view.getId()) {
-			case R.id.et_secretary_hope_call_you:
-				v.et_hope_call_you.setHint("请设置2-12位字符");
-				v.et_hope_call_you.setHintTextColor(getResources().getColor(R.color.translate_gray));
-				break;
-			case R.id.et_secretary_name:
-				v.et_secretary_name.setHint("请设置2-12位字符");
-				v.et_secretary_name.setHintTextColor(getResources().getColor(R.color.translate_gray));
-				break;
+	public void onClick(View view) {
+		switch (view.getId()) {
+		case R.id.iv_secretary_head:
+			upDataHead();
+			break;
+		case R.id.btn_secretary_save:
+			String secretary_name = v.et_secretary_name.getText().toString();
+			String hope_call_you = v.et_hope_call_you.getText().toString();
+			if (TextUtils.isEmpty(secretary_name)) {
+				CustomToast.show(activity, "提示","总裁大大，给起个名字吧");
+				return;
 			}
-		}else {
-			switch (view.getId()) {
-			case R.id.et_secretary_hope_call_you:
-				v.et_hope_call_you.setHint("给我设置个昵称吧");
-				v.et_hope_call_you.setHintTextColor(getResources().getColor(R.color.app_white));
-				break;
-			case R.id.et_secretary_name:
-				v.et_secretary_name.setHint("请问如何称呼您");
-				v.et_secretary_name.setHintTextColor(getResources().getColor(R.color.app_white));
-				break;
+			HashMap<String, String> params = new HashMap<>();
+			params.put("name", secretary_name);
+			params.put("owner", hope_call_you);
+			File file=null;
+			if (!TextUtils.isEmpty(currentHeadPath)) {
+				file=new File(currentHeadPath);
 			}
+			dialogpg = new ProgressDialog(activity);
+			dialogpg.setMessage("图片上传中...");
+			dialogpg.show();
+			OkHttp.asyncPost(GlobalValue.URL_SECRETARY_SAVE,params, file, new Callback() {
+				@Override
+				public void onResponse(Response response) throws IOException {
+					if (response.isSuccessful()) {
+						String result=response.body().string();
+						try {
+							MySecretary secretary = Handler_Json.JsonToBean(MySecretary.class,result);
+							if (secretary != null) {
+								secretaryName=secretary.getName();
+								handlerOkHandler.sendEmptyMessage(0);
+							}
+						} catch (Exception e) {
+							handlerOkHandler.sendEmptyMessage(1);
+						}
+					}else {
+						handlerOkHandler.sendEmptyMessage(1);
+					}
+				}
+				@Override
+				public void onFailure(Request arg0, IOException arg1) {
+					handlerOkHandler.sendEmptyMessage(2);
+				}
+			});
+			break;
 		}
 	}
 }

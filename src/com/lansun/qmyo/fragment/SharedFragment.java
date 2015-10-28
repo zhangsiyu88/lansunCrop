@@ -34,6 +34,7 @@ import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CustomToast;
+import com.lansun.qmyo.MainActivity;
 import com.lansun.qmyo.R;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.bean.SocializeEntity;
@@ -43,6 +44,8 @@ import com.umeng.socialize.controller.UMSocialService;
 import com.umeng.socialize.controller.listener.SocializeListeners.SnsPostListener;
 import com.umeng.socialize.media.QQShareContent;
 import com.umeng.socialize.media.QZoneShareContent;
+import com.umeng.socialize.media.SinaShareContent;
+import com.umeng.socialize.media.TencentWbShareContent;
 import com.umeng.socialize.media.UMImage;
 import com.umeng.socialize.sso.QZoneSsoHandler;
 import com.umeng.socialize.sso.UMQQSsoHandler;
@@ -75,8 +78,7 @@ import android.widget.Toast;
 public class SharedFragment extends BaseFragment {
 	@InjectAll
 	Views v;
-	private UMSocialService mController = UMServiceFactory
-			.getUMSocialService(GlobalValue.DESCRIPTOR);
+	private UMSocialService mController = UMServiceFactory.getUMSocialService(GlobalValue.DESCRIPTOR);
 
 	class Views {
 		private TextView tv_activity_title;
@@ -100,10 +102,12 @@ public class SharedFragment extends BaseFragment {
 	private void init() {
 		v.fl_comments_right_iv.setVisibility(View.GONE);
 		initTitle(v.tv_activity_title, R.string.shared_app, null, 0);
+		
 		configPlatforms();
 		
-		setShareContent(getString(R.string.app_name),
-				getString(R.string.shared_comtent), R.drawable.icon);
+		/*setShareContent(getString(R.string.app_name),getString(R.string.shared_comtent), R.drawable.share_app);*/
+		setShareContent(getString(R.string.app_name),getString(R.string.the_new_shared_comtent), R.drawable.share_app);
+		
 	}
 
 	/**
@@ -141,7 +145,7 @@ public class SharedFragment extends BaseFragment {
 	 */
 	private void setShareContent(String title, String content, int resId) {
 		/**
-		 * 微信朋友圈
+		 * 微信好友
 		 */
 		WeiXinShareContent weixinContent = new WeiXinShareContent();
 		weixinContent.setShareContent(content);
@@ -151,6 +155,9 @@ public class SharedFragment extends BaseFragment {
 		weixinContent.setShareMedia(urlImage);
 		mController.setShareMedia(weixinContent);
 
+		/**
+		 * 微信朋友圈
+		 */
 		CircleShareContent circleMedia = new CircleShareContent();
 		circleMedia.setShareContent(content);
 		circleMedia.setTitle(title);
@@ -181,6 +188,30 @@ public class SharedFragment extends BaseFragment {
 		// qqShareContent.setShareMedia(image);
 		qqShareContent.setTargetUrl(GlobalValue.TARGET_URL);
 		mController.setShareMedia(qqShareContent);
+		
+		
+	    /**
+		 * 网页版腾讯微博的分享
+		 */
+	    TencentWbShareContent tencentWbShareContent = new TencentWbShareContent();
+	    tencentWbShareContent.setTitle(title);
+	    tencentWbShareContent.setShareContent(content);
+	    /*if (!TextUtils.isEmpty(String.valueOf(resId)))
+	    	tencentWbShareContent.setShareImage(new UMImage(this.activity, resId));*/
+	    tencentWbShareContent.setShareImage(new UMImage(this.activity, resId));
+	    this.mController.setShareMedia(tencentWbShareContent);
+	    
+	    
+	    /**
+	     * 网页版新浪微博的分享
+	     */
+	    SinaShareContent sinaShareContent = new SinaShareContent();
+	    sinaShareContent.setTitle(title);
+	    sinaShareContent.setShareContent(content);
+	   /* if (!TextUtils.isEmpty(String.valueOf(resId)))
+	    	sinaShareContent.setShareImage(new UMImage(this.activity, resId));*/
+	    sinaShareContent.setShareImage(new UMImage(this.activity, resId));
+	    this.mController.setShareMedia(sinaShareContent);
 	}
 
 	public void click(View v) {
@@ -196,10 +227,23 @@ public class SharedFragment extends BaseFragment {
 			performShare(SHARE_MEDIA.QQ);
 			break;*/
 		case R.id.ll_shared_tx_wb:
-			performShare(SHARE_MEDIA.TENCENT);
+			
+			try{
+				performShare(SHARE_MEDIA.TENCENT);
+			}catch(Exception e){
+				System.out.println("错误信息如下:  "+e.toString());
+			    MainActivity mainActivity = new MainActivity();
+				mainActivity.startFragmentAdd(new SharedFragment());
+			}
 			break;
 		case R.id.ll_shared_sina_wb:
-			performShare(SHARE_MEDIA.SINA);
+			try{
+				performShare(SHARE_MEDIA.SINA);
+			}catch(Exception e){
+				System.out.println("错误信息如下:  "+e.toString());
+			    MainActivity mainActivity = new MainActivity();
+				mainActivity.startFragmentAdd(new SharedFragment());
+			}
 			break;
 		}
 	}
@@ -214,8 +258,7 @@ public class SharedFragment extends BaseFragment {
 		qqSsoHandler.addToSocialSDK();
 
 		// 添加QZone平台
-		QZoneSsoHandler qZoneSsoHandler = new QZoneSsoHandler(activity, appId,
-				appKey);
+		QZoneSsoHandler qZoneSsoHandler = new QZoneSsoHandler(activity, appId,appKey);
 		qZoneSsoHandler.addToSocialSDK();
 	}
 
@@ -228,16 +271,15 @@ public class SharedFragment extends BaseFragment {
 			}
 
 			@Override
-			public void onComplete(SHARE_MEDIA platform, int eCode,
-					SocializeEntity entity) {
-				String showText = platform.toString();
+			public void onComplete(SHARE_MEDIA platform, int eCode,SocializeEntity entity) {
+				/*String showText = platform.toString();
 				
 				if (eCode == StatusCode.ST_CODE_SUCCESSED) {
 					showText += "平台分享成功";
 				} else {
 					showText += "平台分享失败";
 				}
-				Toast.makeText(activity, showText, Toast.LENGTH_SHORT).show();
+				Toast.makeText(activity, showText, Toast.LENGTH_SHORT).show();*/
 			}
 		});
 	}

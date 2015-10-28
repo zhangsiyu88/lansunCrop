@@ -3,6 +3,7 @@ package com.lansun.qmyo.utils;
 import java.util.List;
 
 import com.android.pc.util.Gps;
+import com.lansun.qmyo.domain.MySecretary;
 import com.lansun.qmyo.domain.Secretary;
 import com.lansun.qmyo.domain.Sensitive;
 import com.lansun.qmyo.domain.User;
@@ -14,8 +15,8 @@ public class GlobalValue {
 	public static final String DESCRIPTOR = "com.umeng.share";
 
 	public static Gps gps;
-	public static String IP = "appapi.qmyo.org";
-	/*public static String IP = "appapi.qmyo.com";*/
+	/*public static String IP = "appapi.qmyo.org";*/
+	public static String IP = "appapi.qmyo.com";
 	public static String URL_HOME_AD = "http://" + IP + "/advertisement/poster/";
 	/**
 	 * wx5078ff274c69bc8c a5af88ff8deb95831a8a4a21d5f0aaec
@@ -152,6 +153,7 @@ public class GlobalValue {
 	public static String URL_QX_GZ_SHOP = "http://" + IP + "/shop/";
 
 	public static String URL_FRESHEN_USER = "http://" + IP + "/user";
+	
 	public static String URL_USER_ACTIVITYBROWSES = "http://" + IP
 			+ "/user/activitybrowses";
 	public static String URL_USER_SHOPBROWSES = "http://" + IP
@@ -343,5 +345,11 @@ public class GlobalValue {
 	public static enum MESSAGE {
 		maijie, activity, comment, secretary
 	}
+	
+	/**
+	 * 用户消息
+	 */
+	public  static   MySecretary  mySecretary;
+	
 
 }

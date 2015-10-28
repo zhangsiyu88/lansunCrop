@@ -34,6 +34,8 @@ import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
+import com.android.pc.ioc.inject.InjectListener;
+import com.android.pc.ioc.inject.InjectMethod;
 import com.android.pc.ioc.inject.InjectPullRefresh;
 import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.internet.FastHttp;
@@ -78,6 +80,9 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 	private BandPuzzySearchAdapter adapter;
 	private RecyclerView band_puzzy_recycle;
 	private String query_name;
+	
+	
+	
 	private static List<String> list=new ArrayList<>();
 	private Handler handlerPuzzy=new Handler(){
 		public void handleMessage(android.os.Message msg) {
@@ -111,6 +116,8 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 	private MyListView lv_search_bank_card;
 	private boolean isPull = false;
 	private BankCardAdapter bankcardAdapter;
+	
+	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -154,6 +161,8 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 		InputMethodManager imm = (InputMethodManager) getActivity()
 				.getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+		
+
 	}
 
 	/**
@@ -499,18 +508,50 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 					
 					Log.i("下一页的地址为：","第一部分："+firstString);
 					Log.i("下一页的地址为：","第二部分："+lastString);
-					
-					
 					Log.i("下一页的地址为：","下一页合并好的银行卡地址为："+next_page_url);
 					
 					isPull = true;
+					
+					String replaceUrl = next_page_url.replace("/?","?");
+					Log.i("replaceUrl的地址为："  ,  "replaceUrl："+ replaceUrl);
+					String forntUrl = replaceUrl.substring(0, 36);
+					Log.i("forntUrl的地址为："  ,  "forntUrl："+ forntUrl);
+					
+					int indexOfWordPage = replaceUrl.indexOf("page=");
+					int indexOfWordQuery = replaceUrl.indexOf("query=");
+					int indexOfWordAnd = replaceUrl.indexOf("&");
+					
+					String queryText = replaceUrl.substring(indexOfWordQuery+6, indexOfWordAnd);
+					Log.i("queryText为："  ,  "queryText："+ queryText);
+					String pageText = replaceUrl.substring(indexOfWordPage+5, replaceUrl.length());
+					Log.i("pageText为："  ,  "pageText："+ pageText);
+					try {
+						Log.i("queryTextUtfEncode为："  ,  "queryTextUtfEncode："+ URLEncoder.encode( queryText, "utf-8"));
+					} catch (UnsupportedEncodingException e1) {
+						e1.printStackTrace();
+					}
+					
+					LinkedHashMap<String, String> params = new LinkedHashMap<String, String>() ;
+					try {
+						params.put("query",URLEncoder.encode(queryText, "utf-8"));
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+						Log.i("","大家快来抓bug");
+					}
+					params.put("page",pageText);
+					
+					InternetConfig config = new InternetConfig();
+					config.setKey(0);
+					FastHttpHander.ajaxGet(forntUrl, params, config, this);
+					
+					
+					
+					
 					//更新当前页面的下一个页面时,前面的数据不应该被取消掉,应该拼接在后面
-					refreshCurrentList(next_page_url,null, 0, lv_search_bank_card);
+					/*refreshCurrentList(next_page_url,null, 0, lv_search_bank_card);*/
 					
 					Log.i("","上拉去获取新的一次银行卡列表的值");
-					
 					Log.i("检测： ","走的是刷新列表的操作！");
-					
 					
 					/*InternetConfig config = new InternetConfig();
 					config.setKey(0);
@@ -548,4 +589,6 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 			break;
 		}
 	}
+	
+	
 }
