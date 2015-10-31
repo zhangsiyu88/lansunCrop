@@ -200,8 +200,6 @@ public class MineBankcardFragment extends BaseFragment{
 		}
 		refreshUrl = GlobalValue.URL_BANKCARD;
 		refreshKey = 0;
-		
-		
 		refresh();
 	}
 
