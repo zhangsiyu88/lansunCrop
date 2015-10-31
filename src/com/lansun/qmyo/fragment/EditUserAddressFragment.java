@@ -380,7 +380,7 @@ public class EditUserAddressFragment extends BaseFragment {
 
 		
 		dialog = new Dialog(activity, R.style.transparentFrameWindowStyle);
-		dialog.setContentView(view, new LayoutParams(LayoutParams.FILL_PARENT,
+		dialog.setContentView(view, new LayoutParams(LayoutParams.MATCH_PARENT,
 				LayoutParams.WRAP_CONTENT));
 		Window window = dialog.getWindow();
 		// 设置显示动画

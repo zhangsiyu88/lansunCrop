@@ -203,11 +203,36 @@ public class SecretaryFragment extends BaseFragment {
 						}
 					});
 				} else{
-					EventBus bus = EventBus.getDefault();
-					FragmentEntity entity = new FragmentEntity();
-					Fragment fragment = new MineSecretaryFragment();
-					entity.setFragment(fragment);
-					bus.post(entity);
+					if (GlobalValue.mySecretary!=null) {
+						if ("false".equals(GlobalValue.mySecretary.getHas())) {
+							final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
+							dialog.show();
+							dialog.setContentView(R.layout.dialog_setting_secretary);
+							Window window = dialog.getWindow();
+							window.findViewById(R.id.setting_now).setOnClickListener(new OnClickListener() {
+								@Override
+								public void onClick(View v) {
+									dialog.dismiss();
+									FragmentEntity entity=new FragmentEntity();
+									Fragment fragment=new SecretarySettingFragment();
+									entity.setFragment(fragment);
+									EventBus.getDefault().post(entity);
+								}
+							});
+						}else {
+							EventBus bus = EventBus.getDefault();
+							FragmentEntity entity = new FragmentEntity();
+							Fragment fragment = new MineSecretaryFragment();
+							entity.setFragment(fragment);
+							bus.post(entity);
+						}
+					}else {
+						EventBus bus = EventBus.getDefault();
+						FragmentEntity entity = new FragmentEntity();
+						Fragment fragment = new MineSecretaryFragment();
+						entity.setFragment(fragment);
+						bus.post(entity);
+					}
 				}
 
 			}
