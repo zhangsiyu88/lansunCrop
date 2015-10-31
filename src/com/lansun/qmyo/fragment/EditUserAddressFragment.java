@@ -436,8 +436,8 @@ public class EditUserAddressFragment extends BaseFragment {
 			
 			ArrayWheelAdapter<String> adapter = new ArrayWheelAdapter<String>(activity, array);
 			
-			adapter.setTextSize(18);
-			city.setViewAdapter(adapter);
+//			adapter.setTextSize(18);
+//			city.setViewAdapter(adapter);
 			
 			city.setCurrentItem(0);
 			cityMaps.get(pName);
@@ -455,9 +455,9 @@ public class EditUserAddressFragment extends BaseFragment {
 			areaMaps.get(cName).toArray(array);
 			ArrayWheelAdapter<String> adapter = new ArrayWheelAdapter<String>(activity, array);
 			
-		    adapter.setTextSize(18);
-			city.setViewAdapter(adapter);
-			
+//		    adapter.setTextSize(18);
+//			city.setViewAdapter(adapter);
+//			
 			city.setCurrentItem(0);
 		} else {
 			city.setViewAdapter(null);

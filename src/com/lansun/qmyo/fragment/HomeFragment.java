@@ -3,26 +3,17 @@ package com.lansun.qmyo.fragment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.zip.Inflater;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ScrollingView;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,13 +31,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
@@ -54,7 +43,6 @@ import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
-import com.android.pc.ioc.inject.InjectPullRefresh;
 import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.internet.FastHttp;
 import com.android.pc.ioc.internet.FastHttpHander;
@@ -70,6 +58,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnPullEventListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.State;
 import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
+import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.HomeListAdapter;
 import com.lansun.qmyo.adapter.HomePagerAdapter;
 import com.lansun.qmyo.adapter.SearchAdapter;
@@ -80,12 +69,10 @@ import com.lansun.qmyo.domain.HomePromote;
 import com.lansun.qmyo.domain.HomePromoteData;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.AnimUtils;
-import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExperienceDialog;
 import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
-import com.lansun.qmyo.R;
 
 /**
  * 主界面
@@ -400,13 +387,6 @@ import com.lansun.qmyo.R;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		//TODO
-		
-		/*this.inflater = inflater;
-		rootView = inflater.inflate(R.layout.activity_home, null, false);
-		head =  rootView.findViewById(R.id.head_banner);*/
-		/*Handler_Inject.injectFragment(this, rootView);*/
-		
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 		v.tv_home_icon.setTextColor(getResources().getColor(R.color.app_green2));
@@ -640,8 +620,6 @@ import com.lansun.qmyo.R;
 
 			} else {
 				refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
-				// TODO 默认上海 开发板
-
 				/*refreshParams.put("location", "31.293688,121.524448");*/
 				refreshParams.put("location", String.valueOf(GlobalValue.gps.getWgLat()+","+ GlobalValue.gps.getWgLon()));
 				/* refreshParams.put("site", getSelectCity()[0]);*/
@@ -822,7 +800,6 @@ import com.lansun.qmyo.R;
 						}
 						/**
 						 * 拿到数据后开始进行对ListView的每一个条目的设置
-						 * TODO
 						 */
 						if (promoteAdapter == null) {//第一次进入,Adapter为null,将其设置到ListView对象上去
 							promoteAdapter = new HomeListAdapter(lv_home_list,
@@ -885,9 +862,11 @@ import com.lansun.qmyo.R;
 						//上面的图还是要加载上去的
 						loadPhoto(photoUrl, iv_home_ad);
 						isFirstRequest = false;
-						//TODO
-						/*PullToRefreshManager.getInstance().onFooterRefreshComplete();
-						PullToRefreshManager.getInstance().footerUnable();*/
+
+
+						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+						PullToRefreshManager.getInstance().footerUnable();
+
 
 					}
 				}

@@ -150,6 +150,16 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 				endProgress();
 				if(searchBankcardAdapter == null){
 					searchBankcardAdapter = new SearchAdapter(lv_search_content,datas, R.layout.activity_search_item);
+
+					try{
+						Log.i("","企图remove掉ListView中的尾布局");
+						
+						lv_search_content.removeFooterView(emptyView);
+						Log.i("","remove掉ListView中的尾布局成功！");
+						
+					}catch(Exception e ){
+//						CustomToast.show(activity, "出异常了", "异常已被抓！");
+					}
 					
 					if(list.getData().size()<10){
 						lv_search_content.addFooterView(emptyView);

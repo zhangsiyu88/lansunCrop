@@ -128,7 +128,7 @@ public class MainActivity extends FragmentActivity {
 			startFragmentAdd(new IntroductionPageFragment());
 		} else {
 			startFragmentAdd(new HomeFragment());
-			/*startFragmentAdd(new PersonCenterFragment());*/
+
 			getTokenService();
 		}
 		

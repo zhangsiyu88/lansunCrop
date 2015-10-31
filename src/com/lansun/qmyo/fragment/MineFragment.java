@@ -1,6 +1,7 @@
 package com.lansun.qmyo.fragment;
 
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -24,6 +25,7 @@ import com.android.pc.util.Handler_Json;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.Message;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.fragment.PersonCenterFragment.OnImageChage;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
@@ -31,7 +33,7 @@ import com.lansun.qmyo.view.CircularImage;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.R;
 
-public class MineFragment extends BaseFragment {
+public class MineFragment extends BaseFragment implements OnImageChage{
 	@InjectAll
 	Views v;
 
@@ -90,7 +92,7 @@ public class MineFragment extends BaseFragment {
 
 		refreshCurrentList(GlobalValue.URL_USER_MESSAGE, null, 0, null);//去刷新消息
 	}
-
+	
 	@Override
 	public void onResume() {
 		v.iv_mine_icon.setPressed(true);
@@ -132,9 +134,12 @@ public class MineFragment extends BaseFragment {
 		// break;
 		case R.id.ll_mine_register_login:// 注册登录
 			if (!TextUtils.isEmpty(App.app.getData("secret"))) {
-				fragment = new PersonCenterFragment();
+				fragment = new PersonCenterFragment(this);
 			} else {
 				fragment = new RegisterFragment();
+				Bundle bundle=new Bundle();
+				bundle.putString("fragment_name",MineFragment.class.getSimpleName());
+				fragment.setArguments(bundle);
 			}
 			break;
 		case R.id.rl_mine_secretary:// 我的私人秘书
@@ -260,5 +265,10 @@ public class MineFragment extends BaseFragment {
 			}
 		}
 
+	}
+
+	@Override
+	public void setOnImageChage(Bitmap bitmap) {
+		v.iv_mine_head.setImageBitmap(bitmap);
 	}
 }
