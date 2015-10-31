@@ -27,6 +27,7 @@
         android:layout_marginBottom="@dimen/margin_top_100"
         android:layout_marginTop="@dimen/margin_top_20"
         android:text="@string/get_back"
+        android:visibility="gone"
         android:textColor="@color/app_green1" />
 
 </LinearLayout>

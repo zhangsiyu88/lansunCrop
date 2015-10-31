@@ -121,6 +121,7 @@ public class StoreDetailFragment extends BaseFragment {
 						dialog.dismiss();
 						RegisterFragment fragment = new RegisterFragment();
 						FragmentEntity event = new FragmentEntity();
+						App.app.setData("shopId", shopId);
 						Bundle bundle = new Bundle();
 						bundle.putString("fragment_name", StoreDetailFragment.class.getSimpleName());
 						fragment.setArguments(bundle);
@@ -160,6 +161,7 @@ public class StoreDetailFragment extends BaseFragment {
 						RegisterFragment fragment = new RegisterFragment();
 						FragmentEntity event = new FragmentEntity();
 						Bundle bundle = new Bundle();
+						App.app.setData("shopId", shopId);
 						bundle.putString("fragment_name", StoreDetailFragment.class.getSimpleName());
 						fragment.setArguments(bundle);
 						event.setFragment(fragment);
