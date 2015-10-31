@@ -58,21 +58,7 @@ public class AboutFragment extends BaseFragment {
 		initCacheSize();
 	}
 	
-	
-	private void init2() {
-		v.tv_about_qmyo_net
-				.setText(Html.fromHtml(getString(R.string.qmyo_net)));
-		initCacheSize();
-		v.tv_about_qmyo_net
-		.setText(Html.fromHtml(getString(R.string.qmyo_net)));
-		initCacheSize();
-		v.tv_about_qmyo_net
-		.setText(Html.fromHtml(getString(R.string.qmyo_net)));
-		initCacheSize();
-		v.tv_about_qmyo_net
-		.setText(Html.fromHtml(getString(R.string.qmyo_net)));
-		initCacheSize();
-	}
+
 	
 	
 
