@@ -4,13 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.zip.Inflater;
-
-import kankan.wheel.widget.OnWheelChangedListener;
-import kankan.wheel.widget.WheelView;
-import kankan.wheel.widget.adapters.AbstractWheelTextAdapter;
-import kankan.wheel.widget.adapters.ArrayWheelAdapter;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -27,7 +20,8 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-
+import com.android.pc.ioc.adapter.AbstractWheelTextAdapter;
+import com.android.pc.ioc.adapter.ArrayWheelAdapter;
 import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.db.sqlite.Selector;
 import com.android.pc.ioc.inject.InjectAll;
@@ -38,9 +32,9 @@ import com.android.pc.ioc.internet.FastHttp;
 import com.android.pc.ioc.internet.FastHttpHander;
 import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
-
+import com.android.pc.ioc.view.WheelView;
 import com.android.pc.ioc.view.listener.OnClick;
-
+import com.android.pc.ioc.view.wheelview.OnWheelChangedListener;
 /*import com.android.pc.ioc.adapter.WheelViewAdapter;*/
 /*import com.android.pc.ioc.adapter.ArrayWheelAdapter;*/
 /*import com.android.pc.ioc.adapter.AbstractWheelTextAdapter;*/
@@ -48,6 +42,7 @@ import com.android.pc.ioc.view.listener.OnClick;
 /*import com.android.pc.ioc.view.wheelview.OnWheelChangedListener;*/
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
+import com.lansun.qmyo.R;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.Address;
 import com.lansun.qmyo.domain.Address2;
@@ -55,7 +50,6 @@ import com.lansun.qmyo.domain.Address3;
 import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CustomToast;
-import com.lansun.qmyo.R;
 
 /**
  * 编辑用户爱好
@@ -405,9 +399,8 @@ public class EditUserAddressFragment extends BaseFragment {
 
 		Log.i("TAGTAGTAGTAGTAG","下面生成Dialog");
 		dialog = new Dialog(activity, R.style.transparentFrameWindowStyle);
-		
-		dialog.setContentView(view, new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
-		
+		dialog.setContentView(view, new LayoutParams(LayoutParams.MATCH_PARENT,
+				LayoutParams.WRAP_CONTENT));
 		Window window = dialog.getWindow();
 		// 设置显示动画
 		window.setWindowAnimations(R.style.PopupWindowAnimation);
