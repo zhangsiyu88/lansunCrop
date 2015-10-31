@@ -121,6 +121,9 @@ public class StoreDetailFragment extends BaseFragment {
 						dialog.dismiss();
 						RegisterFragment fragment = new RegisterFragment();
 						FragmentEntity event = new FragmentEntity();
+						Bundle bundle = new Bundle();
+						bundle.putString("fragment_name", StoreDetailFragment.class.getSimpleName());
+						fragment.setArguments(bundle);
 						event.setFragment(fragment);
 						EventBus.getDefault().post(event);
 					}
@@ -156,6 +159,9 @@ public class StoreDetailFragment extends BaseFragment {
 						dialog.dismiss();
 						RegisterFragment fragment = new RegisterFragment();
 						FragmentEntity event = new FragmentEntity();
+						Bundle bundle = new Bundle();
+						bundle.putString("fragment_name", StoreDetailFragment.class.getSimpleName());
+						fragment.setArguments(bundle);
 						event.setFragment(fragment);
 						EventBus.getDefault().post(event);
 					}

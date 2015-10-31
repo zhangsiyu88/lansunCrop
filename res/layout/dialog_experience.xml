@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/bottom_menu_h" 
+    android:paddingBottom="@dimen/margin_top_50" 
+    android:gravity="center"
     android:alpha="50">
 
     <LinearLayout
@@ -18,18 +19,17 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
-
             <com.android.pc.ioc.image.RecyclingImageView
                 android:id="@+id/iv_exp_bankcard"
-                android:layout_width="@dimen/search_activity_w"
-                android:layout_height="@dimen/search_activity_h"
+                android:layout_width="@dimen/search_bank_card_w"
+                android:layout_height="@dimen/search_bank_card_h"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/margin_top_20" />
+                android:layout_marginTop="@dimen/margin_top_60" />
         </RelativeLayout>
 
         <TextView
             android:id="@+id/textView1"
-            style="@style/text_style_small_24"
+            style="@style/text_style_small_27"
             android:layout_marginTop="@dimen/margin_top_20"
             android:text="@string/maijie_tigong"
             android:textColor="@color/app_green2" />
@@ -42,16 +42,8 @@
             android:layout_marginTop="@dimen/margin_top_20"
             android:gravity="center_horizontal"
             android:textColor="#6F6F6F" 
+            android:layout_marginBottom="@dimen/margin_top_60"
             android:lineSpacingExtra="4dp"/>
-
-        <TextView
-            android:id="@+id/textView3"
-            style="@style/text_style_small_24"
-            android:layout_marginBottom="@dimen/margin_top_20"
-            android:layout_marginTop="@dimen/margin_top_15"
-            android:text=""
-            android:textColor="@color/app_green2" />
-        <!-- android:text="@string/experience_now" -->
     </LinearLayout>
 
     <Button

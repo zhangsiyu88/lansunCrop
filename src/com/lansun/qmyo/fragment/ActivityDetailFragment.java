@@ -70,7 +70,7 @@ import com.lansun.qmyo.R;
 import com.umeng.socialize.media.GooglePlusShareContent;
 
 /**
- * 活动详情 TODO 收藏功能有bug
+ * 活动详情 TODO 
  * 
  * @author bhxx
  * 
@@ -432,6 +432,11 @@ public class ActivityDetailFragment extends BaseFragment {
 							dialog.dismiss();
 							RegisterFragment fragment = new RegisterFragment();
 							FragmentEntity event = new FragmentEntity();
+							App.app.setData("shopId", shopId);
+							App.app.setData("activityId", activityId);
+							Bundle bundle = new Bundle();
+							bundle.putString("fragment_name", ActivityDetailFragment.class.getSimpleName());
+							fragment.setArguments(bundle);
 							event.setFragment(fragment);
 							EventBus.getDefault().post(event);
 						}
@@ -468,6 +473,11 @@ public class ActivityDetailFragment extends BaseFragment {
 						dialog.dismiss();
 						RegisterFragment fragment = new RegisterFragment();
 						FragmentEntity event = new FragmentEntity();
+						App.app.setData("shopId", shopId);
+						App.app.setData("activityId", activityId);
+						Bundle bundle = new Bundle();
+						bundle.putString("fragment_name", ActivityDetailFragment.class.getSimpleName());
+						fragment.setArguments(bundle);
 						event.setFragment(fragment);
 						EventBus.getDefault().post(event);
 
@@ -514,6 +524,11 @@ public class ActivityDetailFragment extends BaseFragment {
 						dialog.dismiss();
 						RegisterFragment fragment = new RegisterFragment();
 						FragmentEntity event = new FragmentEntity();
+						App.app.setData("shopId", shopId);
+						App.app.setData("activityId", activityId);
+						Bundle bundle = new Bundle();
+						bundle.putString("fragment_name", ActivityDetailFragment.class.getSimpleName());
+						fragment.setArguments(bundle);
 						event.setFragment(fragment);
 						EventBus.getDefault().post(event);
 					}

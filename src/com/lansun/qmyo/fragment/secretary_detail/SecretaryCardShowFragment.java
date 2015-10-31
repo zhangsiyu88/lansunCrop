@@ -6,6 +6,7 @@ import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.BaseFragment;
 import com.lansun.qmyo.fragment.HomeFragment;
+import com.lansun.qmyo.fragment.MineBankcardFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.fragment.SecretarySettingFragment;
 import com.lansun.qmyo.fragment.task.TaskAssignment;
@@ -72,6 +73,9 @@ public class SecretaryCardShowFragment extends BaseFragment{
 							dialog.dismiss();
 							FragmentEntity entity=new FragmentEntity();
 							Fragment fragment=new RegisterFragment();
+							Bundle bundle = new Bundle();
+							bundle.putString("fragment_name", SecretaryCardShowFragment.class.getSimpleName());
+							fragment.setArguments(bundle);
 							entity.setFragment(fragment);
 							EventBus.getDefault().post(entity);
 						}
@@ -111,19 +115,16 @@ public class SecretaryCardShowFragment extends BaseFragment{
 								});
 							}else {
 								FragmentEntity entity=new FragmentEntity();
+								
 								Fragment fragment=new RegisterFragment();
+								
 								Bundle bundle=new Bundle();
 								bundle.putString("content", content.getText().toString());
 								bundle.putString("type", "card");
-								System.out.println("测试数据测试数据！！！！");
 								fragment.setArguments(bundle);
-								System.out.println("测试数据测试数据！！！！");
 								entity.setFragment(fragment);
 								EventBus.getDefault().post(entity);
 							}
-							System.out.println("测试数据测试数据！！！！");
-							
-							
 						}
 					}
 				}

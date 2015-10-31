@@ -109,6 +109,9 @@ public class FoundFragment extends BaseFragment {
 						dialog.dismiss();
 						RegisterFragment fragment = new RegisterFragment();
 						FragmentEntity entity = new FragmentEntity();
+						Bundle bundle = new Bundle();
+						bundle.putString("fragment_name", FoundFragment.class.getSimpleName());
+						fragment.setArguments(bundle);
 						entity.setFragment(fragment);
 						EventBus.getDefault().post(entity);
 
@@ -138,6 +141,9 @@ public class FoundFragment extends BaseFragment {
 						dialog.dismiss();
 						RegisterFragment fragment = new RegisterFragment();
 						FragmentEntity entity = new FragmentEntity();
+						Bundle bundle = new Bundle();
+						bundle.putString("fragment_name", FoundFragment.class.getSimpleName());
+						fragment.setArguments(bundle);
 						entity.setFragment(fragment);
 						EventBus.getDefault().post(entity);
 					}

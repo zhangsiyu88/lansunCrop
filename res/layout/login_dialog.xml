@@ -27,22 +27,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:textColor="#6F6F6F"
             android:layout_marginTop="20dp"
             android:lineSpacingExtra="4dp"
             android:text="@string/please_login_secretary" />
     </LinearLayout>
-
-    <TextView
+	<TextView
         android:id="@+id/btn_login"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_below="@+id/tishi"
-        android:layout_marginTop="@dimen/margin_top_45"
-        android:background="@drawable/buton_shape"
-        android:gravity="center"
+        style="@style/text_style_small_24"
+        android:layout_width="@dimen/expe_btn_w"
+        android:layout_height="@dimen/register_edit_h"
+        android:layout_below="@id/tishi"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/margin_top_35"
+        android:background="@drawable/button"
         android:text="@string/login_now"
-        android:layout_marginBottom="10dp"
+        android:gravity="center"
         android:textColor="@color/app_white" />
 
 </RelativeLayout>
