@@ -2,13 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="@dimen/l_r_35"
-    android:layout_marginRight="@dimen/l_r_35"
-    android:orientation="vertical" >
-
+    >
     <LinearLayout
         android:id="@+id/list_display_view_container"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/app_white"
         android:orientation="horizontal" >
@@ -37,7 +34,7 @@
         </RelativeLayout>
 
         <LinearLayout
-           android:id="@+id/add_bank_to_mine"
+            android:id="@+id/add_bank_to_mine"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_top_15"
@@ -57,7 +54,7 @@
                     android:text="@string/currentCard" />
 
                 <com.android.pc.ioc.image.RecyclingImageView
-                     android:id="@+id/iv_bank_card_add"
+                    android:id="@+id/iv_bank_card_add"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"

@@ -59,7 +59,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
-public class MineBankcardFragment extends BaseFragment {
+public class MineBankcardFragment extends BaseFragment{
 
 	
 	private boolean mIsFromHome = false;
@@ -437,7 +437,7 @@ public class MineBankcardFragment extends BaseFragment {
 						
 						RegisterFragment fragment = new RegisterFragment();
 						Bundle bundle = new Bundle();
-						//TODO
+						bundle.putString("fragment_name", MineBankcardFragment.class.getSimpleName());
 						//下面的数据直接写到Register页面中
 						if(mIsFromHome&&!mIsFromEightPart&&!mIsFromNewPart){//来自HomeFrag
 							bundle.putBoolean("isFromHome", mIsFromHome);
@@ -448,7 +448,6 @@ public class MineBankcardFragment extends BaseFragment {
 							bundle.putBoolean("isFromNewPart", mIsFromNewPart);
 							bundle.putBoolean("IsNew", true);
 							bundle.putInt("type", R.string.new_exposure);
-							
 						}
 						bundle.putBoolean("isFromMyBankcardFragToRigisterFrag", true);
 						fragment.setArguments(bundle);

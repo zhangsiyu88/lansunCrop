@@ -2,72 +2,60 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_white"
+    android:background="#EBEBEB"
     android:orientation="vertical" >
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_menu_h"
         android:background="@color/app_white"
-        android:gravity="center_vertical"
         android:orientation="horizontal" >
 
         <com.android.pc.ioc.image.RecyclingImageView
             android:id="@+id/iv_activity_back"
             style="@style/w_wrap_h_wrap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:src="@drawable/back" />
 
         <TextView
             android:id="@+id/tv_feedback_title"
-            style="@style/text_style_big_40"
+            android:textSize="17sp"
+            android:layout_width="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:textColor="@color/app_green2" />
+        <TextView 
+            android:id="@+id/btn_feedback_commit"
+            android:layout_centerVertical="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:gravity="center"
-            android:textColor="@color/app_green2" />
+            android:padding="5dp"
+            android:text="提交"
+            android:textColor="#AFAFAF"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentRight="true"
+            />
     </RelativeLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/app_grey5" />
-
     <TextView
-        style="@style/text_style_big_34"
-        android:layout_marginLeft="@dimen/l_r_35"
-        android:layout_marginRight="@dimen/l_r_35"
-        android:layout_marginTop="@dimen/t_10"
-        android:text="@string/feedback_desc"
-        android:textColor="@color/app_grey7" />
-
+        style="@style/line_style_2"
+        />
     <EditText
         android:id="@+id/et_feedback_content"
         android:layout_width="match_parent"
+        android:padding="10dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/l_r_35"
-        android:layout_marginRight="@dimen/l_r_35"
-        android:layout_marginTop="@dimen/margin_top_32"
-        android:layout_weight="7"
-        android:background="@drawable/tv_style_gray"
-        android:ems="10"
+        android:layout_marginTop="1px"
+        android:background="@color/white"
         android:gravity="top"
-        android:hint="@string/please_enter_feedback" >
-
+        android:lineSpacingExtra="3dp"
+        android:lines="15"
+        android:textSize="15sp"
+        android:hint="@string/feedback_desc" >
         <requestFocus />
     </EditText>
-
-    <Button
-        android:id="@+id/btn_feedback_commit"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_menu_h"
-        android:layout_marginBottom="@dimen/margin_top_32"
-        android:layout_marginLeft="@dimen/l_r_35"
-        android:layout_marginRight="@dimen/l_r_35"
-        android:layout_marginTop="@dimen/margin_top_32"
-        android:background="@drawable/button"
-        android:text="@string/commit"
-        android:textColor="@color/app_white" />
-
 </LinearLayout>

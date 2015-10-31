@@ -156,8 +156,7 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 						Log.i("","remove掉ListView中的尾布局成功！");
 						
 					}catch(Exception e ){
-						CustomToast.show(activity, "出异常了", "异常已被抓！");
-						
+//						CustomToast.show(activity, "出异常了", "异常已被抓！");
 					
 					}finally{
 						Log.i("","remove掉ListView中的尾布局失败，抓住异常，还是展示获取的数据，但尾部跟上了emptyView！");

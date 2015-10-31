@@ -112,7 +112,6 @@
         <!-- android:layout_marginTop="@dimen/l_r_35" -->
         <include
             layout="@layout/bottom_menu" 
-           
             /> 
     </RelativeLayout>
 

@@ -39,6 +39,7 @@ public class OkHttp {
 
 	private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
 //	private static final MediaType MEDIA_TYPE_PNG = MediaType.parse("text/x-markdown; charset=utf-8");
+	private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
 	// timeout
 	static {
@@ -80,8 +81,6 @@ public class OkHttp {
 	}
 
 	public static void asyncPost(String url, Map<String, String> body, Callback callback) {
-
-
 		FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
 		for (String key : body.keySet()) {
 			if (TextUtils.isEmpty(body.get(key))) {
@@ -140,6 +139,26 @@ public class OkHttp {
 		enqueue(request, callback);
 	}
 	/**
+	 * 上传json数据
+	 * @param url
+	 * @param key
+	 * @param value
+	 * @param body
+	 * @param tag
+	 * @param callback
+	 */
+	public static void asyncPost(String url,String json, String tag, Callback callback) {
+		RequestBody body = RequestBody.create(JSON, json);
+		Request request = new Request.Builder()
+		.url(url)
+		.post(body)
+		.addHeader("Authorization", "Bearer "+App.app.getData("access_token"))
+		.tag(tag)
+		.build();
+		enqueue(request, callback);
+	}
+	
+	/**带有请求头的
 	 * @param url
 	 * @param body
 	 * @param tag
@@ -149,6 +168,23 @@ public class OkHttp {
 		Request request = new Request.Builder()
 		.url(url)
 		.addHeader(key, value)
+		.build();
+		enqueue(request, callback);
+	}
+	/**不带请求头
+	 * @param url
+	 * @param body
+	 * @param tag
+	 * @param callback
+	 */
+	public static void asyncGet(String url,String tag, Callback callback) {
+		String token="";
+		if (!TextUtils.isEmpty(App.app.getData("access_token"))) {
+			token="Bearer "+App.app.getData("access_token");
+		}
+		Request request = new Request.Builder()
+		.url(url)
+		.addHeader("Authorization",token)
 		.build();
 		enqueue(request, callback);
 	}

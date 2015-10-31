@@ -2,11 +2,10 @@ package com.lansun.qmyo.fragment;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import android.annotation.SuppressLint;
@@ -17,11 +16,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -34,24 +37,16 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
-import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
-import com.android.pc.ioc.internet.FastHttp;
-import com.android.pc.ioc.internet.FastHttpHander;
-import com.android.pc.ioc.internet.InternetConfig;
-import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
-import com.lansun.qmyo.app.App;
-import com.lansun.qmyo.domain.HistoryActivity;
 import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.net.OkHttp;
@@ -63,21 +58,24 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.lansun.qmyo.R;
-
-public class PersonCenterFragment extends BaseFragment {
+public class PersonCenterFragment extends BaseFragment{
+	private String path;
+	private OnImageChage callbackChage;
+	public PersonCenterFragment(OnImageChage callbackChage){
+		this.callbackChage=callbackChage;
+	}
 	private RecyclingImageView iv_activity_back;
 	@InjectAll
 	Views v;
 	private Button carema;
 	private Button album;
 	private Button give_up;
-
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private View iv_person_center_nickname, rl_person_center_head,
-				iv_person_center_reset_pwd, iv_person_center_edit_person_info,
-				iv_person_center_qr_code, tv_person_center_exit,
-				fl_comments_right_iv;
+		iv_person_center_reset_pwd, iv_person_center_edit_person_info,
+		iv_person_center_qr_code, tv_person_center_exit,
+		fl_comments_right_iv;
 		private TextView tv_activity_title, tv_person_center_nickname;
 		private CircularImage iv_person_center_head;
 	}
@@ -88,10 +86,13 @@ public class PersonCenterFragment extends BaseFragment {
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
 			case 0:
+				Bitmap bitmap=BitmapFactory.decodeFile(path);
+				callbackChage.setOnImageChage(bitmap);
 				if (dialogpg!=null) {
 					dialogpg.dismiss();
 				}
 				CustomToast.show(activity,"提示", "头像修改成功");
+
 				break;
 			case 1:
 				if (dialogpg!=null) {
@@ -111,11 +112,11 @@ public class PersonCenterFragment extends BaseFragment {
 		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
-	
+
 	@InjectInit
 	private void init() {
 		v.fl_comments_right_iv.setVisibility(View.GONE);
-		
+
 		if (!TextUtils.isEmpty(GlobalValue.user.getNickname())) {
 			v.tv_person_center_nickname.setText(GlobalValue.user.getNickname());
 		}
@@ -167,7 +168,9 @@ public class PersonCenterFragment extends BaseFragment {
 			 */
 			GlobalValue.mySecretary=null;
 			fragment = new RegisterFragment();
-			
+			Bundle bundle=new Bundle();
+			bundle.putString("fragment_name", PersonCenterFragment.class.getSimpleName());
+			fragment.setArguments(bundle);
 			/*back();此处无需back，因为主动跳往登录界面*/
 			break;
 		}
@@ -262,7 +265,6 @@ public class PersonCenterFragment extends BaseFragment {
 	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		String path=null;
 		switch (requestCode) {
 		case ACTION_IMAGE_CAPTURE:
 			if (new File(getPath(activity, imageUri)).length() == 0) {
@@ -426,5 +428,7 @@ public class PersonCenterFragment extends BaseFragment {
 		}
 		return null;
 	}
-
+	public interface OnImageChage{
+		void setOnImageChage(Bitmap bitmap);
+	}
 }

@@ -164,7 +164,7 @@ public class GlobalValue {
 			+ "/shop/%1$s/activitys";
 	public static String URL_USER_SAVE = "http://" + IP + "/user";
 	/**
-	 * 保存用户信息
+	 * 意见反馈
 	 */
 	public static String URL_USER_FEEDBACK = "http://" + IP + "/user/feedback";
 	/**
