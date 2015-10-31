@@ -219,8 +219,10 @@ public class SecretarySettingFragment extends BaseFragment implements OnClickLis
 	@InjectInit
 	private void init() {
 		if (GlobalValue.mySecretary!=null) {
-			v.et_secretary_name.setText(GlobalValue.mySecretary.getName());
-			v.et_hope_call_you.setText(GlobalValue.mySecretary.getOwner_name());
+			if ("true".equals(GlobalValue.mySecretary.getHas())) {
+				v.et_secretary_name.setText(GlobalValue.mySecretary.getName());
+				v.et_hope_call_you.setText(GlobalValue.mySecretary.getOwner_name());
+			}
 			loadPhoto(GlobalValue.mySecretary.getAvatar(), v.iv_secretary_head);
 		}else {
 			v.iv_secretary_head.setImageResource(R.drawable.secretary_default_avatar);
