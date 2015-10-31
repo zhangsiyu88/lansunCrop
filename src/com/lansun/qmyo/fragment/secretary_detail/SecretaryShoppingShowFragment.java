@@ -7,6 +7,7 @@ import com.lansun.qmyo.R;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.BaseFragment;
+import com.lansun.qmyo.fragment.MineBankcardFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
 import com.lansun.qmyo.fragment.SecretarySettingFragment;
@@ -74,6 +75,9 @@ public class SecretaryShoppingShowFragment extends BaseFragment{
 							dialog.dismiss();
 							FragmentEntity entity=new FragmentEntity();
 							Fragment fragment=new RegisterFragment();
+							Bundle bundle = new Bundle();
+							bundle.putString("fragment_name", SecretaryShoppingShowFragment.class.getSimpleName());
+							fragment.setArguments(bundle);
 							entity.setFragment(fragment);
 							EventBus.getDefault().post(entity);
 						}

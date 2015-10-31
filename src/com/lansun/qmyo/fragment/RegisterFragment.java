@@ -1,74 +1,51 @@
 package com.lansun.qmyo.fragment;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import cn.jpush.android.api.JPushInterface;
-
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
-import com.android.pc.ioc.inject.InjectListener;
-import com.android.pc.ioc.inject.InjectMethod;
 import com.android.pc.ioc.internet.FastHttp;
 import com.android.pc.ioc.internet.FastHttpHander;
 import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
-
-
-
 import com.android.pc.ioc.view.TimeButton;
-import com.android.pc.ioc.view.TimeTextView;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
-import com.android.pc.util.Handler_Time;
-import com.lansun.qmyo.adapter.HomeListAdapter;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.ErrorInfo;
-import com.lansun.qmyo.domain.HomePromote;
-import com.lansun.qmyo.domain.HomePromoteData;
 import com.lansun.qmyo.domain.Token;
 import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.PersonCenterFragment.OnImageChage;
+import com.lansun.qmyo.fragment.secretary_detail.SecretaryCardShowFragment;
+import com.lansun.qmyo.fragment.secretary_detail.SecretaryInvestmentShowFragment;
+import com.lansun.qmyo.fragment.secretary_detail.SecretaryLifeShowFragment;
+import com.lansun.qmyo.fragment.secretary_detail.SecretaryPartyShowFragment;
+import com.lansun.qmyo.fragment.secretary_detail.SecretaryShoppingShowFragment;
+import com.lansun.qmyo.fragment.secretary_detail.SecretaryStudentShowFragment;
+import com.lansun.qmyo.fragment.secretary_detail.SecretaryTravelShowFragment;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CloudView;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.R;
-
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.SpannedString;
 import android.text.TextUtils;
-import android.text.style.AbsoluteSizeSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
@@ -479,7 +456,6 @@ public class RegisterFragment extends BaseFragment implements OnImageChage{
 				//那么就在此时立即退出程序，下次进入时肯定会自动进入登陆后的状态了
 
 				GlobalValue.user = Handler_Json.JsonToBean(User.class,r.getContentAsString());//-------------------------> 注册成功后，便拿到了返回的 user信息 
-				Log.i("点击注册之后，服务器会返回什么鬼给我",r.getContentAsString());
 				if (GlobalValue.user != null) {
 					clearTempTokenAndSercet();
 					// v.rl_register_dialog.setVisibility(View.GONE);
@@ -593,6 +569,35 @@ public class RegisterFragment extends BaseFragment implements OnImageChage{
 							fragment=new MineFragment();
 						}else if("MineBankcardFragment".equals(fragment_name)){
 							fragment=new MineBankcardFragment();
+						}else if("ActivityDetailFragment".equals(fragment_name)){
+							fragment=new ActivityDetailFragment();
+							Bundle bundle=new Bundle();
+							bundle.putString("shopId", App.app.getData("shopId"));
+							bundle.putString("activityId", App.app.getData("activityId"));
+							fragment.setArguments(bundle);
+						}else if("StoreDetailFragment".equals(fragment_name)){
+							fragment=new StoreDetailFragment();
+							Bundle bundle=new Bundle();
+							bundle.putString("shopId", App.app.getData("shopId"));
+							fragment.setArguments(bundle);
+						}else if("SecretaryFragment".equals(fragment_name)){
+							fragment=new SecretaryFragment();
+						}else if("SecretaryTravelShowFragment".equals(fragment_name)){
+							fragment=new SecretaryTravelShowFragment();
+						}else if("SecretaryShoppingShowFragment".equals(fragment_name)){
+							fragment=new SecretaryShoppingShowFragment();
+						}else if("SecretaryPartyShowFragment".equals(fragment_name)){
+							fragment=new SecretaryPartyShowFragment();
+						}else if("SecretaryLifeShowFragment".equals(fragment_name)){
+							fragment=new SecretaryLifeShowFragment();
+						}else if("SecretaryStudentShowFragment".equals(fragment_name)){
+							fragment=new SecretaryStudentShowFragment();
+						}else if("SecretaryInvestmentShowFragment".equals(fragment_name)){
+							fragment=new SecretaryInvestmentShowFragment();
+						}else if("SecretaryCardShowFragment".equals(fragment_name)){
+							fragment=new SecretaryCardShowFragment();
+						}else if("FoundFragment".equals(fragment_name)){
+							fragment=new FoundFragment();
 						}
 						fEntity.setFragment(fragment);
 						EventBus.getDefault().post(fEntity);
@@ -647,10 +652,6 @@ public class RegisterFragment extends BaseFragment implements OnImageChage{
 	}
 	@Override
 	public void setOnImageChage(Bitmap bitmap) {
-		// TODO Auto-generated method stub
 		
 	}
-
-
-
 }

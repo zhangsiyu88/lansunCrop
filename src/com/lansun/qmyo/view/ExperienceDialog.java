@@ -55,6 +55,10 @@ import com.lansun.qmyo.R;
 @SuppressLint("ValidFragment")
 public class ExperienceDialog extends DialogFragment {
 
+	private DisplayImageOptions options = new DisplayImageOptions.Builder()
+	.cacheInMemory(true).cacheOnDisk(true).considerExifParams(true)
+	.displayer(new FadeInBitmapDisplayer(300))
+	.displayer(new RoundedBitmapDisplayer(10)).build();
 	
 	public String mCardId ;
 	public String mCardHeadPhotoUrl ;
@@ -116,7 +120,7 @@ public class ExperienceDialog extends DialogFragment {
 		getDialog().setCanceledOnTouchOutside(false);
 	
 		
-		ImageLoader.getInstance().displayImage(mCardHeadPhotoUrl, v.iv_exp_bankcard);
+		ImageLoader.getInstance().displayImage(mCardHeadPhotoUrl, v.iv_exp_bankcard,options);
 		v.tv_expe_desc.setText(mCardDesc);
 		
 		return view;
@@ -179,7 +183,7 @@ public class ExperienceDialog extends DialogFragment {
 						r.getContentAsString());
 				/*ImageLoader.getInstance().displayImage(data.getBankcard().getPhoto(), v.iv_exp_bankcard, options);*/
 				
-				ImageLoader.getInstance().displayImage(data.getBankcard().getPhoto(), v.iv_exp_bankcard);
+				ImageLoader.getInstance().displayImage(data.getBankcard().getPhoto(), v.iv_exp_bankcard,options);
 				
 				/*v.tv_expe_desc.setText(data.getBank().getName()+"\n"+data.getBankcard().getName());//给卡前面加上银行的名字*/				
 				v.tv_expe_desc.setText(data.getBank().getName()+data.getBankcard().getName());

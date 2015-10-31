@@ -152,6 +152,9 @@ public class MineFragment extends BaseFragment implements OnImageChage{
 						dialog.dismiss();
 						RegisterFragment fragment = new RegisterFragment();
 						FragmentEntity event = new FragmentEntity();
+						Bundle bundle = new Bundle();
+						bundle.putString("fragment_name", MineFragment.class.getSimpleName());
+						fragment.setArguments(bundle);
 						event.setFragment(fragment);
 						EventBus.getDefault().post(event);
 					}
@@ -166,6 +169,9 @@ public class MineFragment extends BaseFragment implements OnImageChage{
 		case R.id.rl_mine_comments:// 我的评论
 			if (GlobalValue.user == null || isExperience()) {
 				fragment = new RegisterFragment();
+				Bundle bundle = new Bundle();
+				bundle.putString("fragment_name", MineFragment.class.getSimpleName());
+				fragment.setArguments(bundle);
 			} else {
 				fragment = new MineCommentsFragment();
 			}
@@ -205,6 +211,9 @@ public class MineFragment extends BaseFragment implements OnImageChage{
 						dialog.dismiss();
 						RegisterFragment fragment = new RegisterFragment();
 						FragmentEntity event = new FragmentEntity();
+						Bundle bundle = new Bundle();
+						bundle.putString("fragment_name", MineFragment.class.getSimpleName());
+						fragment.setArguments(bundle);
 						event.setFragment(fragment);
 						EventBus.getDefault().post(event);
 					}

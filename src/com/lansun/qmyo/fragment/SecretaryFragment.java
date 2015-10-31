@@ -161,6 +161,9 @@ public class SecretaryFragment extends BaseFragment {
 							EventBus bus = EventBus.getDefault();
 							FragmentEntity entity = new FragmentEntity();
 							Fragment fragment=new RegisterFragment();
+							Bundle bundle = new Bundle();
+							bundle.putString("fragment_name", SecretaryFragment.class.getSimpleName());
+							fragment.setArguments(bundle);
 							entity.setFragment(fragment);
 							bus.post(entity);
 							dialog.dismiss();
@@ -192,6 +195,9 @@ public class SecretaryFragment extends BaseFragment {
 							EventBus bus = EventBus.getDefault();
 							FragmentEntity entity = new FragmentEntity();
 							Fragment fragment=new RegisterFragment();
+							Bundle bundle = new Bundle();
+							bundle.putString("fragment_name", SecretaryFragment.class.getSimpleName());
+							fragment.setArguments(bundle);
 							entity.setFragment(fragment);
 							bus.post(entity);
 							dialog.dismiss();
