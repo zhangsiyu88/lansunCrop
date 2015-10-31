@@ -6,6 +6,7 @@ import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.BaseFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
+import com.lansun.qmyo.fragment.SecretarySettingFragment;
 import com.lansun.qmyo.fragment.task.TaskAssignment;
 import com.lansun.qmyo.override.CircleImageView;
 import com.lansun.qmyo.utils.GlobalValue;
@@ -76,14 +77,48 @@ public class SecretaryLifeShowFragment extends BaseFragment{
 					});
 				}else {
 					if (GlobalValue.user!=null) {
-						FragmentEntity entity=new FragmentEntity();
-						Fragment fragment=new TaskAssignment();
-						Bundle bundle=new Bundle();
-						bundle.putString("content", content.getText().toString());
-						bundle.putString("type", "life");
-						fragment.setArguments(bundle);
-						entity.setFragment(fragment);
-						EventBus.getDefault().post(entity);
+						if (GlobalValue.mySecretary==null) {
+							final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
+							dialog.show();
+							dialog.setContentView(R.layout.dialog_setting_secretary);
+							Window window = dialog.getWindow();
+							window.findViewById(R.id.setting_now).setOnClickListener(new OnClickListener() {
+								@Override
+								public void onClick(View v) {
+									dialog.dismiss();
+									FragmentEntity entity=new FragmentEntity();
+									Fragment fragment=new SecretarySettingFragment();
+									entity.setFragment(fragment);
+									EventBus.getDefault().post(entity);
+								}
+							});
+						}else {
+							if ("false".equals(GlobalValue.mySecretary.getHas())) {
+								final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
+								dialog.show();
+								dialog.setContentView(R.layout.dialog_setting_secretary);
+								Window window = dialog.getWindow();
+								window.findViewById(R.id.setting_now).setOnClickListener(new OnClickListener() {
+									@Override
+									public void onClick(View v) {
+										dialog.dismiss();
+										FragmentEntity entity=new FragmentEntity();
+										Fragment fragment=new SecretarySettingFragment();
+										entity.setFragment(fragment);
+										EventBus.getDefault().post(entity);
+									}
+								});
+							}else {
+								FragmentEntity entity=new FragmentEntity();
+								Fragment fragment=new TaskAssignment();
+								Bundle bundle=new Bundle();
+								bundle.putString("content", content.getText().toString());
+								bundle.putString("type", "card");
+								fragment.setArguments(bundle);
+								entity.setFragment(fragment);
+								EventBus.getDefault().post(entity);
+							}
+						}
 					}
 				}
 			}

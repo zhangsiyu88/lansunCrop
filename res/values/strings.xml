@@ -119,6 +119,7 @@
     <string name="new_pwd">新密码 ：</string>
     <string name="re_new_pwd">确认新密码 ：</string>
     <string name="confirm">确认</string>
+    <string name="i_know">立即设置</string>
     <string name="email">邮箱</string>
     <string name="truname">姓名</string>
     <string name="address">地址</string>
