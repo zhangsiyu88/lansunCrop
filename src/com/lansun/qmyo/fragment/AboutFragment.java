@@ -60,7 +60,6 @@ public class AboutFragment extends BaseFragment {
 		
 	}
 	
-	
 	private void init325435435() {
 		initCacheSize();
 		initCacheSize();
