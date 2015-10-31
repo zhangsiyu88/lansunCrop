@@ -321,6 +321,7 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 	public void onEventMainThread(BackEntity event) {
 		back();
 	}
+	
 	/**
 	 * 点击搜索或者模糊搜索条目开始搜索
 	 * （搜索内容不可能为空所以此处不需要判断是否为空）
