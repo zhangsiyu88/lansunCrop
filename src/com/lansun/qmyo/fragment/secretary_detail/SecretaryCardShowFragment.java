@@ -5,6 +5,7 @@ import com.lansun.qmyo.R;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.BaseFragment;
+import com.lansun.qmyo.fragment.HomeFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.fragment.SecretarySettingFragment;
 import com.lansun.qmyo.fragment.task.TaskAssignment;
@@ -110,7 +111,7 @@ public class SecretaryCardShowFragment extends BaseFragment{
 								});
 							}else {
 								FragmentEntity entity=new FragmentEntity();
-								Fragment fragment=new TaskAssignment();
+								Fragment fragment=new HomeFragment();
 								Bundle bundle=new Bundle();
 								bundle.putString("content", content.getText().toString());
 								bundle.putString("type", "card");
