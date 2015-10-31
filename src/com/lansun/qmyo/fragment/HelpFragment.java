@@ -53,8 +53,10 @@ public class HelpFragment extends BaseFragment {
 		v.fl_comments_right_iv.setVisibility(View.GONE);
 		initTitle(v.tv_activity_title, R.string.help_center, null, 0);
 		List<String> parents = new ArrayList<String>();
+		
 		parents = Arrays.asList(getResources().getStringArray(
 				R.array.help_title));
+		
 		HelpAdapter adapter = new HelpAdapter(activity, parents,
 				R.array.help_q_a);
 		v.elv_help.setAdapter(adapter);

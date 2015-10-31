@@ -61,7 +61,7 @@ public class AboutFragment extends BaseFragment {
 	private void click(View view) {
 		BaseFragment fragment = null;
 		switch (view.getId()) {
-		case R.id.rl_mine_common_problem:// 常见问题
+		case R.id.rl_mine_common_problem:// 常见问题 --〉帮助中心
 			fragment = new HelpFragment();
 			break;
 		case R.id.rl_mine_feedback:// 意见反馈

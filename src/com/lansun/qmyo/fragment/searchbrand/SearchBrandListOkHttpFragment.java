@@ -136,6 +136,7 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 		private RelativeLayout rl_bg;
 	}*/
 	
+	//TODO
 	private Handler handleOkhttp=new Handler(){
 
 		public void handleMessage(android.os.Message msg) {
@@ -149,6 +150,7 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 				endProgress();
 				if(searchBankcardAdapter == null){
 					searchBankcardAdapter = new SearchAdapter(lv_search_content,datas, R.layout.activity_search_item);
+
 					try{
 						Log.i("","企图remove掉ListView中的尾布局");
 						
@@ -157,15 +159,38 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 						
 					}catch(Exception e ){
 //						CustomToast.show(activity, "出异常了", "异常已被抓！");
-					
-					}finally{
-						Log.i("","remove掉ListView中的尾布局失败，抓住异常，还是展示获取的数据，但尾部跟上了emptyView！");
-						lv_search_content.setAdapter(searchBankcardAdapter);
-						endProgress();
 					}
 					
-				}else{
-					searchBankcardAdapter.notifyDataSetChanged();
+					if(list.getData().size()<10){
+						lv_search_content.addFooterView(emptyView);
+						Log.i("","在此处添加上了尾部EmptyView");
+						lv_search_content.setAdapter(searchBankcardAdapter);
+					}else{
+						try{
+							//若之前的隶属于View对象是有emptyView对象的，先将其移除掉
+							lv_search_content.removeFooterView(emptyView);
+						}catch(Exception e ){
+						}finally{
+							Log.i("","remove掉ListView中的尾布局失败，抓住异常，还是展示获取的数据，但尾部跟上了emptyView！");
+							lv_search_content.setAdapter(searchBankcardAdapter);
+							/*endProgress();*/
+						}
+					}
+					
+				}else{//searchBankcardAdapter已经存在
+					if(list.getData().size()<10){
+						lv_search_content.addFooterView(emptyView);
+						searchBankcardAdapter.notifyDataSetChanged();
+					}else{
+						try{
+							//若之前的隶属于View对象是有emptyView对象的，先将其移除掉
+							lv_search_content.removeFooterView(emptyView);
+						}catch(Exception e ){
+						}finally{
+							searchBankcardAdapter.notifyDataSetChanged();
+							/*endProgress();*/
+						}
+					}
 				}
 				PullToRefreshManager.getInstance().footerEnable();//拒绝此时的上拉和下拉操作
 				PullToRefreshManager.getInstance().headerEnable();
@@ -566,8 +591,15 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 						map.put("icons", data.getActivity().getCategory());
 						datas.add(map);
 					}
-					handleOkhttp.sendEmptyMessage(4);
 					
+					/* 下面这一步，试图在setAdapter之前将emptyView塞入到ListView控件上，但此处报错
+					 * if(list.getData().size()<10){
+						lv_search_content.addFooterView(emptyView);
+						Log.i("","在此处添加上了尾部EmptyView");
+					}*/
+					
+					//TODO
+					handleOkhttp.sendEmptyMessage(4);
 					return;
 				}
 				
@@ -738,7 +770,16 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 					//lv_search_content.addFooterView(emptyView);
 					
 					 //setEmptityView(true, 1);
-					  
+					  try{
+							//若之前的隶属于View对象是有emptyView对象的，先将其移除掉
+							lv_search_content.removeFooterView(emptyView);
+						}catch(Exception e ){
+						}finally{
+							Log.i("","remove掉ListView中的尾布局失败，抓住异常，还是展示获取的数据，但尾部跟上了emptyView！");
+							lv_search_content.setAdapter(searchBankcardAdapter);
+							
+							/*endProgress();*/
+						}
 					 lv_search_content.addFooterView(emptyView);
 					
 					Log.e("Tag","应该已经添加了空的View");
@@ -749,7 +790,6 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 				} else {
 					String nextPageUrl = list.getNext_page_url();
 					/*startSearch(defaultVisitUrl,getSelectCity()[0],HODLER_TYPE,"nearby","intelligent","all",GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(),query);*/
-					
 					startSearch(nextPageUrl,getSelectCity()[0], HODLER_TYPE, position_bussness, intelligentStr, type, GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(), query);
 					isPull = true;
 					

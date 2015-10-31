@@ -151,7 +151,7 @@ public class RegisterFragment extends BaseFragment implements OnImageChage{
 
 		//去获取传递进来的args值，下面对应作出判断和回应
 		if (getArguments() != null) {
-			boolean isReset = getArguments().getBoolean("isReset");
+			isReset = getArguments().getBoolean("isReset");
 			isJustLogin = getArguments().getBoolean("isJustLogin");
 			boolean isResetPsw = getArguments().getBoolean("isResetPsw");
 			isFromMyBankcardFragToRigisterFrag  = getArguments().getBoolean("isFromMyBankcardFragToRigisterFrag");
@@ -546,7 +546,7 @@ public class RegisterFragment extends BaseFragment implements OnImageChage{
 			case 4:
 				// GlobalValue.user = Handler_Json.JsonToBean(User.class,r.getContentAsString());
 				if(r.getContentAsString().contains("true")){
-					CustomToast.show(activity, "已绑定推送服务","小迈会为您提供更多惊喜哦");
+					/*CustomToast.show(activity, "已绑定推送服务","小迈会为您提供更多惊喜哦");*/
 				}
 				break;
 			case 5:

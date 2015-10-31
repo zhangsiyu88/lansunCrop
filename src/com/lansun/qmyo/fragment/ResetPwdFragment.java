@@ -73,8 +73,13 @@ public class ResetPwdFragment extends BaseFragment {
 		case R.id.tv_reset_confirm:
 			pwd = v.et_reset_pwd.getText().toString().trim();
 			String rePwd = v.et_reset_re_pwd.getText().toString().trim();
+			
+			if (pwd.length() < 6) {
+				CustomToast.show(activity, "密码","请按要求设置新密码");
+				return;
+			}
 			if (TextUtils.isEmpty(pwd) && TextUtils.isEmpty(rePwd)) {
-				CustomToast.show(activity, "密码", "密码必须填");
+				CustomToast.show(activity, "密码", "密码必须填写");
 				return;
 			} else if (!pwd.equals(rePwd)) {
 				CustomToast.show(activity, "密码", "两次密码不一致");

@@ -14,6 +14,8 @@
         android:layout_marginTop="@dimen/margin_top_35"
         android:paddingLeft="@dimen/l_r_35"
         android:paddingRight="@dimen/l_r_35"
-        android:textColor="@color/text_gray1" />
+        android:textColor="@color/text_gray1" 
+        android:lineSpacingExtra="3dp"
+        />
 
 </LinearLayout>

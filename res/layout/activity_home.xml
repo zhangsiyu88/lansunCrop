@@ -6,10 +6,10 @@
     android:background="@color/app_bg">
 
     
-    <RelativeLayout
+     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:orientation="vertical" > 
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -18,10 +18,11 @@
             android:layout_marginBottom="@dimen/bottom_menu_h"
             android:orientation="vertical" >
             
-            <com.handmark.pulltorefresh.library.PullToRefreshScrollView
-                android:id="@+id/sv_homefrag"
+            <ScrollView
+               android:id="@+id/sv_homefrag"
                android:layout_width="match_parent"
-               android:layout_height="wrap_content"> 
+               android:layout_height="wrap_content"
+               android:scrollbars="none"> 
 	           
                 <LinearLayout 
 	                android:id="@+id/ll_homefrag"
@@ -44,9 +45,9 @@
 		                android:scrollbars="vertical" />
 	            
 	            </LinearLayout>
-            </com.handmark.pulltorefresh.library.PullToRefreshScrollView> 
+            </ScrollView> 
       
-            
+           <!--  </com.handmark.pulltorefresh.library.PullToRefreshScrollView>  -->
 
             <!-- 这个暂时被gone掉的横条就是  将来动画要让其展现的横条 -->
             <include
@@ -113,6 +114,6 @@
         <include
             layout="@layout/bottom_menu" 
             /> 
-    </RelativeLayout>
+    </RelativeLayout> 
 
 </LinearLayout>

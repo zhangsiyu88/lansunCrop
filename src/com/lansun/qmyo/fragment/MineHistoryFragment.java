@@ -47,6 +47,12 @@ import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ListViewSwipeGesture;
 import com.lansun.qmyo.view.MyListView;
 import com.lansun.qmyo.R;
+import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.RequestParams;
+import com.lidroid.xutils.http.ResponseInfo;
+import com.lidroid.xutils.http.callback.RequestCallBack;
+import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 
 import android.content.DialogInterface;
 import android.database.CursorJoiner.Result;
@@ -143,15 +149,17 @@ public class MineHistoryFragment extends BaseFragment {
 			refreshCurrentList(refreshUrl, null, refreshKey,
 					lv_mine_history_list);
 			break;
-		case R.id.tv_mine_history_v16:// V16
+			
+		/*case R.id.tv_mine_history_v16:// V16
 
 			refreshKey = 3;
 			refreshUrl = GlobalValue.URL_USER_ARTICLEBROWSES;
 			changeTextColor(v.tv_mine_history_v16);
 			refreshCurrentList(refreshUrl, null, refreshKey,
 					lv_mine_history_list);
-			break;
-		case R.id.tv_activity_shared:// V16
+			break;*/
+			
+		case R.id.tv_activity_shared:// 全部清除的按钮
 			DialogUtil.createTipAlertDialog(activity, R.string.all_clear_tip,
 					new TipAlertDialogCallBack() {
 
@@ -159,7 +167,7 @@ public class MineHistoryFragment extends BaseFragment {
 						public void onPositiveButtonClick(
 								DialogInterface dialog, int which) {
 							dialog.dismiss();
-							InternetConfig config = new InternetConfig();
+							/*InternetConfig config = new InternetConfig();
 							config.setKey(2);
 							HashMap<String, Object> head = new HashMap<>();
 							head.put("Authorization",
@@ -169,7 +177,53 @@ public class MineHistoryFragment extends BaseFragment {
 							config.setMethod("DELETE");
 							FastHttpHander.ajax(
 									GlobalValue.URL_USER_DELETE_BROWSES,
-									config, MineHistoryFragment.this);
+									config, MineHistoryFragment.this);*/
+							HttpUtils httpUtils = new HttpUtils();
+							RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
+
+								@Override
+								public void onFailure(HttpException arg0, String arg1) {
+									
+								}
+
+								@Override
+								public void onSuccess(ResponseInfo<String> arg0) {
+									if ("true".equals(arg0.result.toString())) {
+										
+											CustomToast.show(activity, R.string.tip,R.string.delete_success);
+											activityDataList.clear();
+											storeDataList.clear();
+											
+											/* NullPointException
+											 * activityAdapter.notify();
+											storeAdapter.notify();*/
+											
+											/*refreshCurrentList(refreshUrl, null, refreshKey,
+													lv_mine_history_list);*/
+											
+											
+											back();
+											
+											/*v16DataList.clear();
+											v16adapter.notifyDataSetChanged();*/
+										} else {
+											CustomToast.show(activity, getString(R.string.tip),
+													getString(R.string.delete_faild));
+										}
+								}
+
+								
+							};
+							RequestParams requestParams = new RequestParams();
+							requestParams.addHeader("Authorization", "Bearer" + App.app.getData("access_token"));
+							
+							//TODO  注意下面拼接的url中的接口域名记得替换
+							httpUtils.send(HttpMethod.DELETE, 
+									GlobalValue.URL_USER_DELETE_BROWSES,
+									requestParams,requestCallBack );
+							
+							
+							
 						}
 
 						@Override
@@ -183,8 +237,8 @@ public class MineHistoryFragment extends BaseFragment {
 	}
 
 	private void changeTextColor(TextView tv) {
-		v.tv_mine_history_v16.setTextColor(getResources().getColor(
-				R.color.app_grey5));
+		/*v.tv_mine_history_v16.setTextColor(getResources().getColor(
+				R.color.app_grey5));*/
 		v.tv_mine_history_activity.setTextColor(getResources().getColor(
 				R.color.app_grey5));
 		v.tv_mine_history_store.setTextColor(getResources().getColor(
@@ -203,11 +257,12 @@ public class MineHistoryFragment extends BaseFragment {
 			case 0:
 				activityList = Handler_Json.JsonToBean(HistoryActivity.class,
 						r.getContentAsString());
+				
 				for (BrowseData data : activityList.getData()) {
 					HashMap<String, Object> map = new HashMap<>();
 					map.put("tv_search_activity_name", data.getShop().getName());
-					long time = Handler_Time.getInstance(
-							data.getBrowse().getTime()).getTimeInMillis();
+					long time = Handler_Time.getInstance(data.getBrowse().getTime()).getTimeInMillis();
+					
 					String historyTime = "";
 					if ((System.currentTimeMillis() - time)
 							/ (1000 * 24 * 60 * 60) > 1) {
@@ -219,6 +274,8 @@ public class MineHistoryFragment extends BaseFragment {
 						historyTime = getHistoryTime(System.currentTimeMillis()
 								- time);
 					}
+					map.put("activityId", data.getActivity().getId());
+					map.put("shopId", data.getShop().getId());
 					map.put("tv_search_activity_distance", historyTime);
 					map.put("tv_search_activity_desc", data.getActivity()
 							.getName());
@@ -238,6 +295,8 @@ public class MineHistoryFragment extends BaseFragment {
 				PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 				PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				break;
+				
+				
 			case 1:
 				storeList = Handler_Json.JsonToBean(HistoryActivity.class,
 						r.getContentAsString());
@@ -273,7 +332,7 @@ public class MineHistoryFragment extends BaseFragment {
 				}
 
 				break;
-			case 2:
+		   /*case 2:
 				if ("true".equals(r.getContentAsString())) {
 					CustomToast.show(activity, R.string.tip,
 							R.string.delete_success);
@@ -284,7 +343,7 @@ public class MineHistoryFragment extends BaseFragment {
 					v16DataList.clear();
 					v16adapter.notifyDataSetChanged();
 				}
-				break;
+				break;*/
 			case 3:
 				v16list = Handler_Json.JsonToBean(HistoryActivity.class,
 						r.getContentAsString());
@@ -418,25 +477,29 @@ public class MineHistoryFragment extends BaseFragment {
 	private void itemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		Fragment fragment = null;
 		Bundle args = new Bundle();
+		
+		//根据refreshKey 来进行设置活动详情页
 		if (refreshKey == 0) {
 			fragment = new ActivityDetailFragment();
-			args.putString("shopId", activityList.getData().get(arg2).getShop()
-					.getId()
-					+ "");
-			args.putString("activityId", activityList.getData().get(arg2)
-					.getActivity().getId()
-					+ "");
+			
+			/*map.put("activityId", data.getActivity().getId());
+			map.put("shopId", data.getShop().getId());*/
+			
+			args.putString("shopId", activityDataList.get(arg2).get("shopId")+ "");
+			args.putString("activityId", activityDataList.get(arg2).get("activityId")+ "");
+			
 		}
 		if (refreshKey == 1) {
 			fragment = new StoreDetailFragment();
 			args.putString("shopId", activityList.getData().get(arg2).getShop()
 					.getId()
 					+ "");
-		} else {
+		} /*else {
 			fragment = new PromoteDetailFragment();
 			args.putSerializable("promote", v16list.getData().get(arg2)
 					.getArticle());
-		}
+		}*/
+		
 		if (fragment != null) {
 			fragment.setArguments(args);
 			FragmentEntity event = new FragmentEntity();

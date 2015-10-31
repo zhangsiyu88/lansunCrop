@@ -168,9 +168,9 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 	}
 	@InjectInit
 	private void init() {
-		InputMethodManager imm = (InputMethodManager) activity
-				.getSystemService(Context.INPUT_METHOD_SERVICE);
+		InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+		
 		initData();
 		
 		et_home_search.setHint(R.string.search_all_hint);
@@ -185,13 +185,20 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 		switch (view.getId()) {
 		case R.id.search_tv_cancle:
 			if (getString(R.string.cancle).equals(v.search_tv_cancle.getText())) {//字为“取消”
-				EventBus bus = EventBus.getDefault();
+				/*EventBus bus = EventBus.getDefault();
 				FragmentEntity entity = new FragmentEntity();
 				entity.setFragment(new HomeFragment());
-				bus.post(entity);
-				InputMethodManager imm = (InputMethodManager) activity
+				bus.post(entity);*/
+				InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+				
+			/*	InputMethodManager imm = (InputMethodManager) activity
 						.getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(view.getWindowToken(), 0); // 强制隐藏键盘
+*/				
+				
+				back();
+				
 			} else {//内容为“搜索”二字时
 				
 				String search_value=et_home_search.getText().toString().trim();
