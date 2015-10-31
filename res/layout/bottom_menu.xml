@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/bottom_menu_h"
     android:layout_alignParentBottom="true"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+     >
 
     <View
         android:layout_width="match_parent"

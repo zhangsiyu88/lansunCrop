@@ -139,8 +139,23 @@ public class MineFragment extends BaseFragment {
 			break;
 		case R.id.rl_mine_secretary:// 我的私人秘书
 			if (GlobalValue.user == null || isExperience()) {
-				fragment = new RegisterFragment();
-			} else
+				DialogUtil.createTipAlertDialog(getActivity(),
+						R.string.login_to_enjoysecretaryyourself, new TipAlertDialogCallBack() {
+					@Override
+					public void onPositiveButtonClick(
+							DialogInterface dialog, int which) {
+						dialog.dismiss();
+						RegisterFragment fragment = new RegisterFragment();
+						FragmentEntity event = new FragmentEntity();
+						event.setFragment(fragment);
+						EventBus.getDefault().post(event);
+					}
+					@Override
+					public void onNegativeButtonClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+			}else
 				fragment = new MineSecretaryFragment();
 			break;
 		case R.id.rl_mine_comments:// 我的评论

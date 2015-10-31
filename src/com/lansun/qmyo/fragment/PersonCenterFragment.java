@@ -148,7 +148,7 @@ public class PersonCenterFragment extends BaseFragment {
 			fragment.setArguments(args);
 			break;
 
-		case R.id.iv_person_center_reset_pwd:
+		case R.id.iv_person_center_reset_pwd:   //充值密码
 			fragment = new RegisterFragment();
 			Bundle args1 = new Bundle();
 			args1.putBoolean("isReset", true);//关键的一个标示
@@ -163,7 +163,7 @@ public class PersonCenterFragment extends BaseFragment {
 			GlobalValue.isFirst = true;//即为三无状态，那么就需要成为是第一次进入的用户状态，也就会是需要自己加卡那个页面
 			clearTokenAndSercet();
 			/**
-			 * 2015-10-24修改退出时清楚信息
+			 * 2015-10-24修改退出时清除信息
 			 */
 			GlobalValue.mySecretary=null;
 			fragment = new RegisterFragment();

@@ -15,7 +15,8 @@
         android:dividerHeight="1px"
         android:groupIndicator="@null"
         android:listSelector="@android:color/transparent"
-        android:scrollbars="none" >
+        android:scrollbars="none" 
+        >
     </ExpandableListView>
 
 </LinearLayout>

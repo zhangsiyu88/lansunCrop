@@ -15,8 +15,8 @@ public class GlobalValue {
 	public static final String DESCRIPTOR = "com.umeng.share";
 
 	public static Gps gps;
-	/*public static String IP = "appapi.qmyo.org";*/
-	public static String IP = "appapi.qmyo.com";
+	public static String IP = "appapi.qmyo.org";
+	/*public static String IP = "appapi.qmyo.com";*/
 	public static String URL_HOME_AD = "http://" + IP + "/advertisement/poster/";
 	/**
 	 * wx5078ff274c69bc8c a5af88ff8deb95831a8a4a21d5f0aaec

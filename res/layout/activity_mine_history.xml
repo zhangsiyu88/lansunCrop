@@ -56,7 +56,8 @@
                 android:layout_centerVertical="true" />
         </RelativeLayout>
 
-        <RelativeLayout
+       <!--  暂时将V16删除掉  
+       <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1" >
@@ -69,7 +70,7 @@
                 android:gravity="center"
                 android:text="@string/v16"
                 android:textColor="@color/text_gray3" />
-        </RelativeLayout>
+        </RelativeLayout> -->
     </LinearLayout>
 
     <View style="@style/line_style_1" />

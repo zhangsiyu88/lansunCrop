@@ -21,7 +21,7 @@
     <string name="entertainment">休闲娱乐</string>
     <string name="integral">积分兑换</string>
     <string name="investment">投资理财</string>
-    <string name="please_enter_search_brand">请输入感兴趣的品牌</string>
+    <string name="please_enter_search_brand">请输入您感兴趣的品牌</string>
     <string name="home_hot_v16">热门活动推荐</string>
     <string name="cancle">取消</string>
     <string name="changecity">城市切换</string>
@@ -295,9 +295,9 @@
     <string name="experience">体验</string>
     <string name="current">当前</string>
     <string name="send">发送</string>
-    <string name="search_card_tip2_1">如果您暂时想选择自己的银行卡</string>
+    <string name="search_card_tip2_1">如果您暂时不想选择自己的银行卡</string>
      <string name="search_card_tip2_2">也可以先行体验迈界为您推荐的银行卡哟</string>
-    <string name="experience_jump_now">先行体验</string>
+    <string name="experience_jump_now">体验迈界推荐银行卡</string>
     <string name="jiwen_about">共有%1$s篇文章与<Data><![CDATA[<font color="#9DC14F">%2$s</font>]]></Data>有关</string>
     <string name="look_now">立即查看</string>
     <string name="search_tip">搜索并添加您所拥有的银行卡\n让迈界更好地为您服务</string>
@@ -322,7 +322,7 @@
     <string name="up_dataing">上传数据中...</string>
     <string name="go_look">去看看吧</string>
     <string name="max_photos">最多9张图片，请确认！！！</string>
-    <string name="common_problem">常见问题</string>
+    <string name="common_problem">帮助中心</string>
     <string name="user_agreement">用户协议</string>
     <string name="v16">V16</string>
     <string name="please_enter_card">搜索/添加银行卡</string>
@@ -419,5 +419,6 @@ A：你可以在首页的右上角点击查看你的卡包或者通过点击“�
      <string name="login_to_report">总裁大大,举报要登录的哟</string>
      <string name="login_to_comment">总裁大大,请先登录再发表高见哟</string>
      <string name="login_to_getmessage">总裁大大,登录才可接收消息哟</string>
+     <string name="login_to_enjoysecretaryyourself">总裁大大,体验专属私人秘书服务需要登录的哟</string>
 
 </resources>

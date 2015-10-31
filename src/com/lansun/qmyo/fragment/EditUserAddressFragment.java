@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.zip.Inflater;
 
+import kankan.wheel.widget.OnWheelChangedListener;
+import kankan.wheel.widget.WheelView;
+import kankan.wheel.widget.adapters.AbstractWheelTextAdapter;
+import kankan.wheel.widget.adapters.ArrayWheelAdapter;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -22,10 +27,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.android.pc.ioc.adapter.AbstractWheelTextAdapter;
-import com.android.pc.ioc.adapter.ArrayWheelAdapter;
 
-import com.android.pc.ioc.adapter.WheelViewAdapter;
 import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.db.sqlite.Selector;
 import com.android.pc.ioc.inject.InjectAll;
@@ -36,9 +38,14 @@ import com.android.pc.ioc.internet.FastHttp;
 import com.android.pc.ioc.internet.FastHttpHander;
 import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
-import com.android.pc.ioc.view.WheelView;
+
 import com.android.pc.ioc.view.listener.OnClick;
-import com.android.pc.ioc.view.wheelview.OnWheelChangedListener;
+
+/*import com.android.pc.ioc.adapter.WheelViewAdapter;*/
+/*import com.android.pc.ioc.adapter.ArrayWheelAdapter;*/
+/*import com.android.pc.ioc.adapter.AbstractWheelTextAdapter;*/
+/*import com.android.pc.ioc.view.WheelView;*/
+/*import com.android.pc.ioc.view.wheelview.OnWheelChangedListener;*/
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
 import com.lansun.qmyo.app.App;
@@ -301,12 +308,25 @@ public class EditUserAddressFragment extends BaseFragment {
 		});
 		
 		Log.i("TAGTAGTAGTAGTAG","wheelCity内容展现之前");
+		
+		
 		wv_wheelcity_country.setVisibleItems(3);
 		wv_wheelcity_country.setViewAdapter(new CountryAdapter(activity));
+		
+		CountryAdapter countryAdapter = new CountryAdapter(activity);
+		int itemsCount = countryAdapter.getItemsCount();
+		Log.i("", "CountryAdapter 中的 数据为"+ itemsCount);
+		Log.i("", countryAdapter == null?"countryAdapter为空":"countryAdapter不为空");
+		
+		
 		wv_wheelcity_city.setVisibleItems(3);
 		wv_wheelcity_ccity.setVisibleItems(3);
+		
+
+		Log.i("TAGTAGTAGTAGTAG","wv_wheelcity_country.setViewAdapter(new CountryAdapter(activity))内容展现之后见不到");
 
 		/*省的选择*/
+		Log.i("TAGTAGTAGTAGTAG","wv_wheelcity_country添加监听器");
 		wv_wheelcity_country.addChangingListener(new OnWheelChangedListener() {
 			public void onChanged(WheelView wheel, int oldValue, int newValue) {
 				String pName = provinces[wv_wheelcity_country.getCurrentItem()];
@@ -328,9 +348,11 @@ public class EditUserAddressFragment extends BaseFragment {
 				updatecCities(wv_wheelcity_ccity, cName);
 				cityTxt = pName + " | " + cName + " | " + aName;
 			}
+
 		});
 
 		/*市的选择*/
+		Log.i("TAGTAGTAGTAGTAG","wv_wheelcity_city添加监听器");
 		wv_wheelcity_city.addChangingListener(new OnWheelChangedListener() {
 			public void onChanged(WheelView wheel, int oldValue, int newValue) {
 				String pName = provinces[wv_wheelcity_country.getCurrentItem()];
@@ -355,6 +377,7 @@ public class EditUserAddressFragment extends BaseFragment {
 		});
 
 		/*区的选择*/
+		Log.i("TAGTAGTAGTAGTAG","wv_wheelcity_ccity添加监听器");
 		wv_wheelcity_ccity.addChangingListener(new OnWheelChangedListener() {
 			public void onChanged(WheelView wheel, int oldValue, int newValue) {
 
@@ -377,11 +400,14 @@ public class EditUserAddressFragment extends BaseFragment {
 		wv_wheelcity_country.setCurrentItem(0);
 		wv_wheelcity_city.setCurrentItem(0);
 		wv_wheelcity_ccity.setCurrentItem(0);
-
 		
+		
+
+		Log.i("TAGTAGTAGTAGTAG","下面生成Dialog");
 		dialog = new Dialog(activity, R.style.transparentFrameWindowStyle);
-		dialog.setContentView(view, new LayoutParams(LayoutParams.FILL_PARENT,
-				LayoutParams.WRAP_CONTENT));
+		
+		dialog.setContentView(view, new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.WRAP_CONTENT));
+		
 		Window window = dialog.getWindow();
 		// 设置显示动画
 		window.setWindowAnimations(R.style.PopupWindowAnimation);
@@ -396,6 +422,8 @@ public class EditUserAddressFragment extends BaseFragment {
 		// 设置点击外围解散
 		dialog.setCanceledOnTouchOutside(true);
 		dialog.show();
+		Log.i("TAGTAGTAGTAGTAG","生成Dialog的Show()不出来！");
+		
 	}
 
 	/**
@@ -438,7 +466,7 @@ public class EditUserAddressFragment extends BaseFragment {
 
 	public class CountryAdapter extends AbstractWheelTextAdapter {
 		// Countries names
-		private String countries[] = provinces;
+		public String countries[] = provinces;
 
 		/**
 		 * Constructor
@@ -455,13 +483,16 @@ public class EditUserAddressFragment extends BaseFragment {
 		}
 
 		@Override
-		public int getItemsCount() {
-			return countries.length;
-		}
-
-		@Override
 		protected CharSequence getItemText(int index) {
 			return countries[index];
+		}
+
+		/**
+		 * 此处重写了WheelViewAdapter接口中的方法getItemsCount()
+		 */
+		
+		public int getItemsCount() {
+			return countries.length;
 		}
 	}
 }

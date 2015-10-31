@@ -127,8 +127,8 @@ public class MainActivity extends FragmentActivity {
 		if (TextUtils.isEmpty(App.app.getData("isFirst"))) {
 			startFragmentAdd(new IntroductionPageFragment());
 		} else {
-			/*startFragmentAdd(new HomeFragment());*/
-			startFragmentAdd(new PersonCenterFragment());
+			startFragmentAdd(new HomeFragment());
+			/*startFragmentAdd(new PersonCenterFragment());*/
 			getTokenService();
 		}
 		

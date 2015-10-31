@@ -654,6 +654,17 @@ public class ActivityFragment extends BaseFragment {
 				break;
 			case 4:// 活动列表
 				Log.i("进入界面时,能不能拿到数据","能拿到!但不展示出来是个问题!");
+				
+				try{
+					Log.i("","企图remove掉ListView中的尾布局");
+					lv_activity_list.removeFooterView(emptyView);
+					Log.i("","remove掉ListView中的尾布局成功！");
+					
+				}catch(Exception e ){
+					/*CustomToast.show(activity, "出异常了", "异常已被抓！");*/
+				}
+					
+					
 				//从服务器端拿到数据
 				activityList = Handler_Json.JsonToBean(ActivityList.class,
 						r.getContentAsString());
@@ -690,23 +701,32 @@ public class ActivityFragment extends BaseFragment {
 								shopDataList, R.layout.activity_search_item);
 
 						lv_activity_list.setAdapter(activityAdapter);
-
 						expandTabViewButtomLine.setVisibility(View.VISIBLE);//当拿到数据加载到ListView上后，再将下面的Line线条展示出来
-
 						Log.i("烦死了", "分明能走到setAdapter这儿啊!!!");
-
+						if(activityList.getData().size()<10){
+							lv_activity_list.addFooterView(emptyView);
+						}
 						endProgress();//当ListView链接上适配器时,我们需要将gif的动画关掉
 
 					} else {
+						
 						//adapter并不为空时
 						activityAdapter.notifyDataSetChanged();
+						if(activityList.getData().size()<10){
+							lv_activity_list.addFooterView(emptyView);
+						}
+						/*activityAdapter.notifyDataSetChanged();*/
 					}
+					
+					
 					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 
 				} else {//因为上拉前去获取到的数据为null，此时需要将之前的值保留住并展示
 					//lv_activity_list.setAdapter(null);
 					activityAdapter.notifyDataSetChanged();
+					lv_activity_list.addFooterView(emptyView);
+					
 
 					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
@@ -753,11 +773,19 @@ public class ActivityFragment extends BaseFragment {
 				/*if (TextUtils.isEmpty(activityList.getNext_page_url())) {//下一页为空的时候，加上footerview*/
 				if (activityList.getNext_page_url()== "null"||TextUtils.isEmpty(activityList.getNext_page_url())) {
 
+					
+				   //当获取到的活动列表的数目少于10条时，顺带给listView 底部加上一个emptyView
+					
+					try{
+						lv_activity_list.removeFooterView(emptyView);
+					}catch(Exception e ){
+						
+					}
 					lv_activity_list.addFooterView(emptyView);
-
+					
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
-					CustomToast.show(activity, "加载进度", "目前所有内容都已经加载完成");
+					CustomToast.show(activity, "到底啦！", "小迈会加油搜集更多惊喜哦");
 
 				} else {
 					/* 下面这一步代码应该耽误了半天时间
@@ -814,8 +842,8 @@ public class ActivityFragment extends BaseFragment {
 				isDownChange = true;//下拉更新的标志
 				refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_activity_list);
 
-				/*lv_activity_list.removeView(emptyView);//不能忘了去除底部的emptyView
-				lv_activity_list.invalidate();*/
+				lv_activity_list.removeFooterView(emptyView);//不能忘了去除底部的emptyView
+				/*lv_activity_list.invalidate();*/
 
 			}else{
 				CustomToast.show(activity, "ti", "activityList == null");
