@@ -115,10 +115,15 @@ public class SecretaryCardShowFragment extends BaseFragment{
 								Bundle bundle=new Bundle();
 								bundle.putString("content", content.getText().toString());
 								bundle.putString("type", "card");
+								System.out.println("测试数据测试数据！！！！");
 								fragment.setArguments(bundle);
+								System.out.println("测试数据测试数据！！！！");
 								entity.setFragment(fragment);
 								EventBus.getDefault().post(entity);
 							}
+							System.out.println("测试数据测试数据！！！！");
+							
+							
 						}
 					}
 				}
