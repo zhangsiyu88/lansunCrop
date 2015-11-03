@@ -84,6 +84,7 @@
     <string name="shared_app">分享APP</string>
     <string name="click_register_login">点击注册/登陆</string>
     <string name="login">登录</string>
+    <string name="card_login">点击注册登录</string>
     <string name="register">注册</string>
     <string name="dai_use">待使用</string>
     <string name="used">已使用</string>
@@ -305,7 +306,7 @@
 
     <string name="jiwen_about">共有%1$s篇文章与<Data><![CDATA[<font color="#9DC14F">%2$s</font>]]></Data>有关</string>
     <string name="look_now">立即查看</string>
-    <string name="search_tip">搜索并添加您所拥有的银行卡\n让迈界更好地为您服务</string>
+    <string name="search_tip">立即登陆添加多张银行卡\n一键切换最新优质活动</string>
     <string name="is_switch_card">是否替换当前信用卡？</string>
     <string name="please_select_one">请选择一项</string>
     <string name="doing">进行中</string>

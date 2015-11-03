@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.amap.api.services.core.bu;
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectAll;
@@ -185,57 +186,19 @@ public class MineBankcardFragment extends BaseFragment{
 			v.ll_bank_card_other.setVisibility(View.GONE);
 
 			v.ll_bank_card_exp.setVisibility(View.VISIBLE);
-
-			/*View search_click = v.ll_bank_card_exp.findViewById(R.id.search_click);*/
-
-			//整个大块头的点击事件，暂给取消掉
 			View search_click = v.ll_bank_card_exp.findViewById(R.id.search_click);
-			/*search_click.setOnClickListener(new OnClickListener() {
+			search_click.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					SearchBankCardFragment fragment = new SearchBankCardFragment();
+					RegisterFragment fragment = new RegisterFragment();
 					FragmentEntity entity = new FragmentEntity();
-					entity.setFragment(fragment);
-					EventBus.getDefault().post(entity);
-				}
-			});*/
-			
-			//区域过小！ 当点击EditText以外的数据时，会出现点击进入卡片搜索页的问题
-			EditText et_home_search = (EditText) search_click.findViewById(R.id.et_home_search);
-			et_home_search.setHint("搜索/添加银行卡");
-			et_home_search.setFocusable(false);
-			et_home_search.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					
-					if(App.app.getData("isExperience").equals("true")){
-						DialogUtil.createTipAlertDialog(getActivity(),
-								R.string.registeror_login, new TipAlertDialogCallBack() {
-							@Override
-							public void onPositiveButtonClick(
-									DialogInterface dialog, int which) {
-								dialog.dismiss();
-								RegisterFragment fragment = new RegisterFragment();
-								FragmentEntity event = new FragmentEntity();
-								event.setFragment(fragment);
-								EventBus.getDefault().post(event);
-
-							}
-							@Override
-							public void onNegativeButtonClick(DialogInterface dialog, int which) {
-								dialog.dismiss();
-							}
-						});
-						return;
-					}
-					
-					SearchBankCardFragment fragment = new SearchBankCardFragment();
-					FragmentEntity entity = new FragmentEntity();
+					Bundle bundle=new Bundle();
+					bundle.putString("fragment_name", MineBankcardFragment.class.getSimpleName());
+					fragment.setArguments(bundle);
 					entity.setFragment(fragment);
 					EventBus.getDefault().post(entity);
 				}
 			});
-
 			v.tv_bank_card_exp.setText(getString(R.string.experience));
 		} else {
 			v.ll_bank_card_other.setVisibility(View.VISIBLE);
@@ -243,6 +206,9 @@ public class MineBankcardFragment extends BaseFragment{
 			v.ll_bank_card_exp.setVisibility(View.GONE);
 			v.tv_bank_card_exp.setText(getString(R.string.current));
 		}
+
+	
+
 	}
 
 	private void refresh() {

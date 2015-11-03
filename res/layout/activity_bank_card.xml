@@ -135,10 +135,14 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/margin_top_50" />
 
-        <include
+        <TextView
             android:id="@+id/search_click"
-            layout="@layout/search_menu" />
-       <!--  android:layout_gravity="center_horizontal" -->
+            style="@style/text_style_small_24"
+            android:layout_width="@dimen/register_item_w"
+            android:layout_height="@dimen/register_item_h"
+            android:background="@drawable/button"
+            android:gravity="center"
+            android:text="@string/card_login"
+            android:textColor="@color/app_white" />
     </LinearLayout>
-
 </LinearLayout>
