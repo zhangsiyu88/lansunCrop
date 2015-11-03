@@ -44,7 +44,7 @@
             android:layout_toRightOf="@id/textView1"
             android:background="@color/app_white"
             android:password="true"
-            android:hint="设置6~16为的数字或英文"
+            android:hint="设置6~16位的数字或英文"
             android:textColor="@color/text_gray1" >
 
             <requestFocus />

@@ -276,7 +276,7 @@ public class SharedDialog implements OnClickListener {
 		 */
 	    TencentWbShareContent tencentWbShareContent = new TencentWbShareContent();
 	    tencentWbShareContent.setTitle(title);
-	    tencentWbShareContent.setShareContent(content);
+	    tencentWbShareContent.setShareContent(content+"."+currentActivityUrl);
 	    if (!TextUtils.isEmpty(imageUrl))
 	    	tencentWbShareContent.setShareImage(new UMImage(this.activity, imageUrl));
 	    tencentWbShareContent.setTargetUrl(currentActivityUrl);//腾讯微博分享的活动链接
@@ -288,11 +288,16 @@ public class SharedDialog implements OnClickListener {
 	     */
 	    SinaShareContent sinaShareContent = new SinaShareContent();
 	    sinaShareContent.setTitle(title);
-	    sinaShareContent.setShareContent(content);
+	    
+	    sinaShareContent.setShareContent(content+"."+currentActivityUrl);//-->test
+	    
 	    if (!TextUtils.isEmpty(imageUrl))
 	    	sinaShareContent.setShareImage(new UMImage(this.activity, imageUrl));
 	    
 	    sinaShareContent.setTargetUrl(currentActivityUrl);//新浪微博分享的活动链接
+	    
+	    /*sinaShareContent.setAppWebSite(currentActivityUrl);*///-->test
+	    
 	    this.mController.setShareMedia(sinaShareContent);
 	}
 
@@ -325,7 +330,7 @@ public class SharedDialog implements OnClickListener {
 
 			@Override
 			public void onStart() {
-				CustomToast.show(activity, "分享平台："+ plat.name(), "开始分享");
+				/*CustomToast.show(activity, "分享平台："+ plat.name(), "开始分享");*/
 			}
 			
 			@Override

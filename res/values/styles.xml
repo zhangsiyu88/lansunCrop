@@ -22,7 +22,6 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
-        <item name="android:windowBackground">@android:color/holo_green_light</item>
     </style>
     
     

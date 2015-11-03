@@ -115,7 +115,6 @@ public class SecretaryCardShowFragment extends BaseFragment{
 								});
 							}else {
 								FragmentEntity entity=new FragmentEntity();
-								
 								Fragment fragment=new RegisterFragment();
 								
 								Bundle bundle=new Bundle();

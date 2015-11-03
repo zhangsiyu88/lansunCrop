@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.RelativeLayout;
 
 import android.widget.TextView;
 
@@ -96,17 +97,20 @@ public class StoreListFragment extends BaseFragment {
 	private boolean isPosition;
 	private View emptyView;
 	private TextView tv_found_secretary;
+	private RelativeLayout activity_search_empty_storelist;
 
 	class Views {
 		private View fl_comments_right_iv, tv_activity_shared;
 		private ExpandTabView expandtab_view;
 		private TextView tv_activity_title;
+		private RelativeLayout activity_search_empty_storelist;
 	}
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_store_list, null);
+		activity_search_empty_storelist = (RelativeLayout) rootView.findViewById(R.id.activity_search_empty_storelist);
 		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
@@ -133,19 +137,8 @@ public class StoreListFragment extends BaseFragment {
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		
-		emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_search_empty, null);
-		tv_found_secretary = (TextView) emptyView.findViewById(R.id.tv_found_secretary);
-		tv_found_secretary.setVisibility(View.VISIBLE);
+		emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_search_empty_storelist, null);
 		
-		tv_found_secretary.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				SecretaryFragment homeFragment = new SecretaryFragment();
-				FragmentEntity fEntity = new FragmentEntity();
-				fEntity.setFragment(homeFragment);
-				EventBus.getDefault().post(fEntity);
-			}
-		});
 		super.onCreate(savedInstanceState);
 	}
 	
@@ -239,7 +232,9 @@ public class StoreListFragment extends BaseFragment {
 	@InjectHttp
 	private void result(ResponseEntity r) {
 		if (r.getStatus() == FastHttp.result_ok) {
+			
 			endProgress();
+			
 			PullToRefreshManager.getInstance().onFooterRefreshComplete();
 			/*dataList = new ArrayList<HashMap<String, String>>();*/
 			String name;
@@ -345,9 +340,11 @@ public class StoreListFragment extends BaseFragment {
 					
 					try{
 						lv_stores_content.removeFooterView(emptyView);
+						/*v.activity_search_empty_storelist.setVisibility(View.INVISIBLE);*/
 					}catch(Exception e ){
 					}
 					lv_stores_content.addFooterView(emptyView);
+					/*activity_search_empty_storelist.setVisibility(View.VISIBLE);*/
 					lv_stores_content.setAdapter(null);
 					/*adapter.notifyDataSetChanged();*/
 					

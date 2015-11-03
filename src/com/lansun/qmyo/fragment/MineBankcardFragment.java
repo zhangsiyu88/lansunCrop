@@ -66,8 +66,10 @@ public class MineBankcardFragment extends BaseFragment{
 	private boolean mIsFromEightPart = false;
 	private boolean mIsFromNewPart = false;
 	private boolean mIsFromRigisterFragToMyBankcardFrag = false;
+	private boolean mIsFromInsertBankcardAdapterPage = false;
 	private int type;
 	private int mInitType;
+	private String bankCardId;
 	
 	private DisplayImageOptions options = new DisplayImageOptions.Builder()
 	.cacheInMemory(true).cacheOnDisk(true).considerExifParams(true)
@@ -91,6 +93,7 @@ public class MineBankcardFragment extends BaseFragment{
 
 	@InjectView(pull = true)
 	private MyListView lv_ban_card_other;
+	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -123,6 +126,8 @@ public class MineBankcardFragment extends BaseFragment{
 			boolean isFromEightPart = getArguments().getBoolean("isFromEightPart");
 			boolean isFromNewPart = getArguments().getBoolean("isFromNewPart");
 			boolean isFromRigisterFragToMyBankcardFrag = getArguments().getBoolean("isFromRigisterFragToMyBankcardFrag");
+			boolean isFromInsertBankcardAdapterPage = getArguments().getBoolean("isFromInsertBankcardAdapterPage");
+			Log.d("isFromInsertBankcardAdapterPage的值为：", "isFromInsertBankcardAdapterPage的值为："+isFromInsertBankcardAdapterPage);
 			int initType = getArguments().getInt("type");
 			
 			mIsFromHome = isFromHome;
@@ -133,9 +138,49 @@ public class MineBankcardFragment extends BaseFragment{
 			
 			mInitType = initType;
 			mIsFromRigisterFragToMyBankcardFrag = isFromRigisterFragToMyBankcardFrag;
-		
+			
+			mIsFromInsertBankcardAdapterPage = isFromInsertBankcardAdapterPage;
 	    }
+		
+		if(mIsFromInsertBankcardAdapterPage){//从添加卡页而来，此时本地的主卡数据未发生变化，下面将原始主卡送入选择接口数据中
+			InternetConfig config = new InternetConfig();
+			config.setKey(4);
+			HashMap<String, Object> head = new HashMap<>();
+			head.put("Authorization", "Bearer "+ App.app.getData("access_token"));
+			config.setHead(head);
+			LinkedHashMap<String, String> params = new LinkedHashMap<>();
+			Log.i("MainBankCard的值", "MainBankCard的值：" +App.app.getData("MainBankcard"));
+			params.put("bankcard_id", App.app.getData("MainBankcard"));
+			
+			Log.d("原始主卡的id为:  ", "原始主卡的id为:  "+App.app.getData("MainBankcard"));
+			
+			//在这里从搜索银行卡页回来，自己跑过去请求了一下，进行了选卡操作！！！
+			FastHttpHander.ajax(GlobalValue.URL_SELECT_BANKCARD,  params, config,this);
+			Handler_Inject.injectFragment(MineBankcardFragment.this, null);
+			return;
+			
+		}else{
+			
+			refreshUrl = GlobalValue.URL_BANKCARD;
+			refreshKey = 0;
+			refresh();//刷新其他银行卡的操作		
+		    decideHowToShow();
+		    showChosenBankcard();
+	  }
+		
+	}
 
+	public void showChosenBankcard() {
+		//获取展示选中的卡
+		if (!TextUtils.isEmpty(App.app.getData("exp_secret"))) {//体验用户
+			/*refreshCurrentList(GlobalValue.URL_BANKCARD_RECOMMEND, null, 3,null);*/
+			refreshCurrentList(GlobalValue.URL_BANKCARD_CHOSEN, null, 3, null);
+		} else {//登陆用户
+			refreshCurrentList(GlobalValue.URL_BANKCARD_CHOSEN, null, 3, null);
+		}
+	}
+
+	public void decideHowToShow() {
 		if (isExperience()) {//体验用户就只有一张卡并且显示是体验状态,那么下面的显示是那只猫头鹰
 			v.ll_bank_card_other.setVisibility(View.GONE);
 
@@ -198,26 +243,16 @@ public class MineBankcardFragment extends BaseFragment{
 			v.ll_bank_card_exp.setVisibility(View.GONE);
 			v.tv_bank_card_exp.setText(getString(R.string.current));
 		}
-		refreshUrl = GlobalValue.URL_BANKCARD;
-		refreshKey = 0;
-		
-		
-		refresh();
 	}
 
 	private void refresh() {
 
+		//下行代码中的refreshKey为 0
 		refreshCurrentList(refreshUrl, null, refreshKey, lv_ban_card_other);//其他银行卡的页面展示
-
-		if (!TextUtils.isEmpty(App.app.getData("exp_secret"))) {//体验用户
-			
-			/*refreshCurrentList(GlobalValue.URL_BANKCARD_RECOMMEND, null, 3,null);*/
-			refreshCurrentList(GlobalValue.URL_BANKCARD_CHOSEN, null, 3, null);
-			
-		} else {//登陆用户
-			refreshCurrentList(GlobalValue.URL_BANKCARD_CHOSEN, null, 3, null);
-		}
+		showChosenBankcard();
 	}
+	
+	
 
 	ListViewSwipeGesture.TouchCallbacks swipeListener = new ListViewSwipeGesture.TouchCallbacks() {
 		@Override
@@ -273,17 +308,19 @@ public class MineBankcardFragment extends BaseFragment{
 		 * @see com.qmyo.view.ListViewSwipeGesture.TouchCallbacks#OnClickListView(int)
 		 */
 		@Override
-		public void OnClickListView(int position) {
+		public void OnClickListView(int position) {//---------------------------------------------->listView 的点击事件
 			final HashMap<String, String> map = dataList.get(position);
 
 			DialogUtil.createTipAlertDialog(activity, R.string.is_switch_card,
 					new TipAlertDialogCallBack() {
 
+				
+
 				@Override
 				public void onPositiveButtonClick(
 						DialogInterface dialog, int which) {
 					dialog.dismiss();
-					String bankCardId = map.get("id");
+					bankCardId = map.get("id");
 					InternetConfig config = new InternetConfig();
 					config.setKey(2);
 					HashMap<String, Object> head = new HashMap<>();
@@ -330,6 +367,7 @@ public class MineBankcardFragment extends BaseFragment{
 	private boolean isPull = false;
 
 	private boolean isChangeTheChoseCard = false;
+	private boolean isChangeTheChoseCardUnderSearchBankcardPage = false;
 
 	@InjectHttp
 	private void result(ResponseEntity r) {
@@ -392,6 +430,19 @@ public class MineBankcardFragment extends BaseFragment{
 					CustomToast.show(activity, R.string.tip,
 							R.string.select_bank_card_success);
 					
+					App.app.setData("MainBankcard", bankCardId);
+					
+					if(mIsFromInsertBankcardAdapterPage){
+						//刷下页面
+						refreshUrl = GlobalValue.URL_BANKCARD;
+						refreshKey = 0;
+						refresh();
+						decideHowToShow();
+						showChosenBankcard();
+						isChangeTheChoseCardUnderSearchBankcardPage = true;
+						return;
+					}
+					
 					
 					refresh();
 					//上面的refresh()操作完成后，表明已经进行了换卡的操作
@@ -402,18 +453,78 @@ public class MineBankcardFragment extends BaseFragment{
 							R.string.select_bank_card_faild);
 				}
 				break;
+				
+			
 			case 3:// 获取当前银行卡
 				BankCardData data = Handler_Json.JsonToBean(BankCardData.class,
 						r.getContentAsString());
 				
 				currentCardId = data.getBankcard().getId();
 				
+				App.app.setData("MainBankcard", currentCardId+"");//只要进入就将当前的原始主卡ID写入到本地文件中
+				
+				Log.d("","存入到本地的MainBankcard为: "+App.app.getData("MainBankcard"));
+				
 				v.ll_bank_currentCard.setVisibility(View.VISIBLE);
 				v.tv_bank_card_name.setText(data.getBank().getName());
 				v.tv_bank_card_desc.setText(data.getBankcard().getName());
 				ImageLoader.getInstance().displayImage(data.getBankcard().getPhoto(), v.iv_ban_card_head,
 						options);
+				
+
+				/**
+				 * 在此处进行拦截操作！//TODO
+				 */
+				/*if(mIsFromInsertBankcardAdapterPage){//将原BankcardId重新去访问一下服务器接口，这样就将选中卡返回至原卡状态
+					InternetConfig config = new InternetConfig();
+					config.setKey(0);
+					HashMap<String, Object> head = new HashMap<>();
+					head.put("Authorization", "Bearer "
+							+ App.app.getData("access_token"));
+					config.setHead(head);
+					LinkedHashMap<String, String> params = new LinkedHashMap<>();
+					params.put("bankcard_id", currentCardId+"");
+					FastHttpHander.ajax(GlobalValue.URL_BANKCARD_ADD,  params, config,MineBankcardFragment.this);
+					Handler_Inject.injectFragment(MineBankcardFragment.this, null);
+					
+					refreshUrl = GlobalValue.URL_BANKCARD;
+					refreshKey = 0;
+					refresh();//刷新其他银行卡的操作
+				}*/
+				
+				
 				break;
+			case 4://从银行卡搜索页并且完成添卡操作后，需要将主卡id恢复到本地
+				if ("true".equals(r.getContentAsString())) {
+					CustomToast.show(activity, R.string.tip,
+							R.string.select_bank_card_success);
+					
+					refreshUrl = GlobalValue.URL_BANKCARD;
+					refreshKey = 0;
+					refresh();
+					decideHowToShow();
+					showChosenBankcard();
+					
+					
+					/*App.app.setData("MainBankcard", bankCardId);*/
+					/*if(mIsFromInsertBankcardAdapterPage){
+						//刷下页面
+						refreshUrl = GlobalValue.URL_BANKCARD;
+						refreshKey = 0;
+						refresh();
+						decideHowToShow();
+						showChosenBankcard();
+						isChangeTheChoseCardUnderSearchBankcardPage = true;
+						return;
+					}
+					refresh();
+					//上面的refresh()操作完成后，表明已经进行了换卡的操作
+					 isChangeTheChoseCard  = true;*/
+				} else {
+					CustomToast.show(activity, R.string.tip,
+							R.string.select_bank_card_faild);
+				}
+			   break;
 			}
 		} else {
 			progress_text.setText(R.string.net_error_refresh);
@@ -464,9 +575,42 @@ public class MineBankcardFragment extends BaseFragment{
 
 			}else{
 				SearchBankCardFragment fragment = new SearchBankCardFragment();
-				//				BankCardSearchFragment fragment = new BankCardSearchFragment();
-				//				com.qmyo.fragment.searchbank.SearchBankCardFragment fragment = new com.qmyo.fragment.searchbank.SearchBankCardFragment();
 				FragmentEntity event = new FragmentEntity();
+				
+				/*boolean isFromHome = getArguments().getBoolean("isFromHome");
+				boolean isFromEightPart = getArguments().getBoolean("isFromEightPart");
+				boolean isFromNewPart = getArguments().getBoolean("isFromNewPart");
+				mIsFromHome = isFromHome;
+				mIsFromEightPart = isFromEightPart;
+				mIsFromNewPart = isFromNewPart;
+				mInitType = initType;
+				mIsFromRigisterFragToMyBankcardFrag = isFromRigisterFragToMyBankcardFrag;
+				mIsFromInsertBankcardAdapterPage = isFromInsertBankcardAdapterPage;
+				*
+				*/
+				
+				//来自 home页
+				if(mIsFromHome){
+					App.app.setData("isFromHome", "true");
+					App.app.setData("isFromNewPart", "");
+					App.app.setData("isFromEightPart", "");
+				}
+				//来自 New页
+				if(mIsFromNewPart){
+					App.app.setData("isFromHome", "");
+					App.app.setData("isFromNewPart", "true");
+					App.app.setData("isFromEightPart", "");
+				}
+				//来自 8大板块页
+				if(mIsFromEightPart){
+					App.app.setData("isFromHome", "");
+					App.app.setData("isFromNewPart", "");
+					App.app.setData("isFromEightPart", "true");
+					App.app.setData("type", mInitType+"");
+				}
+				/*Bundle bundle = new Bundle();
+				bundle.putInt("currentBankcardId", currentCardId);*/
+				App.app.setData("currentBankcardId", currentCardId+"");
 				event.setFragment(fragment);
 				EventBus.getDefault().post(event);
 			}
@@ -509,8 +653,7 @@ public class MineBankcardFragment extends BaseFragment{
 		super.onPause();
 	}
 	
-	@Override
-	@InjectMethod(@InjectListener(ids = R.id.iv_activity_back, listeners = OnClick.class))
+	@Override/*@InjectMethod(@InjectListener(ids = R.id.iv_activity_back, listeners = OnClick.class))*/
 	protected void back() {
 		
 		if(isChangeTheChoseCard){ //在当前页进行了替换选中银行卡的操作后，需要对应的进行返回至上一页
@@ -525,16 +668,21 @@ public class MineBankcardFragment extends BaseFragment{
 				FragmentEntity fEntity = new FragmentEntity();
 				fEntity.setFragment(homeFragment);
 				EventBus.getDefault().post(fEntity);
+				return;
 			}
+			
+			
 			if(mIsFromEightPart){
 				/*CustomToast.show(activity, "准备跳转至八大板块页刷新", "来自我的银行卡页面");*/
 				ActivityFragment activityFragment = new ActivityFragment();
 				Bundle args = new Bundle();
 				args.putInt("type", mInitType);//将这个type参数放入到返回回去的八大板块页
+				args.putBoolean("isHasChangeTheBankcardInMineBankcardPage", true);
 				activityFragment.setArguments(args);
 				FragmentEntity fEntity = new FragmentEntity();
 				fEntity.setFragment(activityFragment);
 				EventBus.getDefault().post(fEntity);
+				return;
 			}
 			
 			if(mIsFromNewPart){  
@@ -542,13 +690,54 @@ public class MineBankcardFragment extends BaseFragment{
 				ActivityFragment activityFragment = new ActivityFragment();
 				Bundle args = new Bundle();
 				args.putBoolean("IsNew", true);
+				args.putBoolean("isHasChangeTheBankcardInMineBankcardPage", true);
 				args.putInt("type", R.string.new_exposure);
 				activityFragment.setArguments(args);
 				FragmentEntity fEntity = new FragmentEntity();
 				fEntity.setFragment(activityFragment);
 				EventBus.getDefault().post(fEntity);
+				return;
 			}
-			return;
+			
+			//从添加搜索银行卡页回来，并且 在我的银行卡页进行了换卡的操作,即表明肯定进行了换卡的操作
+			if(mIsFromInsertBankcardAdapterPage){  
+				if(App.app.getData("isFromHome")=="true"&&App.app.getData("isFromNewPart")==""&&App.app.getData("isFromEightPart")==""){
+					HomeFragment homeFragment = new HomeFragment();
+					FragmentEntity fEntity = new FragmentEntity();
+					fEntity.setFragment(homeFragment);
+					EventBus.getDefault().post(fEntity);
+					return;
+					
+				}
+				//来自 New页
+				if(App.app.getData("isFromHome")==""&&App.app.getData("isFromNewPart")=="true"&&App.app.getData("isFromEightPart")==""){
+					ActivityFragment activityFragment = new ActivityFragment();
+					Bundle args = new Bundle();
+					args.putBoolean("IsNew", true);
+					args.putInt("type", R.string.new_exposure);
+					args.putBoolean("isHasChangeTheBankcardInMineBankcardPage", true);
+					activityFragment.setArguments(args);
+					FragmentEntity fEntity = new FragmentEntity();
+					fEntity.setFragment(activityFragment);
+					EventBus.getDefault().post(fEntity);
+					return;
+				}
+				//来自 8大板块页
+				if(App.app.getData("isFromHome")==""&&App.app.getData("isFromNewPart")==""&&App.app.getData("isFromEightPart")=="true"){
+					ActivityFragment activityFragment = new ActivityFragment();
+					Bundle args = new Bundle();
+					args.putInt("type", Integer.valueOf(App.app.getData("type"))); //将这个type参数放入到返回回去的八大板块页
+					args.putBoolean("isHasChangeTheBankcardInMineBankcardPage", true);
+					activityFragment.setArguments(args);
+					FragmentEntity fEntity = new FragmentEntity();
+					fEntity.setFragment(activityFragment);
+					EventBus.getDefault().post(fEntity);
+					return;
+				}
+			}
+			
+			super.back();
+			
 			
 		}else if(!isChangeTheChoseCard&&mIsFromRigisterFragToMyBankcardFrag){//虽然没有进行换卡的操作，但是是从注册页返回回来的，故而仍需进行刷新返回页面的操作
 			
@@ -580,7 +769,50 @@ public class MineBankcardFragment extends BaseFragment{
 				EventBus.getDefault().post(fEntity);
 			}
 		    return;	
+		    
+		}else if(mIsFromInsertBankcardAdapterPage&&isChangeTheChoseCardUnderSearchBankcardPage){//如果是从添卡搜索页回来，但却没有在当前页进行换卡操作，那么应返回至来源页，且不做刷新操作
+			
+			Log.d("isisis", "home"+App.app.getData("isFromHome")+ "new "+ App.app.getData("isFromNewPart")+ "eight"+App.app.getData("isFromEightPart"));
+			
+			if(App.app.getData("isFromHome")=="true"&&App.app.getData("isFromNewPart")==""&&App.app.getData("isFromEightPart")==""){
+				HomeFragment homeFragment = new HomeFragment();
+				FragmentEntity fEntity = new FragmentEntity();
+				fEntity.setFragment(homeFragment);
+				EventBus.getDefault().post(fEntity);
+				return;
+				
+			}
+			//来自 New页
+			if(App.app.getData("isFromHome")==""&&App.app.getData("isFromNewPart")=="true"&&App.app.getData("isFromEightPart")==""){
+				ActivityFragment activityFragment = new ActivityFragment();
+				Bundle args = new Bundle();
+				args.putBoolean("IsNew", true);
+				args.putInt("type", R.string.new_exposure);
+				args.putBoolean("isHasChangeTheBankcardInMineBankcardPage", true);
+				activityFragment.setArguments(args);
+				FragmentEntity fEntity = new FragmentEntity();
+				fEntity.setFragment(activityFragment);
+				EventBus.getDefault().post(fEntity);
+				return;
+			}
+			//来自 8大板块页
+			if(App.app.getData("isFromHome").equals("")&&App.app.getData("isFromNewPart").equals("")&&App.app.getData("isFromEightPart").equals("true")){
+				ActivityFragment activityFragment = new ActivityFragment();
+				Bundle args = new Bundle();
+				args.putInt("type", Integer.valueOf(App.app.getData("type"))); //将这个type参数放入到返回回去的八大板块页
+				args.putBoolean("isHasChangeTheBankcardInMineBankcardPage", true);
+				activityFragment.setArguments(args);
+				FragmentEntity fEntity = new FragmentEntity();
+				fEntity.setFragment(activityFragment);
+				EventBus.getDefault().post(fEntity);
+				return;
+			}
+			
+			Log.d("morenfangfa", "走到默认返回方法");
+			super.back();
+			return;
 		}
+		
 		super.back();
 		
 	}

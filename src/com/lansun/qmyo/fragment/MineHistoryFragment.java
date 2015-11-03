@@ -77,7 +77,7 @@ public class MineHistoryFragment extends BaseFragment {
 
 	@InjectAll
 	Views v;
-	@InjectView(binders = { @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick") }, down = true, pull = true)
+	@InjectView(binders = { @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick") }, pull = true)
 	private MyListView lv_mine_history_list;
 	private HistoryActivity activityList;
 	private HistoryActivity storeList;
@@ -88,6 +88,7 @@ public class MineHistoryFragment extends BaseFragment {
 	private SearchAdapter activityAdapter;
 	private HistoryActivity v16list;
 	private MineV16Adapter v16adapter;
+	private boolean isPull = false;
 
 	class Views {
 
@@ -250,14 +251,19 @@ public class MineHistoryFragment extends BaseFragment {
 	private void result(ResponseEntity r) {
 		if (r.getStatus() == FastHttp.result_ok) {
 			endProgress();
-			activityDataList.clear();
-			storeDataList.clear();
+			
+			
 			v16DataList.clear();
 			switch (r.getKey()) {
 			case 0:
 				activityList = Handler_Json.JsonToBean(HistoryActivity.class,
 						r.getContentAsString());
 				
+				if(isPull){
+					isPull =false;
+				}else{
+					activityDataList.clear();
+				}
 				for (BrowseData data : activityList.getData()) {
 					HashMap<String, Object> map = new HashMap<>();
 					map.put("tv_search_activity_name", data.getShop().getName());
@@ -300,6 +306,12 @@ public class MineHistoryFragment extends BaseFragment {
 			case 1:
 				storeList = Handler_Json.JsonToBean(HistoryActivity.class,
 						r.getContentAsString());
+				if(isPull){
+					isPull =false;
+				}else{
+					storeDataList.clear();
+				}
+				
 				for (BrowseData data : storeList.getData()) {
 					HashMap<String, String> map = new HashMap<String, String>();
 					map.put("tv_store_item_name", data.getShop().getName());
@@ -424,36 +436,36 @@ public class MineHistoryFragment extends BaseFragment {
 		case InjectView.PULL:
 			if (activityList != null || storeDataList != null) {
 				if (refreshKey == 0) {
-					if (TextUtils.isEmpty(activityList.getNext_page_url())) {
-						PullToRefreshManager.getInstance()
-								.onFooterRefreshComplete();
-						CustomToast.show(activity, "加载进度", "目前所有内容都已经加载完成");
+					if (TextUtils.isEmpty(activityList.getNext_page_url())||activityList.getNext_page_url().contains("[]")
+							||activityList.getNext_page_url().contains("null")) {
+						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+						PullToRefreshManager.getInstance().footerUnable();
+						CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的活动");
 						return;
 					}
 					refreshUrl = activityList.getNext_page_url();
 				} else if (refreshKey == 1) {
 					if (TextUtils.isEmpty(storeList.getNext_page_url())) {
-						PullToRefreshManager.getInstance()
-								.onFooterRefreshComplete();
-						CustomToast.show(activity, "加载进度", "目前所有内容都已经加载完成");
+						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+						PullToRefreshManager.getInstance().footerUnable();
+						CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的门店");
 						return;
 					}
 					refreshUrl = storeList.getNext_page_url();
 				} else {
 					if (TextUtils.isEmpty(v16list.getNext_page_url())) {
-						PullToRefreshManager.getInstance()
-								.onFooterRefreshComplete();
+						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 						CustomToast.show(activity, "加载进度", "目前所有内容都已经加载完成");
 						return;
 					}
 					refreshUrl = v16list.getNext_page_url();
 				}
-				refreshCurrentList(refreshUrl, null, refreshKey,
-						lv_mine_history_list);
-			}
+				refreshCurrentList(refreshUrl, null, refreshKey,lv_mine_history_list);
+				isPull  = true;
+			} 
 			break;
-		case InjectView.DOWN:
-			if (refreshKey == 0) {
+		case InjectView.DOWN://拒绝下拉操作
+			/*if (refreshKey == 0) {
 				refreshUrl = GlobalValue.URL_USER_ACTIVITYBROWSES;
 			} else if (refreshKey == 1) {
 				refreshUrl = GlobalValue.URL_USER_SHOPBROWSES;
@@ -461,7 +473,7 @@ public class MineHistoryFragment extends BaseFragment {
 				refreshUrl = GlobalValue.URL_USER_ARTICLEBROWSES;
 			}
 			refreshCurrentList(refreshUrl, null, refreshKey,
-					lv_mine_history_list);
+					lv_mine_history_list);*/
 			break;
 		}
 	}

@@ -31,6 +31,8 @@ import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
+import com.android.pc.ioc.inject.InjectListener;
+import com.android.pc.ioc.inject.InjectMethod;
 import com.android.pc.ioc.inject.InjectPullRefresh;
 import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.internet.FastHttp;
@@ -125,6 +127,7 @@ public class ActivityFragment extends BaseFragment {
 
 	private String intelligentStr="intelligent";
 	private String type;
+	private int initType;
 
 	private View tv_found_secretary;
 
@@ -175,13 +178,19 @@ public class ActivityFragment extends BaseFragment {
 
 	private boolean isDownChange  = false;
 
+	private boolean mIsHasChangeTheBankcardInMineBankcardPage = false;
+
 	@InjectInit
 	private void init() {
 		secretaryTitle = getResources().getStringArray(R.array.secretary_title);
 		secretaryhint = getResources().getStringArray(R.array.secretary_hint);
 		int type = getArguments().getInt("type");
-
+		initType = type;
 		Log.i("type", "这次的type的值为"+ type);
+		
+		
+		mIsHasChangeTheBankcardInMineBankcardPage = getArguments().getBoolean("isHasChangeTheBankcardInMineBankcardPage");
+		Log.d("mIsHasChangeTheBankcardInMineBankcardPage", "这次的mIsHasChangeTheBankcardInMineBankcardPage的值为"+ mIsHasChangeTheBankcardInMineBankcardPage);
 
 		if (type != 0) {
 			switch (type) {
@@ -235,7 +244,6 @@ public class ActivityFragment extends BaseFragment {
 			}
 			initData();//---------------------功能：
 			v.tv_activity_title.setText(type);
-
 			System.out.println(v.tv_activity_title.getText());
 
 		} else {
@@ -255,7 +263,6 @@ public class ActivityFragment extends BaseFragment {
 		/*注意：
 		 * progress_container就是所有的ListView所在的，那个最大的布局界面上
 		 * 这样就可以巧妙的将那个Gif的动画优先设置到progress_container中，然后再将ListView对象放入进去
-		 * 
 		 */
 		progress_container.setOnClickListener(new OnClickListener() {
 
@@ -269,9 +276,18 @@ public class ActivityFragment extends BaseFragment {
 	private void click(View view) {
 		switch (view.getId()) {
 		case R.id.rl_bg:// 进入我的银行卡
-			Fragment fragment;
-			fragment = new MineBankcardFragment();
-			//new MineBankcardFragment();
+			Fragment fragment =  new MineBankcardFragment();
+			Bundle bundle = new Bundle();
+			if(getArguments().getBoolean("IsNew")){
+				bundle.putBoolean("isFromNewPart", true);
+				fragment.setArguments(bundle);
+				/*CustomToast.show(activity, "来自于新品曝光板块", "下面进入我的银行卡页");*/
+			}else{
+				fragment.setArguments(bundle);
+				bundle.putBoolean("isFromEightPart", true);
+				bundle.putInt("type",initType);
+				/*CustomToast.show(activity, "来自于八大板块页", "下面进入我的银行卡页");*/
+			}
 			FragmentEntity event = new FragmentEntity();
 			event.setFragment(fragment);
 			EventBus.getDefault().post(event);
@@ -353,7 +369,10 @@ public class ActivityFragment extends BaseFragment {
 
 			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SERVICE
 					+ HODLER_TYPE, config, this);
-
+			Log.d("八大板块测试", "准备前往获取板块服务列表的数据 "+System.currentTimeMillis());
+			/*Log.d("八大板块测试", "准备前往获取商圈的数据 "+System.currentTimeMillis());
+			Log.d("八大板块测试", "准备前往获取智能排序的数据 "+System.currentTimeMillis());
+			Log.d("八大板块测试", "准备前往获取筛选的数据 "+System.currentTimeMillis());*/
 
 			// 附近 固定
 			InternetConfig config1 = new InternetConfig();
@@ -363,18 +382,21 @@ public class ActivityFragment extends BaseFragment {
 
 			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_DISTRICT
 					+ App.app.getData("select_cityCode"), config1, this);
+			Log.d("八大板块测试", "准备前往获取商圈的数据 "+System.currentTimeMillis());
 
 
 			// 智能排序
 			InternetConfig config2 = new InternetConfig();
 			config2.setKey(2);
 			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_INTELLIGENT,config2, this);
+			Log.d("八大板块测试", "准备前往获取智能排序的数据 "+System.currentTimeMillis());
 
 
 			// 筛选
 			InternetConfig config3 = new InternetConfig();
 			config3.setKey(3);
 			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SCREENING,config3, this);
+			Log.d("八大板块测试", "准备前往获取筛选的数据 "+System.currentTimeMillis());
 		}
 
 		emptyView = inflater.inflate(R.layout.activity_search_empty, null);
@@ -383,7 +405,8 @@ public class ActivityFragment extends BaseFragment {
 
 			@Override
 			public void onClick(View arg0) {
-				SecretaryDetailFragment fragment = new SecretaryDetailFragment();
+				/*SecretaryDetailFragment fragment = new SecretaryDetailFragment();*/
+				SecretaryFragment fragment = new SecretaryFragment();
 				Bundle args = new Bundle();
 				args.putString("type", typeStr);
 				args.putString("title", secretaryTitle[secretaryPosition]);
@@ -528,7 +551,12 @@ public class ActivityFragment extends BaseFragment {
 		/*refreshParams.put("site", "310000");//首先默认是在上海 310000*/	
 		refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
 		refreshKey = 4;
-		refreshCurrentList(refreshUrl+"site="+getSelectCity()[0]+"&service="+HODLER_TYPE+"&position="+position_bussness+"&intelligent="+intelligentStr+"&type="+type+"&location="+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon()+"&query="+"",null, refreshKey,lv_activity_list);
+		refreshCurrentList(refreshUrl+"site="+getSelectCity()[0]+"&service="+HODLER_TYPE+"&position="
+									+position_bussness+"&intelligent="+intelligentStr+"&type="+type+"&location="+GlobalValue.gps.getWgLat()+","
+									+GlobalValue.gps.getWgLon()+"&query="+"",null, refreshKey,lv_activity_list);
+		
+		//TODO
+		Log.d("八大板块测试", "八大板块页面准备前去访问数据：  "+System.currentTimeMillis());
 	}
 
 
@@ -550,7 +578,7 @@ public class ActivityFragment extends BaseFragment {
 
 			switch (r.getKey()) {
 			case 0:// 全部
-
+				Log.d("八大板块测试", "已获取板块服务列表的数据 "+System.currentTimeMillis());
 				Log.i("全部的数据", "拿到最左边列表的展示的全部数据!");
 				AllService = Handler_Json.JsonToBean(Service.class,
 						r.getContentAsString());
@@ -578,6 +606,7 @@ public class ActivityFragment extends BaseFragment {
 				mViewArray.put(0, viewLeft);
 				break;
 			case 1:// 附近
+				Log.d("八大板块测试", "已获取商圈的数据 "+System.currentTimeMillis());
 				Log.i("附近的数据", "拿到附近的数据!");
 				Gson gson=new Gson();
 				nearService = gson.fromJson(r.getContentAsString(),Position.class);
@@ -605,6 +634,7 @@ public class ActivityFragment extends BaseFragment {
 				mViewArray.put(1, viewLeft2);
 				break;
 			case 2:// 智能排序
+				Log.d("八大板块测试", "已获取智能排序的数据 "+System.currentTimeMillis());
 				Log.i("智能排序的数据", "拿到智能排序的数据!");
 				intelligent = Handler_Json.JsonToBean(Intelligent.class,r.getContentAsString());
 
@@ -620,6 +650,7 @@ public class ActivityFragment extends BaseFragment {
 				break;
 
 			case 3:// 筛选
+				Log.d("八大板块测试", "已获取筛选的数据 "+System.currentTimeMillis());
 				Log.i("筛选的数据", "拿到筛选的数据!");
 				sxintelligent = Handler_Json.JsonToBean(Type.class,r.getContentAsString());
 				name = sxintelligent.getName();
@@ -654,7 +685,7 @@ public class ActivityFragment extends BaseFragment {
 				break;
 			case 4:// 活动列表
 				Log.i("进入界面时,能不能拿到数据","能拿到!但不展示出来是个问题!");
-				
+				Log.d("八大板块测试", "八大板块页面去访问数据现已拿到数据内容的时间： "+System.currentTimeMillis());
 				try{
 					Log.i("","企图remove掉ListView中的尾布局");
 					lv_activity_list.removeFooterView(emptyView);
@@ -703,12 +734,16 @@ public class ActivityFragment extends BaseFragment {
 						lv_activity_list.setAdapter(activityAdapter);
 						expandTabViewButtomLine.setVisibility(View.VISIBLE);//当拿到数据加载到ListView上后，再将下面的Line线条展示出来
 						Log.i("烦死了", "分明能走到setAdapter这儿啊!!!");
+						
+						Log.d("八大板块测试", "八大板块页面去访问数据现已拿到数据内容，已连接上适配器： "+System.currentTimeMillis());
+						
 						if(activityList.getData().size()<10){
 							lv_activity_list.addFooterView(emptyView);
 						}
 						endProgress();//当ListView链接上适配器时,我们需要将gif的动画关掉
 
 					} else {
+						Log.d("八大板块测试", "八大板块页面去访问数据现已拿到数据内容，已连接上适配器(适配器复用)： "+System.currentTimeMillis());
 						
 						//adapter并不为空时
 						activityAdapter.notifyDataSetChanged();
@@ -894,5 +929,18 @@ public class ActivityFragment extends BaseFragment {
 		return -1;
 	}
 
+	
+	@Override/*@InjectMethod(@InjectListener(ids = 2131296342, listeners = OnClick.class))*/
+	protected void back() {
+		if(mIsHasChangeTheBankcardInMineBankcardPage){
+			Log.d("", "");
+			HomeFragment homeFragment = new HomeFragment();
+			FragmentEntity fEntity = new FragmentEntity();
+			fEntity.setFragment(homeFragment);
+			EventBus.getDefault().post(fEntity);
+			return;
+		}
+		super.back();
+	}
 
 }
