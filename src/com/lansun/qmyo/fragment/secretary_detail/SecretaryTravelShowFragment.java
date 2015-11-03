@@ -121,7 +121,7 @@ public class SecretaryTravelShowFragment extends BaseFragment{
 								Fragment fragment=new TaskAssignment();
 								Bundle bundle=new Bundle();
 								bundle.putString("content", content.getText().toString());
-								bundle.putString("type", "card");
+								bundle.putString("type", "travel");
 								fragment.setArguments(bundle);
 								entity.setFragment(fragment);
 								EventBus.getDefault().post(entity);

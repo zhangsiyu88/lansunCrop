@@ -60,9 +60,7 @@ import com.squareup.okhttp.Response;
 import com.lansun.qmyo.R;
 public class PersonCenterFragment extends BaseFragment{
 	private String path;
-	private OnImageChage callbackChage;
-	public PersonCenterFragment(OnImageChage callbackChage){
-		this.callbackChage=callbackChage;
+	public PersonCenterFragment(){
 	}
 	private RecyclingImageView iv_activity_back;
 	@InjectAll
@@ -86,8 +84,6 @@ public class PersonCenterFragment extends BaseFragment{
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
 			case 0:
-				Bitmap bitmap=BitmapFactory.decodeFile(path);
-				callbackChage.setOnImageChage(bitmap);
 				if (dialogpg!=null) {
 					dialogpg.dismiss();
 				}
@@ -112,7 +108,7 @@ public class PersonCenterFragment extends BaseFragment{
 		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
-
+	
 	@InjectInit
 	private void init() {
 		v.fl_comments_right_iv.setVisibility(View.GONE);
@@ -427,8 +423,5 @@ public class PersonCenterFragment extends BaseFragment{
 				cursor.close();
 		}
 		return null;
-	}
-	public interface OnImageChage{
-		void setOnImageChage(Bitmap bitmap);
 	}
 }

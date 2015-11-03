@@ -21,7 +21,6 @@ import com.lansun.qmyo.domain.ErrorInfo;
 import com.lansun.qmyo.domain.Token;
 import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.event.entity.FragmentEntity;
-import com.lansun.qmyo.fragment.PersonCenterFragment.OnImageChage;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryCardShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryInvestmentShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryLifeShowFragment;
@@ -54,7 +53,7 @@ import android.widget.TextView;
  * @author bhxx
  * 
  */
-public class RegisterFragment extends BaseFragment implements OnImageChage{
+public class RegisterFragment extends BaseFragment{
 	@InjectAll
 	Views v;
 	private String code;
@@ -564,7 +563,7 @@ public class RegisterFragment extends BaseFragment implements OnImageChage{
 						//此处就是登录成功之后的页面跳转
 						FragmentEntity fEntity = new FragmentEntity();
 						if ("PersonCenterFragment".equals(fragment_name)) {
-							fragment=new PersonCenterFragment(this);
+							fragment=new PersonCenterFragment();
 						}else if ("MineFragment".equals(fragment_name)) {
 							fragment=new MineFragment();
 						}else if("MineBankcardFragment".equals(fragment_name)){
@@ -613,11 +612,6 @@ public class RegisterFragment extends BaseFragment implements OnImageChage{
 			}
 		}
 	}
-
-	private void backandinitMine() {
-
-	}
-
 	/**
 	 * 注册推送的RegisterId
 	 * 
@@ -649,9 +643,5 @@ public class RegisterFragment extends BaseFragment implements OnImageChage{
 		/*v.iv_register_bg.threadFlag = false;
 		v.iv_register_bg.setBackgroundResource(R.drawable.cloud_1);*/
 		super.onPause();
-	}
-	@Override
-	public void setOnImageChage(Bitmap bitmap) {
-		
 	}
 }

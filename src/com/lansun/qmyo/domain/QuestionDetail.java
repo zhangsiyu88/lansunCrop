@@ -16,7 +16,7 @@ public class QuestionDetail implements Serializable {
 	private String answer;
 	private String time;
 	private String type;
-	private ArrayList<QuestionDetailItem> items;
+	private ArrayList<QuestionAnswerDetail> items;
 
 	public int getId() {
 		return id;
@@ -58,12 +58,18 @@ public class QuestionDetail implements Serializable {
 		this.type = type;
 	}
 
-	public ArrayList<QuestionDetailItem> getItems() {
+	public ArrayList<QuestionAnswerDetail> getItems() {
 		return items;
 	}
 
-	public void setItems(ArrayList<QuestionDetailItem> items) {
+	public void setItems(ArrayList<QuestionAnswerDetail> items) {
 		this.items = items;
 	}
 
+	@Override
+	public String toString() {
+		return "QuestionDetail [id=" + id + ", content=" + content
+				+ ", answer=" + answer + ", time=" + time + ", type=" + type
+				+ ", items=" + items + "]";
+	}
 }

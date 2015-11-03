@@ -32,19 +32,19 @@
             android:id="@+id/tv_message_item_desc"
             style="@style/text_style_small_26"
             android:layout_width="@dimen/tv_w_500"
+            android:lineSpacingExtra="3dp"
             android:layout_below="@id/tv_message_item_name"
             android:layout_marginTop="@dimen/margin_top_10" />
 
         <TextView
             android:id="@+id/tv_message_item_count"
-            style="@style/text_style_small_26"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
             android:layout_alignParentRight="true"
             android:layout_alignTop="@id/tv_message_item_desc"
             android:layout_marginLeft="@dimen/l_r_35"
             android:layout_marginRight="@dimen/l_r_35"
-            android:gravity="center"
-            android:background="@drawable/circle_background_red"
-            android:ellipsize="end" />
+            android:background="@drawable/circle_shape_infor_center" />
 
         <View
             android:layout_width="match_parent"

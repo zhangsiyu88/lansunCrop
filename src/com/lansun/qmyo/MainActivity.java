@@ -61,7 +61,6 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	protected void onCreate(@Nullable Bundle arg0) {
-		
 		registerMessageReceiver();
 		
 		/*TextView mImei = (TextView) findViewById(R.id.tv_imei);*/
@@ -116,7 +115,6 @@ public class MainActivity extends FragmentActivity {
 		}
 		super.onCreate(arg0);
 	}
-	
 	@InjectInit
 	private void init() {
 		

@@ -1,50 +1,52 @@
 package com.lansun.qmyo.domain;
 
 public class QuestionDetailItem {
-	private int id;
+	private String id;
+
 	private String content;
-	private String answer;
+
 	private String time;
+
 	private String type;
 
-	public int getId() {
-		return id;
-	}
+	private String status;
 
-	public void setId(int id) {
-		this.id = id;
-	}
+	private int is_read;
 
-	public String getContent() {
-		return content;
+	public void setId(String id){
+	this.id = id;
 	}
-
-	public void setContent(String content) {
-		this.content = content;
+	public String getId(){
+	return this.id;
 	}
-
-	public String getAnswer() {
-		return answer;
+	public void setContent(String content){
+	this.content = content;
 	}
-
-	public void setAnswer(String answer) {
-		this.answer = answer;
+	public String getContent(){
+	return this.content;
 	}
-
-	public String getTime() {
-		return time;
+	public void setTime(String time){
+	this.time = time;
 	}
-
-	public void setTime(String time) {
-		this.time = time;
+	public String getTime(){
+	return this.time;
 	}
-
-	public String getType() {
-		return type;
+	public void setType(String type){
+	this.type = type;
 	}
-
-	public void setType(String type) {
-		this.type = type;
+	public String getType(){
+	return this.type;
 	}
-
+	public void setStatus(String status){
+	this.status = status;
+	}
+	public String getStatus(){
+	return this.status;
+	}
+	public void setIs_read(int is_read){
+	this.is_read = is_read;
+	}
+	public int getIs_read(){
+	return this.is_read;
+	}
 }

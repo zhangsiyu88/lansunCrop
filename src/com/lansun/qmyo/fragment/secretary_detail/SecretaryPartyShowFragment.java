@@ -120,7 +120,7 @@ public class SecretaryPartyShowFragment extends BaseFragment{
 								Fragment fragment=new TaskAssignment();
 								Bundle bundle=new Bundle();
 								bundle.putString("content", content.getText().toString());
-								bundle.putString("type", "card");
+								bundle.putString("type", "party");
 								fragment.setArguments(bundle);
 								entity.setFragment(fragment);
 								EventBus.getDefault().post(entity);

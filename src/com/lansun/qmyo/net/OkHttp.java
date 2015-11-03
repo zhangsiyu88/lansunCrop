@@ -76,6 +76,7 @@ public class OkHttp {
 	public static void asyncGet(String url, Callback callback) {
 		Request request = new Request.Builder()
 		.url(url)
+		.addHeader("Authorization", "Bearer "+App.app.getData("access_token"))
 		.build();
 		enqueue(request, callback);
 	}

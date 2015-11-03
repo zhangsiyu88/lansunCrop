@@ -31,6 +31,7 @@ public class MessageAdapter extends
 		super.deal(data, viewHold, position);
 		if (Integer.parseInt(data.get("tv_message_item_count")) > 0) {
 			viewHold.tv_message_item_count.setVisibility(View.GONE);
+			viewHold.tv_message_item_count.setText("");
 		}
 		if (position + 1 == dataList.size()) {
 			viewHold.line.setVisibility(View.GONE);

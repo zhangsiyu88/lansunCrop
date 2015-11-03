@@ -150,6 +150,7 @@
     <string name="store_detail_count"><Data><![CDATA[<font color="#939393">%1$s</font>/%2$s]]></Data></string>
     <string name="cache_size">%1$sM</string>
     <string name="tip">提示</string>
+    <string name="tip_send_question">~（*^﹏^*）~</string>
      <string name="tip_attentionstore">总裁大大，想要关注门店得先登录哟</string>
      <string name="tip_activittiescollection">总裁大大，想要收藏活动得先登录哟</string>
     <string name="tip5">登录中... </string>
@@ -222,6 +223,8 @@
       <string name="please_enter_correct_code">请您输入正确的验证码哦</string>
     <string name="search_city">中文/拼音搜索城市</string>
     <string name="none">暂无</string>
+    <string name="none_data_tip">到底啦</string>
+    <string name="none_data_content">您指派的任务只有这么多哦</string>
     <string name="activity_detail_info">活动详情</string>
     <string name="maijie_tigong">迈界推荐您体验</string>
     <string name="experience_now">开始玩转</string>
@@ -420,11 +423,13 @@ A：你可以在首页的右上角点击查看你的卡包或者通过点击“�
     <string name="has_sensitive">请注意您的用语</string>
     <string name="coupons_remainder">剩余可用人数：%1$s</string>
     <string name="bank_empty_title">抱歉,小迈没有找到您的银行卡</string>
+    <string name="secretary_empty_title">要不找一下小秘书></string>
      <string name="get_back">银行卡问题反馈  ></string>
      <string name="registeror_login">总裁大大,想要添加多张银行卡请先登录哟</string>
      <string name="login_to_report">总裁大大,举报要登录的哟</string>
      <string name="login_to_comment">总裁大大,请先登录再发表高见哟</string>
      <string name="login_to_getmessage">总裁大大,登录才可接收消息哟</string>
      <string name="login_to_enjoysecretaryyourself">总裁大大,体验专属私人秘书服务需要登录的哟</string>
+     <string name="pump">请您在收到回复再进行追问...</string>
 
 </resources>

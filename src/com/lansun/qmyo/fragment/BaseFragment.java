@@ -267,7 +267,6 @@ public class BaseFragment extends Fragment implements OnTouchListener{
 	 */
 	protected void initTitle(TextView tv_activity_title, int titleId,
 			View iv_activity_shared, int rightRes) {
-
 		if (iv_activity_shared instanceof TextView) {
 			((TextView) iv_activity_shared).setText(rightRes);
 		}

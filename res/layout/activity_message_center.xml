@@ -54,6 +54,10 @@
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
                     android:gravity="center"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
                     android:text="@string/activity"
                     android:textColor="@color/app_green1" />
 
@@ -76,6 +80,10 @@
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
                     android:gravity="center"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
                     android:text="@string/maijie" />
             </RelativeLayout>
         </LinearLayout>

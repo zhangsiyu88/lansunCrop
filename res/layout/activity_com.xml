@@ -53,7 +53,5 @@
             android:src="@drawable/mai_comment"
             android:textColor="@color/app_green2" />
     </RelativeLayout>
-
     <View style="@style/line_style_1" />
-
 </LinearLayout>

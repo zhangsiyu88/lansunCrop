@@ -528,7 +528,11 @@ public class ActivityFragment extends BaseFragment {
 		/*refreshParams.put("site", "310000");//首先默认是在上海 310000*/	
 		refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
 		refreshKey = 4;
-		refreshCurrentList(refreshUrl+"site="+getSelectCity()[0]+"&service="+HODLER_TYPE+"&position="+position_bussness+"&intelligent="+intelligentStr+"&type="+type+"&location="+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon()+"&query="+"",null, refreshKey,lv_activity_list);
+		if (IsNew) {
+			refreshCurrentList(refreshUrl+"site="+getSelectCity()[0]+"&service="+HODLER_TYPE+"&position="+position_bussness+"&intelligent="+intelligentStr+"&type=new"+"&location="+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(),null, refreshKey,lv_activity_list);
+		}else {
+			refreshCurrentList(refreshUrl+"site="+getSelectCity()[0]+"&service="+HODLER_TYPE+"&position="+position_bussness+"&intelligent="+intelligentStr+"&type="+type+"&location="+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon()+"&query="+"",null, refreshKey,lv_activity_list);
+		}
 	}
 
 
@@ -612,7 +616,13 @@ public class ActivityFragment extends BaseFragment {
 				ArrayList<String> sortGroup = new ArrayList<String>();
 				ArrayList<Data> sortData = intelligent.getData();
 				for (Data d : sortData) {
-					sortGroup.add(d.getName());
+					if (IsNew) {
+						if (!"银行卡优先".equals(d.getName().toString().trim())) {
+							sortGroup.add(d.getName());
+						}
+					}else {
+						sortGroup.add(d.getName());
+					}
 				}
 				holder_button.put(2, name);
 				viewMiddle.setItems(sortGroup);
@@ -620,7 +630,6 @@ public class ActivityFragment extends BaseFragment {
 				break;
 
 			case 3:// 筛选
-				Log.i("筛选的数据", "拿到筛选的数据!");
 				sxintelligent = Handler_Json.JsonToBean(Type.class,r.getContentAsString());
 				name = sxintelligent.getName();
 				ArrayList<String> iconGroup = new ArrayList<String>();
@@ -653,12 +662,8 @@ public class ActivityFragment extends BaseFragment {
 				//				mViewArray.put(3, viewRight);
 				break;
 			case 4:// 活动列表
-				Log.i("进入界面时,能不能拿到数据","能拿到!但不展示出来是个问题!");
-				
 				try{
-					Log.i("","企图remove掉ListView中的尾布局");
 					lv_activity_list.removeFooterView(emptyView);
-					Log.i("","remove掉ListView中的尾布局成功！");
 					
 				}catch(Exception e ){
 					/*CustomToast.show(activity, "出异常了", "异常已被抓！");*/
@@ -753,7 +758,6 @@ public class ActivityFragment extends BaseFragment {
 		} else {//如果服务器没有返回需要值回来，提示为 网络错误信息
 			progress_text.setText(R.string.net_error_refresh);
 		}
-
 		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 		PullToRefreshManager.getInstance().onFooterRefreshComplete();
 	}

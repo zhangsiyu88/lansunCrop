@@ -69,6 +69,7 @@ public class EditUserInfoFragment extends BaseFragment {
 	private void init() {
 		name = getArguments().getString("name");
 		paramName = getArguments().getString("paramName");
+		
 		v.tv_activity_shared.setText(R.string.save);
 		initTitle(v.tv_activity_title, name, null, 0);
 		v.fl_comments_right_iv.setVisibility(View.GONE);

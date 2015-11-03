@@ -32,7 +32,7 @@ public class SearchBrandBiz {
 					}
 					@Override
 					public void onFailure(Request arg0, IOException arg1) {
-						requestCallBack.onFailure(arg1, arg0);
+						requestCallBack.onFailure(arg0,arg1);
 					}
 				});
 	}

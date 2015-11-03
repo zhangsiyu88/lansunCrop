@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
@@ -27,6 +30,7 @@ import com.android.pc.util.Handler_Time;
 import com.lansun.qmyo.adapter.MessageAdapter;
 import com.lansun.qmyo.domain.MessageData;
 import com.lansun.qmyo.domain.MessageList;
+import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ListViewSwipeGesture;
@@ -34,7 +38,10 @@ import com.lansun.qmyo.view.MyListView;
 import com.lansun.qmyo.R;
 
 public class MessageCenterFragment extends BaseFragment {
-
+	private MessageList list;
+	private MessageAdapter adapter;
+	private ArrayList<HashMap<String, String>> dataList = new ArrayList<HashMap<String, String>>();
+	private int index;
 	@InjectAll
 	Views v;
 
@@ -43,7 +50,8 @@ public class MessageCenterFragment extends BaseFragment {
 		private TextView tv_message_activity, tv_message_maijie;
 	}
 
-	@InjectView(down = true, pull = true)
+//	@InjectView(down = true, pull = true)
+	@InjectView(pull = true)
 	private MyListView lv_message_list;
 
 	@Override
@@ -72,35 +80,35 @@ public class MessageCenterFragment extends BaseFragment {
 	ListViewSwipeGesture.TouchCallbacks swipeListener = new ListViewSwipeGesture.TouchCallbacks() {
 		@Override
 		public void FullSwipeListView(int position) {
-			System.out.println(position);
 		}
-
 		@Override
 		public void HalfSwipeListView(final int position) {
 		}
-
 		@Override
 		public void OnClickListView(int position) {
-			System.out.println(position);
+			if (index==0) {
+				FragmentEntity entity=new FragmentEntity();
+				Fragment fragment=new ActivityDetailFragment();
+				Bundle bundle=new Bundle();
+				bundle.putString("shopId", list.getData().get(position).getShop_id()+"");
+				bundle.putString("activityId", list.getData().get(position).getActivity_id()+"");
+				fragment.setArguments(bundle);
+				entity.setFragment(fragment);
+				EventBus.getDefault().post(entity);
+			}else {
+				
+			}
 		}
-
 		@Override
 		public void LoadDataForScroll(int count) {
-			// TODO Auto-generated method stub
 
 		}
-
 		@Override
 		public void onDismiss(ListView listView, int[] reverseSortedPositions) {
-			// TODO Auto-generated method stub
 
 		}
 
 	};
-	private MessageList list;
-	private MessageAdapter adapter;
-	private ArrayList<HashMap<String, String>> dataList = new ArrayList<HashMap<String, String>>();;
-
 	private void click(View view) {
 		dataList.clear();
 		adapter = null;
@@ -108,10 +116,12 @@ public class MessageCenterFragment extends BaseFragment {
 		case R.id.tv_message_activity:// TODO 活动
 			refreshUrl = GlobalValue.URL_USER_MESSAGE_LIST+ GlobalValue.MESSAGE.activity;
 			changeTextColor(v.tv_message_activity);
+			index=0;
 			break;
 		case R.id.tv_message_maijie:// TODO 迈界
 			refreshUrl = GlobalValue.URL_USER_MESSAGE_LIST+ GlobalValue.MESSAGE.maijie;
 			changeTextColor(v.tv_message_maijie);
+			index=1;
 			break;
 
 		}
@@ -134,7 +144,6 @@ public class MessageCenterFragment extends BaseFragment {
 				list = Handler_Json.JsonToBean(MessageList.class,
 						r.getContentAsString());
 				if (list.getData() != null) {
-
 					for (MessageData data : list.getData()) {
 						HashMap<String, String> map = new HashMap<String, String>();
 						map.put("tv_message_item_name", data.getTitle());
@@ -191,12 +200,13 @@ public class MessageCenterFragment extends BaseFragment {
 				}
 			}
 			break;
-		case InjectView.DOWN:
-			if (list != null) {
-				refreshCurrentList(refreshUrl, null, refreshKey,
-						lv_message_list);
-			}
-			break;
+//		case InjectView.DOWN:
+//			if (list != null) {
+//				dataList.clear();
+//				refreshCurrentList(refreshUrl, null, refreshKey,
+//						lv_message_list);
+//			}
+//			break;
 		}
 	}
 

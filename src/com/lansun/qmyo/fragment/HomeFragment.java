@@ -1,5 +1,6 @@
 package com.lansun.qmyo.fragment;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -11,6 +12,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -53,6 +55,7 @@ import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.ioc.view.listener.OnItemClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
+import com.google.gson.Gson;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnPullEventListener;
@@ -67,12 +70,17 @@ import com.lansun.qmyo.domain.ActivityList;
 import com.lansun.qmyo.domain.ActivityListData;
 import com.lansun.qmyo.domain.HomePromote;
 import com.lansun.qmyo.domain.HomePromoteData;
+import com.lansun.qmyo.domain.MySecretary;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.AnimUtils;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExperienceDialog;
 import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 /**
  * 主界面
@@ -98,24 +106,24 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 	 */
 	@InjectView(binders = { @InjectBinder(listeners ={ OnItemClick.class }, method = "itemClick")})  //, pull = true
 	private ListView lv_home_list;
-	
-   /* @InjectView(pull = true)
+
+	/* @InjectView(pull = true)
 	private ScrollView  sv_homefrag;*/
-    
-    
-    
-   /* @InjectView
+
+
+
+	/* @InjectView
 	private PullToRefreshScrollView sv_homefrag;*/
-    
-    @InjectView
+
+	@InjectView
 	private ScrollView sv_homefrag;
-    
-    
-	
+
+
+
 	/*@InjectView(pull = true)
 	private  LinearLayout ll_homefrag;*/
-	
-	
+
+
 
 	class Views {
 		@InjectBinder(method = "click", listeners = OnClick.class)
@@ -138,37 +146,34 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 	private boolean isPlay = false;
 
 	private ArrayList<HashMap<String, Object>> shopDataList = new ArrayList<HashMap<String, Object>>();
-
 	public HomeFragment(boolean mIsFirstEnter) {
 		mFromBankCardFragment = mIsFirstEnter;
 	}
 
 	public HomeFragment() {
-
+		Log.i("token", App.app.getData("access_token"));	
 	}
 
 	@Override
 	public void onResume() {
 		// imm.hideSoftInputFromWindow(activity.getWindow().getCurrentFocus()
 		// .getWindowToken(), 0);
-		
-		
-		
+
+
+
 		v.iv_home_icon.setPressed(true);//底部的首页定位button
 		isPlay = false;
 		v.tv_home_icon.setTextColor(getResources().getColor(R.color.app_green1));
-		
-		
-		
-		
+
+
+
+
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN|WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
-		
-		
-		 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		 imm.hideSoftInputFromWindow(sv_homefrag.getWindowToken(), 0); 
-		//TODO
 
+
+		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(sv_homefrag.getWindowToken(), 0); 
 		/*v.rl_bg.setPressed(true);
 		v.rl_top_bg.setPressed(true);*/
 		super.onResume();
@@ -206,7 +211,7 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 			/*HashMap<String, Object> data = shopDataList.get(arg2 - 1);*/
 			//arg2的参数应为position，上步故意将位置向下偏移
 			HashMap<String, Object> data = shopDataList.get(arg2);
-			
+
 			fragment = new ActivityDetailFragment();
 			Bundle args = new Bundle();
 			args.putString("shopId", data.get("shopId").toString());
@@ -233,18 +238,17 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 		LayoutInflater inflater  = LayoutInflater.from(activity);
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-		//TODO
 		rootView = inflater.inflate(R.layout.activity_home, null, false);
 		head =  rootView.findViewById(R.id.head_banner);
 		Handler_Inject.injectFragment(this, rootView);//当前的fragment里面使用 自动去注入组件
-		
+
 		refresh_footer = inflater.inflate(R.layout.refresh_footer, null);
-		
+
 		sv_homefrag.scrollTo(0, 0);
-		
-		
-		
-		
+
+
+
+
 		/*sv_homefrag.setPullToRefreshEnabled(false);*/
 		/*sv_homefrag.setOnRefreshListener(new OnRefreshListener<ScrollView>() {
 			@Override
@@ -252,7 +256,7 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 				new GetDataTask().execute();				
 			}
 		});*/
-	   /*sv_homefrag.setOnPullEventListener(new OnPullEventListener<ScrollView>(){
+		/*sv_homefrag.setOnPullEventListener(new OnPullEventListener<ScrollView>(){
 
 			@Override
 			public void onPullEvent(PullToRefreshBase<ScrollView> refreshView,
@@ -260,18 +264,18 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 				new GetDataTask().execute();
 			}
 		});*/
-		
-		
+
+
 		sv_homefrag.setOnTouchListener(new OnTouchListener() {
-			
-			
+
+
 
 			@SuppressLint("ClickableViewAccessibility")
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				switch(event.getAction()){
 				case MotionEvent.ACTION_DOWN:
-					
+
 					break;
 				case MotionEvent.ACTION_MOVE:
 					int scrollY = v.getScrollY();
@@ -281,33 +285,33 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 					Log.i("滑动中", "height = v.getHeight()值为: "+height);
 					Log.i("滑动中", "measuredHeight = sv_homefrag.getChildAt(0).getMeasuredHeight(): "+measuredHeight);
 					//Log.i("滑动中", "measuredHeight = sv_homefrag.getChildAt(1).getMeasuredHeight(): "+sv_homefrag.getChildAt(1).getMeasuredHeight());
-					
+
 					View childAt1 = sv_homefrag.getChildAt(0);
 					//View childAt2 = sv_homefrag.getChildAt(1);
 					int childAt1Height1 = childAt1.getLayoutParams().height;
 					//int childAt1Height2 = childAt2.getLayoutParams().height;
-					
+
 					System.out.println("childAt1Height1的高度   "+childAt1Height1);
 					//System.out.println("childAt2Height1的高度   "+childAt1Height2);
-					
+
 					//System.out.println(childAt1==childAt2?"是":"否");
-					
+
 					if(scrollY == 0){
-					/*	CustomToast.show(activity, "置顶!", "到顶部!");*/
+						/*	CustomToast.show(activity, "置顶!", "到顶部!");*/
 						Log.i("置顶时", "scrollY = v.getScrollY()值为: "+scrollY);
 						Log.i("置顶时", "height = v.getHeight()值为: "+height);
 						Log.i("置顶时", "measuredHeight = sv_homefrag.getChildAt(0).getMeasuredHeight(): "+measuredHeight);
-						
+
 					}
-					
+
 					if(scrollY+height == measuredHeight){ // 滑出屏幕外的高度+ 当前距离屏幕的高度 =sv_homefag的实测高度 
 						/*CustomToast.show(activity, "滑到底了", "到底了!");*/
 						/*sv_homefrag.setOnTouchListener(null);*/
-						
+
 						Log.i("触底时", "scrollY = v.getScrollY()值为: "+scrollY);
 						Log.i("触底时", "height = v.getHeight()值为: "+height);
 						Log.i("触底时", "measuredHeight = sv_homefrag.getChildAt(0).getMeasuredHeight(): "+measuredHeight);
-						
+
 						if (list != null) {
 							if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url()=="null") {
 								CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
@@ -318,19 +322,19 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 								}catch(Exception e){
 									e.printStackTrace();
 								}
-								
+
 								lv_home_list.setAdapter(adapter);
 								setListViewHeightBasedOnChildren(lv_home_list); 
-								
+
 
 							} else {
 								if(onlyOne ){//只给ListView加一次FooterView
 									onlyOne = false;
-									
+
 									lv_home_list.addFooterView(refresh_footer);
 									/*adapter.notifyDataSetChanged();*/						
 									setListViewHeightBasedOnChildren(lv_home_list); 
-									
+
 									refreshParams = new LinkedHashMap<>();
 									if (isChina) {//如果是国内活动，需要进行刷新操作
 										refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
@@ -342,27 +346,27 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 									}
 									CustomToast.show(activity, "准备访问网络", "稍等~~");
 									refreshCurrentList(list.getNext_page_url(), refreshParams,1, lv_home_list);
-									
+
 								}
 							}
-					   }
+						}
 					}
 					break;
 				case MotionEvent.ACTION_UP:
-					
+
 					break;	
 				}
-				
-				
-				
+
+
+
 				return false;
 			}
 		});
 
 		/*mScrollView = sv_homefrag.getRefreshableView();*/
-		
-		
-		
+
+
+
 		if (TextUtils.isEmpty(App.app.getData("exp_secret"))
 				&& TextUtils.isEmpty(App.app.getData("secret"))
 				&& !GlobalValue.isFirst){
@@ -383,14 +387,13 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 		}
 		super.onCreate(savedInstanceState);
 	}
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 		v.tv_home_icon.setTextColor(getResources().getColor(R.color.app_green2));
-		
+
 		if(mFromBankCardFragment){
 			v.rl_bg.setPressed(true);//这是“体验”二字后面的背景绿色和灰色选择器，那么为了取消点击效果，则在此将选择器设置为  点击和非点击都为 统一效果
 			v.rl_top_bg.setPressed(true);
@@ -400,23 +403,23 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 			v.iv_top_card.setVisibility(View.GONE);
 			mFromBankCardFragment = false;//使者用完后，要马上清除
 		}
-		
-		
+
+
 		/*final SwipeRefreshLayout refreshlayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
 		//初始化刷新头
 		final TextView tv = (TextView)refreshlayout.findViewById(R.id.textView1);
-		
+
 		Log.i("", refreshlayout==null?"为空":"不为空");
         //设置刷新时动画的颜色，可以设置4个
 		refreshlayout.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
 		refreshlayout.setOnRefreshListener(new OnRefreshListener() {
-            
+
             @Override
             public void onRefresh() {
                 tv.setText("正在刷新");
-                
+
                 new Handler().postDelayed(new Runnable() {
-                    
+
                     @Override
                     public void run() {
                         tv.setText("刷新完成");
@@ -425,9 +428,9 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
                 }, 6000);
             }
         });*/
-		
-		
-		
+
+
+
 		return rootView;
 	}
 	boolean canscoll = false;
@@ -475,16 +478,16 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 			}
 
 			/*head = inflater.inflate(R.layout.activity_home_banner, null);*/
-			
+
 
 			/*尝试在head被充起来的瞬间就将其放到ListView的头上*/
 			/*lv_home_list.addHeaderView(head, null, true);*/
-			
-			
-			
-			
+
+
+
+
 			Log.i("","head的值为： "+head.toString());
-			
+
 
 			ViewTreeObserver vto = head.getViewTreeObserver();
 			vto.addOnScrollChangedListener(new OnScrollChangedListener() {
@@ -499,7 +502,7 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 					/**
 					 * View searchView = lv_home_list.findViewById(R.id.ll_search);
 					 * */
-					
+
 					View searchView = head.findViewById(R.id.ll_search);//在head这个View中拿到对应的搜索栏对象
 					searchView.setOnClickListener(new OnClickListener() {
 
@@ -643,7 +646,7 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 			 */
 			/*iv_point = (ImageView) lv_home_list.findViewById(R.id.iv_point);
 			iv_point2 = (ImageView) lv_home_list.findViewById(R.id.iv_point2);*/
-			
+
 			iv_point = (ImageView) head.findViewById(R.id.iv_point);
 			iv_point2 = (ImageView) head.findViewById(R.id.iv_point2);
 
@@ -766,8 +769,8 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 					JSONObject obj = new JSONObject(r.getContentAsString());
 					photoUrl = obj.get("photo").toString();
 					//loadPhoto(photoUrl, iv_home_ad);
-					
-				/*	for(HashMap<String, Object> shopData: shopDataList){
+
+					/*	for(HashMap<String, Object> shopData: shopDataList){
 						System.out.println(shopData.toString());
 					}
 
@@ -844,9 +847,9 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 						if (adapter == null) {
 							adapter = new SearchAdapter(lv_home_list,shopDataList, R.layout.activity_search_item);
 							lv_home_list.setAdapter(adapter);
-							
+
 							setListViewHeightBasedOnChildren(lv_home_list);   
-							
+
 						} else {
 							try{
 								CustomToast.show(activity, "网络返回数据后，正在移除footerView", "请稍等！");
@@ -854,7 +857,7 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 							}catch(Exception e){
 								e.printStackTrace();
 							}
-							
+
 							adapter.notifyDataSetChanged();
 							lv_home_list.setAdapter(adapter);
 							setListViewHeightBasedOnChildren(lv_home_list);  
@@ -882,28 +885,28 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 	 * @param listView
 	 */
 	private void setListViewHeightBasedOnChildren(ListView listView ) {
-		
+
 		ListAdapter lAdapter = listView.getAdapter(); 
 		// 获取ListView对应的Adapter  
-	        if (lAdapter == null) {   
-	            return;   
-	        }   
-	   
-	        int totalHeight = 0;   
-	        for (int i = 0, len = lAdapter.getCount(); i < len; i++) {   
-	            // listAdapter.getCount()返回数据项的数目   
-	            View listItem = lAdapter.getView(i, null, listView);   
-	            // 计算子项View 的宽高   
-	            listItem.measure(0, 0);    
-	            // 统计所有子项的总高度   
-	            totalHeight += listItem.getMeasuredHeight();    
-	        }   
-	   
-	        ViewGroup.LayoutParams params = listView.getLayoutParams();   
-	        params.height = totalHeight+ (listView.getDividerHeight() * (lAdapter.getCount() - 1));   
-	        // listView.getDividerHeight()获取子项间分隔符占用的高度   
-	        // params.height最后得到整个ListView完整显示需要的高度   
-	        listView.setLayoutParams(params);  
+		if (lAdapter == null) {   
+			return;   
+		}   
+
+		int totalHeight = 0;   
+		for (int i = 0, len = lAdapter.getCount(); i < len; i++) {   
+			// listAdapter.getCount()返回数据项的数目   
+			View listItem = lAdapter.getView(i, null, listView);   
+			// 计算子项View 的宽高   
+			listItem.measure(0, 0);    
+			// 统计所有子项的总高度   
+			totalHeight += listItem.getMeasuredHeight();    
+		}   
+
+		ViewGroup.LayoutParams params = listView.getLayoutParams();   
+		params.height = totalHeight+ (listView.getDividerHeight() * (lAdapter.getCount() - 1));   
+		// listView.getDividerHeight()获取子项间分隔符占用的高度   
+		// params.height最后得到整个ListView完整显示需要的高度   
+		listView.setLayoutParams(params);  
 	}
 
 	public void click(View v) {
@@ -972,7 +975,7 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 	 * 
 	 * @param type
 	 */
-/*	@InjectPullRefresh
+	/*	@InjectPullRefresh
 	public void call(int type) {
 		// 首页是没有下拉加载的
 		switch (type) {
@@ -1008,19 +1011,19 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 			break;
 		}
 	}
-*/
-	
+	 */
+
 	private class GetDataTask extends AsyncTask<Void, Void, String[]> {
 
 		@Override
 		protected String[] doInBackground(Void... params) {
 			// Simulates a background job.
 			try {
-				
-				
+
+
 				Thread.sleep(4000);
-				
-				
+
+
 			} catch (InterruptedException e) {
 			}
 			return null;
@@ -1031,14 +1034,14 @@ import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 			// Do some stuff here
 			if (list != null) {
 				if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url()=="null") {
-				/*	PullToRefreshManager.getInstance().onFooterRefreshComplete();
+					/*	PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					PullToRefreshManager.getInstance().footerUnable();*/
 					//CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
-					
+
 					/*sv_homefrag.setOnPullEventListener(null);
 					sv_homefrag.setPullToRefreshEnabled(false);
 					sv_homefrag.setPullToRefreshOverScrollEnabled(false);*/
-					
+
 
 				} else {
 					refreshParams = new LinkedHashMap<>();
