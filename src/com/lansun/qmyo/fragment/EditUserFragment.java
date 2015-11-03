@@ -126,7 +126,8 @@ public class EditUserFragment extends BaseFragment {
 			EventBus.getDefault().post(event);
 			break;
 		case R.id.rl_edit_user_address://地址
-			fragment = new EditUserAddressFragment();
+			/*fragment = new EditUserAddressFragment();*/
+			fragment = new EditUserAddressFragment1();
 			event = new FragmentEntity();
 			event.setFragment(fragment);
 			EventBus.getDefault().post(event);
@@ -196,10 +197,12 @@ public class EditUserFragment extends BaseFragment {
 		PickerView ll_setmovment_pv = (PickerView) view
 				.findViewById(R.id.ll_setmovment_pv);
 		final TextView tv_set_up = (TextView) view.findViewById(R.id.tv_set_up);
-		final Dialog dialog = new Dialog(activity,
-				R.style.transparentFrameWindowStyle);
+		
+		final Dialog dialog = new Dialog(activity,R.style.transparentFrameWindowStyle);
+		
 		dialog.setContentView(view, new LayoutParams(LayoutParams.MATCH_PARENT,
 				LayoutParams.WRAP_CONTENT));
+		
 		Window window = dialog.getWindow();
 		// 设置显示动画
 		window.setWindowAnimations(R.style.PopupWindowAnimation);
@@ -217,13 +220,18 @@ public class EditUserFragment extends BaseFragment {
 		
 		//pv.init(0x33000000);
 		
+		//给PickerView设置上原始的数据内容
 		ll_setmovment_pv.setData(data);//给PickerView设置上需要展示的数据
+		
+		
+		
 		dialog.show();
 		ll_setmovment_pv.setOnSelectListener(new onSelectListener() {
 
 			@Override
 			public void onSelect(final String text) {
 
+				//滚动中间放入了点击监听
 				tv_set_up.setOnClickListener(new OnClickListener() {
 
 					@Override

@@ -86,7 +86,7 @@ public class RegisterFragment extends BaseFragment{
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private TextView btn_register_reg_login;
 
-		private CloudView iv_register_bg;
+		/*private CloudView iv_register_bg;*/
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -462,8 +462,6 @@ public class RegisterFragment extends BaseFragment{
 					CustomToast.show(activity, "恭喜你注册成功哟", "小迈在此恭候多时，请您立即登录哟~");
 					pushToken(GlobalValue.user.getMobile());//---------------------------------------------->注册成功（或者登陆成功）后才会进行上传RegisterId的操作
 				}
-
-
 				/*App.app.setData("secret", GlobalValue.user.getSecret());*/             //------>是否在一注册成功就进行写入secret的操作？这一步是去是留待考虑
 
 				//点击注册成功后，立即跳转至登录页
@@ -488,20 +486,34 @@ public class RegisterFragment extends BaseFragment{
 					return;
 				}
 
+				
 				GlobalValue.user = Handler_Json.JsonToBean(User.class,r.getContentAsString());//----> 登录成功后，便拿到了返回的 user信息 
 				Log.i("打出包含secret的返回信息内容",r.getContentAsString());
+				
+				
 				if (GlobalValue.user != null) {
-					clearTempTokenAndSercet();//清除掉临时的secret和 token
-					App.app.setData("secret", GlobalValue.user.getSecret());
-					// 拿着user中的secret 去访问服务器获取token
-					InternetConfig config = new InternetConfig();
-					config.setKey(3);
-					LinkedHashMap<String, String> params = new LinkedHashMap<>();
-					FastHttpHander.ajaxGet(GlobalValue.URL_GET_ACCESS_TOKEN+ App.app.getData("secret"), config, this);
-					CustomToast.show(activity, "迈界欢迎您", "小迈一定会尽心尽力为您服务哦");
-					App.app.setData("isExperience", "false");//将体验用户标示置为 false
-					pushToken(GlobalValue.user.getMobile());//-------------------------------------------> 进行极光推送的token ！！
+					Log.i("","用户的status状态为： "+GlobalValue.user.getStatus());
+					if(GlobalValue.user.getStatus().contains("0")){
+						CustomToast.show(activity, "抱歉，您的账号暂时冻结", "详情请联系迈界客服");
+						pd.dismiss();
+						this.pd = null;
+						return;
+						
+					}else{
+						clearTempTokenAndSercet();//清除掉临时的secret和 token
+						App.app.setData("secret", GlobalValue.user.getSecret());
+						// 拿着user中的secret 去访问服务器获取token
+						InternetConfig config = new InternetConfig();
+						config.setKey(3);
+						LinkedHashMap<String, String> params = new LinkedHashMap<>();
+						FastHttpHander.ajaxGet(GlobalValue.URL_GET_ACCESS_TOKEN+ App.app.getData("secret"), config, this);
+						CustomToast.show(activity, "迈界欢迎您", "小迈一定会尽心尽力为您服务哦");
+						App.app.setData("isExperience", "false");//将体验用户标示置为 false
+						pushToken(GlobalValue.user.getMobile());//-------------------------------------------> 进行极光推送的token ！！
+					}
+					
 				}
+				
 				break;
 			case 3:// 拿到了token，燥起来
 				Token token = Handler_Json.JsonToBean(Token.class,r.getContentAsString());
@@ -633,7 +645,10 @@ public class RegisterFragment extends BaseFragment{
 
 	@Override
 	public void onResume() {
-		v.iv_register_bg.threadFlag = true;
+		
+		/**
+		 * 背景上的云暂关闭掉
+		 * v.iv_register_bg.threadFlag = true;*/
 
 		super.onResume();
 	}

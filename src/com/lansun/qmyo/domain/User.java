@@ -23,6 +23,7 @@ public class User {
 	private String deleted_at;
 	private Area area;
 	private String address;
+	
 
 	private String avatar;
 	private String hobby;

@@ -16,12 +16,17 @@
             android:layout_height="match_parent"
             android:orientation="vertical" >
 
+            <!-- 暂时将其关闭   -->
             <com.lansun.qmyo.view.ExpandTabView
+                android:visibility="gone"
+                
                 android:id="@+id/expandtab_view"
                 style="@style/w_full_h_wrap"
                 android:layout_height="@dimen/expandtab_view_h" />
 
             <View
+                android:visibility="gone"
+                
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:background="@color/line_bg" />
@@ -33,6 +38,13 @@
                 android:divider="@null"
                 android:listSelector="@android:color/transparent"
                 android:scrollbars="none" />
+           
+            <include 
+                android:id="@+id/activity_search_empty_storelist"
+                android:visibility="gone"
+                layout="@layout/activity_search_empty_storelist"
+                />
+            
         </LinearLayout>
     </RelativeLayout>
 

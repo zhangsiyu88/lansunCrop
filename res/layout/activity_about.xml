@@ -45,7 +45,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/about_icon_bg_h"
-                android:background="@color/app_grey3" >
+                android:background="@color/app_bg" >
 
                 <LinearLayout
                     style="@style/w_wrap_h_wrap"
@@ -54,11 +54,12 @@
                     android:gravity="center"
                     android:orientation="vertical" >
 
+                    <!-- 图标大小缩小至120*120 -->
                     <com.android.pc.ioc.image.RecyclingImageView
                         android:id="@+id/bt_close"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/about_icon" />
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:src="@drawable/app" />
 
                     <TextView
                         android:id="@+id/tv_about_qmyo_version"
@@ -153,12 +154,13 @@
                     <TextView
                         android:id="@+id/tv_setting_cache_size"
                         style="@style/text_style_nomal_30"
-                        android:layout_alignBottom="@id/iv_setting_clear_cache"
+                       
                         android:layout_centerVertical="true"
                         android:layout_marginRight="@dimen/l_r_35"
                         android:layout_toLeftOf="@id/iv_setting_clear_cache"
                         android:text="55"
                         android:textColor="@color/app_green1" />
+                    <!--  android:layout_alignBottom="@id/iv_setting_clear_cache" -->
                 </RelativeLayout>
 
                 <View style="@style/line_style_1" />
@@ -192,6 +194,8 @@
                         android:layout_centerVertical="true"
                         android:text="@string/qmyo_wx"
                         android:textColor="@color/text_gray1" />
+                    <!-- android:text="@string/qmyo_wx" -->
+                    
                 </RelativeLayout>
 
                 <View style="@style/line_style_1" />

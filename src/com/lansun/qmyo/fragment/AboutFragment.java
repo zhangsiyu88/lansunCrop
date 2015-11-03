@@ -36,7 +36,7 @@ public class AboutFragment extends BaseFragment {
 
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
-		private TextView tv_about_qmyo_net, tv_setting_cache_size;
+		private TextView tv_about_qmyo_net, tv_setting_cache_size,tv_about_qmyo_wx;
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private View rl_mine_common_problem, rl_mine_feedback,
 				rl_mine_clear_cache, rl_mine_user_agreement;
@@ -55,7 +55,11 @@ public class AboutFragment extends BaseFragment {
 	private void init() {
 		v.tv_about_qmyo_net
 				.setText(Html.fromHtml(getString(R.string.qmyo_net)));
+		v.tv_about_qmyo_wx
+		.setText(Html.fromHtml(getString(R.string.qmyo_wx)));
+		
 		initCacheSize();
+		
 		init325435435();
 		
 	}

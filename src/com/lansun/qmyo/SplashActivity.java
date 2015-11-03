@@ -311,9 +311,32 @@ public class SplashActivity extends FragmentActivity {
 	 */
 	@InjectInit
 	private void init() {
+		
+		String sdk = android.os.Build.VERSION.SDK;
+		String brand = android.os.Build.BRAND;
+		
+		if(Integer.valueOf(sdk) < 19){
+			DialogUtil.createTipAlertDialog(SplashActivity.this,
+					"亲爱的 "+brand+" 用户"+"\n"+"请将系统升级至4.4版本后使用",
+					new DialogUtil.TipAlertDialogCallBack() {
+						@Override
+						public void onPositiveButtonClick(
+								DialogInterface dialog, int which) {
+							dialog.dismiss();
+							finish();
+						}
+						@Override
+						public void onNegativeButtonClick(
+								DialogInterface dialog, int which) {
+							dialog.dismiss();
+							/*finish();*/
+						}
+					});
+			return;
+		}
+		
 		isTip = true;
 		if (!isDebug) {//非debug状态
-			
 			 locationData();
 			 /*Timer timer2 = new Timer();
 			 timer2.schedule(new TimerTask() {

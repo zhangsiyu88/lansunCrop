@@ -104,7 +104,7 @@
 				            android:layout_marginTop="10dp"
 				            android:layout_width="wrap_content"
 				            android:layout_height="wrap_content"
-				            android:text="您收藏的活动中暂无已过期活动"/>
+				            android:text="暂无此类型的收藏活动"/>
 				        
 		         </LinearLayout>
 		    </RelativeLayout>

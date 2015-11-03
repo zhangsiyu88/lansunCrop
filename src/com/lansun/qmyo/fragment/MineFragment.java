@@ -233,13 +233,13 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 			break;
 		case R.id.rl_mine_history:// 最近浏览
 			if (GlobalValue.user == null || isExperience()) {
-				fragment = new RegisterFragment();
+				/*fragment = new RegisterFragment();*///体验用户也可以进入到我的历史浏览页
+				fragment = new MineHistoryFragment();
 			} else {
 				fragment = new MineHistoryFragment();
 			}
 			break;
 		case R.id.ll_mine_xy_card:// 信用卡
-
 			/*	if (GlobalValue.user == null) {
 				return;
 			}
@@ -251,7 +251,8 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 			break;
 		case R.id.ll_mine_yhq:// TODO 优惠券
 			if (GlobalValue.user == null || isExperience()) {
-				fragment = new RegisterFragment();
+				/*fragment = new RegisterFragment();*/
+				fragment = new MineCouponsFragment();
 			} else
 				fragment = new MineCouponsFragment();
 			break;

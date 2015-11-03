@@ -168,7 +168,7 @@ public class MineActivityFragment extends BaseFragment {
 			
 			//TODO  注意下面拼接的url中的接口域名记得替换
 			httpUtils.send(HttpMethod.DELETE, 
-					"http://appapi.qmyo.org/activity/"+dataList
+					"http://appapi.qmyo.com/activity/"+dataList
 					.get(position).get("activityId").toString()+"?shop_id="+dataList.get(position).get("shopId").toString(),
 					requestParams,requestCallBack );
 			

@@ -302,7 +302,12 @@ public class ActivityDetailFragment extends BaseFragment {
 					maiCommentAdapter2.setActivity(this);
 					v.lv_comments_list.setAdapter(maiCommentAdapter2);
 				} else {
-					v.ll_activity_detail_none.setVisibility(View.VISIBLE);
+					
+					
+					/**暂时禁掉！！
+					 * 
+					 * 即使没有拿到数据也不要将其显示
+					 * v.ll_activity_detail_none.setVisibility(View.VISIBLE);*/
 					HasComment = false;
 				}
 
@@ -413,7 +418,7 @@ public class ActivityDetailFragment extends BaseFragment {
 			bus.post(entity);
 
 			break;
-		case R.id.iv_activity_detail_report_list:
+		case R.id.iv_activity_detail_report_list://评论列表
 			if (HasComment) {
 				fragment = new MaiCommentListFragment();
 				args = new Bundle();

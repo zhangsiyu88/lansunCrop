@@ -60,6 +60,7 @@ public class BankCardAdapter extends
 	private Fragment activity;
 	private DisplayImageOptions options;
 	private boolean isEmbarrassingStatue;
+	private boolean addBankcardUnderLoginStatus = false;
 	public static String selectCardId;
 	
 	public void setActivity(Fragment activity) {
@@ -79,6 +80,19 @@ public class BankCardAdapter extends
 				.cacheOnDisk(true).considerExifParams(true)
 				.displayer(new FadeInBitmapDisplayer(300))
 				.displayer(new RoundedBitmapDisplayer(10)).build();
+		
+	}
+	public BankCardAdapter(ListView listView,
+			ArrayList<HashMap<String, String>> dataList, int layout_id,boolean isNotNeedChange) {
+		super(listView, dataList, layout_id);
+		
+		options = new DisplayImageOptions.Builder().cacheInMemory(true)
+				.cacheOnDisk(true).considerExifParams(true)
+				.displayer(new FadeInBitmapDisplayer(300))
+				.displayer(new RoundedBitmapDisplayer(10)).build();
+		
+		mIsNotChanged = isNotNeedChange;
+		Log.d("sssssssss", mIsNotChanged+"");
 		
 	}
 
@@ -121,7 +135,7 @@ public class BankCardAdapter extends
 			}
 		});
 
-		//条目中的某一块区域的点击添加
+		//条目中的那个绿色的一小块区域的点击添加
 		viewHold.iv_bank_card_add.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -149,9 +163,16 @@ public class BankCardAdapter extends
 									LinkedHashMap<String, String> params = new LinkedHashMap<>();
 									params.put("bankcard_id", cardId);
 									
-								
+									//TODO
+									if(mIsNotChanged){//不需要改变的标签值，即此时的点击操作：是将原始卡替换为欲添卡，但保存于本地的sp中的原始卡数据不需要更改
+										addBankcardUnderLoginStatus = true;
+									}
+									/*else{//此时是我的银行卡页中列表的点击事件，那么需要将原始卡替换掉
+										App.app.setData("MainBankcard",cardId);
+									}*/
+									
+									FastHttpHander.ajax(GlobalValue.URL_BANKCARD_ADD,params, config,BankCardAdapter.this);
 									/*FastHttpHander.ajaxForm(GlobalValue.URL_BANKCARD_ADD,params, null, config,BankCardAdapter.this);*/
-									FastHttpHander.ajax(GlobalValue.URL_BANKCARD_ADD,  params, config, BankCardAdapter.this);
 									Log.i("警报警报！！","添加进来的卡的id为： "+ cardId);
 									
 									Handler_Inject.injectFragment(BankCardAdapter.this, null);
@@ -308,7 +329,7 @@ public class BankCardAdapter extends
 	private void result(ResponseEntity r) {
 		if (r.getStatus() == FastHttp.result_ok) {
 			switch (r.getKey()) {
-			case 0:
+			case 0://TODO
 				if ("true".equals(r.getContentAsString())) {
 					CustomToast.show(context, context.getString(R.string.tip),"添加成功");
 					/*BackEntity event = new BackEntity();
@@ -320,10 +341,31 @@ public class BankCardAdapter extends
 						EventBus.getDefault().post(event);
 						return;
 					}
+					
+					
+					if(mIsNotChanged){//不需要改变的标签值，即此时的点击操作：是将原始卡替换为欲添卡，但保存于本地的sp中的原始卡数据不需要更改
+						if(addBankcardUnderLoginStatus){
+							Bundle bundle = new Bundle();
+							bundle.putBoolean("isFromInsertBankcardAdapterPage", addBankcardUnderLoginStatus);
+							MineBankcardFragment fragment = new MineBankcardFragment();
+							fragment.setArguments(bundle);
+							FragmentEntity event = new FragmentEntity();
+							event.setFragment(fragment);
+							EventBus.getDefault().post(event);
+							return;
+						}
+					}else{//此时是我的银行卡页中列表的点击事件，那么需要将原始卡替换掉
+						/*App.app.setData("MainBankcard",selectCardId);*/
+						
+					}
+					
+					
 					MineBankcardFragment fragment = new MineBankcardFragment();
 					FragmentEntity event = new FragmentEntity();
 					event.setFragment(fragment);
 					EventBus.getDefault().post(event);
+					
+					
 				} else {
 					CustomToast.show(context, context.getString(R.string.tip),"卡种已重复");
 				}
@@ -403,6 +445,7 @@ public class BankCardAdapter extends
 	}
 
 	boolean hasAdd = true;
+	private boolean mIsNotChanged;
 	
 
 

@@ -56,11 +56,6 @@ import com.android.pc.ioc.view.listener.OnItemClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
 import com.google.gson.Gson;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnPullEventListener;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.State;
-import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.HomeListAdapter;
 import com.lansun.qmyo.adapter.HomePagerAdapter;
@@ -111,14 +106,8 @@ import com.squareup.okhttp.Response;
 	private ScrollView  sv_homefrag;*/
 
 
-
-	/* @InjectView
-	private PullToRefreshScrollView sv_homefrag;*/
-
 	@InjectView
 	private ScrollView sv_homefrag;
-
-
 
 	/*@InjectView(pull = true)
 	private  LinearLayout ll_homefrag;*/
@@ -246,10 +235,6 @@ import com.squareup.okhttp.Response;
 
 		sv_homefrag.scrollTo(0, 0);
 
-
-
-
-		/*sv_homefrag.setPullToRefreshEnabled(false);*/
 		/*sv_homefrag.setOnRefreshListener(new OnRefreshListener<ScrollView>() {
 			@Override
 			public void onRefresh(PullToRefreshBase<ScrollView> refreshView) {
@@ -267,8 +252,6 @@ import com.squareup.okhttp.Response;
 
 
 		sv_homefrag.setOnTouchListener(new OnTouchListener() {
-
-
 
 			@SuppressLint("ClickableViewAccessibility")
 			@Override
@@ -317,8 +300,8 @@ import com.squareup.okhttp.Response;
 								CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
 								sv_homefrag.setOnTouchListener(null);
 								try{
-									CustomToast.show(activity, "监听器中正在移除footerView", "请稍等！");
-									lv_home_list.removeFooterView(head);
+									/*CustomToast.show(activity, "监听器中正在移除footerView", "请稍等！");*/
+									lv_home_list.removeFooterView(refresh_footer);
 								}catch(Exception e){
 									e.printStackTrace();
 								}
@@ -344,7 +327,7 @@ import com.squareup.okhttp.Response;
 										refreshParams = null;
 										refreshUrl = String.format(GlobalValue.URL_ARTICLE_PROMOTE,getSelectCity()[0]);
 									}
-									CustomToast.show(activity, "准备访问网络", "稍等~~");
+									CustomToast.show(activity, "努力加载中", "稍等哟");
 									refreshCurrentList(list.getNext_page_url(), refreshParams,1, lv_home_list);
 
 								}
@@ -852,8 +835,9 @@ import com.squareup.okhttp.Response;
 
 						} else {
 							try{
-								CustomToast.show(activity, "网络返回数据后，正在移除footerView", "请稍等！");
-								lv_home_list.removeFooterView(head);
+								/*CustomToast.show(activity, "网络返回数据后，正在移除footerView", "请稍等！");*/
+								lv_home_list.removeFooterView(refresh_footer);
+								
 							}catch(Exception e){
 								e.printStackTrace();
 							}

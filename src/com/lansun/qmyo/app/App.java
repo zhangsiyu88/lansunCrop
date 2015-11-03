@@ -53,6 +53,11 @@ public class App extends Application {
 
 	public static App app;
 	public static List<String> search_list_history=new ArrayList<>();
+	public static App getInstance() {
+		return app;
+	}
+	
+	
 	@Override
 	public void onCreate() {
 		
@@ -69,19 +74,20 @@ public class App extends Application {
 		// JPushInterface.init(this);
 		
 		/*if (TextUtils.isEmpty(App.app.getData("HasCity"))) {*/
-			
-		if (true){
-			// 网络获取城市
-			InternetConfig config = new InternetConfig();
-			config.setKey(0);
-			System.out.println("下面去访问网络,去拿所有省市区的信息回来!!!!");
-			FastHttpHander.ajaxGet(GlobalValue.URL_AREA_ALL, config, this);
-			Handler_Inject.injectFragment(this, null);
-			
-			DbUtils.create(this, getCacheDir().getPath(), "province");
-			DbUtils.create(this, getCacheDir().getPath(), "city");
-			DbUtils.create(this, getCacheDir().getPath(), "area");
-		}
+	
+		
+//		if (true){
+//			// 网络获取城市
+//			InternetConfig config = new InternetConfig();
+//			config.setKey(0);
+//			System.out.println("下面去访问网络,去拿所有省市区的信息回来!!!!");
+//			FastHttpHander.ajaxGet(GlobalValue.URL_AREA_ALL, config, this);//前往服务器
+//			Handler_Inject.injectFragment(this, null);
+//			
+//			DbUtils.create(this, getCacheDir().getPath(), "province");
+//			DbUtils.create(this, getCacheDir().getPath(), "city");
+//			DbUtils.create(this, getCacheDir().getPath(), "area");
+//		}
 		
 		
 		/*	try {
@@ -139,83 +145,83 @@ public class App extends Application {
 	 * 保存访问服务器后返回回来的省市区信息,供后面的wheelview使用
 	 * @param json
 	 */
-	private void saveCity(String json) {
-		final AddressList list = Handler_Json.JsonToBean(AddressList.class,
-				json);
-		if (list.getData() != null) {
-
-			new Thread() {
-				public void run() {
-					for (int i = 0; i < list.getData().size(); i++) {
-						Address address = list.getData().get(i);
-						if (list.getData().get(i).getItems() != null) {
-							address.setCityCount(list.getData().get(i)
-									.getItems().size());
-						}
-					/*	new Thread(new Runnable() {
-							@Override
-							public void run() {
-								Ioc.getIoc().getDb(getCacheDir().getPath(), "province").saveBindingId(address);
-							}
-						}).start();*/
-						
-						Ioc.getIoc().getDb(getCacheDir().getPath(), "province").saveBindingId(address);
-						
-						
-
-						// 市
-						if (list.getData().get(i).getItems() != null) {
-							for (int j = 0; j < list.getData().get(i)
-									.getItems().size(); j++) {
-								 Address2 address2 = list.getData().get(i)
-										.getItems().get(j);
-								if (list.getData().get(i).getItems() != null
-										&& list.getData().get(i).getItems()
-												.get(j).getItems() != null) {
-									address2.setAreaCount(list.getData().get(i)
-											.getItems().get(j).getItems()
-											.size());
-								}
-								/*System.out.println("city" + address2.getName());*/
-								
-								/*new Thread(new Runnable() {
-									@Override
-									public void run() {
-										Ioc.getIoc().getDb(getCacheDir().getPath(), "city").saveBindingId(address2);
-									}
-								}).start();*/
-								
-								Ioc.getIoc().getDb(getCacheDir().getPath(), "city").saveBindingId(address2);
-								
-								// 区
-								if (list.getData().get(i).getItems().get(j)
-										.getItems() != null) {
-									for (int k = 0; k < list.getData().get(i)
-											.getItems().get(j).getItems()
-											.size(); k++) {
-										 Address3 address3 = list.getData()
-												.get(i).getItems().get(j)
-												.getItems().get(k);
-										
-										
-										/*new Thread(new Runnable() {
-											@Override
-											public void run() {
-												Ioc.getIoc().getDb(getCacheDir().getPath(),"area").saveBindingId(address3);
-											}
-										}).start();*/
-										
-										Ioc.getIoc().getDb(getCacheDir().getPath(),"area").saveBindingId(address3);
-									}
-								}
-							}
-						}
-					}
-
-				};
-			}.start();
-		}
-	}
+//	private void saveCity(String json) {
+//		final AddressList list = Handler_Json.JsonToBean(AddressList.class,
+//				json);
+//		if (list.getData() != null) {
+//
+//			new Thread() {
+//				public void run() {
+//					for (int i = 0; i < list.getData().size(); i++) {
+//						Address address = list.getData().get(i);
+//						if (list.getData().get(i).getItems() != null) {
+//							address.setCityCount(list.getData().get(i)
+//									.getItems().size());
+//						}
+//					/*	new Thread(new Runnable() {
+//							@Override
+//							public void run() {
+//								Ioc.getIoc().getDb(getCacheDir().getPath(), "province").saveBindingId(address);
+//							}
+//						}).start();*/
+//						
+//						Ioc.getIoc().getDb(getCacheDir().getPath(), "province").saveBindingId(address);
+//						
+//						
+//
+//						// 市
+//						if (list.getData().get(i).getItems() != null) {
+//							for (int j = 0; j < list.getData().get(i)
+//									.getItems().size(); j++) {
+//								 Address2 address2 = list.getData().get(i)
+//										.getItems().get(j);
+//								if (list.getData().get(i).getItems() != null
+//										&& list.getData().get(i).getItems()
+//												.get(j).getItems() != null) {
+//									address2.setAreaCount(list.getData().get(i)
+//											.getItems().get(j).getItems()
+//											.size());
+//								}
+//								/*System.out.println("city" + address2.getName());*/
+//								
+//								/*new Thread(new Runnable() {
+//									@Override
+//									public void run() {
+//										Ioc.getIoc().getDb(getCacheDir().getPath(), "city").saveBindingId(address2);
+//									}
+//								}).start();*/
+//								
+//								Ioc.getIoc().getDb(getCacheDir().getPath(), "city").saveBindingId(address2);
+//								
+//								// 区
+//								if (list.getData().get(i).getItems().get(j)
+//										.getItems() != null) {
+//									for (int k = 0; k < list.getData().get(i)
+//											.getItems().get(j).getItems()
+//											.size(); k++) {
+//										 Address3 address3 = list.getData()
+//												.get(i).getItems().get(j)
+//												.getItems().get(k);
+//										
+//										
+//										/*new Thread(new Runnable() {
+//											@Override
+//											public void run() {
+//												Ioc.getIoc().getDb(getCacheDir().getPath(),"area").saveBindingId(address3);
+//											}
+//										}).start();*/
+//										
+//										Ioc.getIoc().getDb(getCacheDir().getPath(),"area").saveBindingId(address3);
+//									}
+//								}
+//							}
+//						}
+//					}
+//
+//				};
+//			}.start();
+//		}
+//	}
 
 	/**
 	 * 初始化ImageLoader
@@ -279,65 +285,65 @@ public class App extends Application {
 			System.out.println("什么是省市区的数据,让我来告诉你吧!!!!");
 			switch (r.getKey()) {
 
-			case 0://拿省市区地数据库就是为了后面的WheelView来使用的
-				final AddressList list = Handler_Json.JsonToBean(AddressList.class, r.getContentAsString());
-				System.out.println("什么是省市区的数据,让我来告诉你吧!!!!"+r.getContentAsString());
-				System.out.println("什么是省市区的数据,让我来告诉你吧!!!!"+list.toString());
-				
-				if (list.getData() != null) {
-					new Thread() {
-						public void run() {
-							for (int i = 0; i < list.getData().size(); i++) {
-								Address address = list.getData().get(i);
-								if (list.getData().get(i).getItems() != null) {
-									address.setCityCount(list.getData().get(i)
-											.getItems().size());
-								}
-								Ioc.getIoc().getDb(getCacheDir().getPath(),"province").saveBindingId(address);
-								
-
-								// 市
-								if (list.getData().get(i).getItems() != null) {
-									for (int j = 0; j < list.getData().get(i)
-											.getItems().size(); j++) {
-										Address2 address2 = list.getData()
-												.get(i).getItems().get(j);
-										
-										if (list.getData().get(i).getItems() != null
-												&& list.getData().get(i)
-														.getItems().get(j)
-														.getItems() != null) {
-											address2.setAreaCount(list
-													.getData().get(i)
-													.getItems().get(j)
-													.getItems().size());
-										}
-										
-										Ioc.getIoc().getDb(getCacheDir().getPath(),"city").saveBindingId(address2);
-										
-										// 区
-										if (list.getData().get(i).getItems()
-												.get(j).getItems() != null) {
-											for (int k = 0; k < list.getData()
-													.get(i).getItems().get(j)
-													.getItems().size(); k++) {
-												
-												Address3 address3 = list.getData().get(i).getItems().get(j).getItems().get(k);
-												
-												Ioc.getIoc().getDb(getCacheDir().getPath(),"area").saveBindingId(address3);
-											}
-										}
-									}
-								}
-							}
-
-						};
-					}.start();
-					
-					
-					App.app.setData("HasCity", "true");
-				}
-				break;
+//			case 0://拿省市区地数据库就是为了后面的WheelView来使用的
+//				final AddressList list = Handler_Json.JsonToBean(AddressList.class, r.getContentAsString());
+//				System.out.println("什么是省市区的数据,让我来告诉你吧!!!!"+r.getContentAsString());
+//				System.out.println("什么是省市区的数据,让我来告诉你吧!!!!"+list.toString());
+//				
+//				if (list.getData() != null) {
+//					new Thread() {
+//						public void run() {
+//							for (int i = 0; i < list.getData().size(); i++) {
+//								Address address = list.getData().get(i);
+//								if (list.getData().get(i).getItems() != null) {
+//									address.setCityCount(list.getData().get(i)
+//											.getItems().size());
+//								}
+//								Ioc.getIoc().getDb(getCacheDir().getPath(),"province").saveBindingId(address);
+//								
+//
+//								// 市
+//								if (list.getData().get(i).getItems() != null) {
+//									for (int j = 0; j < list.getData().get(i)
+//											.getItems().size(); j++) {
+//										Address2 address2 = list.getData()
+//												.get(i).getItems().get(j);
+//										
+//										if (list.getData().get(i).getItems() != null
+//												&& list.getData().get(i)
+//														.getItems().get(j)
+//														.getItems() != null) {
+//											address2.setAreaCount(list
+//													.getData().get(i)
+//													.getItems().get(j)
+//													.getItems().size());
+//										}
+//										
+//										Ioc.getIoc().getDb(getCacheDir().getPath(),"city").saveBindingId(address2);
+//										
+//										// 区
+//										if (list.getData().get(i).getItems()
+//												.get(j).getItems() != null) {
+//											for (int k = 0; k < list.getData()
+//													.get(i).getItems().get(j)
+//													.getItems().size(); k++) {
+//												
+//												Address3 address3 = list.getData().get(i).getItems().get(j).getItems().get(k);
+//												
+//												Ioc.getIoc().getDb(getCacheDir().getPath(),"area").saveBindingId(address3);
+//											}
+//										}
+//									}
+//								}
+//							}
+//
+//						};
+//					}.start();
+//					
+//					
+//					App.app.setData("HasCity", "true");
+//				}
+//				break;
 			}
 		}
 	}

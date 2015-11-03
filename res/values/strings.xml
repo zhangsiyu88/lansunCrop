@@ -134,9 +134,9 @@
     <string name="exit_login">退出登录</string>
     <string name="replay">回复</string>
     <string name="store">门店</string>
-    <string name="qmyo_version">迈界 V1.0.1</string>
+    <string name="qmyo_version">迈界 V1.1.1</string>
     <string name="qmyo_desc">收集世界各地惊喜\n伴随迈友走遍世界</string>
-    <string name="qmyo_wx">迈界微信公众号： qmyoclub</string>
+    <string name="qmyo_wx">迈界微信公众号：<Data><![CDATA[<font color="#9DC14F">qmyoclub</font>]]></Data></string>
     <string name="qmyo_net">迈界官网：<Data><![CDATA[<font color="#9DC14F">www.qmyo.com</font>]]></Data></string>
     <string name="qmyo_jianjie">迈界简介</string>
     <string name="feedback_desc">欢迎你提出宝贵的意见与建议，收到您的反馈以后，我们将尽快3-7个工作日内回复您，届时请您查看“我的”信息信箱(500字以内)</string>
