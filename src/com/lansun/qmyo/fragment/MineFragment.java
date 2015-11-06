@@ -1,9 +1,7 @@
 package com.lansun.qmyo.fragment;
-
 import java.io.IOException;
 
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -18,33 +16,24 @@ import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
-import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
-import com.android.pc.ioc.internet.FastHttp;
-import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
-import com.android.pc.util.Handler_Json;
 import com.google.gson.Gson;
-import com.jauker.widget.BadgeView;
+import com.lansun.qmyo.R;
 import com.lansun.qmyo.app.App;
-import com.lansun.qmyo.biz.InformationBiz;
-import com.lansun.qmyo.domain.Message;
 import com.lansun.qmyo.domain.MySecretary;
 import com.lansun.qmyo.domain.information.InformationCount;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.listener.RequestCallBack;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.DialogUtil;
-import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
+import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CircularImage;
-import com.lansun.qmyo.view.CustomToast;
-import com.lansun.qmyo.R;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-
 public class MineFragment extends BaseFragment implements RequestCallBack{
 	@InjectAll
 	Views v;
@@ -59,7 +48,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 		private RecyclingImageView iv_mine_icon;
 		private CircularImage iv_mine_head;
 	}
-	private Handler handler=new Handler(){
+	private Handler handlerOk=new Handler(){
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
 			case 0:
@@ -82,8 +71,8 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 		initInformation();
 	}
 	private void initInformation() {
-		InformationBiz biz=new InformationBiz();
-		biz.getInformation(this);
+//		InformationBiz biz=new InformationBiz();
+//		biz.getInformation(this);
 	}
 	/**
 	 * 此处请求网络目的是当我进入私人秘书的时候要有个私人秘书的名字。
@@ -337,7 +326,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 			String json=response.body().string();
 			Gson gson=new Gson();
 			count=gson.fromJson(json, InformationCount.class);
-			handler.sendEmptyMessage(0);
+			handlerOk.sendEmptyMessage(0);
 		}
 	}
 	@Override

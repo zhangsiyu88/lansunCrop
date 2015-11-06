@@ -16,7 +16,7 @@
         android:id="@+id/ll_search_holder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/app_white"
+        android:background="@color/line_bg_expand"
         android:orientation="vertical"
         android:visibility="visible" >
 
@@ -25,7 +25,7 @@
 
         <com.lansun.qmyo.view.ExpandTabView
             android:id="@+id/expandtab_view"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/expandtab_view_h" />
         <View style="@style/line_style_1" />
     </LinearLayout>

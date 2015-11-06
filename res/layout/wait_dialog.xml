@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:layout_gravity="center"
+    android:gravity="center_horizontal"
+    android:orientation="vertical" >
+    <com.android.pc.ioc.view.GifMovieView
+        android:id="@+id/gif_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+	<TextView 
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:text="正在努力加载中..."
+	    android:gravity="center"
+	    />
+</LinearLayout>

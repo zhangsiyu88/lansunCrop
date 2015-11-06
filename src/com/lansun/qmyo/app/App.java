@@ -39,7 +39,6 @@ import com.lansun.qmyo.domain.AddressList;
 import com.lansun.qmyo.domain.Sensitive;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
-
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -50,7 +49,7 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 
 
 public class App extends Application {
-
+	public static final String[] TAGS=new String[]{"shopping","travel","food","car","happy","life","core","investment"};
 	public static App app;
 	public static List<String> search_list_history=new ArrayList<>();
 	public static App getInstance() {

@@ -1,12 +1,7 @@
 package com.lansun.qmyo.fragment;
-
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
-
 import android.app.Activity;
-import android.app.FragmentManager.BackStackEntry;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -14,13 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.text.TextUtils;
-import android.text.style.ClickableSpan;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,7 +17,6 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewParent;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -37,28 +24,18 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectListener;
 import com.android.pc.ioc.inject.InjectMethod;
-import com.android.pc.ioc.inject.InjectPullRefresh;
-import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.internet.FastHttpHander;
 import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.view.GifMovieView;
-import com.android.pc.ioc.view.PullToRefreshManager;
 import com.android.pc.ioc.view.listener.OnClick;
-import com.android.pc.util.Handler_Ui;
 import com.lansun.qmyo.MainActivity;
 import com.lansun.qmyo.app.App;
-import com.lansun.qmyo.event.entity.FragmentEntity;
-import com.lansun.qmyo.utils.GlobalValue;
-import com.lansun.qmyo.view.CustomToast;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.lansun.qmyo.R;
-
 public class BaseFragment extends Fragment implements OnTouchListener{
 
 	protected LayoutInflater inflater;

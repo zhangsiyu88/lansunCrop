@@ -235,6 +235,7 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 						Bundle args = new Bundle();
 						args.putString("title",getString(R.string.yhk_feedback));
 						args.putString("type", "bankcard");
+						args.putString("fragment_name", "SearchBankCardFragment");
 						fragment.setArguments(args);
 						FragmentEntity event = new FragmentEntity();
 						event.setFragment(fragment);

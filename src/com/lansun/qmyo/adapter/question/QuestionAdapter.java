@@ -36,7 +36,7 @@ public class QuestionAdapter extends Adapter<QuestionAdapter.MyViewHolder> {
 	public class MyViewHolder extends ViewHolder{
 		private View view;
 		private CircularImage c_iv;
-		private TextView tv_title,tv_type,tv_time,tv_question,tv_answer;
+		private TextView tv_title,tv_type,tv_time,tv_question,tv_answer,have_information;
 		public MyViewHolder(View itemView) {
 			super(itemView);
 			view=itemView;
@@ -46,6 +46,7 @@ public class QuestionAdapter extends Adapter<QuestionAdapter.MyViewHolder> {
 			tv_time=(TextView)itemView.findViewById(R.id.my_question_time);
 			tv_question=(TextView)itemView.findViewById(R.id.question);
 			tv_answer=(TextView)itemView.findViewById(R.id.answer);
+			have_information=(TextView)itemView.findViewById(R.id.have_information);
 		}
 	}
 
@@ -56,6 +57,12 @@ public class QuestionAdapter extends Adapter<QuestionAdapter.MyViewHolder> {
 	private String type;
 	@Override
 	public void onBindViewHolder(MyViewHolder holder, final int position) {
+		if ("0".equals(String.valueOf(list.get(position).getIs_read()))) {
+			holder.have_information.setVisibility(View.VISIBLE);
+		}else {
+			holder.have_information.setVisibility(View.INVISIBLE);
+		}
+		
 		ImageLoader.getInstance().displayImage(GlobalValue.mySecretary.getAvatar(), holder.c_iv, new ImageLoadingListener() {
 			@Override
 			public void onLoadingStarted(String arg0, View arg1) {

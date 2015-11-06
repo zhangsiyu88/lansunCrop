@@ -87,13 +87,13 @@ public class ActivityFragment extends BaseFragment {
 
 	private ViewRight viewRight;
 
-	private HashMap<Integer, View> mViewArray = new HashMap<Integer, View>();
 
 	int index = 0;
 	private ActivityList activityList;
 	private SearchAdapter activityAdapter;
 	private ArrayList<HashMap<String, Object>> shopDataList = new ArrayList<HashMap<String, Object>>();
 
+	private HashMap<Integer, View> mViewArray = new HashMap<Integer, View>();
 	private HashMap<Integer, String> holder_button = new HashMap<Integer, String>();
 
 	@InjectView(binders = @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick"), down = true, pull = true)
@@ -124,7 +124,6 @@ public class ActivityFragment extends BaseFragment {
 	private Type sxintelligent;
 
 	private String position_bussness = "nearby";
-
 	private String intelligentStr="intelligent";
 	private String type;
 	private int initType;
@@ -150,27 +149,6 @@ public class ActivityFragment extends BaseFragment {
 
 		return rootView;
 	}
-
-	private String[] secretaryTitle;
-	private String[] secretaryhint;
-	private int[][] secretaryImages = new int[][] {
-			{ R.drawable.details_figure01, R.drawable.details_figure02,
-				R.drawable.details_figure03, R.drawable.details_figure04,
-				R.drawable.details_figure05, R.drawable.details_cannot },
-				{ R.drawable.details_shopping01, R.drawable.details_shopping02,
-					R.drawable.details_shopping03,
-					R.drawable.details_shopping04, R.drawable.details_cannot },
-					{ R.drawable.details_party01, R.drawable.details_party02,
-						R.drawable.details_party03, R.drawable.details_party04,
-						R.drawable.details_cannot },
-						{ R.drawable.details_life01, R.drawable.details_life02,
-							R.drawable.details_life03, R.drawable.details_life04,
-							R.drawable.details_cannot },
-							{ R.drawable.details_abroad01, R.drawable.details_abroad02,
-								R.drawable.details_cannot },
-								{ R.drawable.details_financial01, R.drawable.details_financial02,
-									R.drawable.details_cannot },
-									{ R.drawable.details_card01, R.drawable.details_cannot } };
 	private String typeStr;
 	private int secretaryPosition;
 
@@ -180,18 +158,15 @@ public class ActivityFragment extends BaseFragment {
 
 	private boolean mIsHasChangeTheBankcardInMineBankcardPage = false;
 
+	private int type_index;
+
 	@InjectInit
 	private void init() {
-		secretaryTitle = getResources().getStringArray(R.array.secretary_title);
-		secretaryhint = getResources().getStringArray(R.array.secretary_hint);
+		//		secretaryTitle = getResources().getStringArray(R.array.secretary_title);
+		//		secretaryhint = getResources().getStringArray(R.array.secretary_hint);
 		int type = getArguments().getInt("type");
 		initType = type;
-		Log.i("type", "这次的type的值为"+ type);
-		
-		
 		mIsHasChangeTheBankcardInMineBankcardPage = getArguments().getBoolean("isHasChangeTheBankcardInMineBankcardPage");
-		Log.d("mIsHasChangeTheBankcardInMineBankcardPage", "这次的mIsHasChangeTheBankcardInMineBankcardPage的值为"+ mIsHasChangeTheBankcardInMineBankcardPage);
-
 		if (type != 0) {
 			switch (type) {
 			case R.string.shopping_carnival:
@@ -235,17 +210,8 @@ public class ActivityFragment extends BaseFragment {
 				HODLER_TYPE = "800000";
 				break;
 			}
-			if (getArguments() != null) {
-				IsNew = getArguments().getBoolean("IsNew");
-				if (IsNew) {
-					HODLER_TYPE = "000000";
-				}
-
-			}
 			initData();//---------------------功能：
 			v.tv_activity_title.setText(type);
-			System.out.println(v.tv_activity_title.getText());
-
 		} else {
 			v.tv_activity_title.setText("未知");
 		}
@@ -327,78 +293,107 @@ public class ActivityFragment extends BaseFragment {
 
 		setProgress(lv_activity_list);
 		startProgress();
-
-
+		loadActivityList();//-->加载活动的列表
 		viewLeft = new ViewLeft(activity);
 		viewLeft2 = new ViewLeft(activity);
 		viewMiddle = new ViewMiddle(activity);
 		viewRight = new ViewRight(activity);
+		//		Log.e("HODLER_TYPE", HODLER_TYPE);
+		switch (HODLER_TYPE) {
+		case "100000":
+			type_index=0;
+			String shopping=App.app.getData(App.TAGS[0]);
+			if ("".equals(shopping)||shopping==null) {
+				getServerBanner();
+			}else {
+				setFirstValue(shopping);
+			}
+			break;
+		case "200000":
+			type_index=1;
+			String travel=App.app.getData(App.TAGS[1]);
+			if ("".equals(travel)||travel==null) {
+				getServerBanner();
+			}else {
+				setFirstValue(travel);
+			}
+			break;
+		case "300000":
+			type_index=2;
+			String party=App.app.getData(App.TAGS[2]);
+			if ("".equals(party)||party==null) {
+				getServerBanner();
+			}else {
+				setFirstValue(party);
+			}
+			break;
+		case "400000":
+			type_index=3;
+			String car=App.app.getData(App.TAGS[3]);
+			if ("".equals(car)||car==null) {
+				getServerBanner();
+			}else {
+				setFirstValue(car);
+			}
+			break;
+		case "500000":
+			type_index=4;
+			String happy=App.app.getData(App.TAGS[4]);
+			if ("".equals(happy)||happy==null) {
+				getServerBanner();
+			}else {
+				setFirstValue(happy);
+			}
+			break;
+		case "600000":
+			type_index=5;
+			String life=App.app.getData(App.TAGS[5]);
+			if ("".equals(life)||life==null) {
+				getServerBanner();
+			}else {
+				setFirstValue(life);
+			}
+			break;
+		case "700000":
+			type_index=6;
+			String core=App.app.getData(App.TAGS[6]);
+			if ("".equals(core)||core==null) {
+				getServerBanner();
+			}else {
+				setFirstValue(core);
+			}
+			break;
+		case "800000":
+			type_index=7;
+			String investment=App.app.getData(App.TAGS[7]);
+			if ("".equals(investment)||investment==null) {
+				getServerBanner();
+			}else {
+				setFirstValue(investment);
+			}
+			break;
+		}
+
 
 		//判断Activity的类型是不是新品的内容，新内容时只展示三个模块，若为其他的八个板块时，那么需要的是展示四个TextView
-		if (IsNew) {
+		// 附近 固定
+		InternetConfig config1 = new InternetConfig();
+		config1.setKey(1);
 
-			InternetConfig config = new InternetConfig();
-			config.setKey(0);
-			//---->调整接口连接器,此处需要将Token加入到config里面的head中去
-			HashMap<String, Object> head = new HashMap<>();
-			head.put("Authorization","Bearer " + App.app.getData("access_token"));
-			config.setHead(head);
-
-			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SERVICE
-					+ HODLER_TYPE, config, this);
-			// 附近 固定
-			InternetConfig config1 = new InternetConfig();
-			config1.setKey(1);
-			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_DISTRICT
-					+ App.app.getData("select_cityCode"), config1, this);
-			// 智能排序
-			InternetConfig config2 = new InternetConfig();
-			config2.setKey(2);
-			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_INTELLIGENT,
-					config2, this);
-		} else {//八大板块中任意一个点击进入后的list
-			// 服务板块
-			InternetConfig config = new InternetConfig();
-			config.setKey(0);
-
-			//---->调整接口连接器,此处需要将Token加入到config里面的head中去
-			HashMap<String, Object> head = new HashMap<>();
-			head.put("Authorization",
-					"Bearer " + App.app.getData("access_token"));
-			config.setHead(head);
-
-			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SERVICE
-					+ HODLER_TYPE, config, this);
-			Log.d("八大板块测试", "准备前往获取板块服务列表的数据 "+System.currentTimeMillis());
-			/*Log.d("八大板块测试", "准备前往获取商圈的数据 "+System.currentTimeMillis());
-			Log.d("八大板块测试", "准备前往获取智能排序的数据 "+System.currentTimeMillis());
-			Log.d("八大板块测试", "准备前往获取筛选的数据 "+System.currentTimeMillis());*/
-
-			// 附近 固定
-			InternetConfig config1 = new InternetConfig();
-			config1.setKey(1);
-
-			Log.i("选择城市的code为:", App.app.getData("select_cityCode"));
-
-			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_DISTRICT
-					+ App.app.getData("select_cityCode"), config1, this);
-			Log.d("八大板块测试", "准备前往获取商圈的数据 "+System.currentTimeMillis());
-
-
-			// 智能排序
-			InternetConfig config2 = new InternetConfig();
-			config2.setKey(2);
-			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_INTELLIGENT,config2, this);
-			Log.d("八大板块测试", "准备前往获取智能排序的数据 "+System.currentTimeMillis());
-
-
+		FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_DISTRICT
+				+ App.app.getData("select_cityCode"), config1, this);
+		// 智能排序
+		InternetConfig config2 = new InternetConfig();
+		config2.setKey(2);
+		FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_INTELLIGENT,config2, this);
+		if ("700000".equals(HODLER_TYPE)||"800000".equals(HODLER_TYPE)) {
+			
+		}else {
 			// 筛选
 			InternetConfig config3 = new InternetConfig();
 			config3.setKey(3);
 			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SCREENING,config3, this);
-			Log.d("八大板块测试", "准备前往获取筛选的数据 "+System.currentTimeMillis());
 		}
-
 		emptyView = inflater.inflate(R.layout.activity_search_empty, null);
 		tv_found_secretary = emptyView.findViewById(R.id.tv_found_secretary);
 		tv_found_secretary.setOnClickListener(new OnClickListener() {
@@ -409,15 +404,7 @@ public class ActivityFragment extends BaseFragment {
 				SecretaryFragment fragment = new SecretaryFragment();
 				Bundle args = new Bundle();
 				args.putString("type", typeStr);
-				args.putString("title", secretaryTitle[secretaryPosition]);
-				args.putString("hint", secretaryhint[secretaryPosition]);
-				args.putIntArray("images", secretaryImages[secretaryPosition]);
 				fragment.setArguments(args);
-
-				// type = arguments.getString("type");
-				// title = arguments.getString("title");
-				// hint = arguments.getString("hint");
-				// images = arguments.getIntArray("images");
 				FragmentEntity event = new FragmentEntity();
 				event.setFragment(fragment);
 				EventBus.getDefault().post(event);
@@ -430,9 +417,24 @@ public class ActivityFragment extends BaseFragment {
 
 		initListener();//-->给上面四个TextView每个设置上选择的监听
 
-		loadActivityList();//-->加载活动的列表
 
 
+
+	}
+
+	private void getServerBanner() {
+		// 服务板块
+		InternetConfig config = new InternetConfig();
+		config.setKey(0);
+
+		//---->调整接口连接器,此处需要将Token加入到config里面的head中去
+		HashMap<String, Object> head = new HashMap<>();
+		head.put("Authorization",
+				"Bearer " + App.app.getData("access_token"));
+		config.setHead(head);
+
+		FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SERVICE
+				+ HODLER_TYPE, config, this);
 	}
 
 	/**
@@ -529,7 +531,6 @@ public class ActivityFragment extends BaseFragment {
 			refreshParams.put("location", GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());//问题在这儿!这个location 拼接在了服务器访问接口里面
 		}
 		refreshParams.put("poistion",position_bussness);
-		Log.e("position", "position_bussness="+position_bussness);
 		if (IsNew) {// 新品曝光 固定为NEW
 			refreshParams.put("type", "new");
 			refreshParams.put("site", getSelectCity()[0]);
@@ -577,36 +578,9 @@ public class ActivityFragment extends BaseFragment {
 
 			switch (r.getKey()) {
 			case 0:// 全部
-				Log.d("八大板块测试", "已获取板块服务列表的数据 "+System.currentTimeMillis());
-				Log.i("全部的数据", "拿到最左边列表的展示的全部数据!");
-				AllService = Handler_Json.JsonToBean(Service.class,
-						r.getContentAsString());
-				name = AllService.getName();
-				if (name == null) {
-					name = AllService.getData().get(0).getName();
-				}
-				ArrayList<String> allGroup = new ArrayList<String>();
-				SparseArray<LinkedList<String>> allChild = new SparseArray<LinkedList<String>>();
-				for (int j = 0; j < AllService.getData().size(); j++) {
-					LinkedList<String> chind = new LinkedList<String>();
-					allGroup.add(AllService.getData().get(j).getName());
-					ArrayList<ServiceDataItem> items = AllService.getData()
-							.get(j).getItems();
-					if (items != null) {
-						for (ServiceDataItem item : items) {
-							chind.add(item.getName());
-						}
-					}
-					allChild.put(j, chind);
-				}
-				holder_button.put(0, name);
-				viewLeft.setGroups(allGroup);
-				viewLeft.setChildren(allChild);
-				mViewArray.put(0, viewLeft);
+				setFirstValue(r.getContentAsString());
 				break;
 			case 1:// 附近
-				Log.d("八大板块测试", "已获取商圈的数据 "+System.currentTimeMillis());
-				Log.i("附近的数据", "拿到附近的数据!");
 				Gson gson=new Gson();
 				nearService = gson.fromJson(r.getContentAsString(),Position.class);
 				name = nearService.getName();
@@ -661,8 +635,10 @@ public class ActivityFragment extends BaseFragment {
 				ArrayList<String> sxGroup = new ArrayList<String>();
 				List<DataScrolling> sxData = sxintelligent.getData();
 				for (DataScrolling d : sxData) {
-					sxGroup.add(d.getName());
-					iconGroup.add(d.getKey());
+					if (!"积分兑换".equals(d.getName())) {
+						sxGroup.add(d.getName());
+						iconGroup.add(d.getKey());
+					}
 				}
 				holder_button.put(3, name);
 				viewRight.setICons(iconGroup);
@@ -689,12 +665,12 @@ public class ActivityFragment extends BaseFragment {
 			case 4:// 活动列表
 				try{
 					lv_activity_list.removeFooterView(emptyView);
-					
+
 				}catch(Exception e ){
 					/*CustomToast.show(activity, "出异常了", "异常已被抓！");*/
 				}
-					
-					
+
+
 				//从服务器端拿到数据
 				activityList = Handler_Json.JsonToBean(ActivityList.class,
 						r.getContentAsString());
@@ -732,18 +708,12 @@ public class ActivityFragment extends BaseFragment {
 
 						lv_activity_list.setAdapter(activityAdapter);
 						expandTabViewButtomLine.setVisibility(View.VISIBLE);//当拿到数据加载到ListView上后，再将下面的Line线条展示出来
-						Log.i("烦死了", "分明能走到setAdapter这儿啊!!!");
-						
-						Log.d("八大板块测试", "八大板块页面去访问数据现已拿到数据内容，已连接上适配器： "+System.currentTimeMillis());
-						
 						if(activityList.getData().size()<10){
 							lv_activity_list.addFooterView(emptyView);
 						}
 						endProgress();//当ListView链接上适配器时,我们需要将gif的动画关掉
 
 					} else {
-						Log.d("八大板块测试", "八大板块页面去访问数据现已拿到数据内容，已连接上适配器(适配器复用)： "+System.currentTimeMillis());
-						
 						//adapter并不为空时
 						activityAdapter.notifyDataSetChanged();
 						if(activityList.getData().size()<10){
@@ -751,8 +721,8 @@ public class ActivityFragment extends BaseFragment {
 						}
 						/*activityAdapter.notifyDataSetChanged();*/
 					}
-					
-					
+
+
 					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 
@@ -760,8 +730,6 @@ public class ActivityFragment extends BaseFragment {
 					//lv_activity_list.setAdapter(null);
 					activityAdapter.notifyDataSetChanged();
 					lv_activity_list.addFooterView(emptyView);
-					
-
 					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 
@@ -772,7 +740,7 @@ public class ActivityFragment extends BaseFragment {
 			}
 			if (r.getKey() < 4) {
 				progress_text.setText("正在搜索幸运中");
-				if (IsNew) {
+				if (HODLER_TYPE=="700000"||HODLER_TYPE=="800000") {
 					if (holder_button.size() == 3) {
 						v.expandtab_view.setValue(holder_button, mViewArray);
 					}
@@ -787,8 +755,44 @@ public class ActivityFragment extends BaseFragment {
 		} else {//如果服务器没有返回需要值回来，提示为 网络错误信息
 			progress_text.setText(R.string.net_error_refresh);
 		}
+		if (pd!=null) {
+			pd.dismiss();
+		}
 		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 		PullToRefreshManager.getInstance().onFooterRefreshComplete();
+	}
+
+	private void setFirstValue(String json) {
+		App.app.setData(App.TAGS[type_index], json);
+		String name;
+		AllService = Handler_Json.JsonToBean(Service.class,
+				json);
+		name = AllService.getName();
+		Log.e("name===", name);
+		if (name == null) {
+			name = AllService.getData().get(0).getName();
+		}
+		ArrayList<String> allGroup = new ArrayList<String>();
+		SparseArray<LinkedList<String>> allChild = new SparseArray<LinkedList<String>>();
+		for (int j = 0; j < AllService.getData().size(); j++) {
+			LinkedList<String> chind = new LinkedList<String>();
+			allGroup.add(AllService.getData().get(j).getName());
+			ArrayList<ServiceDataItem> items = AllService.getData()
+					.get(j).getItems();
+			if (items != null) {
+				for (ServiceDataItem item : items) {
+					chind.add(item.getName());
+				}
+			}
+			allChild.put(j, chind);
+		}
+		holder_button.put(0, name);
+		viewLeft.setGroups(allGroup);
+		viewLeft.setChildren(allChild);
+		mViewArray.put(0, viewLeft);
+		if (holder_button.size() == 3) {
+			v.expandtab_view.setValue(holder_button, mViewArray);
+		}
 	}
 
 	/**
@@ -797,25 +801,18 @@ public class ActivityFragment extends BaseFragment {
 	 */
 	@InjectPullRefresh
 	public void call(int type) {
-		Log.i("上拉或者下拉的动作是否可以识别?", "说明动作能够被系统识别");
 		// 这里的type来判断是否是下拉还是上拉
 		switch (type) {
 		case InjectView.PULL:
-			Log.i("上拉动作是否可以识别?", "说明上拉动作能够被识别");
 			if (activityList != null) {
 				/*if (TextUtils.isEmpty(activityList.getNext_page_url())) {//下一页为空的时候，加上footerview*/
 				if (activityList.getNext_page_url()== "null"||TextUtils.isEmpty(activityList.getNext_page_url())) {
-
-					
-				   //当获取到的活动列表的数目少于10条时，顺带给listView 底部加上一个emptyView
-					
+					//当获取到的活动列表的数目少于10条时，顺带给listView 底部加上一个emptyView
 					try{
 						lv_activity_list.removeFooterView(emptyView);
 					}catch(Exception e ){
-						
 					}
 					lv_activity_list.addFooterView(emptyView);
-					
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
 					CustomToast.show(activity, "到底啦！", "小迈会加油搜集更多惊喜哦");
@@ -824,7 +821,6 @@ public class ActivityFragment extends BaseFragment {
 					/* 下面这一步代码应该耽误了半天时间
 					 * PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					 */
-
 					refreshParams = new LinkedHashMap<>();
 					refreshParams.put("location",GlobalValue.gps.toString());
 					//定位成功后,则将location拼接到refreshParams中,但目前暂时将其关闭,对外不打开
@@ -850,34 +846,7 @@ public class ActivityFragment extends BaseFragment {
 			break;
 		case InjectView.DOWN:
 			if (activityList != null) {
-				refreshParams = new LinkedHashMap<>();
-
-				if (isPosition) {
-					refreshParams.put("location", GlobalValue.gps.toString());
-				}
-
-				if (IsNew) {
-					refreshParams.put("type", "new");
-				}
-
-				//refreshParams.put("distance", distance);
-				refreshParams.put("site", getSelectCity()[0]);
-				/*refreshParams.put("site", "310000");//默认先只跑上海市版本*/	
-
-				try {
-					refreshParams.put("poistion", URLEncoder.encode(
-							position_bussness, "utf-8"));
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				}
-				refreshParams.put("service", HODLER_TYPE);
-
-				isDownChange = true;//下拉更新的标志
-				refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_activity_list);
-
-				lv_activity_list.removeFooterView(emptyView);//不能忘了去除底部的emptyView
-				/*lv_activity_list.invalidate();*/
-
+				loadActivityList();
 			}else{
 				CustomToast.show(activity, "ti", "activityList == null");
 			}
@@ -927,7 +896,7 @@ public class ActivityFragment extends BaseFragment {
 		return -1;
 	}
 
-	
+
 	@Override/*@InjectMethod(@InjectListener(ids = 2131296342, listeners = OnClick.class))*/
 	protected void back() {
 		if(mIsHasChangeTheBankcardInMineBankcardPage){

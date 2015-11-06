@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -23,13 +24,14 @@ import com.lansun.qmyo.adapter.serch_hot.PuzzyListAdapter;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.PuzzyData;
 import com.lansun.qmyo.domain.PuzzySearch;
+import com.lansun.qmyo.fragment.BaseFragment;
 import com.lansun.qmyo.listener.PuzzyItemClickCallBack;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-public class PuzzyFragment extends Fragment implements PuzzyItemClickCallBack{
+public class PuzzyFragment extends BaseFragment implements PuzzyItemClickCallBack{
 	private RecyclerView puzzy_search_list;
 	private List<PuzzySearch> list;
 	private String searchName;
@@ -64,6 +66,10 @@ public class PuzzyFragment extends Fragment implements PuzzyItemClickCallBack{
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		
+		InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+		
 		View view=inflater.inflate(R.layout.puzzy_fragment, container,false);
 		initView(view);
 		return view;

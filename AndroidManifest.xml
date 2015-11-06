@@ -53,9 +53,13 @@
         
         
         <!--  包名为com.lansun.qmyo     申请    发布版本模式下的高德地图的key -->
+	   <!--   <meta-data
+	            android:name="com.amap.api.v2.apikey"
+	            android:value="a81d22502d5958d33c95c7e32f97c656" />  -->
+	            <!-- Guzman key -->
 	     <meta-data
 	            android:name="com.amap.api.v2.apikey"
-	            android:value="a81d22502d5958d33c95c7e32f97c656" /> 
+	            android:value="6f42a67f536e232ba8ba4bf7744ee749" /> 
 	        
 	        
        
@@ -225,7 +229,7 @@
            <!-- 此值来自 以com.lansun.qmyo作为标示并正式上线  开发者平台取得的AppKey--> 
 	     <!-- Required  . Enable it you can get statistics data with channel -->
         <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
-        <meta-data android:name="JPUSH_APPKEY" android:value="dec54ebb0514c3529b7f99ae" />  
+        <meta-data android:name="JPUSH_APPKEY" android:value="dec54ebb0514c3529b7f99ae" />
            
     </application>
 

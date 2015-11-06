@@ -1,10 +1,16 @@
 package com.lansun.qmyo.fragment;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -14,11 +20,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amap.api.mapcore2d.an;
+import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectInit;
@@ -30,7 +39,9 @@ import com.google.gson.Gson;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.question.QuestionAnswerAdapter;
 import com.lansun.qmyo.biz.AddQuestionBiz;
+import com.lansun.qmyo.domain.QuestionAnswerDetail;
 import com.lansun.qmyo.domain.QuestionDetail;
+import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.listener.RequestCallBack;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
@@ -52,12 +63,14 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	Views v;
 	private String question_id;
 	private QuestionDetail list;
+
 	private String currentType;
 	private ProgressDialog pd;
 	private QuestionAnswerAdapter adapter;
 	private TextView btn_secretary_question_commit;
 	protected boolean canSend;
 	class Views {
+		private ImageView iv_activity_back;
 		private View fl_comments_right_iv, tv_activity_shared;
 		private TextView tv_activity_title,tv_mine_secretary_type;
 		private EditText et_secretary_question;
@@ -91,7 +104,14 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 				}
 				break;
 			case 1:
-				CustomToast.show(activity, R.string.tip,"提交成功");
+				v.et_secretary_question.setText("");
+				v.et_secretary_question.setFocusable(false);
+				canSend=false;
+				QuestionAnswerDetail detail=new QuestionAnswerDetail();
+				detail.setContent(question);
+				list.getItems().add(list.getItems().size(), detail);
+				adapter.notifyDataSetChanged();
+				my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);
 				break;
 			case 2:
 				CustomToast.show(activity, R.string.tip,"提交失败");
@@ -103,7 +123,8 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 			}
 		};
 	};
-	@Override
+
+	private String question;	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments()!=null) {
@@ -151,16 +172,16 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 				if (response.isSuccessful()) {
 					String json=response.body().string();
 					json=json.replace(" ", "");
-					Log.e("detail", json);
 					Gson gson=new Gson();
 					list=gson.fromJson(json, QuestionDetail.class);
+					currentType=list.getType();
 					adapter=new QuestionAnswerAdapter(list);
 					handleOk.sendEmptyMessage(0);
 				}
 			}
 			@Override
 			public void onFailure(Request request, IOException arg1) {
-				
+
 			}
 		});
 	}
@@ -168,7 +189,15 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	private void init() {
 		v.fl_comments_right_iv.setVisibility(View.GONE);
 		v.tv_activity_title.setText(GlobalValue.mySecretary.getName());
-		v.et_secretary_question.setFocusable(false);
+		v.iv_activity_back.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				FragmentEntity entity=new FragmentEntity();
+				Fragment fragment=new MineSecretaryFragment();
+				entity.setFragment(fragment);
+				EventBus.getDefault().post(entity);
+			}
+		});
 	}
 
 
@@ -186,7 +215,8 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		pd.setMessage(getString(R.string.up_dataing));
 		pd.show();
 		AddQuestionBiz biz=new AddQuestionBiz();
-		biz.sendQuestion(v.et_secretary_question.getText().toString(), currentType, question_id+"", this);
+		question = v.et_secretary_question.getText().toString();
+		biz.sendQuestion(question, currentType, question_id+"", this);
 	}
 	private int switchType(String type) {
 		int resId = R.string.travel_holiday;
@@ -201,7 +231,7 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 			resId = R.string.shengyan_part;
 			break;
 		case "life":
-			resId = R.string.life_service;
+			resId = R.string.life_quality;
 			break;
 		case "student":
 			resId = R.string.studybroad;
@@ -215,21 +245,15 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		}
 		return resId;
 	}
-	@InjectPullRefresh
-	private void call(int type) {
-		switch (type) {
-		case InjectView.DOWN:
-			if (list != null) {
-				
-			}
-			break;
-		}
-	}
+	
 	@Override
 	public void onResponse(Response response) throws IOException {
 		if (response.isSuccessful()) {
 			String json=response.body().string();
 			if (json.contains("true")) {
+				InputMethodManager imm = (InputMethodManager) getActivity()
+						.getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(v.et_secretary_question.getWindowToken(), 0); 
 				handleOk.sendEmptyMessage(1);
 			}else {
 				handleOk.sendEmptyMessage(2);
@@ -239,5 +263,13 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	@Override
 	public void onFailure(Request request, IOException exception) {
 		handleOk.sendEmptyMessage(2);
+	}
+	class MessageReplayBraodCast extends BroadcastReceiver{
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if ("com.lansun.qmyo.fragment.questionDetailFragment".equals(intent.getAction())) {
+				
+			}
+		}
 	}
 }

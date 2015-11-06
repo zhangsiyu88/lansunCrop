@@ -1,6 +1,5 @@
 package com.lansun.qmyo;
-
-import java.net.HttpURLConnection;
+import java.io.IOException;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,32 +15,22 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentManager.BackStackEntry;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
-import android.transition.Transition;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import cn.jpush.android.api.JPushInterface;
 
 import com.android.pc.ioc.event.EventBus;
-import com.android.pc.ioc.inject.InjectAll;
-import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.inject.InjectLayer;
 import com.android.pc.ioc.view.PullToRefreshManager;
-import com.android.pc.ioc.view.listener.OnClick;
-
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.biz.ServiceAllBiz;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.ExperienceSearchFragment;
 import com.lansun.qmyo.fragment.FoundFragment;
 import com.lansun.qmyo.fragment.HomeFragment;
 import com.lansun.qmyo.fragment.IntroductionPageFragment;
-import com.lansun.qmyo.fragment.MessageCenterFragment;
 import com.lansun.qmyo.fragment.MineFragment;
-import com.lansun.qmyo.fragment.NewCommentFragment;
-import com.lansun.qmyo.fragment.PersonCenterFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
 import com.lansun.qmyo.service.AccessTokenService;
@@ -49,16 +38,10 @@ import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.ExampleUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
-import com.lansun.qmyo.view.ExperienceDialog;
-
-
-
 @InjectLayer(R.layout.activity_main)
 public class MainActivity extends FragmentActivity {
-
 	private FragmentTransaction fragmentTransaction;
 	public static boolean isForeground = false;
-
 	@Override
 	protected void onCreate(@Nullable Bundle arg0) {
 		registerMessageReceiver();
@@ -76,33 +59,26 @@ public class MainActivity extends FragmentActivity {
 		String packageName =  getPackageName();
 		/*TextView mPackage = (TextView) findViewById(R.id.tv_package);*/
 		/*mPackage.setText("PackageName: " + packageName);*/
-		Log.i("PackageName: ", "PackageName:" + packageName);
-		
 		String versionName =  ExampleUtil.GetVersion(getApplicationContext());
 		/*TextView mVersion = (TextView) findViewById(R.id.tv_version);*/
 		/*mVersion.setText("Version: " + versionName);*/
-		Log.i("Version: ", "Version:" + versionName);
 		
 		
 		
-		Log.i("init()", "走init()的方法");
 		//若发现权限被关闭后，那么进入之后会弹出开启定位权限的提醒
 		int checkCallingOrSelfPermission = getApplication().checkCallingOrSelfPermission("android.permission.ACCESS_FINE_LOCATION");
-		Log.i("checkCallingOrSelfPermission", "checkCallingOrSelfPermission的值为多少？"+   checkCallingOrSelfPermission);
 		
 		if (-1 ==checkCallingOrSelfPermission){
 			
 		      DialogUtil.createTipAlertDialog(this, "定位可以激发小宇宙！", new DialogUtil.TipAlertDialogCallBack(){
 		    	  
 		        public void onNegativeButtonClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt){
-		        	
 		          paramAnonymousDialogInterface.dismiss();
 		          App.app.setData("cityCode", "310000");
 		          App.app.setData("cityName", "上海市");
 		          App.app.setData("select_cityCode", "310000");
 		          App.app.setData("select_cityName", "上海市");
 		        }
-
 		        public void onPositiveButtonClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt){//确定
 		          paramAnonymousDialogInterface.dismiss();
 		          Intent localIntent = new Intent("android.settings.APPLICATION_DETAILS_SETTINGS");
@@ -115,10 +91,9 @@ public class MainActivity extends FragmentActivity {
 		}
 		super.onCreate(arg0);
 	}
+	
 	@InjectInit
 	private void init() {
-		
-		
 		EventBus eventBus = EventBus.getDefault();
 		eventBus.register(this);
 
@@ -126,7 +101,7 @@ public class MainActivity extends FragmentActivity {
 			startFragmentAdd(new IntroductionPageFragment());
 		} else {
 			startFragmentAdd(new HomeFragment());
-
+//			startFragmentAdd(new NewBrandFragment());
 			getTokenService();
 		}
 		
@@ -194,7 +169,10 @@ public class MainActivity extends FragmentActivity {
 		fragmentTransaction.addToBackStack(fragment.getClass().getName());
 		fragmentTransaction.add(R.id.content_frame, fragment, fragment.getClass().getName());
 		fragmentTransaction.commitAllowingStateLoss();
-		
+		/**
+		 * 在此地方启动了一个服务来获取8大板块的导航
+		 * 考虑在点击进入8大板块的里面进行判断然后终止服务
+		 */
 		/*fragmentTransaction.replace(R.id.content_frame, fragment,
 				fragment.getClass().getName()).commitAllowingStateLoss();*/
 	}
@@ -335,6 +313,7 @@ public class MainActivity extends FragmentActivity {
 		public static final String KEY_TITLE = "title";
 		public static final String KEY_MESSAGE = "message";
 		public static final String KEY_EXTRAS = "extras";
+		private Intent intent;
 		
 		public void registerMessageReceiver() {
 			mMessageReceiver = new MessageReceiver();

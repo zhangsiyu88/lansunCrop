@@ -1,5 +1,6 @@
 package com.lansun.qmyo.service;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -7,6 +8,7 @@ import java.util.logging.Handler;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.IBinder;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -25,6 +27,7 @@ import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.biz.ServiceAllBiz;
 import com.lansun.qmyo.domain.Token;
 import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.event.entity.FragmentEntity;
@@ -32,7 +35,10 @@ import com.lansun.qmyo.event.entity.RefreshTokenEntity;
 import com.lansun.qmyo.fragment.BaseFragment;
 import com.lansun.qmyo.fragment.ExperienceSearchFragment;
 import com.lansun.qmyo.fragment.MineFragment;
+import com.lansun.qmyo.listener.RequestCallBack;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 /**
  * 获取Accesstoken
@@ -41,9 +47,7 @@ import com.lansun.qmyo.utils.GlobalValue;
  * 
  */
 public class AccessTokenService extends Service {
-
 	private int delay = 1000 * 60 * 30;
-
 	@Override
 	public IBinder onBind(Intent arg0) {
 		return null;

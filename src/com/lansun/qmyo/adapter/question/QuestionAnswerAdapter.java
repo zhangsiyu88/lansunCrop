@@ -78,17 +78,17 @@ public class QuestionAnswerAdapter extends Adapter<QuestionAnswerAdapter.MyViewH
 			holder.tv_user_question.setText(detail.getContent());
 			String answer=String.valueOf(detail.getAnswer());
 			if ("null".equals(answer)||"".equals(answer)||" ".equals(answer)) {
-				holder.tv_secretary_answer.setText(GlobalValue.mySecretary.getName()+"已经收到您的任务指派哦，2小时内必有回复，请耐心等待哟。如果您对收到的回答不满意，还可以继续追问哦~");
+				holder.tv_secretary_answer.setText("已经收到您的任务指派哦，2小时内必有回复，请耐心等待哟。如果您对收到的回答不满意，还可以继续追问哦~");
 			}else {
-				holder.tv_secretary_answer.setText(GlobalValue.mySecretary.getName()+answer);
+				holder.tv_secretary_answer.setText(answer);
 			}
 		}else {
 			holder.tv_user_question.setText(detail.getItems().get(position-1).getContent());
 			String answer=String.valueOf(detail.getItems().get(position-1).getAnswer());
 			if ("null".equals(answer)||"".equals(answer)||" ".equals(answer)) {
-				holder.tv_secretary_answer.setText(GlobalValue.mySecretary.getName()+"已经收到您的任务指派哦，2小时内必有回复，请耐心等待哟。如果您对收到的回答不满意，还可以继续追问哦~");
+				holder.tv_secretary_answer.setText("已经收到您的任务指派哦，2小时内必有回复，请耐心等待哟。如果您对收到的回答不满意，还可以继续追问哦~");
 			}else {
-				holder.tv_secretary_answer.setText(GlobalValue.mySecretary.getName()+answer);
+				holder.tv_secretary_answer.setText(answer);
 			}
 		}
 	}
