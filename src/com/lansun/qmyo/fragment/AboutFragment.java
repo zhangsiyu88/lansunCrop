@@ -56,7 +56,7 @@ public class AboutFragment extends BaseFragment {
 		v.tv_about_qmyo_net
 				.setText(Html.fromHtml(getString(R.string.qmyo_net)));
 		v.tv_about_qmyo_wx
-		.setText(Html.fromHtml(getString(R.string.qmyo_wx)));
+			.setText(Html.fromHtml(getString(R.string.qmyo_wx)));
 		
 		initCacheSize();
 		

@@ -137,7 +137,7 @@ public class StoreListFragment extends BaseFragment {
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		
-		emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_search_empty_storelist, null);
+		emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_search_empty_storelist1, null);
 		
 		super.onCreate(savedInstanceState);
 	}
@@ -325,9 +325,10 @@ public class StoreListFragment extends BaseFragment {
 						
 					} else {
 						/*Log.i("","走到此处证明已经拿到服务器返回的数据，已经将adapter和ListView控件塞到一起了,notifyDataSetChanged");*/
-						/*adapter.notifyDataSetChanged();*/
-						adapter = new StoreAdapter(lv_stores_content, dataList,R.layout.activity_store_item);
-						lv_stores_content.setAdapter(adapter);
+						/*adapter = new StoreAdapter(lv_stores_content, dataList,R.layout.activity_store_item);*/
+						
+						adapter.notifyDataSetChanged();
+						/*lv_stores_content.setAdapter(adapter);*/
 					
 					}
 					/*if(list.getData().size()<10){

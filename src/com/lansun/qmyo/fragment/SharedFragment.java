@@ -150,7 +150,9 @@ public class SharedFragment extends BaseFragment {
 		WeiXinShareContent weixinContent = new WeiXinShareContent();
 		weixinContent.setShareContent(content);
 		weixinContent.setTitle(title);
-		weixinContent.setTargetUrl(GlobalValue.TARGET_URL);
+		
+		weixinContent.setTargetUrl(GlobalValue.TARGET_URL);//--->需要修改为对应的软件下载网址
+		
 		UMImage urlImage = new UMImage(activity, resId);
 		weixinContent.setShareMedia(urlImage);
 		mController.setShareMedia(weixinContent);
@@ -165,7 +167,8 @@ public class SharedFragment extends BaseFragment {
 		weixinContent.setShareMedia(urlImage);
 		// circleMedia.setShareMedia(uMusic);
 		// circleMedia.setShareMedia(video);
-		circleMedia.setTargetUrl(GlobalValue.TARGET_URL);
+		
+		circleMedia.setTargetUrl(GlobalValue.TARGET_URL);//--->需要修改为对应的软件下载网址
 		mController.setShareMedia(circleMedia);
 
 		// 设置QQ空间分享内容

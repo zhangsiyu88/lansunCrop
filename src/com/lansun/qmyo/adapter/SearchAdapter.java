@@ -96,11 +96,21 @@ public class SearchAdapter extends
 			}
 		}*/
 		
-		viewHold.iv_search_activity_discount.setVisibility(View.GONE);
-		viewHold.iv_search_activity_new.setVisibility(View.GONE);
-		viewHold.iv_search_activity_point.setVisibility(View.GONE);
-		viewHold.iv_search_activity_staging.setVisibility(View.GONE);
-		viewHold.iv_search_activity_coupon.setVisibility(View.GONE);
+		
+//		探测首页的标签消失是否和这里的标签移除有关
+//		viewHold.iv_search_activity_discount.setVisibility(View.GONE);
+//		viewHold.iv_search_activity_new.setVisibility(View.GONE);
+//		viewHold.iv_search_activity_point.setVisibility(View.GONE);
+//		viewHold.iv_search_activity_staging.setVisibility(View.GONE);
+//		viewHold.iv_search_activity_coupon.setVisibility(View.GONE);
+		
+		viewHold.iv_search_activity_discount.setVisibility(View.INVISIBLE);
+		viewHold.iv_search_activity_new.setVisibility(View.INVISIBLE);
+		viewHold.iv_search_activity_point.setVisibility(View.INVISIBLE);
+		viewHold.iv_search_activity_staging.setVisibility(View.INVISIBLE);
+		viewHold.iv_search_activity_coupon.setVisibility(View.INVISIBLE);
+		
+		
 		
 		//因为ListViewItem的复用造成了数据的错误显示，所以在这种情况下需要将前面复用的部件全部清除掉
 		if (iconArray != null) {

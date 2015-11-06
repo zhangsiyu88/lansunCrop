@@ -580,6 +580,15 @@ public class RegisterFragment extends BaseFragment{
 							fragment=new MineFragment();
 						}else if("MineBankcardFragment".equals(fragment_name)){
 							fragment=new MineBankcardFragment();
+							Bundle bundle=new Bundle();
+							bundle.putBoolean("isFromEightPart",mIsFromEightPart);
+							if(mIsFromEightPart){
+								bundle.putInt("type",mInitType);
+							}
+							bundle.putBoolean("isFromNewPart",mIsFromNewPart);
+							bundle.putBoolean("isFromHome",mIsFromHome);
+							bundle.putBoolean("isFromRigisterFragToMyBankcardFrag",true);
+							fragment.setArguments(bundle);
 						}else if("ActivityDetailFragment".equals(fragment_name)){
 							fragment=new ActivityDetailFragment();
 							Bundle bundle=new Bundle();

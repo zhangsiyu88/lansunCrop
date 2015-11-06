@@ -56,10 +56,10 @@ public class NetWorkChangeBroadcastReceiver extends BroadcastReceiver {
 			Log.i("第六种网络",networkInfos[1].toString());*/
 			
 			
-			Log.i("网络1的Type",networkInfos[0].getType()+"");
-			Log.i("网络2的Type",networkInfos[1].getType()+"");
+			/*Log.i("网络1的Type",networkInfos[0].getType()+"");
+			Log.i("网络2的Type",networkInfos[1].getType()+"");*/
 			
-			Log.i("networkInfos.length的长度：",networkInfos.length+"");//真是奇葩！！！ networkInfos.length = 11
+			/*Log.i("networkInfos.length的长度：",networkInfos.length+"");*/ //真是奇葩！！！ networkInfos.length = 11
 			
 			for (i = 0; i<2; i++) {//两种网络中任一网络连接都可以前往获取token
 				
@@ -79,7 +79,7 @@ public class NetWorkChangeBroadcastReceiver extends BroadcastReceiver {
 					System.out.println(i+"NetworkChangeBroadcast中友情提醒你网络为可用状态，燥起来！");
 					
 					if(networkInfos[i].getType()==0){
-						Toast.makeText(context, "已接入移动网络！", 2000).show();
+						/*Toast.makeText(context, "已接入移动网络！", 2000).show();*/
 					}
 					if(networkInfos[i].getType()==1){
 						Toast.makeText(context, "已接入无线WiFi网络！", 2000).show();
@@ -92,10 +92,10 @@ public class NetWorkChangeBroadcastReceiver extends BroadcastReceiver {
 					System.out.println(i+"NetworkChangeBroadcast中友情提醒你网络   不可用！！！赶快找无线啦！");
 					
 					if(networkInfos[i].getType()==0){
-						Toast.makeText(context, "移动网络断开！", 2000).show();
+						/*Toast.makeText(context, "移动网络断开！", 2000).show();*/
 					}
 					if(networkInfos[i].getType()==1){
-						Toast.makeText(context, "无线WiFi网络断开！", 2000).show();
+						/*Toast.makeText(context, "无线WiFi网络断开！", 2000).show();*/
 					}
 					/*Toast.makeText(context, "目前暂无网络！", 2000).show();*/
 					/*return;*/
@@ -141,8 +141,7 @@ public class NetWorkChangeBroadcastReceiver extends BroadcastReceiver {
 				HashMap<String, Object> head = new HashMap<>();
 				head.put("Authorization", "Bearer " + token.getToken());
 				config.setHead(head);
-				FastHttpHander.ajaxGet(GlobalValue.URL_FRESHEN_USER, config,
-						this);
+				FastHttpHander.ajaxGet(GlobalValue.URL_FRESHEN_USER, config, this);
 				App.app.setData("access_token", token.getToken());
 				break;
 			case 1:

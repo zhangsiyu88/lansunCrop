@@ -89,6 +89,7 @@
         android:divider="@null"
         android:listSelector="@android:color/transparent"
         android:scrollbarFadeDuration="1000"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical" 
+        />
 
 </LinearLayout>

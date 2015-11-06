@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_search_empty_storelist"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EBEBEB"
+     >
+    <RelativeLayout 
+        android:layout_marginTop="150dp"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        >
+    <ImageView
+        android:id="@+id/bt_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_top_30"
+        android:layout_gravity="center"
+        android:src="@drawable/lv_empty" 
+        android:layout_centerInParent="true"/>
+
+    <TextView
+        style="@style/text_style_nomal_28"
+        android:layout_below="@id/bt_close"
+        android:layout_centerHorizontal="true"
+        android:text="暂无参与此活动的门店"
+        android:textColor="#AFAFAF" 
+        android:layout_marginTop="20dp"/>
+     </RelativeLayout>
+
+</RelativeLayout>

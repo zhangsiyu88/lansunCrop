@@ -61,6 +61,7 @@ public class BankCardAdapter extends
 	private DisplayImageOptions options;
 	private boolean isEmbarrassingStatue;
 	private boolean addBankcardUnderLoginStatus = false;
+	private boolean mIsFromRigisterFragToMyBankcardFrag = false;
 	public static String selectCardId;
 	
 	public void setActivity(Fragment activity) {
@@ -92,6 +93,7 @@ public class BankCardAdapter extends
 				.displayer(new RoundedBitmapDisplayer(10)).build();
 		
 		mIsNotChanged = isNotNeedChange;
+		
 		Log.d("sssssssss", mIsNotChanged+"");
 		
 	}
@@ -345,8 +347,14 @@ public class BankCardAdapter extends
 					
 					if(mIsNotChanged){//不需要改变的标签值，即此时的点击操作：是将原始卡替换为欲添卡，但保存于本地的sp中的原始卡数据不需要更改
 						if(addBankcardUnderLoginStatus){
-							Bundle bundle = new Bundle();
+							Bundle bundle = new Bundle();//TODO
 							bundle.putBoolean("isFromInsertBankcardAdapterPage", addBankcardUnderLoginStatus);
+							
+							//这个标签是当从登录注册页登陆回来时，此时已经刷新了MineBankcardFragment页面，且此时为登录状态下，再跑去添加搜索银行卡页，但是返回后却不进行替卡操作，此时点击back键，仍然是需要刷新对应界面的
+							if(App.app.getData("isFromRigisterFragToMyBankcardFrag").equals("true")){
+								bundle.putBoolean("isFromRigisterFragToMyBankcardFrag", true );
+								App.app.setData("isFromRigisterFragToMyBankcardFrag","");
+							}
 							MineBankcardFragment fragment = new MineBankcardFragment();
 							fragment.setArguments(bundle);
 							FragmentEntity event = new FragmentEntity();
@@ -358,8 +366,6 @@ public class BankCardAdapter extends
 						/*App.app.setData("MainBankcard",selectCardId);*/
 						
 					}
-					
-					
 					MineBankcardFragment fragment = new MineBankcardFragment();
 					FragmentEntity event = new FragmentEntity();
 					event.setFragment(fragment);

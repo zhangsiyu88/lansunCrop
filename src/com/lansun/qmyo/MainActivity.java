@@ -101,7 +101,6 @@ public class MainActivity extends FragmentActivity {
 			startFragmentAdd(new IntroductionPageFragment());
 		} else {
 			startFragmentAdd(new HomeFragment());
-//			startFragmentAdd(new NewBrandFragment());
 			getTokenService();
 		}
 		
@@ -323,6 +322,8 @@ public class MainActivity extends FragmentActivity {
 			registerReceiver(mMessageReceiver, filter);
 		}
 
+		
+		
 		public class MessageReceiver extends BroadcastReceiver {
 
 			@Override

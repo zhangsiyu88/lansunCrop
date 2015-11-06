@@ -44,6 +44,7 @@ import cn.jpush.android.util.ac;
 
 import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.db.sqlite.Selector;
+import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
@@ -68,6 +69,7 @@ import com.lansun.qmyo.domain.Address2;
 import com.lansun.qmyo.domain.Address3;
 import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.domain.area.CityBean;
+import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.DBManager;
 import com.lansun.qmyo.utils.DensityUtil;
 import com.lansun.qmyo.utils.GlobalValue;
@@ -218,7 +220,14 @@ public class EditUserAddressFragment1 extends BaseFragment
 				GlobalValue.user = Handler_Json.JsonToBean(User.class,
 						r.getContentAsString());
 				CustomToast.show(activity, getString(R.string.tip), "修改成功");
-				back();
+				
+				/*back();*/
+				//此处直接跳装至完善个人信息页
+				EditUserFragment editUserFragment = new EditUserFragment();
+				FragmentEntity fEntity = new FragmentEntity();
+				fEntity.setFragment(editUserFragment);
+				EventBus.getDefault().post(fEntity);
+				
 				break;
 			}
 		} else {

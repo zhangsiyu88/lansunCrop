@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
@@ -30,6 +31,7 @@ import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.User;
+import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.R;
@@ -76,10 +78,18 @@ public class EditUserInfoFragment extends BaseFragment {
 
 		switch (paramName) {
 		case "email":
-			v.et_edit_content.setText(GlobalValue.user.getEmail());
+			if(GlobalValue.user.getEmail()=="null"||GlobalValue.user.getEmail()==null||GlobalValue.user.getEmail().isEmpty()){
+				v.et_edit_content.setHint("请输入您希望绑定的邮箱");
+			}else{
+				v.et_edit_content.setText(GlobalValue.user.getEmail());
+			}
 			break;
 		case "truename":
-			v.et_edit_content.setText(GlobalValue.user.getTruename());
+			if(GlobalValue.user.getTruename()=="null"||GlobalValue.user.getTruename()==null||GlobalValue.user.getTruename().isEmpty()){
+				v.et_edit_content.setHint("请输入您的真实姓名");
+			}else{
+				v.et_edit_content.setText(GlobalValue.user.getTruename());
+			}
 			break;
 		case "nickname":
 			v.et_edit_content.setText(GlobalValue.user.getNickname());
@@ -101,8 +111,7 @@ public class EditUserInfoFragment extends BaseFragment {
 
 			if ("email".equals(paramName)) {
 				if (!isEmail(v.et_edit_content.getText().toString())) {
-					CustomToast.show(activity, R.string.tip,
-							R.string.email_faild);
+					CustomToast.show(activity, R.string.tip,R.string.email_faild);
 					return;
 				}
 			}
@@ -119,9 +128,6 @@ public class EditUserInfoFragment extends BaseFragment {
 			/*
 			将用户的nickname以表单形式提交上去并保存
 			 */
-			/*FastHttpHander.ajaxForm(GlobalValue.URL_USER_SAVE, params, null,
-					config, this);*/
-			
 			FastHttpHander.ajax(GlobalValue.URL_USER_SAVE, params,config, this);
 			
 			
@@ -140,7 +146,11 @@ public class EditUserInfoFragment extends BaseFragment {
 				GlobalValue.user.setNickname(v.et_edit_content.getText().toString());
 				
 				//BaseFragment中设置的一个方法，功能是：将自己从FragmentManager中弹出，类似于Activity中的销毁操作
-				back();
+				/*back();*/
+				EditUserFragment editUserFragment = new EditUserFragment();
+				FragmentEntity fEntity = new FragmentEntity();
+				fEntity.setFragment(editUserFragment);
+				EventBus.getDefault().post(fEntity);
 				break;
 			}
 		}
@@ -148,8 +158,10 @@ public class EditUserInfoFragment extends BaseFragment {
 	}
 
 	public static boolean isEmail(String strEmail) {
-		String strPattern = "^[a-zA-Z][\\w\\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\\w\\.-]*[a-zA-Z0-9]\\.[a-zA-Z][a-zA-Z\\.]*[a-zA-Z]$";
-
+		/*String strPattern = "^[a-zA-Z][\\w\\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\\w\\.-]*[a-zA-Z0-9]\\.[a-zA-Z][a-zA-Z\\.]*[a-zA-Z]$";*/
+		
+		//下面这个是企业级的邮箱 正则表达式
+		String strPattern  = "^\\s*\\w+(?:\\.{0,1}[\\w-]+)*@[a-zA-Z0-9]+(?:[-.][a-zA-Z0-9]+)*\\.[a-zA-Z]+\\s*$";
 		Pattern p = Pattern.compile(strPattern);
 		Matcher m = p.matcher(strEmail);
 		return m.matches();

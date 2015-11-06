@@ -59,6 +59,30 @@
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
+   
+    
+    
+    
+    <style name="CustomDialog" parent="@android:style/Theme.Dialog">  
+        <item name="android:windowFrame">@null</item>  
+        <item name="android:windowIsFloating">true</item>  
+        <item name="android:windowContentOverlay">@null</item>  
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>  
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>  
+    </style>  
+      
+    
+     <!-- 加入了gif的CustomProgressDialog --><!-- parent="@style/CustomDialog" -->
+    <style name="CustomProgressDialog" >  
+        <item name="android:windowBackground">@android:color/transparent</item>  
+        <item name="android:windowNoTitle">true</item>  
+        
+    </style>  
+    
+    
+    
+    
+    
     <style name="user_head">
         <item name="android:layout_width">@dimen/user_head_w_125</item>
         <item name="android:layout_height">@dimen/user_head_h_125</item>

@@ -80,7 +80,7 @@ public class ActivityDetailFragment extends BaseFragment {
 	private int position;
 	private ImageView[] imageViews;
 
-	private boolean isOpen;
+	private boolean isOpen = true;
 
 	@InjectAll
 	Views v;
@@ -190,9 +190,16 @@ public class ActivityDetailFragment extends BaseFragment {
 				v.tv_activity_shop_address.setText(String.format(
 						getString(R.string.tele_address), data.getShop()
 								.getAddress()));
-				v.tv_activity_shop_telephone.setText(Html.fromHtml(String
-						.format(getString(R.string.telephone), data.getShop()
-								.getTelephone())));
+				
+				if(data.getShop().getTelephone()==""||data.getShop().getTelephone().isEmpty()||data.getShop().getTelephone().equals(null)){
+					v.tv_activity_shop_telephone.setText(Html.fromHtml(String
+							.format(getString(R.string.telephone_nothave_now), "暂无")));
+					
+				}else{
+					v.tv_activity_shop_telephone.setText(Html.fromHtml(String
+							.format(getString(R.string.telephone), data.getShop()
+									.getTelephone())));
+				}
 				
 				//优惠券返回暂时为空的！
 				ArrayList<CouponsData> coupons = data.getActivity()
@@ -377,7 +384,9 @@ public class ActivityDetailFragment extends BaseFragment {
 		Bundle args;
 		switch (view.getId()) {
 		case R.id.yh_detail_header://点击活动优惠详情页的线性布局
-			if (isOpen) {
+			/**
+			点击上面横栏不产生任何操作 */
+			  if (isOpen) {
 				AnimUtils.startRotateOut(activity, v.iv_open_activity_detail);
 				v.lv_tip_list.setVisibility(View.GONE);
 				isOpen = false;
@@ -469,7 +478,7 @@ public class ActivityDetailFragment extends BaseFragment {
 			showDialog();
 			break;
 		case R.id.ll_activity_detail_report:// 举报
-			if(App.app.getData("isExperience")=="true"){
+			if(App.app.getData("isExperience").equals("true")){
 				DialogUtil.createTipAlertDialog(getActivity(),
 						R.string.login_to_report, new TipAlertDialogCallBack() {
 					@Override
@@ -519,8 +528,9 @@ public class ActivityDetailFragment extends BaseFragment {
 			bus.post(entity);
 			break;
 		case R.id.ll_activity_collection: // 活动详情收藏
+			Log.d("异常处的isExperience的值为： ", "异常处的isExperience的值为： "+App.app.getData("isExperience"));
 			
-			if(App.app.getData("isExperience")=="true"){
+			if(App.app.getData("isExperience").equals("true")){
 				DialogUtil.createTipAlertDialog(getActivity(),
 						R.string.logintocollectactivity, new TipAlertDialogCallBack() {
 					@Override

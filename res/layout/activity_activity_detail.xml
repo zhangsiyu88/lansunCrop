@@ -364,7 +364,9 @@
                 android:divider="@null"
                 android:listSelector="@android:color/transparent"
                 android:scrollbars="none"
-                android:visibility="gone" >
+               >
+                <!-- android:visibility="gone" 暂时为展开的显示 -->
+                
             </com.lansun.qmyo.view.MySubListView>
 
             <View
