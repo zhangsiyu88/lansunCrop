@@ -105,7 +105,7 @@ public class EditUserFragment extends BaseFragment {
 		ArrayList<String> data = new ArrayList<String>();
 		Fragment fragment;
 		switch (view.getId()) {
-		case R.id.rl_edit_user_email://邮编
+		case R.id.rl_edit_user_email://邮箱
 			fragment = new EditUserInfoFragment();
 			Bundle args = new Bundle();
 			args.putString("name", getString(R.string.change_email));

@@ -120,30 +120,37 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 		v.iv_mine_icon.setPressed(true);
 		v.tv_mine_icon.setTextColor(getResources().getColor(R.color.app_green2));
 
-		if (GlobalValue.user != null) {
-			String avatar = GlobalValue.user.getAvatar();
-			if (!TextUtils.isEmpty(avatar)) {
-				//加载头像上去
-				loadPhoto(avatar, v.iv_mine_head);
-			}
-
-			if (!TextUtils.isEmpty(GlobalValue.user.getNickname())) {
-
-
-				if(GlobalValue.user.getNickname() == null||GlobalValue.user.getNickname() =="null"||GlobalValue.user.getNickname().contains("null")){
-					v.tv_mine_nickname.setText("请设置昵称");
-					Log.i("Tag：nickName","NickName应该为设置昵称");
-
+		if(App.app.getData("isExperience").equals("true")){ //此处的isExperience是无用
+			v.tv_mine_nickname.setText("请注册或登陆");
+			
+		}else{
+			if (GlobalValue.user != null) {
+				String avatar = GlobalValue.user.getAvatar();
+				if (!TextUtils.isEmpty(avatar)) {
+					//加载头像上去
+					loadPhoto(avatar, v.iv_mine_head);
+				}
+				
+				if (!TextUtils.isEmpty(GlobalValue.user.getNickname())) {
+					
+					if(GlobalValue.user.getNickname() == null||GlobalValue.user.getNickname() =="null"||GlobalValue.user.getNickname().contains("null")){
+						v.tv_mine_nickname.setText("请设置昵称");
+						Log.i("Tag：nickName","NickName应该为设置昵称");
+						
+					}else{
+						Log.i("Tag：nickName","NickName有值："+GlobalValue.user.getNickname());
+						v.tv_mine_nickname.setText(GlobalValue.user.getNickname());
+					}
 				}else{
-					Log.i("Tag：nickName","NickName有值："+GlobalValue.user.getNickname());
-					v.tv_mine_nickname.setText(GlobalValue.user.getNickname());
+					v.tv_mine_nickname.setText("请注册或登陆");
 				}
 			}else{
-				v.tv_mine_nickname.setText("请注册或登陆");
+				/*CustomToast.show(activity, "GlobalValue.user为空", "同上");*/
 			}
-		}else{
-			/*CustomToast.show(activity, "GlobalValue.user为空", "同上");*/
+			
 		}
+		
+		
 
 		refreshCurrentList(GlobalValue.URL_USER_MESSAGE, null, 0, null);//去刷新消息
 	}
@@ -151,7 +158,8 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 	@Override
 	public void onResume() {
 		v.iv_mine_icon.setPressed(true);
-		if (GlobalValue.user != null) {
+		
+		/*if (GlobalValue.user != null) {
 			String avatar = GlobalValue.user.getAvatar();
 			if (!TextUtils.isEmpty(avatar)) {
 				//加载头像上去
@@ -166,10 +174,10 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 				}else{
 					v.tv_mine_nickname.setText(GlobalValue.user.getNickname());
 				}
-			}else{
+			}else{//GlobalValue.user.getNickname()
 				v.tv_mine_nickname.setText("请注册或登陆");
 			}
-		}
+		}*/
 		super.onResume();
 	}
 	@Override
@@ -258,7 +266,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 			break;
 		case R.id.ll_mine_message:// TODO 消息中心
 
-			if(App.app.getData("isExperience")=="true"){
+			if(App.app.getData("isExperience").equals("true")){
 				DialogUtil.createTipAlertDialog(getActivity(),
 						R.string.login_to_getmessage, new TipAlertDialogCallBack() {
 					@Override

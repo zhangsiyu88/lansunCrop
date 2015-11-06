@@ -126,7 +126,7 @@ public class MainActivity extends FragmentActivity {
 			startFragmentAdd(new IntroductionPageFragment());
 		} else {
 			startFragmentAdd(new HomeFragment());
-
+			//程序启动后去获取一次的新的token值
 			getTokenService();
 		}
 		
@@ -344,6 +344,8 @@ public class MainActivity extends FragmentActivity {
 			registerReceiver(mMessageReceiver, filter);
 		}
 
+		
+		
 		public class MessageReceiver extends BroadcastReceiver {
 
 			@Override

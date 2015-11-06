@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -95,6 +96,8 @@ import com.squareup.okhttp.Response;
 	private boolean isChina = true;
 	public boolean mFromBankCardFragment = false;
 	private boolean onlyOne = true;
+	private boolean hasFooterview;
+	private String nextPageUrl = "";
 
 	/**
 	 * LoonAndroid框架规定，上拉和下拉刷新只能针对ListView进行设置，其他的View类型不可识别
@@ -139,8 +142,8 @@ import com.squareup.okhttp.Response;
 		mFromBankCardFragment = mIsFirstEnter;
 	}
 
-	public HomeFragment() {
-		Log.i("token", App.app.getData("access_token"));	
+    public HomeFragment() {
+		//Log.i("token", App.app.getData("access_token"));	
 	}
 
 	@Override
@@ -234,6 +237,7 @@ import com.squareup.okhttp.Response;
 		refresh_footer = inflater.inflate(R.layout.refresh_footer, null);
 
 		sv_homefrag.scrollTo(0, 0);
+		sv_homefrag.setSmoothScrollingEnabled(true);
 
 		/*sv_homefrag.setOnRefreshListener(new OnRefreshListener<ScrollView>() {
 			@Override
@@ -250,7 +254,9 @@ import com.squareup.okhttp.Response;
 			}
 		});*/
 
-
+		
+	
+		//TODO 首页刷新的位置监听
 		sv_homefrag.setOnTouchListener(new OnTouchListener() {
 
 			@SuppressLint("ClickableViewAccessibility")
@@ -270,14 +276,8 @@ import com.squareup.okhttp.Response;
 					//Log.i("滑动中", "measuredHeight = sv_homefrag.getChildAt(1).getMeasuredHeight(): "+sv_homefrag.getChildAt(1).getMeasuredHeight());
 
 					View childAt1 = sv_homefrag.getChildAt(0);
-					//View childAt2 = sv_homefrag.getChildAt(1);
 					int childAt1Height1 = childAt1.getLayoutParams().height;
-					//int childAt1Height2 = childAt2.getLayoutParams().height;
-
 					System.out.println("childAt1Height1的高度   "+childAt1Height1);
-					//System.out.println("childAt2Height1的高度   "+childAt1Height2);
-
-					//System.out.println(childAt1==childAt2?"是":"否");
 
 					if(scrollY == 0){
 						/*	CustomToast.show(activity, "置顶!", "到顶部!");*/
@@ -300,24 +300,36 @@ import com.squareup.okhttp.Response;
 								CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
 								sv_homefrag.setOnTouchListener(null);
 								try{
-									/*CustomToast.show(activity, "监听器中正在移除footerView", "请稍等！");*/
 									lv_home_list.removeFooterView(refresh_footer);
 								}catch(Exception e){
 									e.printStackTrace();
 								}
-
+								//在最后一页刷不出数据时，需要将底部的footerview去除掉
 								lv_home_list.setAdapter(adapter);
-								setListViewHeightBasedOnChildren(lv_home_list); 
+								setListViewHeightBasedOnChildren(lv_home_list);
 
-
-							} else {
-								if(onlyOne ){//只给ListView加一次FooterView
-									onlyOne = false;
-
+							} else {//下一页仍然拥有数据
+								
+								/*if(onlyOne){*/
+									//只给ListView加一次FooterView
+									/*onlyOne = false;*/
+								/*	onlyOne = true;*/
+								
+								if(list.getNext_page_url()==nextPageUrl){
+									
+								}else{
+									try{
+										lv_home_list.removeFooterView(refresh_footer);
+										//hasFooterview = false;
+									}catch(Exception e){
+									}
+									
 									lv_home_list.addFooterView(refresh_footer);
-									/*adapter.notifyDataSetChanged();*/						
-									setListViewHeightBasedOnChildren(lv_home_list); 
-
+									//hasFooterview = true ;
+									/*adapter.notifyDataSetChanged();*/		
+									//setListViewHeightBasedOnChildrenByDataList(lv_home_list,shopDataList); 
+									setListViewHeightBasedOnChildren(lv_home_list);
+									
 									refreshParams = new LinkedHashMap<>();
 									if (isChina) {//如果是国内活动，需要进行刷新操作
 										refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
@@ -327,11 +339,21 @@ import com.squareup.okhttp.Response;
 										refreshParams = null;
 										refreshUrl = String.format(GlobalValue.URL_ARTICLE_PROMOTE,getSelectCity()[0]);
 									}
-									CustomToast.show(activity, "努力加载中", "稍等哟");
+									
 									refreshCurrentList(list.getNext_page_url(), refreshParams,1, lv_home_list);
-
+									CustomToast.show(activity, "努力加载中", "总裁大大,稍等哟");
+								    nextPageUrl = list.getNext_page_url();
 								}
-							}
+								
+//									if(list.getNext_page_url()==nextPageUrl){
+//										 //DoNothing!
+//									}else{
+//										refreshCurrentList(list.getNext_page_url(), refreshParams,1, lv_home_list);
+//										CustomToast.show(activity, "努力加载中", "总裁大大,稍等哟");
+//										nextPageUrl = list.getNext_page_url();
+//									}
+								}
+							/*}*/
 						}
 					}
 					break;
@@ -350,6 +372,8 @@ import com.squareup.okhttp.Response;
 
 
 
+		
+		Log.d("exp_secret", App.app.getData("exp_secret"));
 		if (TextUtils.isEmpty(App.app.getData("exp_secret"))
 				&& TextUtils.isEmpty(App.app.getData("secret"))
 				&& !GlobalValue.isFirst){
@@ -432,6 +456,7 @@ import com.squareup.okhttp.Response;
 
 		} else {//可能我有access_token,可能我不是第一次进来
 			v.et_home_search.setHint(R.string.please_enter_search_brand);
+			
 			if ("true".equals(App.app.getData("isExperience"))) {//我拿到了exp_sercret并且也拿到了转换后的access_token ,而且又添加了某张银行卡，那么我就成为了体验用户
 				Log.i("是不是体验用户？",App.app.getData("isExperience"));
 				v.rl_bg.setPressed(true);
@@ -551,7 +576,9 @@ import com.squareup.okhttp.Response;
 
 				@Override
 				public void onClick(View arg0) {
-					ActivityFragment fragment = new ActivityFragment();
+					ActivityFragment fragment = new ActivityFragment();//TODO
+					
+					/*ActivityFragment1 fragment = new ActivityFragment1();*/
 					Bundle args = new Bundle();
 					args.putBoolean("IsNew", true);
 					args.putInt("type", R.string.new_exposure);
@@ -662,7 +689,7 @@ import com.squareup.okhttp.Response;
 			/*
 			 * 这个HomePagerAdapter真是别有洞天啊！里面设计了一系列的点击跳转操作和事件的监听
 			 */
-			HomePagerAdapter adapter = new HomePagerAdapter(activity);//这个ViewPager的Adapter中含有大量操作方法
+			HomePagerAdapter adapter = new HomePagerAdapter(activity);//这个ViewPager的Adapter中含有大量操作方法  //TODO
 			if (!isChina) {
 				iv_point2.setVisibility(View.GONE);
 			}
@@ -768,7 +795,6 @@ import com.squareup.okhttp.Response;
 				loadPhoto(photoUrl, iv_home_ad);
 
 
-
 				break;
 			case 1:// 极文列表
 
@@ -832,22 +858,24 @@ import com.squareup.okhttp.Response;
 							lv_home_list.setAdapter(adapter);
 
 							setListViewHeightBasedOnChildren(lv_home_list);   
+							//setListViewHeightBasedOnChildrenByDataList(lv_home_list, shopDataList);
 
 						} else {
 							try{
-								/*CustomToast.show(activity, "网络返回数据后，正在移除footerView", "请稍等！");*/
 								lv_home_list.removeFooterView(refresh_footer);
-								
 							}catch(Exception e){
 								e.printStackTrace();
 							}
-
+							//TODO
 							adapter.notifyDataSetChanged();
-							lv_home_list.setAdapter(adapter);
+							/*adapter.notifyAll();*/
+							lv_home_list.setAdapter(adapter); //少了这段代码，仅仅只有新刷出来的数据是拥有标签的
+							
 							setListViewHeightBasedOnChildren(lv_home_list);  
+							//setListViewHeightBasedOnChildrenByDataList(lv_home_list, shopDataList);
 						}
 						//上面的图还是要加载上去的
-						loadPhoto(photoUrl, iv_home_ad);
+						/*loadPhoto(photoUrl, iv_home_ad);*/
 						isFirstRequest = false;
 
 
@@ -887,9 +915,35 @@ import com.squareup.okhttp.Response;
 		}   
 
 		ViewGroup.LayoutParams params = listView.getLayoutParams();   
-		params.height = totalHeight+ (listView.getDividerHeight() * (lAdapter.getCount() - 1));   
 		// listView.getDividerHeight()获取子项间分隔符占用的高度   
 		// params.height最后得到整个ListView完整显示需要的高度   
+		/*params.height = totalHeight+ (listView.getDividerHeight() * (lAdapter.getCount() - 1) + refresh_footer.getMeasuredHeight());   */
+	    params.height = totalHeight+ (listView.getDividerHeight() * (lAdapter.getCount() - 1));   
+	    
+		listView.setLayoutParams(params);  
+	}
+	
+	/**
+	 * 动态自动测量ListView的高度
+	 * @param listView
+	 */
+	private void setListViewHeightBasedOnChildrenByDataList(ListView listView, List dataList ) {
+
+		ListAdapter lAdapter = listView.getAdapter(); 
+		int totalHeight = 0;   
+		int len = dataList.size(); 
+		// listAdapter.getCount()返回数据项的数目   
+		View listItem = lAdapter.getView(0, null, listView);   
+		// 计算子项View 的宽高   
+		listItem.measure(0, 0);    
+		// 统计所有子项的总高度   
+		totalHeight = listItem.getMeasuredHeight() * len;
+		ViewGroup.LayoutParams params = listView.getLayoutParams();   
+		if(hasFooterview){
+			params.height = totalHeight+ (listView.getDividerHeight() *len-1)+refresh_footer.getMeasuredHeight();   
+		}else{
+			params.height = totalHeight+ (listView.getDividerHeight() *len-1);   
+		}
 		listView.setLayoutParams(params);  
 	}
 
@@ -988,7 +1042,6 @@ import com.squareup.okhttp.Response;
 				refreshParams.put("site", getSelectCity()[0]);
 				refreshParams.put("intelligent", "home");
 				refreshCurrentList(refreshUrl, refreshParams,1, lv_home_list);
-
 				PullToRefreshManager.getInstance().onFooterRefreshComplete();
 
 			}
@@ -997,6 +1050,11 @@ import com.squareup.okhttp.Response;
 	}
 	 */
 
+	/**
+	 * 下面的方法原本是针对PullTorefresh进行的滑动监听的
+	 * @author Yeun.Zhang
+	 *
+	 */
 	private class GetDataTask extends AsyncTask<Void, Void, String[]> {
 
 		@Override
@@ -1018,9 +1076,9 @@ import com.squareup.okhttp.Response;
 			// Do some stuff here
 			if (list != null) {
 				if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url()=="null") {
-					/*	PullToRefreshManager.getInstance().onFooterRefreshComplete();
-					PullToRefreshManager.getInstance().footerUnable();*/
-					//CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
+					PullToRefreshManager.getInstance().onFooterRefreshComplete();
+					PullToRefreshManager.getInstance().footerUnable();
+					CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
 
 					/*sv_homefrag.setOnPullEventListener(null);
 					sv_homefrag.setPullToRefreshEnabled(false);

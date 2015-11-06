@@ -89,7 +89,6 @@ public class App extends Application {
 //			DbUtils.create(this, getCacheDir().getPath(), "area");
 //		}
 		
-		
 		/*	try {
 				if (!new File(getCacheDir().getPath() + "/qmyo_sensitive.db").exists()) {
 					Handler_File.writeFile(getCacheDir().getPath()+ "/qmyo_sensitive.db", getResources().getAssets()
@@ -249,8 +248,7 @@ public class App extends Application {
 				// SD卡缓存最大值
 				.tasksProcessingOrder(QueueProcessingType.LIFO)
 				.diskCache(new UnlimitedDiskCache(cacheDir))
-				.imageDownloader(
-						new BaseImageDownloader(context, 5 * 1000, 30 * 3000))
+				.imageDownloader(new BaseImageDownloader(context, 5 * 1000, 30 * 3000))
 				.writeDebugLogs().build();
 		
 		ImageLoader.getInstance().init(config);
@@ -300,7 +298,6 @@ public class App extends Application {
 //											.getItems().size());
 //								}
 //								Ioc.getIoc().getDb(getCacheDir().getPath(),"province").saveBindingId(address);
-//								
 //
 //								// 市
 //								if (list.getData().get(i).getItems() != null) {

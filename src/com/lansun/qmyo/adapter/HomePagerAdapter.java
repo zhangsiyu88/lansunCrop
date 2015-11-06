@@ -8,6 +8,7 @@ import java.util.zip.Inflater;
 import com.android.pc.ioc.event.EventBus;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.ActivityFragment;
+import com.lansun.qmyo.fragment.ActivityFragment1;
 import com.lansun.qmyo.R;
 
 import android.R.raw;
@@ -116,7 +117,11 @@ public class HomePagerAdapter extends CommonPagerAdapter implements
 		FragmentEntity entity = new FragmentEntity();
 		
 		//NB的ActivityFragment带上需要的类型参数，去生成自己的造型去了
-		ActivityFragment fragment = new ActivityFragment();
+		
+		
+		ActivityFragment fragment = new ActivityFragment();//TODO
+		
+		/*ActivityFragment1 fragment = new ActivityFragment1();*/
 		
 		Bundle args = new Bundle();
 		args.putInt("type", type);

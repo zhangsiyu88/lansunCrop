@@ -89,6 +89,7 @@ public class MineHistoryFragment extends BaseFragment {
 	private HistoryActivity v16list;
 	private MineV16Adapter v16adapter;
 	private boolean isPull = false;
+	private View emptyView;
 
 	class Views {
 
@@ -106,6 +107,7 @@ public class MineHistoryFragment extends BaseFragment {
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_mine_history, null);
+		emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_minhistory_recorder1, null);
 		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
@@ -252,97 +254,119 @@ public class MineHistoryFragment extends BaseFragment {
 		if (r.getStatus() == FastHttp.result_ok) {
 			endProgress();
 			
-			
 			v16DataList.clear();
 			switch (r.getKey()) {
 			case 0:
+				
 				activityList = Handler_Json.JsonToBean(HistoryActivity.class,
 						r.getContentAsString());
 				
-				if(isPull){
-					isPull =false;
-				}else{
-					activityDataList.clear();
-				}
-				for (BrowseData data : activityList.getData()) {
-					HashMap<String, Object> map = new HashMap<>();
-					map.put("tv_search_activity_name", data.getShop().getName());
-					long time = Handler_Time.getInstance(data.getBrowse().getTime()).getTimeInMillis();
-					
-					String historyTime = "";
-					if ((System.currentTimeMillis() - time)
-							/ (1000 * 24 * 60 * 60) > 1) {
-						Handler_Time instance = Handler_Time.getInstance(data
-								.getBrowse().getTime());
-						historyTime = instance.getYear() + "-"
-								+ instance.getMonth() + "-" + instance.getDay();
-					} else {
-						historyTime = getHistoryTime(System.currentTimeMillis()
-								- time);
+				if(activityList.getData()!=null){
+				
+					if(isPull){
+						isPull =false;
+					}else{
+						activityDataList.clear();
 					}
-					map.put("activityId", data.getActivity().getId());
-					map.put("shopId", data.getShop().getId());
-					map.put("tv_search_activity_distance", historyTime);
-					map.put("tv_search_activity_desc", data.getActivity()
-							.getName());
-					map.put("iv_search_activity_head", data.getActivity()
-							.getPhoto());
-					map.put("tv_search_tag", data.getActivity().getTag());
-					map.put("icons", data.getActivity().getCategory());
-					activityDataList.add(map);
+					for (BrowseData data : activityList.getData()) {
+						HashMap<String, Object> map = new HashMap<>();
+						map.put("tv_search_activity_name", data.getShop().getName());
+						long time = Handler_Time.getInstance(data.getBrowse().getTime()).getTimeInMillis();
+						
+						String historyTime = "";
+						if ((System.currentTimeMillis() - time)
+								/ (1000 * 24 * 60 * 60) > 1) {
+							Handler_Time instance = Handler_Time.getInstance(data
+									.getBrowse().getTime());
+							historyTime = instance.getYear() + "-"
+									+ instance.getMonth() + "-" + instance.getDay();
+						} else {
+							historyTime = getHistoryTime(System.currentTimeMillis()
+									- time);
+						}
+						map.put("activityId", data.getActivity().getId());
+						map.put("shopId", data.getShop().getId());
+						map.put("tv_search_activity_distance", historyTime);
+						map.put("tv_search_activity_desc", data.getActivity()
+								.getName());
+						map.put("iv_search_activity_head", data.getActivity()
+								.getPhoto());
+						map.put("tv_search_tag", data.getActivity().getTag());
+						map.put("icons", data.getActivity().getCategory());
+						activityDataList.add(map);
+					}
+					if (activityAdapter == null) {
+						activityAdapter = new SearchAdapter(lv_mine_history_list,
+								activityDataList, R.layout.activity_search_item);
+						lv_mine_history_list.setAdapter(activityAdapter);
+						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+					} else {
+						activityAdapter.notifyDataSetChanged();
+						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+					}
+			}else{
+				try{
+					lv_mine_history_list.removeFooterView(emptyView);
+				}catch(Exception e){
 				}
-				if (activityAdapter == null) {
-					activityAdapter = new SearchAdapter(lv_mine_history_list,
-							activityDataList, R.layout.activity_search_item);
-					lv_mine_history_list.setAdapter(activityAdapter);
-				} else {
-					activityAdapter.notifyDataSetChanged();
-				}
-				PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-				PullToRefreshManager.getInstance().onFooterRefreshComplete();
+				lv_mine_history_list.addFooterView(emptyView);
+				PullToRefreshManager.getInstance().footerUnable();
+			}
+				
 				break;
 				
 				
 			case 1:
 				storeList = Handler_Json.JsonToBean(HistoryActivity.class,
 						r.getContentAsString());
-				if(isPull){
-					isPull =false;
-				}else{
-					storeDataList.clear();
-				}
-				
-				for (BrowseData data : storeList.getData()) {
-					HashMap<String, String> map = new HashMap<String, String>();
-					map.put("tv_store_item_name", data.getShop().getName());
-					map.put("tv_store_item_num", data.getShop().getAttention()
-							+ "");
-					long time = Handler_Time.getInstance(
-							data.getBrowse().getTime()).getTimeInMillis();
-					String historyTime = "";
-					if ((System.currentTimeMillis() - time)
-							/ (1000 * 3600 * 24) > 1) {
-						Handler_Time instance = Handler_Time.getInstance(data
-								.getBrowse().getTime());
-						historyTime = instance.getYear() + "-"
-								+ instance.getMonth() + "-" + instance.getDay();
-					} else {
-						historyTime = getHistoryTime(System.currentTimeMillis()
-								- time);
+				if(storeList!=null){
+					
+					if(isPull){
+						isPull =false;
+					}else{
+						storeDataList.clear();
 					}
-					map.put("tv_store_item_distance", historyTime);
-					map.put("rb_store_item", data.getShop().getEvaluate() + "");
-
-					storeDataList.add(map);
+				
+					for (BrowseData data : storeList.getData()) {
+						HashMap<String, String> map = new HashMap<String, String>();
+						map.put("tv_store_item_name", data.getShop().getName());
+						map.put("tv_store_item_num", data.getShop().getAttention()
+								+ "");
+						long time = Handler_Time.getInstance(
+								data.getBrowse().getTime()).getTimeInMillis();
+						String historyTime = "";
+						if ((System.currentTimeMillis() - time)
+								/ (1000 * 3600 * 24) > 1) {
+							Handler_Time instance = Handler_Time.getInstance(data
+									.getBrowse().getTime());
+							historyTime = instance.getYear() + "-"
+									+ instance.getMonth() + "-" + instance.getDay();
+						} else {
+							historyTime = getHistoryTime(System.currentTimeMillis()
+									- time);
+						}
+						map.put("tv_store_item_distance", historyTime);
+						map.put("rb_store_item", data.getShop().getEvaluate() + "");
+	
+						storeDataList.add(map);
+					}
+					if (storeAdapter == null) {
+						storeAdapter = new StoreAdapter(lv_mine_history_list,
+								storeDataList, R.layout.activity_store_item);
+						lv_mine_history_list.setAdapter(storeAdapter);
+						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+					} else {
+						storeAdapter.notifyDataSetChanged();
+						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+					}
+			}else{
+				try{
+					lv_mine_history_list.removeFooterView(emptyView);
+				}catch(Exception e){
 				}
-				if (storeAdapter == null) {
-					storeAdapter = new StoreAdapter(lv_mine_history_list,
-							storeDataList, R.layout.activity_store_item);
-					lv_mine_history_list.setAdapter(storeAdapter);
-				} else {
-					storeAdapter.notifyDataSetChanged();
-				}
-
+				lv_mine_history_list.addFooterView(emptyView);
+				PullToRefreshManager.getInstance().footerUnable();
+			}
 				break;
 		   /*case 2:
 				if ("true".equals(r.getContentAsString())) {
@@ -404,8 +428,8 @@ public class MineHistoryFragment extends BaseFragment {
 
 			progress_text.setText(R.string.net_error_refresh);
 		}
-		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-		PullToRefreshManager.getInstance().onFooterRefreshComplete();
+		/*PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+		PullToRefreshManager.getInstance().onFooterRefreshComplete();*/
 	}
 
 	private String getHistoryTime(long mss) {

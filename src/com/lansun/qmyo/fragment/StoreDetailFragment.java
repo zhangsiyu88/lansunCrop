@@ -112,7 +112,7 @@ public class StoreDetailFragment extends BaseFragment {
 	private void click(View view) {
 		switch (view.getId()) {
 		case R.id.tv_report_content:// 门店投诉
-			if(App.app.getData("isExperience")=="true"){
+			if(App.app.getData("isExperience").equals("true")){
 				DialogUtil.createTipAlertDialog(getActivity(),
 						R.string.logintocomplain, new TipAlertDialogCallBack() {
 					@Override
@@ -151,7 +151,7 @@ public class StoreDetailFragment extends BaseFragment {
 					shopAddress, shop.getPhotos().get(0));
 			break;
 		case R.id.iv_store_detail_gz_store://关注门店
-			if(App.app.getData("isExperience")=="true"){
+			if(App.app.getData("isExperience").equals("true")){
 				DialogUtil.createTipAlertDialog(getActivity(),
 						R.string.logintofllow, new TipAlertDialogCallBack() {
 					@Override

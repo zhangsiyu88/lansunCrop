@@ -74,7 +74,7 @@ import com.lansun.qmyo.view.ViewMiddle;
 import com.lansun.qmyo.view.ViewRight;
 import com.lansun.qmyo.R;
 
-public class ActivityFragment extends BaseFragment {
+public class ActivityFragment1 extends BaseFragment {
 
 	private String HODLER_TYPE;
 
@@ -148,6 +148,9 @@ public class ActivityFragment extends BaseFragment {
 		private ExpandTabView expandtab_view;
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private RelativeLayout rl_bg;
+		
+		@InjectBinder(listeners = { OnClick.class }, method = "click")
+		private View customdialogprogress;
 	}
 
 	@Override
@@ -155,6 +158,7 @@ public class ActivityFragment extends BaseFragment {
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_activity, null);
+		
 		Handler_Inject.injectFragment(this, rootView);//Handler_Inject就会去调用invoke，invoke中会调用Inject_View,而Inject_View中又会调用applyTo()
 
 		return rootView;
@@ -308,6 +312,25 @@ public class ActivityFragment extends BaseFragment {
 				}
 			}
 		});
+		
+		TextView messageTextView = (TextView) v.customdialogprogress.findViewById(R.id.messageText);
+		ImageView iv_gif_loadingprogress = (ImageView)  v.customdialogprogress.findViewById(R.id.iv_gif_loadingprogress);
+    	((AnimationDrawable)iv_gif_loadingprogress.getDrawable()).start();
+		messageTextView.setText("请检查网络连接，确保联网后进入页面");
+		v.customdialogprogress.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				if(!justFirstClick){
+					isFromNoNetworkViewTip = true;
+					refreshCurrentList(refreshUrl+"site="+getSelectCity()[0]+"&service="+
+				HODLER_TYPE+"&position="+position_bussness+"&intelligent="+intelligentStr+"&type="+ActivityFragment1.this.type+
+				"&location="+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon()+"&query="+"",
+				null, refreshKey,lv_activity_list);
+				}
+			}
+		});
+		
 	}
 
 	private void click(View view) {
@@ -329,6 +352,26 @@ public class ActivityFragment extends BaseFragment {
 			event.setFragment(fragment);
 			EventBus.getDefault().post(event);
 			break;
+		/*case R.id.customdialogprogress:
+			TextView messageTextView = (TextView) v.customdialogprogress.findViewById(R.id.messageText);
+			ImageView iv_gif_loadingprogress = (ImageView)  v.customdialogprogress.findViewById(R.id.iv_gif_loadingprogress);
+	    	((AnimationDrawable)iv_gif_loadingprogress.getDrawable()).start();
+			messageTextView.setText("请检查网络连接，确保联网后进入页面");
+			v.customdialogprogress.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View arg0) {
+					if(!justFirstClick){
+						isFromNoNetworkViewTip = true;
+						refreshCurrentList(refreshUrl+"site="+getSelectCity()[0]+"&service="+
+					HODLER_TYPE+"&position="+position_bussness+"&intelligent="+intelligentStr+"&type="+type+
+					"&location="+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon()+"&query="+"",
+					null, refreshKey,lv_activity_list);
+					}
+				}
+			});
+			
+			break;*/
 		}
 	}
 
@@ -958,51 +1001,62 @@ public class ActivityFragment extends BaseFragment {
 		} else {//如果服务器没有返回需要值回来 ---->网络未连接上外部网络//TODO
 			progress_text.setText(R.string.net_error_refresh);
 			//针对在断网后再次点击上部筛选栏的自己菜单时，做出的重复添加无效的 noNetworkView界面操作
-			try{
+		   /*try{
 				lv_activity_list.removeFooterView(noNetworkView);
+				v.customdialogprogress.setVisibility(View.VISIBLE);
 			}catch(Exception e ){
-			}
+			}*/
+			
+			lv_activity_list.setVisibility(View.GONE);
+			v.customdialogprogress.setVisibility(View.VISIBLE);
 			
 			if(cPd!=null){//断网情况下，且还拥有了cPd，表明其走到了loadActivityList，表示之前成功使用过筛选栏进行列表选择过， 实际上是访问不到数据的 
 				cPd.dismiss();
 				cPd = null;
-				
-				
-				setNetworkView();
+			    lv_activity_list.setVisibility(View.GONE);
+				v.customdialogprogress.setVisibility(View.VISIBLE);
+				/*setNetworkView();
 				noNetworkView = setNetworkView();
-				lv_activity_list.addFooterView(noNetworkView);
+				lv_activity_list.addFooterView(noNetworkView);*/
+				
+				
 				//此时可断开上拉的操作
 				PullToRefreshManager.getInstance().footerUnable();
 				PullToRefreshManager.getInstance().headerUnable();
 				
 			}else{//注意下面的两个判断的安放顺序
+				  lv_activity_list.setVisibility(View.GONE);
+				  v.customdialogprogress.setVisibility(View.VISIBLE);
 				
 				if(isFromNoNetworkViewTip){//由ListView添加上的footerview画面点击产生的效果
 					//筛选栏的点击在无网的状态下，点击提示画面，进行尝试联网操作，但依旧是返回统一的检查网络的提示画面
 				/*	ImageView iv_gif_loadingprogress = (ImageView) noNetworkView.findViewById(R.id.iv_gif_loadingprogress);
 			    	((AnimationDrawable)iv_gif_loadingprogress.getDrawable()).start();*/
-					noNetworkView = setNetworkView();
+					lv_activity_list.setVisibility(View.GONE);
+					v.customdialogprogress.setVisibility(View.VISIBLE);
+					
+					/*noNetworkView = setNetworkView();
 					lv_activity_list.addFooterView(noNetworkView);
 					PullToRefreshManager.getInstance().footerUnable();
-					PullToRefreshManager.getInstance().headerUnable();
-					isFromNoNetworkViewTip = false;
+					PullToRefreshManager.getInstance().headerUnable();*/
+					/*isFromNoNetworkViewTip = false;*/
 					return;
 				}
 				
 				if(!justFirstClick){//针对 一进来就是无网状态，此时点击container会进行initData()的操作，此时点击一次后，justFirstClick=false，但是为了来网络时点击有效，那么很明显，不可禁掉点击监听，但可以禁掉 点击响应后的操作
-					/*lv_activity_list.addFooterView(noNetworkView);
-					PullToRefreshManager.getInstance().footerUnable();*/
-					justFirstClick = true;
 					
+					justFirstClick = true;
 				}
 			}
+			lv_activity_list.setVisibility(View.GONE);
+			v.customdialogprogress.setVisibility(View.VISIBLE);
 		}
 		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 		PullToRefreshManager.getInstance().onFooterRefreshComplete();
 	}
 
 	private RelativeLayout setNetworkView() {
-				noNetworkView = (RelativeLayout) inflater.inflate(R.layout.customdialogprogress1, null);
+				noNetworkView = (RelativeLayout) inflater.inflate(R.layout.customdialogprogress, null);
 				TextView messageTextView = (TextView) noNetworkView.findViewById(R.id.messageText);
 				ImageView iv_gif_loadingprogress = (ImageView) noNetworkView.findViewById(R.id.iv_gif_loadingprogress);
 		    	((AnimationDrawable)iv_gif_loadingprogress.getDrawable()).start();
@@ -1048,6 +1102,8 @@ public class ActivityFragment extends BaseFragment {
 					}
 					//当我是在无网络环境的状态下，并且已经展示出网络获取失败的界面效果下，此时在进行
 					//...在添加上无望的操作时，我们可以将其上拉的操作禁止掉
+					
+					
 					lv_activity_list.addFooterView(emptyView);
 					
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();

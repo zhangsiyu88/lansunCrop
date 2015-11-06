@@ -84,8 +84,15 @@
         android:divider="@null"
         android:listSelector="@android:color/transparent"
         android:scrollbarFadeDuration="1000"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical" 
+        />
     <!-- android:fastScrollEnabled="true" -->
     <!-- style="@style/w_h_full" -->
+    
+    
+   <!-- <include 
+       android:id="@+id/customdialogprogress"
+       layout="@layout/customdialogprogress" 
+       android:visibility="gone"/> -->
 
 </LinearLayout>

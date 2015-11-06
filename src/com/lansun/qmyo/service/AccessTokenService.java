@@ -128,13 +128,14 @@ public class AccessTokenService extends Service {
 			case 0:
 				Token token = Handler_Json.JsonToBean(Token.class,
 						r.getContentAsString());
+				App.app.setData("access_token", token.getToken());
 				InternetConfig config = new InternetConfig();
 				config.setKey(1);
 				HashMap<String, Object> head = new HashMap<>();
 				head.put("Authorization", "Bearer " + token.getToken());
 				config.setHead(head);
 				FastHttpHander.ajaxGet(GlobalValue.URL_FRESHEN_USER, config,this);
-				App.app.setData("access_token", token.getToken());
+				
 				break;
 			case 1:
 				//拿到access_token就可以去拿到用户信息，并且将其存在本地的静态变量GlobalValue.user中，供后面使用
