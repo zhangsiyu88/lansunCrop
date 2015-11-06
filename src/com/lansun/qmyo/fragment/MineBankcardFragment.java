@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,6 +44,7 @@ import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.BankCardData;
 import com.lansun.qmyo.domain.BankCardList;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.fragment.newbrand.NewBrandFragment;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.utils.GlobalValue;
@@ -677,15 +679,18 @@ public class MineBankcardFragment extends BaseFragment{
 				EventBus.getDefault().post(fEntity);
 				return;
 			}
-			
+			/**
+			 * 新品曝光单独开启了一个页面，所以不需要传递一些参数
+			 */
 			if(mIsFromNewPart){  
+				
 				/*CustomToast.show(activity, "准备跳转至新品曝光刷新", "来自我的银行卡页面");*/
-				ActivityFragment activityFragment = new ActivityFragment();
-				Bundle args = new Bundle();
-				args.putBoolean("IsNew", true);
-				args.putBoolean("isHasChangeTheBankcardInMineBankcardPage", true);
-				args.putInt("type", R.string.new_exposure);
-				activityFragment.setArguments(args);
+				Fragment activityFragment = new NewBrandFragment();
+//				Bundle args = new Bundle();
+//				args.putBoolean("IsNew", true);
+//				args.putBoolean("isHasChangeTheBankcardInMineBankcardPage", true);
+//				args.putInt("type", R.string.new_exposure);
+//				activityFragment.setArguments(args);
 				FragmentEntity fEntity = new FragmentEntity();
 				fEntity.setFragment(activityFragment);
 				EventBus.getDefault().post(fEntity);
@@ -704,14 +709,18 @@ public class MineBankcardFragment extends BaseFragment{
 				}
 				//来自 New页
 				if(App.app.getData("isFromHome")==""&&App.app.getData("isFromNewPart")=="true"&&App.app.getData("isFromEightPart")==""){
-					ActivityFragment activityFragment = new ActivityFragment();
-					Bundle args = new Bundle();
-					args.putBoolean("IsNew", true);
-					args.putInt("type", R.string.new_exposure);
-					args.putBoolean("isHasChangeTheBankcardInMineBankcardPage", true);
-					activityFragment.setArguments(args);
+//					ActivityFragment activityFragment = new ActivityFragment();
+//					Bundle args = new Bundle();
+//					args.putBoolean("IsNew", true);
+//					args.putInt("type", R.string.new_exposure);
+//					args.putBoolean("isHasChangeTheBankcardInMineBankcardPage", true);
+//					activityFragment.setArguments(args);
+//					FragmentEntity fEntity = new FragmentEntity();
+//					fEntity.setFragment(activityFragment);
+//					EventBus.getDefault().post(fEntity);
+					Fragment fragment = new NewBrandFragment();
 					FragmentEntity fEntity = new FragmentEntity();
-					fEntity.setFragment(activityFragment);
+					fEntity.setFragment(fragment);
 					EventBus.getDefault().post(fEntity);
 					return;
 				}
@@ -817,16 +826,26 @@ public class MineBankcardFragment extends BaseFragment{
 				}
 			}
 			
-			
-		    
-			
-			
-			
-			
-			
-			
-			
-			
+			if(mIsFromEightPart){//从登录页返回回来，回到我的银行卡页，再按返回键时，重新刷新之前的八大板块页内容
+				ActivityFragment activityFragment = new ActivityFragment();
+				Bundle args = new Bundle();
+				args.putInt("type", mInitType);//将这个type参数放入到返回回去的八大板块页
+				activityFragment.setArguments(args);
+				FragmentEntity fEntity = new FragmentEntity();
+				fEntity.setFragment(activityFragment);
+				EventBus.getDefault().post(fEntity);
+			}
+			if(mIsFromNewPart){//从登录页返回回来，回到我的银行卡页，再按返回键时，重新刷新之前的新品曝光板块页内容
+				Fragment fragment = new NewBrandFragment();
+//				Bundle args = new Bundle();
+//				args.putBoolean("IsNew", true);
+//				args.putInt("type", R.string.new_exposure);
+//				fragment.setArguments(args);
+				FragmentEntity fEntity = new FragmentEntity();
+				fEntity.setFragment(fragment);
+				EventBus.getDefault().post(fEntity);
+			}
+		    return;	
 			
 			
 		}else if(mIsFromInsertBankcardAdapterPage&&isChangeTheChoseCardUnderSearchBankcardPage){//如果是从添卡搜索页回来，但却没有在当前页进行换卡操作，那么应返回至来源页，且不做刷新操作
@@ -843,17 +862,29 @@ public class MineBankcardFragment extends BaseFragment{
 				
 			}
 			//来自 New页
+			if(App.app.getData("isFromHome")==""&&App.app.getData("isFromNewPart")=="true"&&App.app.getData("isFromEightPart")==""){
+				Fragment fragment = new NewBrandFragment();
 			/*if(App.app.getData("isFromHome")==""&&App.app.getData("isFromNewPart")=="true"&&App.app.getData("isFromEightPart")==""){*/
-			if(App.app.getData("isFromHome").equals("")&&App.app.getData("isFromNewPart").equals("true")&&App.app.getData("isFromEightPart").equals("")){
-				ActivityFragment activityFragment = new ActivityFragment();
-				Bundle args = new Bundle();
-				args.putBoolean("IsNew", true);
-				args.putInt("type", R.string.new_exposure);
-				args.putBoolean("isHasChangeTheBankcardInMineBankcardPage", true);
-				activityFragment.setArguments(args);
+//			if(App.app.getData("isFromHome").equals("")&&App.app.getData("isFromNewPart").equals("true")&&App.app.getData("isFromEightPart").equals("")){
+//				ActivityFragment activityFragment = new ActivityFragment();
+//				Bundle args = new Bundle();
+//				args.putBoolean("IsNew", true);
+//				args.putInt("type", R.string.new_exposure);
+//				args.putBoolean("isHasChangeTheBankcardInMineBankcardPage", true);
+//				activityFragment.setArguments(args);
 				FragmentEntity fEntity = new FragmentEntity();
-				fEntity.setFragment(activityFragment);
+				fEntity.setFragment(fragment);
 				EventBus.getDefault().post(fEntity);
+				
+//				ActivityFragment activityFragment = new ActivityFragment();
+//				Bundle args = new Bundle();
+//				args.putBoolean("IsNew", true);
+//				args.putInt("type", R.string.new_exposure);
+//				args.putBoolean("isHasChangeTheBankcardInMineBankcardPage", true);
+//				activityFragment.setArguments(args);
+//				FragmentEntity fEntity = new FragmentEntity();
+//				fEntity.setFragment(activityFragment);
+//				EventBus.getDefault().post(fEntity);
 				return;
 			}
 			//来自 8大板块页

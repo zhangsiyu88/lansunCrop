@@ -47,13 +47,14 @@
     <EditText
         android:id="@+id/et_feedback_content"
         android:layout_width="match_parent"
-        android:padding="10dp"
+        android:padding="@dimen/margin_top_30"
         android:layout_height="wrap_content"
         android:layout_marginTop="1px"
         android:background="@color/white"
         android:gravity="top"
         android:lineSpacingExtra="3dp"
         android:lines="15"
+        android:textColorHint="#939393"	
         android:textSize="15sp"
         android:hint="@string/feedback_desc" >
         <requestFocus />

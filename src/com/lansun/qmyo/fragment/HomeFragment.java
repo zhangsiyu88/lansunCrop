@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -62,12 +63,15 @@ import com.lansun.qmyo.adapter.HomeListAdapter;
 import com.lansun.qmyo.adapter.HomePagerAdapter;
 import com.lansun.qmyo.adapter.SearchAdapter;
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.biz.ServiceAllBiz;
 import com.lansun.qmyo.domain.ActivityList;
 import com.lansun.qmyo.domain.ActivityListData;
 import com.lansun.qmyo.domain.HomePromote;
 import com.lansun.qmyo.domain.HomePromoteData;
 import com.lansun.qmyo.domain.MySecretary;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.fragment.newbrand.NewBrandFragment;
+import com.lansun.qmyo.listener.RequestCallBack;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.AnimUtils;
 import com.lansun.qmyo.utils.GlobalValue;
@@ -227,6 +231,7 @@ import com.squareup.okhttp.Response;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		intent = new Intent("com.lansun.qmyo.fragment.newbrand");
 		LayoutInflater inflater  = LayoutInflater.from(activity);
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -270,31 +275,13 @@ import com.squareup.okhttp.Response;
 					int scrollY = v.getScrollY();
 					int height = v.getHeight();
 					int measuredHeight = sv_homefrag.getChildAt(0).getMeasuredHeight();
-					Log.i("滑动中", "scrollY = v.getScrollY()值为: "+scrollY);
-					Log.i("滑动中", "height = v.getHeight()值为: "+height);
-					Log.i("滑动中", "measuredHeight = sv_homefrag.getChildAt(0).getMeasuredHeight(): "+measuredHeight);
 					//Log.i("滑动中", "measuredHeight = sv_homefrag.getChildAt(1).getMeasuredHeight(): "+sv_homefrag.getChildAt(1).getMeasuredHeight());
 
 					View childAt1 = sv_homefrag.getChildAt(0);
 					int childAt1Height1 = childAt1.getLayoutParams().height;
-					System.out.println("childAt1Height1的高度   "+childAt1Height1);
-
-					if(scrollY == 0){
-						/*	CustomToast.show(activity, "置顶!", "到顶部!");*/
-						Log.i("置顶时", "scrollY = v.getScrollY()值为: "+scrollY);
-						Log.i("置顶时", "height = v.getHeight()值为: "+height);
-						Log.i("置顶时", "measuredHeight = sv_homefrag.getChildAt(0).getMeasuredHeight(): "+measuredHeight);
-
-					}
-
 					if(scrollY+height == measuredHeight){ // 滑出屏幕外的高度+ 当前距离屏幕的高度 =sv_homefag的实测高度 
 						/*CustomToast.show(activity, "滑到底了", "到底了!");*/
 						/*sv_homefrag.setOnTouchListener(null);*/
-
-						Log.i("触底时", "scrollY = v.getScrollY()值为: "+scrollY);
-						Log.i("触底时", "height = v.getHeight()值为: "+height);
-						Log.i("触底时", "measuredHeight = sv_homefrag.getChildAt(0).getMeasuredHeight(): "+measuredHeight);
-
 						if (list != null) {
 							if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url()=="null") {
 								CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
@@ -576,13 +563,7 @@ import com.squareup.okhttp.Response;
 
 				@Override
 				public void onClick(View arg0) {
-					ActivityFragment fragment = new ActivityFragment();//TODO
-					
-					/*ActivityFragment1 fragment = new ActivityFragment1();*/
-					Bundle args = new Bundle();
-					args.putBoolean("IsNew", true);
-					args.putInt("type", R.string.new_exposure);
-					fragment.setArguments(args);
+					Fragment fragment=new NewBrandFragment();
 					FragmentEntity event = new FragmentEntity();
 					event.setFragment(fragment);
 					EventBus.getDefault().post(event);
@@ -737,6 +718,8 @@ import com.squareup.okhttp.Response;
 	private View rootView;
 	private ScrollView mScrollView;
 	private View refresh_footer;
+	private ServiceAllBiz biz;
+	protected Intent intent;
 
 	public int getLocation(View v) {
 		int[] loc = new int[4];

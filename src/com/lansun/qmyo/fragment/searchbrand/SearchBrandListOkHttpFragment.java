@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectAll;
@@ -45,6 +47,7 @@ import com.google.gson.Gson;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.SearchAdapter;
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.biz.ServiceAllBiz;
 import com.lansun.qmyo.domain.ActivityList;
 import com.lansun.qmyo.domain.ActivityListData;
 import com.lansun.qmyo.domain.Intelligent;
@@ -54,6 +57,8 @@ import com.lansun.qmyo.domain.position.City;
 import com.lansun.qmyo.domain.position.Position;
 import com.lansun.qmyo.domain.screening.DataScrolling;
 import com.lansun.qmyo.domain.screening.Type;
+import com.lansun.qmyo.domain.service.ServiceData;
+import com.lansun.qmyo.domain.service.ServiceRoot;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.ActivityDetailFragment;
 import com.lansun.qmyo.fragment.ActivityFragment;
@@ -61,7 +66,7 @@ import com.lansun.qmyo.fragment.BaseFragment;
 import com.lansun.qmyo.fragment.SearchBankCardFragment;
 import com.lansun.qmyo.fragment.SearchFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
-
+import com.lansun.qmyo.listener.RequestCallBack;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CustomToast;
@@ -81,7 +86,7 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 	private ActivityList list;
 	public static String defaultVisitUrl = GlobalValue.URL_ALL_ACTIVITY;
 	private SearchAdapter searchBankcardAdapter;
-	
+
 	/**
 	 * 全部服务信息
 	 */
@@ -93,7 +98,7 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 	/**
 	 * 全部的信息
 	 */
-	private Service AllService;
+	private ServiceRoot root;
 	/**
 	 * 筛选
 	 */
@@ -110,7 +115,7 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 	private String query;
 	private EditText et_home_search;
 	private ExpandTabView expandtab_view;
-	
+
 	private RecyclingImageView iv_activity_back;
 	private View emptyView;
 	//	private ActivityList list;
@@ -120,14 +125,15 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 	private String name;
 	private boolean isExpandTag;
 	private ArrayList<HashMap<String, Object>> datas;
-	
+
 	//TODO
 	@InjectView(binders = @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick"), down = true, pull = true)
 	private MyListView lv_search_content;
-	
-/*	@InjectAll
+	protected boolean allready;
+
+	/*	@InjectAll
 	Views v;
-	
+
 	class Views {
 		private View iv_card;
 		private TextView tv_activity_title, tv_home_experience;
@@ -135,35 +141,26 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private RelativeLayout rl_bg;
 	}*/
-	
+
 	//TODO
 	private Handler handleOkhttp=new Handler(){
 
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
 			case 0:
-				if (holder_button.size() == 4) {
-					expandtab_view.setValue(holder_button,mViewArray);
-				}
 				break;
-			case 4:
+			case 1:
 				endProgress();
 				if(searchBankcardAdapter == null){
 					searchBankcardAdapter = new SearchAdapter(lv_search_content,datas, R.layout.activity_search_item);
 
 					try{
-						Log.i("","企图remove掉ListView中的尾布局");
-						
 						lv_search_content.removeFooterView(emptyView);
-						Log.i("","remove掉ListView中的尾布局成功！");
-						
 					}catch(Exception e ){
-//						CustomToast.show(activity, "出异常了", "异常已被抓！");
 					}
-					
+
 					if(list.getData().size()<10){
 						lv_search_content.addFooterView(emptyView);
-						Log.i("","在此处添加上了尾部EmptyView");
 						lv_search_content.setAdapter(searchBankcardAdapter);
 					}else{
 						try{
@@ -171,12 +168,11 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 							lv_search_content.removeFooterView(emptyView);
 						}catch(Exception e ){
 						}finally{
-							Log.i("","remove掉ListView中的尾布局失败，抓住异常，还是展示获取的数据，但尾部跟上了emptyView！");
 							lv_search_content.setAdapter(searchBankcardAdapter);
 							/*endProgress();*/
 						}
 					}
-					
+
 				}else{//searchBankcardAdapter已经存在
 					if(list.getData().size()<10){
 						lv_search_content.addFooterView(emptyView);
@@ -196,32 +192,62 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 				PullToRefreshManager.getInstance().headerEnable();
 				PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 				PullToRefreshManager.getInstance().onFooterRefreshComplete();
-				
+
 				break;
-			case 5:
+			case 2:
 				//endProgress();
 				//setEmptityView(first,1);
-				Log.i("case为5时，能否走到下面这一步？", "返回数据解析为空，故而在listView尾部添加emptyView");
 				//emptyView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
 				lv_search_content.addFooterView(emptyView);
-				
+
 				lv_search_content.setAdapter(null);
-				
+
 				PullToRefreshManager.getInstance().footerUnable();//拒绝此时的上拉和下拉操作
 				PullToRefreshManager.getInstance().headerUnable();
 				break;
+			case 3:
+				setFirstValue();
+				break;
+			case 4:
+				setFirstValue();
+				break;
+			case 5:
+				setFirstValue();
+				break;
+			case 6:
+				setFirstValue();
+				break;
+			case 7:
+				setFirstValue();
+				break;
+			case 8:
+				setFirstValue();
+				break;
+			case 9:
+				setFirstValue();
+				break;
+			case 10:
+				setFirstValue();
+				break;
+			}
+			if (holder_button.size() == 4) {
+				if (!allready) {
+					expandtab_view.setValue(holder_button, mViewArray);
+					allready=true;
+				}
 			}
 		};
 	};
 	protected String position_bussness="nearby";
 	private TextView tv_found_secretary;
+	private ServiceAllBiz biz;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		
+
 		emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_search_empty, null);
 		tv_found_secretary = (TextView) emptyView.findViewById(R.id.tv_found_secretary);
 		tv_found_secretary.setVisibility(View.VISIBLE);
-		
+
 		tv_found_secretary.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -246,43 +272,20 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 		viewLeft2 = new ViewLeft(activity);
 		viewMiddle = new ViewMiddle(activity);
 		viewRight = new ViewRight(activity);
-		
-		
-		//按服务类型进行范文
-		OkHttp.asyncGet(GlobalValue.URL_SEARCH_HOLDER_SERVICE+"000000","Authorization","Bearer "+App.app.getData("access_token"),null,new Callback() {
-			@Override
-			public void onResponse(Response response) throws IOException {
-				Gson gson=new Gson();
-				AllService = gson.fromJson(response.body().string(),Service.class);
-				name = AllService.getName();
-				if (name == null) {
-					name = AllService.getData().get(0).getName();
-				}
-				ArrayList<String> allGroup = new ArrayList<String>();
-				SparseArray<LinkedList<String>> allChild = new SparseArray<LinkedList<String>>();
-				for (int j = 0; j < AllService.getData().size(); j++) {
-					LinkedList<String> chind = new LinkedList<String>();
-					allGroup.add(AllService.getData().get(j).getName());
-					ArrayList<ServiceDataItem> items = AllService.getData()
-							.get(j).getItems();
-					if (items != null) {
-						for (ServiceDataItem item : items) {
-							chind.add(item.getName());
-						}
-					}
-					allChild.put(j, chind);
-				}
-				holder_button.put(0, name);
-				viewLeft.setGroups(allGroup);
-				viewLeft.setChildren(allChild);
-				mViewArray.put(0, viewLeft);
-				handleOkhttp.sendEmptyMessage(0);
+		String time=App.app.getData("in_this_fragment_time");
+		if (!"".equals(time)) {
+			long oldtime=Long.valueOf(time);
+			long curr_time=System.currentTimeMillis();
+			int ours=(int) ((curr_time-oldtime)/1000/60/60);
+			if (ours>11) {
+				getAllServer();
+			}else {
+				setFirstValue();
 			}
-			@Override
-			public void onFailure(Request arg0, IOException arg1) {
-
-			}
-		});
+		}else {
+			getAllServer();
+			App.app.setData("in_this_fragment_time",String.valueOf(System.currentTimeMillis()));
+		}
 		
 		//按商圈选择访问
 		OkHttp.asyncGet(GlobalValue.URL_SEARCH_HOLDER_DISTRICT+App.app.getData("select_cityCode"),
@@ -342,7 +345,7 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 			public void onFailure(Request arg0, IOException arg1) {
 			}
 		});
-		
+
 		//去获取需要
 		OkHttp.asyncGet(GlobalValue.URL_SEARCH_HOLDER_SCREENING, "Content-Type", "application/json", null, new Callback(){
 			@Override
@@ -379,19 +382,12 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 		event.setFragment(fragment);
 		EventBus.getDefault().post(event);
 	}
-	
-	
-	
+
 	private void initView( View view) {
 		initData();
-		
 		iv_activity_back=(RecyclingImageView)view.findViewById(R.id.iv_activity_back);
 		del_search_content=(ImageView)view.findViewById(R.id.del_search_content);
 		et_home_search=(EditText)view.findViewById(R.id.et_home_search);
-		
-		et_home_search.setFocusable(false);//使其丧失焦点，即不让键盘自动弹起
-		
-		
 		et_home_search.setOnFocusChangeListener(new OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
@@ -414,46 +410,37 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 		et_home_search.addTextChangedListener(this);
 		expandtab_view=(ExpandTabView)view.findViewById(R.id.expandtab_view);
 		expandtab_view.removeAllViews();//ExpandTab终于上场了！
-		
-		
+
+
 		lv_search_content=(MyListView)view.findViewById(R.id.lv_search_content); //TODO	
-		
+
 		//初始化完成之后去请求网络获取所有数据
 
 		startSearch(defaultVisitUrl,getSelectCity()[0],HODLER_TYPE,"nearby","intelligent","all",GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(),query);
 		search_tv_cancle=(TextView)view.findViewById(R.id.search_tv_cancle);
 		search_tv_cancle.setOnClickListener(this);
 	}
-	
-	
-	@InjectInit
-	private void init() {
-		
-		
-	}
-	
-	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		this.inflater=inflater;
 		//TODO
-	    View rootView = inflater.inflate(R.layout.activity_search_content, null);
-	    rootView.setBackgroundColor(Color.argb(255, 235, 235, 235));
-	    initView(rootView);
-	    
-	    activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-	    
-	    Handler_Inject.injectFragment(this, rootView);//Handler_Inject就会去调用invoke，invoke中会调用Inject_View,而Inject_View中又会调用applyTo()
-		
-	   //这里面就寻找并定位到ListView对象，并且涉及到搜索startSearch(),其中startSearch()中就需要将listView和progress挂上钩，言即需要将ListView找到并和progress挂上钩
+		View rootView = inflater.inflate(R.layout.activity_search_content, container,false);
+		rootView.setBackgroundColor(Color.argb(255, 235, 235, 235));
+		initView(rootView);
+
+		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+		Handler_Inject.injectFragment(this, rootView);//Handler_Inject就会去调用invoke，invoke中会调用Inject_View,而Inject_View中又会调用applyTo()
+
+		//这里面就寻找并定位到ListView对象，并且涉及到搜索startSearch(),其中startSearch()中就需要将listView和progress挂上钩，言即需要将ListView找到并和progress挂上钩
 		//init();
-	    getTitleBanner();
+		getTitleBanner();
 		setListener();
 		return rootView;
 	}
-	
-	
+
+
 	/*
 	 * listView 对象设置上点击事件
 	 */
@@ -524,12 +511,12 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 				back();
 			} else {
 				query = et_home_search.getText().toString().trim();
-				
+
 				InputMethodManager imm = (InputMethodManager) activity
 						.getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-				
-				
+
+
 				//				startSearch();
 				setEmptityView(first, 0);
 			}
@@ -550,30 +537,31 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 	 * @param string
 	 */
 	private void startSearch(String visitUrl, String site,String service,String positon,String intelligent,String type,String location,String query) {
-		
+
 		/*PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 		PullToRefreshManager.getInstance().onFooterRefreshComplete();*/
-		
+
 		setProgress(lv_search_content);
 		startProgress();
 		progress_text.setText("正在搜索幸运中");
+		/**
+		 * +"&query="+query暂时先去掉
+		 */
+		Log.e("location", GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
 		OkHttp.asyncGet(visitUrl+"site="+site+"&service="+service+"&position="+positon+"&intelligent="+intelligent+"&type="
-		+type+"&location="+location+"&query="+query, "Authorization", "Bearer "+App.app.getData("access_token"), null, new Callback() {
-			
+				+type+"&location="+location+"&query="+query, "Authorization", "Bearer "+App.app.getData("access_token"), null, new Callback() {
+
 			@Override
 			public void onResponse(Response response) throws IOException {
-			
+
 				Gson gson=new Gson();
 				list = gson.fromJson(response.body().string(), ActivityList.class);
-				
-				System.out.println("网络返回的数据 转化为 list后的对象为： "+list.getData().toString());
-				//TODO
 				if(isPull){
 					isPull = false;
 				}else{
 					datas = new ArrayList<>();//重新new出来一个新的list
 				}
-				
+
 				if (list.getData() != null && !list.getData().toString().equals("[]") ){
 					for (ActivityListData data : list.getData()) {
 						HashMap<String, Object> map = new HashMap<String, Object>();
@@ -591,21 +579,20 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 						map.put("icons", data.getActivity().getCategory());
 						datas.add(map);
 					}
-					
+
 					/* 下面这一步，试图在setAdapter之前将emptyView塞入到ListView控件上，但此处报错
 					 * if(list.getData().size()<10){
 						lv_search_content.addFooterView(emptyView);
 						Log.i("","在此处添加上了尾部EmptyView");
 					}*/
-					
+
 					//TODO
-					handleOkhttp.sendEmptyMessage(4);
+					handleOkhttp.sendEmptyMessage(1);
 					return;
 				}
-				
+
 				if(list.getData().toString().equals("[]")){
-					handleOkhttp.sendEmptyMessage(5);//返回的数据解析后为空时
-					Log.i("能否走到下面这一步？", "返回数据解析为空，故而在listView尾部添加emptyView");
+					handleOkhttp.sendEmptyMessage(2);//返回的数据解析后为空时
 					return;
 				}
 			}
@@ -615,8 +602,8 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 			}
 		});
 	}
-	
-	
+
+
 	private void setOnPullListeners() {
 		viewMiddle.setOnSelectListener(new ViewMiddle.OnSelectListener() {
 			@Override
@@ -636,29 +623,21 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 			@Override
 			public void getValue(String showText, int parendId,
 					int position) {
-				if (AllService.getData().get(parendId).getItems() == null) {
+				if (root.getData().get(parendId).getData() == null) {
 					onRefresh(viewLeft, showText);
-					HODLER_TYPE = AllService.getData()
-							.get(parendId).getKey()
-							+ "";
-				} else if (AllService.getData().get(parendId)
-						.getItems().get(position) != null) {
-					
-					HODLER_TYPE = AllService.getData().get(parendId).getItems().get(position).getKey();
-					
-					query=AllService.getData().get(parendId).getItems().get(position).getName();
-//					onRefreshEd(AllService.getData()
-//							.get(parendId).getItems().get(position)
-//							.getName());
+					HODLER_TYPE = root.getData().get(parendId).getKey()+ "";
+				} else if (root.getData().get(parendId)
+						.getData().get(position) != null) {
+
+					HODLER_TYPE = root.getData().get(parendId).getData().get(position).getKey();
+//					query=root.getData().get(parendId).getData().get(position).getName();
 				}
 				searchBankcardAdapter = null;
-				
-				/*lv_search_content.removeView(emptyView);*/
 				startSearch(defaultVisitUrl,getSelectCity()[0],HODLER_TYPE,position_bussness,intelligentStr,type,GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(),query);
 				onRefresh(viewLeft, showText);
 			}
 		});
-		
+
 		viewLeft2.setOnSelectListener(new ViewLeft.OnSelectListener() {
 			@Override
 			public void getValue(String showText, int parendId,int position) {
@@ -693,7 +672,7 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 		viewRight.setOnSelectListener(new ViewRight.OnSelectListener() {
 			@Override
 			public void getValue(String distance, String showText,int position) {
-				
+
 				type = sxintelligent.getData().get(position).getKey();
 				if ("all".equals(type)) {
 					typeSb.delete(0, typeSb.length());
@@ -746,11 +725,11 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
 		changeText(s, start, before, count);
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * 对上拉和下拉操作的处理
 	 * @param type
@@ -765,48 +744,209 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 			/*CustomToast.show(activity, "上拉操作", "现在进行上拉操作！");*/
 			if (list != null) {
 				/*if (TextUtils.isEmpty(activityList.getNext_page_url())) {//下一页为空的时候，加上footerview*/
-				  if (list.getNext_page_url()== "null"||TextUtils.isEmpty(list.getNext_page_url())) {
-					
+				if (list.getNext_page_url()== "null"||TextUtils.isEmpty(list.getNext_page_url())) {
+
 					//lv_search_content.addFooterView(emptyView);
-					
-					 //setEmptityView(true, 1);
-					  try{
-							//若之前的隶属于View对象是有emptyView对象的，先将其移除掉
-							lv_search_content.removeFooterView(emptyView);
-						}catch(Exception e ){
-						}finally{
-							Log.i("","remove掉ListView中的尾布局失败，抓住异常，还是展示获取的数据，但尾部跟上了emptyView！");
-							lv_search_content.setAdapter(searchBankcardAdapter);
-							
-							/*endProgress();*/
-						}
-					 lv_search_content.addFooterView(emptyView);
-					
+
+					//setEmptityView(true, 1);
+					try{
+						//若之前的隶属于View对象是有emptyView对象的，先将其移除掉
+						lv_search_content.removeFooterView(emptyView);
+					}catch(Exception e ){
+					}finally{
+						Log.i("","remove掉ListView中的尾布局失败，抓住异常，还是展示获取的数据，但尾部跟上了emptyView！");
+						lv_search_content.setAdapter(searchBankcardAdapter);
+
+						/*endProgress();*/
+					}
+					lv_search_content.addFooterView(emptyView);
+
 					Log.e("Tag","应该已经添加了空的View");
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
 					CustomToast.show(activity, "到底啦！", "该关键词下暂时只有这么多内容");
-					
+
 				} else {
 					String nextPageUrl = list.getNext_page_url();
 					/*startSearch(defaultVisitUrl,getSelectCity()[0],HODLER_TYPE,"nearby","intelligent","all",GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(),query);*/
 					startSearch(nextPageUrl,getSelectCity()[0], HODLER_TYPE, position_bussness, intelligentStr, type, GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(), query);
 					isPull = true;
-					
+
 				}
 			}
 			break;
-			
-			
+
+
 		case InjectView.DOWN://去做刷新操作
-		
+
 			startSearch(defaultVisitUrl,getSelectCity()[0], HODLER_TYPE, position_bussness, intelligentStr, type, GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(), query);
 			searchBankcardAdapter = null;
-				//暂时为空
+			//暂时为空
 			/*CustomToast.show(activity, "下拉操作", "现在进行下拉操作！");*/
 			PullToRefreshManager.getInstance().footerEnable();
 			lv_search_content.removeFooterView(emptyView);
 			break;
 		}
 	}
+
+
+	/**
+	 * 获得8大板块的头部导航
+	 */
+	private void getAllServer() {
+		biz=new ServiceAllBiz();
+		if ("".equals(App.app.getData(App.TAGS[0]))) {
+			biz.getAllService("100000", new RequestCallBack() {
+				@Override
+				public void onResponse(Response response) throws IOException {
+					String json=response.body().string();
+					App.app.setData(App.TAGS[0],json);
+					handleOkhttp.sendEmptyMessage(3);
+				}
+				@Override
+				public void onFailure(Request request, IOException exception) {
+
+				}
+			});
+		}else {
+			handleOkhttp.sendEmptyMessage(3);
+		}
+		if ("".equals(App.app.getData(App.TAGS[1]))) {
+			biz.getAllService("200000", new RequestCallBack() {
+				@Override
+				public void onResponse(Response response) throws IOException {
+					String json=response.body().string();
+					App.app.setData(App.TAGS[1],json);
+					handleOkhttp.sendEmptyMessage(4);
+				}
+				@Override
+				public void onFailure(Request request, IOException exception) {
+
+				}
+			});
+		}else {
+			handleOkhttp.sendEmptyMessage(4);
+		}
+		if ("".equals(App.app.getData(App.TAGS[2]))) {
+			biz.getAllService("300000", new RequestCallBack() {
+				@Override
+				public void onResponse(Response response) throws IOException {
+					String json=response.body().string();
+					App.app.setData(App.TAGS[2],json);
+					handleOkhttp.sendEmptyMessage(5);
+				}
+				@Override
+				public void onFailure(Request request, IOException exception) {
+
+				}
+			});
+		}else {
+			handleOkhttp.sendEmptyMessage(5);
+		}
+		if ("".equals(App.app.getData(App.TAGS[3]))) {
+			biz.getAllService("400000", new RequestCallBack() {
+				@Override
+				public void onResponse(Response response) throws IOException {
+					String json=response.body().string();
+					App.app.setData(App.TAGS[3],json);
+					handleOkhttp.sendEmptyMessage(6);
+				}
+				@Override
+				public void onFailure(Request request, IOException exception) {
+
+				}
+			});
+		}else {
+			handleOkhttp.sendEmptyMessage(6);
+		}
+		if ("".equals(App.app.getData(App.TAGS[4]))) {
+			biz.getAllService("500000",new RequestCallBack() {
+				@Override
+				public void onResponse(Response response) throws IOException {
+					String json=response.body().string();
+					App.app.setData(App.TAGS[4],json);
+					handleOkhttp.sendEmptyMessage(7);
+				}
+				@Override
+				public void onFailure(Request request, IOException exception) {
+
+				}
+			});
+		}else {
+			handleOkhttp.sendEmptyMessage(7);
+		}
+		if ("".equals(App.app.getData(App.TAGS[5]))) {
+			biz.getAllService("600000", new RequestCallBack() {
+				@Override
+				public void onResponse(Response response) throws IOException {
+					String json=response.body().string();
+					App.app.setData(App.TAGS[5],json);
+					handleOkhttp.sendEmptyMessage(8);
+				}
+				@Override
+				public void onFailure(Request request, IOException exception) {
+
+				}
+			});
+		}else {
+			handleOkhttp.sendEmptyMessage(8);
+		}
+		if ("".equals(App.app.getData(App.TAGS[6]))) {
+			biz.getAllService("700000", new RequestCallBack() {
+				@Override
+				public void onResponse(Response response) throws IOException {
+					String json=response.body().string();
+					App.app.setData(App.TAGS[6],json);
+					handleOkhttp.sendEmptyMessage(9);
+				}
+				@Override
+				public void onFailure(Request request, IOException exception) {
+
+				}
+			});
+		}else {
+			handleOkhttp.sendEmptyMessage(9);
+		}
+		if ("".equals(App.app.getData(App.TAGS[7]))) {
+			biz.getAllService("800000", new RequestCallBack() {
+				@Override
+				public void onResponse(Response response) throws IOException {
+					String json=response.body().string();
+					App.app.setData(App.TAGS[7],json);
+					handleOkhttp.sendEmptyMessage(10);
+				}
+				@Override
+				public void onFailure(Request request, IOException exception) {
+
+				}
+			});
+		}else {
+			handleOkhttp.sendEmptyMessage(10);
+		}
+	}
+	private void setFirstValue() {
+		if (!"".equals(App.app.getData(App.TAGS[0]))&&!"".equals(App.app.getData(App.TAGS[1]))&&!"".equals(App.app.getData(App.TAGS[2]))&&!"".equals(App.app.getData(App.TAGS[3]))&&!"".equals(App.app.getData(App.TAGS[4]))&&!"".equals(App.app.getData(App.TAGS[5]))&&!"".equals(App.app.getData(App.TAGS[6]))&&!"".equals(App.app.getData(App.TAGS[7]))) {
+			String allJson="{name: 全部,data:[{name: 全部,key: 000000},"+App.app.getData(App.TAGS[0])+","+App.app.getData(App.TAGS[1])+","+App.app.getData(App.TAGS[2])+","+App.app.getData(App.TAGS[3])+","+App.app.getData(App.TAGS[4])+","+App.app.getData(App.TAGS[5])+","+App.app.getData(App.TAGS[6])+","+App.app.getData(App.TAGS[7])+"]}";
+			Gson gson=new Gson();
+			root = gson.fromJson(allJson, ServiceRoot.class);
+			name = root.getName();
+			ArrayList<String> allGroup = new ArrayList<String>();
+			SparseArray<LinkedList<String>> allChild = new SparseArray<LinkedList<String>>();
+			for (int j = 0; j < root.getData().size(); j++) {
+				LinkedList<String> chind = new LinkedList<String>();
+				allGroup.add(root.getData().get(j).getName());
+				List<ServiceData> items =root.getData().get(j).getData();
+				if (items != null) {
+					for (ServiceData item : items) {
+						chind.add(item.getName());
+					}
+				}
+				allChild.put(j, chind);
+			}
+			holder_button.put(0, name);
+			viewLeft.setGroups(allGroup);
+			viewLeft.setChildren(allChild);
+			mViewArray.put(0, viewLeft);
+		}
+	};
 }

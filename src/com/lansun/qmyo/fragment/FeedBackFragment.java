@@ -2,38 +2,35 @@ package com.lansun.qmyo.fragment;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectBinder;
-import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.inject.InjectView;
-import com.android.pc.ioc.internet.FastHttp;
-import com.android.pc.ioc.internet.FastHttpHander;
-import com.android.pc.ioc.internet.InternetConfig;
-import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
-import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.R;
+import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CustomToast;
-import com.lansun.qmyo.R;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -56,6 +53,15 @@ public class FeedBackFragment extends BaseFragment implements TextWatcher{
 					progressDialog.dismiss();
 				}
 				CustomToast.show(activity, "提示", "提交成功,请您耐心等候");
+				FragmentEntity entity=new FragmentEntity();
+				Fragment fragment=null;
+				if ("SearchBankCardFragment".equals(fragment_name)) {
+					fragment=new SearchBankCardFragment();
+				}else {
+					fragment=new FeedBackListFragment();
+				}
+				entity.setFragment(fragment);
+				EventBus.getDefault().post(entity);
 				break;
 			case 1:
 				if (progressDialog!=null) {
@@ -67,6 +73,7 @@ public class FeedBackFragment extends BaseFragment implements TextWatcher{
 		}
 	};
 	private ProgressDialog progressDialog;
+	private String fragment_name;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -75,7 +82,15 @@ public class FeedBackFragment extends BaseFragment implements TextWatcher{
 		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
-
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		if (getArguments()!=null) {
+			fragment_name=getArguments().getString("fragment_name");
+		}
+		InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+	}
 	@InjectInit
 	private void init() {
 		String title = getArguments().getString("title");

@@ -117,7 +117,7 @@
     <style name="line_style_1">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1px</item>
-        <item name="android:background">@color/line_bg2</item>
+        <item name="android:background">@color/line_bg1</item>
     </style>
     <style name="line_style_2">
         <item name="android:layout_width">match_parent</item>

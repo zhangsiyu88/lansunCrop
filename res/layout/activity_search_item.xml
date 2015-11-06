@@ -130,7 +130,7 @@
             android:layout_height="1px"
             android:layout_marginLeft="@dimen/margin_top_35"
             android:layout_marginRight="@dimen/margin_top_35"
-            android:background="@color/line_bg" />
+            android:background="@color/line_bg_expand" />
     </LinearLayout>
 
 </RelativeLayout>

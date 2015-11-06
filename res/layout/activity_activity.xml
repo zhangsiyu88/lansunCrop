@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EBEBEB"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+     >
 
     <!-- 头部的两行栏 -->
 
@@ -63,18 +64,22 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/line_bg" />
+        android:background="@color/line_bg_expand" />
 
-    <com.lansun.qmyo.view.ExpandTabView
-        android:id="@+id/expandtab_view"
-        style="@style/w_full_h_wrap"
-        android:layout_height="@dimen/expandtab_view_h" />
-
-    <View
-        android:id="@+id/expandTabViewButtomLine"
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/line_bg" />
+    <LinearLayout
+        android:id="@+id/header"
+        style="@style/w_match_h_wrap"
+        android:orientation="vertical" >
+        <com.lansun.qmyo.view.ExpandTabView
+            android:id="@+id/expandtab_view"
+            style="@style/w_full_h_wrap"
+            android:layout_height="@dimen/expandtab_view_h" />
+        <View
+            android:id="@+id/expandTabViewButtomLine"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/line_bg_expand" />
+    </LinearLayout>
 
     <com.lansun.qmyo.view.MyListView
         android:id="@+id/lv_activity_list"
@@ -86,13 +91,5 @@
         android:scrollbarFadeDuration="1000"
         android:scrollbars="vertical" 
         />
-    <!-- android:fastScrollEnabled="true" -->
-    <!-- style="@style/w_h_full" -->
-    
-    
-   <!-- <include 
-       android:id="@+id/customdialogprogress"
-       layout="@layout/customdialogprogress" 
-       android:visibility="gone"/> -->
 
 </LinearLayout>

@@ -44,8 +44,6 @@ import com.lansun.qmyo.domain.Sensitive;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CustomToast;
-
-
 /**
  * 欢迎界面
  * 
@@ -54,10 +52,8 @@ import com.lansun.qmyo.view.CustomToast;
  */
 @InjectLayer(R.layout.activity_splash)
 public class SplashActivity extends FragmentActivity {
-
 	private boolean isDebug = false;
 	Timer timer = new Timer();
-	
 	private LocationManagerProxy aMapLocManager = null;
 	private AMapLocation aMapLocation;// 用于判断定位超时
 	private boolean isTip;

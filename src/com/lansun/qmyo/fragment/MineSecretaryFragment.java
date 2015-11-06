@@ -128,9 +128,9 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 	 */
 	private void setEmptyView(int state) {
 		if (state==0) {
-			question_item_recycle.setVisibility(View.GONE);
+			swiperefresh.setVisibility(View.GONE);
 		}else {
-			question_item_recycle.setVisibility(View.VISIBLE);
+			swiperefresh.setVisibility(View.VISIBLE);
 		}
 	}
 	private void initView(View rootView) {

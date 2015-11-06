@@ -17,9 +17,11 @@
     <color name="app_grey7">#757575</color>
     <color name="popup_main_background">#b0000000</color>
     <color name="line_bg">#C9C9C9</color>
+    <color name="line_bg_expand">#EBEBEB</color>
     <color name="text_nomal">#6F6F6F</color>
     <color name="btntextcolor">#ff1E90FF</color>
     <color name="line_bg2">#DBDBDB</color>
+    <color name="line_bg1">#EBEBEB</color>
     <color name="app_circle_gray">#9C9C9C</color>
     <color name="text_gray1">#6F6F6F</color>
     <color name="text_gray2">#AFAFAF</color>

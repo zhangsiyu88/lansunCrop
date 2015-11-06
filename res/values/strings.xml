@@ -18,6 +18,7 @@
     <string name="dining">美食餐饮</string>
     <string name="courtesy_car">汽车礼遇</string>
     <string name="life_service">生活服务</string>
+    <string name="life_quality">高质生活</string>
     <string name="entertainment">休闲娱乐</string>
     <string name="integral">积分兑换</string>
     <string name="investment">投资理财</string>
@@ -432,6 +433,6 @@ A：你可以在首页的右上角点击查看你的卡包或者通过点击“�
      <string name="login_to_comment">总裁大大,请先登录再发表高见哟</string>
      <string name="login_to_getmessage">总裁大大,登录才可接收消息哟</string>
      <string name="login_to_enjoysecretaryyourself">总裁大大,体验专属私人秘书服务需要登录的哟</string>
-     <string name="pump">请您在收到回复再进行追问...</string>
+     <string name="pump">请您在收到回复后再进行追问...</string>
 
 </resources>
