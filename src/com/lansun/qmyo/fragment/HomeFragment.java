@@ -444,8 +444,8 @@ import com.squareup.okhttp.Response;
 				v.rl_top_bg.setPressed(true);
 
 				//强行将体验字体后面的背景设置为 绿色！
-				v.rl_bg.setBackgroundResource(R.drawable.circle_background_gray);
-				v.rl_top_bg.setBackgroundResource(R.drawable.circle_background_gray);
+				v.rl_bg.setBackgroundResource(R.drawable.circle_background_green);
+				v.rl_top_bg.setBackgroundResource(R.drawable.circle_background_green);
 
 				v.tv_home_experience.setVisibility(View.VISIBLE);
 				v.tv_top_home_experience.setVisibility(View.VISIBLE);
