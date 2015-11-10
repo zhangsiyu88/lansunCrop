@@ -1,14 +1,13 @@
 package com.lansun.qmyo.fragment.searchbrand;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,19 +27,15 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
-import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
-import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.inject.InjectPullRefresh;
 import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.view.PullToRefreshManager;
-import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.ioc.view.listener.OnItemClick;
 import com.android.pc.util.Handler_Inject;
 import com.google.gson.Gson;
@@ -51,8 +46,6 @@ import com.lansun.qmyo.biz.ServiceAllBiz;
 import com.lansun.qmyo.domain.ActivityList;
 import com.lansun.qmyo.domain.ActivityListData;
 import com.lansun.qmyo.domain.Intelligent;
-import com.lansun.qmyo.domain.Service;
-import com.lansun.qmyo.domain.ServiceDataItem;
 import com.lansun.qmyo.domain.position.City;
 import com.lansun.qmyo.domain.position.Position;
 import com.lansun.qmyo.domain.screening.DataScrolling;
@@ -61,14 +54,13 @@ import com.lansun.qmyo.domain.service.ServiceData;
 import com.lansun.qmyo.domain.service.ServiceRoot;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.ActivityDetailFragment;
-import com.lansun.qmyo.fragment.ActivityFragment;
 import com.lansun.qmyo.fragment.BaseFragment;
-import com.lansun.qmyo.fragment.SearchBankCardFragment;
 import com.lansun.qmyo.fragment.SearchFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
 import com.lansun.qmyo.listener.RequestCallBack;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.view.CustomDialogProgress;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExpandTabView;
 import com.lansun.qmyo.view.MyListView;
@@ -80,6 +72,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 public class SearchBrandListOkHttpFragment extends BaseFragment implements OnClickListener,TextWatcher{
+	private final String TAG=SearchBrandListOkHttpFragment.class.getSimpleName();
 	private String HODLER_TYPE = "000000";
 	private boolean isPull = false;
 	private boolean first;
@@ -130,19 +123,9 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 	@InjectView(binders = @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick"), down = true, pull = true)
 	private MyListView lv_search_content;
 	protected boolean allready;
-
-	/*	@InjectAll
-	Views v;
-
-	class Views {
-		private View iv_card;
-		private TextView tv_activity_title, tv_home_experience;
-		private ExpandTabView expandtab_view;
-		@InjectBinder(listeners = { OnClick.class }, method = "click")
-		private RelativeLayout rl_bg;
-	}*/
-
-	//TODO
+	/**
+	 * 处理okhttp的网络返回请求
+	 */
 	private Handler handleOkhttp=new Handler(){
 
 		public void handleMessage(android.os.Message msg) {
@@ -151,6 +134,11 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 				break;
 			case 1:
 				endProgress();
+				lv_search_content.setVisibility(View.VISIBLE);
+				if(cPd!=null){
+					cPd.dismiss();
+					cPd = null;
+				}
 				if(searchBankcardAdapter == null){
 					searchBankcardAdapter = new SearchAdapter(lv_search_content,datas, R.layout.activity_search_item);
 
@@ -195,11 +183,15 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 
 				break;
 			case 2:
-				//endProgress();
+				endProgress();
+				if(cPd!=null){
+					cPd.dismiss();
+					cPd = null;
+				}
 				//setEmptityView(first,1);
 				//emptyView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
+				lv_search_content.removeFooterView(emptyView);
 				lv_search_content.addFooterView(emptyView);
-
 				lv_search_content.setAdapter(null);
 
 				PullToRefreshManager.getInstance().footerUnable();//拒绝此时的上拉和下拉操作
@@ -241,9 +233,13 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 	protected String position_bussness="nearby";
 	private TextView tv_found_secretary;
 	private ServiceAllBiz biz;
+	private boolean isShowFromInitData;
+	private boolean isShowDialog;
+	private CustomDialogProgress cPd;
+	private boolean isDownRefresh;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
+		isShowFromInitData = true;
 		emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_search_empty, null);
 		tv_found_secretary = (TextView) emptyView.findViewById(R.id.tv_found_secretary);
 		tv_found_secretary.setVisibility(View.VISIBLE);
@@ -272,6 +268,9 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 		viewLeft2 = new ViewLeft(activity);
 		viewMiddle = new ViewMiddle(activity);
 		viewRight = new ViewRight(activity);
+		/**
+		 * 此处主要用于12小时更新一次最新的banner
+		 */
 		String time=App.app.getData("in_this_fragment_time");
 		if (!"".equals(time)) {
 			long oldtime=Long.valueOf(time);
@@ -286,6 +285,7 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 			getAllServer();
 			App.app.setData("in_this_fragment_time",String.valueOf(System.currentTimeMillis()));
 		}
+		//到此结束
 		
 		//按商圈选择访问
 		OkHttp.asyncGet(GlobalValue.URL_SEARCH_HOLDER_DISTRICT+App.app.getData("select_cityCode"),
@@ -323,6 +323,9 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 
 			}
 		});
+		/**
+		 * 智能排序
+		 */
 		OkHttp.asyncGet(GlobalValue.URL_SEARCH_HOLDER_INTELLIGENT, "Content-Type", "application/json", null, new Callback() {
 
 			@Override
@@ -373,6 +376,10 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 		});
 		setOnPullListeners();
 	}
+	/**
+	 * 页面跳转
+	 * @param query
+	 */
 	private void startSearch(String query) {
 		SearchFragment fragment = new SearchFragment();
 		Bundle args = new Bundle();
@@ -415,7 +422,10 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 		lv_search_content=(MyListView)view.findViewById(R.id.lv_search_content); //TODO	
 
 		//初始化完成之后去请求网络获取所有数据
-
+		if(isShowFromInitData){//设计isShowFromInitData标签的原因是： 只有第一次进来时，才会有container的监听，在container没有消失的前提下，都只会走initData()方法间接地操作loadActivityList()
+			//而筛选栏是直接的进行loadActivityList()的操作，那么在一进入页面就断网的环境下，是没有机会点击筛选栏的，自然也无法 弹出那个customDialogProgress
+			isShowDialog = false;
+		}
 		startSearch(defaultVisitUrl,getSelectCity()[0],HODLER_TYPE,"nearby","intelligent","all",GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(),query);
 		search_tv_cancle=(TextView)view.findViewById(R.id.search_tv_cancle);
 		search_tv_cancle.setOnClickListener(this);
@@ -515,8 +525,6 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 				InputMethodManager imm = (InputMethodManager) activity
 						.getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-
-
 				//				startSearch();
 				setEmptityView(first, 0);
 			}
@@ -537,23 +545,35 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 	 * @param string
 	 */
 	private void startSearch(String visitUrl, String site,String service,String positon,String intelligent,String type,String location,String query) {
-
 		/*PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 		PullToRefreshManager.getInstance().onFooterRefreshComplete();*/
-
-		setProgress(lv_search_content);
-		startProgress();
-		progress_text.setText("正在搜索幸运中");
-		/**
-		 * +"&query="+query暂时先去掉
-		 */
-		Log.e("location", GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
+		if (isShowDialog){
+			if(cPd == null ){
+				cPd = CustomDialogProgress.createDialog(activity);
+				cPd.setOnCancelListener(new OnCancelListener() {
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						lv_search_content.setVisibility(View.INVISIBLE);
+						if (allready) {
+							
+						}
+					}
+				});
+				lv_search_content.setVisibility(View.INVISIBLE);
+				cPd.setCanceledOnTouchOutside(false);
+				cPd.show();
+			}else{
+				cPd.show();
+			}
+		}else {
+			setProgress(lv_search_content);
+			startProgress();
+			progress_text.setText("正在搜索幸运中");
+		}
 		OkHttp.asyncGet(visitUrl+"site="+site+"&service="+service+"&position="+positon+"&intelligent="+intelligent+"&type="
-				+type+"&location="+location+"&query="+query, "Authorization", "Bearer "+App.app.getData("access_token"), null, new Callback() {
-
+				+type+"&location="+location+"&query="+query, "Authorization", "Bearer "+App.app.getData("access_token"), "SearchBrandListOkHttpFragment", new Callback() {
 			@Override
 			public void onResponse(Response response) throws IOException {
-
 				Gson gson=new Gson();
 				list = gson.fromJson(response.body().string(), ActivityList.class);
 				if(isPull){
@@ -586,7 +606,6 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 						Log.i("","在此处添加上了尾部EmptyView");
 					}*/
 
-					//TODO
 					handleOkhttp.sendEmptyMessage(1);
 					return;
 				}
@@ -603,7 +622,9 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 		});
 	}
 
-
+	/**
+	 * 设置下拉的刷新
+	 */
 	private void setOnPullListeners() {
 		viewMiddle.setOnSelectListener(new ViewMiddle.OnSelectListener() {
 			@Override
@@ -611,12 +632,17 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 					int position) {
 				intelligentStr = intelligent.getData()
 						.get(position).getKey();
-				searchBankcardAdapter = null;//上面四个板块点击之前需要进行  设置为空的操作，为了将前面的页面数据给我清掉
+				//				searchBankcardAdapter = null;//上面四个板块点击之前需要进行  设置为空的操作，为了将前面的页面数据给我清掉
+				OkHttp.okHttpClient.cancel(TAG);
+				searchBankcardAdapter=null;
 				/*lv_search_content.removeView(emptyView);*/
+				if (!isShowDialog) {
+					endProgress();
+				}
+				isShowDialog=true;
 				startSearch(defaultVisitUrl,getSelectCity()[0],HODLER_TYPE,position_bussness,intelligentStr,type,GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(),query);
 				onRefresh(viewMiddle, showText);
 			}
-
 		});
 
 		viewLeft.setOnSelectListener(new ViewLeft.OnSelectListener(){
@@ -630,9 +656,14 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 						.getData().get(position) != null) {
 
 					HODLER_TYPE = root.getData().get(parendId).getData().get(position).getKey();
-//					query=root.getData().get(parendId).getData().get(position).getName();
+					//					query=root.getData().get(parendId).getData().get(position).getName();
 				}
-				searchBankcardAdapter = null;
+				OkHttp.okHttpClient.cancel(TAG);
+				searchBankcardAdapter=null;
+				if (!isShowDialog) {
+					endProgress();
+				}
+				isShowDialog=true;
 				startSearch(defaultVisitUrl,getSelectCity()[0],HODLER_TYPE,position_bussness,intelligentStr,type,GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(),query);
 				onRefresh(viewLeft, showText);
 			}
@@ -662,8 +693,12 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 							.getKey();
 					Log.e("position", "=="+position_bussness);
 				}
-				searchBankcardAdapter = null;
-				/*lv_search_content.removeView(emptyView);*/
+				OkHttp.okHttpClient.cancel(TAG);
+				searchBankcardAdapter=null;
+				if (!isShowDialog) {
+					endProgress();
+				}
+				isShowDialog=true;
 				startSearch(defaultVisitUrl,getSelectCity()[0],HODLER_TYPE,position_bussness,intelligentStr,type,GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(),query);
 				onRefresh(viewLeft2, showText);
 			}
@@ -672,7 +707,6 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 		viewRight.setOnSelectListener(new ViewRight.OnSelectListener() {
 			@Override
 			public void getValue(String distance, String showText,int position) {
-
 				type = sxintelligent.getData().get(position).getKey();
 				if ("all".equals(type)) {
 					typeSb.delete(0, typeSb.length());
@@ -680,7 +714,12 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 				if (!typeSb.toString().contains(type)) {
 					typeSb.append(type + ",");
 				}
-				searchBankcardAdapter = null;
+				OkHttp.okHttpClient.cancel(TAG);
+				searchBankcardAdapter=null;
+				if (!isShowDialog) {
+					endProgress();
+				}
+				isShowDialog=true;
 				/*lv_search_content.removeView(emptyView);*/
 				startSearch(defaultVisitUrl,getSelectCity()[0],HODLER_TYPE,position_bussness,intelligentStr,type,GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(),query);
 				onRefresh(viewRight, showText);
@@ -740,6 +779,7 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 		// 这里的type来判断是否是下拉还是上拉
 		switch (type1) {
 		case InjectView.PULL:
+			isShowDialog=false;
 			Log.i("上拉动作是否可以识别?", "说明上拉动作能够被识别");
 			/*CustomToast.show(activity, "上拉操作", "现在进行上拉操作！");*/
 			if (list != null) {
@@ -778,7 +818,7 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 
 
 		case InjectView.DOWN://去做刷新操作
-
+			isShowDialog=false;
 			startSearch(defaultVisitUrl,getSelectCity()[0], HODLER_TYPE, position_bussness, intelligentStr, type, GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(), query);
 			searchBankcardAdapter = null;
 			//暂时为空
@@ -924,6 +964,9 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 			handleOkhttp.sendEmptyMessage(10);
 		}
 	}
+	/**
+	 * 加载本地导航资源
+	 */
 	private void setFirstValue() {
 		if (!"".equals(App.app.getData(App.TAGS[0]))&&!"".equals(App.app.getData(App.TAGS[1]))&&!"".equals(App.app.getData(App.TAGS[2]))&&!"".equals(App.app.getData(App.TAGS[3]))&&!"".equals(App.app.getData(App.TAGS[4]))&&!"".equals(App.app.getData(App.TAGS[5]))&&!"".equals(App.app.getData(App.TAGS[6]))&&!"".equals(App.app.getData(App.TAGS[7]))) {
 			String allJson="{name: 全部,data:[{name: 全部,key: 000000},"+App.app.getData(App.TAGS[0])+","+App.app.getData(App.TAGS[1])+","+App.app.getData(App.TAGS[2])+","+App.app.getData(App.TAGS[3])+","+App.app.getData(App.TAGS[4])+","+App.app.getData(App.TAGS[5])+","+App.app.getData(App.TAGS[6])+","+App.app.getData(App.TAGS[7])+"]}";

@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -48,6 +49,7 @@ public class EditUserInfoFragment extends BaseFragment {
 	Views v;
 	private String name;
 	private String paramName;
+	private String fragment_name;
 
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
@@ -71,17 +73,17 @@ public class EditUserInfoFragment extends BaseFragment {
 	private void init() {
 		name = getArguments().getString("name");
 		paramName = getArguments().getString("paramName");
-		
+		fragment_name=getArguments().getString("fragment_name");
 		v.tv_activity_shared.setText(R.string.save);
 		initTitle(v.tv_activity_title, name, null, 0);
 		v.fl_comments_right_iv.setVisibility(View.GONE);
-
 		switch (paramName) {
 		case "email":
 			if(GlobalValue.user.getEmail()=="null"||GlobalValue.user.getEmail()==null||GlobalValue.user.getEmail().isEmpty()){
 				v.et_edit_content.setHint("请输入您希望绑定的邮箱");
 			}else{
 				v.et_edit_content.setText(GlobalValue.user.getEmail());
+				v.et_edit_content.setSelection(String.valueOf(GlobalValue.user.getEmail()).length());
 			}
 			break;
 		case "truename":
@@ -89,10 +91,12 @@ public class EditUserInfoFragment extends BaseFragment {
 				v.et_edit_content.setHint("请输入您的真实姓名");
 			}else{
 				v.et_edit_content.setText(GlobalValue.user.getTruename());
+				v.et_edit_content.setSelection(String.valueOf(GlobalValue.user.getTruename()).length());
 			}
 			break;
 		case "nickname":
 			v.et_edit_content.setText(GlobalValue.user.getNickname());
+			v.et_edit_content.setSelection(String.valueOf(GlobalValue.user.getNickname()).length());
 			break;
 		}
 		autoHiddenKey();
@@ -101,14 +105,11 @@ public class EditUserInfoFragment extends BaseFragment {
 	private void click(View view) {
 		switch (view.getId()) {
 		case R.id.tv_activity_shared:
-
-			if (TextUtils
-					.isEmpty(v.et_edit_content.getText().toString().trim())) {
+			if (TextUtils.isEmpty(v.et_edit_content.getText().toString().trim())) {
 				//输入框为空但点击提交，要提示
 				CustomToast.show(activity, R.string.tip,R.string.please_enter_content);
 				return;
 			}
-
 			if ("email".equals(paramName)) {
 				if (!isEmail(v.et_edit_content.getText().toString())) {
 					CustomToast.show(activity, R.string.tip,R.string.email_faild);
@@ -124,13 +125,12 @@ public class EditUserInfoFragment extends BaseFragment {
 			config.setHead(head);
 			LinkedHashMap<String, String> params = new LinkedHashMap<>();
 			params.put(paramName, v.et_edit_content.getText().toString());
-			
+			pd.setMessage("保存中,请耐心等候...");
+			pd.show();
 			/*
 			将用户的nickname以表单形式提交上去并保存
 			 */
 			FastHttpHander.ajax(GlobalValue.URL_USER_SAVE, params,config, this);
-			
-			
 			break;
 		}
 	}
@@ -141,16 +141,10 @@ public class EditUserInfoFragment extends BaseFragment {
 			switch (r.getKey()) {
 			case 0:
 				GlobalValue.user = Handler_Json.JsonToBean(User.class,r.getContentAsString());
-				CustomToast.show(activity, getString(R.string.tip), "修改成功");
-				//App.app.setData("userNickname", paramName);
-				GlobalValue.user.setNickname(v.et_edit_content.getText().toString());
-				
-				//BaseFragment中设置的一个方法，功能是：将自己从FragmentManager中弹出，类似于Activity中的销毁操作
-				/*back();*/
-				EditUserFragment editUserFragment = new EditUserFragment();
-				FragmentEntity fEntity = new FragmentEntity();
-				fEntity.setFragment(editUserFragment);
-				EventBus.getDefault().post(fEntity);
+				if (pd!=null) {
+					pd.dismiss();
+					CustomToast.show(activity, getString(R.string.tip), "修改成功");
+				}
 				break;
 			}
 		}

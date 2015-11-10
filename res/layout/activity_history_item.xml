@@ -2,8 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/w_match_h_wrap"
     android:gravity="center_vertical"
-    android:paddingTop="12dp"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:paddingTop="12dp" >
+
     <LinearLayout
         style="@style/w_match_h_wrap"
         android:background="@drawable/tv_style"
@@ -18,12 +19,18 @@
             android:gravity="center_vertical"
             android:paddingLeft="12dp" />
 
-        <com.android.pc.ioc.image.RecyclingImageView
+        <RelativeLayout
             android:id="@+id/iv_history_delete"
             style="@style/w_wrap_h_wrap"
-            android:padding="5dp"
-            android:layout_marginRight="12dp"
-            android:background="@drawable/history_delete" />
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+             >
+            <com.android.pc.ioc.image.RecyclingImageView
+                style="@style/w_wrap_h_wrap"
+                android:background="@drawable/history_delete" />
+        </RelativeLayout>
     </LinearLayout>
 
 </LinearLayout>

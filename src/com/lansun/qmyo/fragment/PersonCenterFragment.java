@@ -50,6 +50,7 @@ import com.android.pc.util.Handler_Json;
 import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.net.OkHttp;
+import com.lansun.qmyo.override.CircleImageView;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CircularImage;
 import com.lansun.qmyo.view.CustomToast;
@@ -75,7 +76,7 @@ public class PersonCenterFragment extends BaseFragment{
 		iv_person_center_qr_code, tv_person_center_exit,
 		fl_comments_right_iv;
 		private TextView tv_activity_title, tv_person_center_nickname;
-		private CircularImage iv_person_center_head;
+		private CircleImageView iv_person_center_head;
 	}
 
 	protected static final int ACTION_IMAGE_CAPTURE = 2;
@@ -142,6 +143,7 @@ public class PersonCenterFragment extends BaseFragment{
 			Bundle args = new Bundle();
 			args.putString("name", getString(R.string.edit_nick_name));
 			args.putString("paramName", "nickname");
+			args.putString("fragment_name", "PersonCenterFragment");
 			fragment.setArguments(args);
 			break;
 

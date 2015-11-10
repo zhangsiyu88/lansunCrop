@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EBEBEB" >
+    android:background="#EBEBEB" xmlns:app="http://schemas.android.com/apk/res/com.lansun.qmyo">
 
     <ScrollView
         android:id="@+id/sc_mine"
@@ -38,11 +38,14 @@
                             android:layout_gravity="center"
                             android:background="@drawable/picture_frame" >
 
-                            <com.lansun.qmyo.view.CircularImage
+                            <com.lansun.qmyo.override.CircleImageView
                                 android:id="@+id/iv_mine_head"
                                 style="@style/user_head"
+                                app:circle_border_color="@color/app_green1"
+                                app:circle_border_width="2dp"
+                                android:src="@drawable/default_avatar"
                                 android:layout_gravity="center"
-                                android:background="@drawable/default_avatar" />
+                                />
                         </FrameLayout>
 
                         <TextView
@@ -150,12 +153,12 @@
                 android:background="#EBEBEB" />
 
             <LinearLayout
+                 android:id="@+id/rl_mine_secretary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/app_white" >
+                android:background="@drawable/white_to_translate_gray" >
 
                 <RelativeLayout
-                    android:id="@+id/rl_mine_secretary"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/item_h_90"
                     android:layout_marginLeft="@dimen/l_r_35"
@@ -166,7 +169,7 @@
                         style="@style/w_wrap_h_wrap"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/private_secretary_1" />
+                        android:src="@drawable/private_secretary" />
 
                     <TextView
                         android:id="@+id/title"
@@ -192,12 +195,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_alignParentBottom="true"
-                android:background="@color/line_bg" />
+                android:background="@color/line_bg_expand" />
 
             <!-- 暂时将我的评论关闭掉 -->
             <LinearLayout
                 android:visibility="gone"
-                
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/app_white" >
@@ -245,27 +247,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_alignParentBottom="true"
-                android:background="@color/line_bg" />
+                android:background="@color/line_bg_expand" />
 
             <LinearLayout
+                android:id="@+id/rl_mine_history"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/app_white" >
-
+                android:background="@drawable/white_to_translate_gray" >
                 <RelativeLayout
-                    android:id="@+id/rl_mine_history"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/item_h_90"
                     android:layout_marginLeft="@dimen/l_r_35"
                     android:layout_marginRight="@dimen/l_r_35"
-                    android:background="@color/app_white" >
+                    >
 
                     <com.android.pc.ioc.image.RecyclingImageView
                         android:id="@+id/mine_secretary_icon3"
                         style="@style/w_wrap_h_wrap"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/recent_1" />
+                        android:src="@drawable/recent" />
 
                     <TextView
                         style="@style/text_style_nomal_28"
@@ -287,24 +288,24 @@
                 android:background="#ebebeb" />
 
             <LinearLayout
+                android:id="@+id/rl_mine_about"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/app_white" >
+                android:background="@drawable/white_to_translate_gray" >
 
                 <RelativeLayout
-                    android:id="@+id/rl_mine_about"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/item_h_90"
                     android:layout_marginLeft="@dimen/l_r_35"
                     android:layout_marginRight="@dimen/l_r_35"
-                    android:background="@color/app_white" >
+                    >
 
                     <com.android.pc.ioc.image.RecyclingImageView
                         android:id="@+id/mine_secretary_icon4"
                         style="@style/w_wrap_h_wrap"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/about_1" />
+                        android:src="@drawable/about" />
 
                     <TextView
                         style="@style/text_style_nomal_28"
@@ -320,27 +321,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_alignParentBottom="true"
-                android:background="@color/line_bg" />
+                android:background="@color/line_bg_expand" />
 
             <LinearLayout
+                android:id="@+id/rl_mine_shared"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/app_white" >
-
+                android:background="@drawable/white_to_translate_gray" >
                 <RelativeLayout
-                    android:id="@+id/rl_mine_shared"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/item_h_90"
                     android:layout_marginLeft="@dimen/l_r_35"
                     android:layout_marginRight="@dimen/l_r_35"
-                    android:background="@color/app_white" >
-
+                    >
                     <com.android.pc.ioc.image.RecyclingImageView
                         android:id="@+id/mine_secretary_icon5"
                         style="@style/w_wrap_h_wrap"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/shared_1" />
+                        android:src="@drawable/share" />
 
                     <TextView
                         style="@style/text_style_nomal_28"

@@ -140,7 +140,7 @@ public class ActivityFragment extends BaseFragment {
 	private boolean justFirstClick = true;
 	private boolean isFromNoNetworkViewTip = false;
 	/*private boolean spyJustFirstClick = false;*/
-	
+
 	class Views {
 		private View iv_card;
 		private TextView tv_activity_title, tv_home_experience;
@@ -166,7 +166,7 @@ public class ActivityFragment extends BaseFragment {
 	private boolean mIsHasChangeTheBankcardInMineBankcardPage = false;
 	private CustomDialogProgress cPd = null;
 
-	
+
 	private long districtToRequestCurrentTimeMillis;
 	private long intelligentToRequestCurrentTimeMillis;
 	private long screenToRequestCurrentTimeMillis;
@@ -183,8 +183,8 @@ public class ActivityFragment extends BaseFragment {
 	private boolean isShowFromInitData = false;
 
 	private RelativeLayout noNetworkView;
-	
-	
+
+
 
 	private int type_index;
 
@@ -241,20 +241,19 @@ public class ActivityFragment extends BaseFragment {
 			initData();//---------------------功能：
 			/*spyJustFirstClick = true;*/
 			justFirstClick = false;
-					
+
 			v.tv_activity_title.setText(type);
 		} else {
 			v.tv_activity_title.setText("未知");
 		}
 
 		if ("true".equals(App.app.getData("isExperience"))) {
-			v.rl_bg.setPressed(true);
 			v.tv_home_experience.setVisibility(View.VISIBLE);
+			v.rl_bg.setBackgroundResource(R.drawable.circle_background_green);
 			v.iv_card.setVisibility(View.GONE);
 		} else {
 			v.iv_card.setVisibility(View.VISIBLE);
 			v.tv_home_experience.setVisibility(View.GONE);
-			v.rl_bg.setPressed(false);//含有“体验”两个字的灰色按钮隐藏掉
 		}
 
 		//TODO
@@ -266,7 +265,7 @@ public class ActivityFragment extends BaseFragment {
 
 			@Override
 			public void onClick(View arg0) {
-				
+
 				if(justFirstClick){
 					/*spyJustFirstClick = true;*/
 					justFirstClick = false;
@@ -424,72 +423,72 @@ public class ActivityFragment extends BaseFragment {
 		config2.setKey(2);
 		FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_INTELLIGENT,config2, this);
 		if ("700000".equals(HODLER_TYPE)||"800000".equals(HODLER_TYPE)) {
-			
+
 		}else {
-//			InternetConfig config = new InternetConfig();
-//			config.setKey(0);
-//			//---->调整接口连接器,此处需要将Token加入到config里面的head中去
-//			HashMap<String, Object> head = new HashMap<>();
-//			head.put("Authorization","Bearer " + App.app.getData("access_token"));
-//			config.setHead(head);
-//
-//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SERVICE
-//					+ HODLER_TYPE, config, this);
-//			// 附近 固定
-//			InternetConfig config1 = new InternetConfig();
-//			config1.setKey(1);
-//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_DISTRICT
-//					+ App.app.getData("select_cityCode"), config1, this);
-//			// 智能排序
-//			InternetConfig config2 = new InternetConfig();
-//			config2.setKey(2);
-//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_INTELLIGENT,
-//					config2, this);
-//		} else {//八大板块中任意一个点击进入后的list
-//			// 服务板块
-//			InternetConfig config = new InternetConfig();
-//			config.setKey(0);
-//
-//			//---->调整接口连接器,此处需要将Token加入到config里面的head中去
-//			HashMap<String, Object> head = new HashMap<>();
-//			head.put("Authorization",
-//					"Bearer " + App.app.getData("access_token"));
-//			config.setHead(head);
-//
-//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SERVICE
-//					+ HODLER_TYPE, config, this);
-//			
-//			
-//			serviceToRequesturrentTimeMillis = System.currentTimeMillis();
-//			Log.d("八大板块测试", "准备前往获取板块服务列表的数据 "+serviceToRequesturrentTimeMillis);
-//
-//			// 附近 固定
-//			InternetConfig config1 = new InternetConfig();
-//			config1.setKey(1);
-//
-//			Log.i("选择城市的code为:", App.app.getData("select_cityCode"));
-//
-//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_DISTRICT
-//					+ App.app.getData("select_cityCode"), config1, this);
-//			
-//			
-//			districtToRequestCurrentTimeMillis = System.currentTimeMillis();
-//			Log.d("八大板块测试", "准备前往获取商圈的数据 "+districtToRequestCurrentTimeMillis);
-//
-//
-//			// 智能排序
-//			InternetConfig config2 = new InternetConfig();
-//			config2.setKey(2);
-//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_INTELLIGENT,config2, this);
-//			
-//			intelligentToRequestCurrentTimeMillis = System.currentTimeMillis();
-//			Log.d("八大板块测试", "准备前往获取智能排序的数据 "+intelligentToRequestCurrentTimeMillis);
+			//			InternetConfig config = new InternetConfig();
+			//			config.setKey(0);
+			//			//---->调整接口连接器,此处需要将Token加入到config里面的head中去
+			//			HashMap<String, Object> head = new HashMap<>();
+			//			head.put("Authorization","Bearer " + App.app.getData("access_token"));
+			//			config.setHead(head);
+			//
+			//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SERVICE
+			//					+ HODLER_TYPE, config, this);
+			//			// 附近 固定
+			//			InternetConfig config1 = new InternetConfig();
+			//			config1.setKey(1);
+			//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_DISTRICT
+			//					+ App.app.getData("select_cityCode"), config1, this);
+			//			// 智能排序
+			//			InternetConfig config2 = new InternetConfig();
+			//			config2.setKey(2);
+			//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_INTELLIGENT,
+			//					config2, this);
+			//		} else {//八大板块中任意一个点击进入后的list
+			//			// 服务板块
+			//			InternetConfig config = new InternetConfig();
+			//			config.setKey(0);
+			//
+			//			//---->调整接口连接器,此处需要将Token加入到config里面的head中去
+			//			HashMap<String, Object> head = new HashMap<>();
+			//			head.put("Authorization",
+			//					"Bearer " + App.app.getData("access_token"));
+			//			config.setHead(head);
+			//
+			//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SERVICE
+			//					+ HODLER_TYPE, config, this);
+			//			
+			//			
+			//			serviceToRequesturrentTimeMillis = System.currentTimeMillis();
+			//			Log.d("八大板块测试", "准备前往获取板块服务列表的数据 "+serviceToRequesturrentTimeMillis);
+			//
+			//			// 附近 固定
+			//			InternetConfig config1 = new InternetConfig();
+			//			config1.setKey(1);
+			//
+			//			Log.i("选择城市的code为:", App.app.getData("select_cityCode"));
+			//
+			//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_DISTRICT
+			//					+ App.app.getData("select_cityCode"), config1, this);
+			//			
+			//			
+			//			districtToRequestCurrentTimeMillis = System.currentTimeMillis();
+			//			Log.d("八大板块测试", "准备前往获取商圈的数据 "+districtToRequestCurrentTimeMillis);
+			//
+			//
+			//			// 智能排序
+			//			InternetConfig config2 = new InternetConfig();
+			//			config2.setKey(2);
+			//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_INTELLIGENT,config2, this);
+			//			
+			//			intelligentToRequestCurrentTimeMillis = System.currentTimeMillis();
+			//			Log.d("八大板块测试", "准备前往获取智能排序的数据 "+intelligentToRequestCurrentTimeMillis);
 			// 筛选
 			InternetConfig config3 = new InternetConfig();
 			config3.setKey(3);
 			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SCREENING,config3, this);
-//			screenToRequestCurrentTimeMillis = System.currentTimeMillis();
-//			Log.d("八大板块测试", "准备前往获取筛选的数据 "+screenToRequestCurrentTimeMillis);
+			//			screenToRequestCurrentTimeMillis = System.currentTimeMillis();
+			//			Log.d("八大板块测试", "准备前往获取筛选的数据 "+screenToRequestCurrentTimeMillis);
 		}
 		emptyView = inflater.inflate(R.layout.activity_search_empty, null);
 		tv_found_secretary = emptyView.findViewById(R.id.tv_found_secretary);
@@ -509,21 +508,21 @@ public class ActivityFragment extends BaseFragment {
 			}
 		});
 
-		
-		
-		
-		
+
+
+
+
 		//当服务器返回的json中的nextpage_url为空的时候，ListView加上尾部的View操作
 		//lv_activity_list.addFooterView(emptyView);
 
 		initListener();//-->给上面四个TextView每个设置上选择的监听
 		if(isShowFromInitData){//设计isShowFromInitData标签的原因是： 只有第一次进来时，才会有container的监听，在container没有消失的前提下，都只会走initData()方法间接地操作loadActivityList()
-			                   //而筛选栏是直接的进行loadActivityList()的操作，那么在一进入页面就断网的环境下，是没有机会点击筛选栏的，自然也无法 弹出那个customDialogProgress
+			//而筛选栏是直接的进行loadActivityList()的操作，那么在一进入页面就断网的环境下，是没有机会点击筛选栏的，自然也无法 弹出那个customDialogProgress
 			isShowDialog = false;
 		}
-		
+
 		loadActivityList();//-->加载活动的列表
-		
+
 		isShowDialog = true;
 
 	}
@@ -647,7 +646,7 @@ public class ActivityFragment extends BaseFragment {
 			public void getValue(String distance, String showText, int position) {
 				type = sxintelligent.getData().get(position).getKey();
 				shopDataList.clear();
-				
+
 				if (activityAdapter != null) {
 					activityAdapter.notifyDataSetChanged();
 				}
@@ -673,7 +672,7 @@ public class ActivityFragment extends BaseFragment {
 	 * 加载活动列表,最后走的都是refreshCurrentList,只不过携带的参数不同
 	 */
 	private void loadActivityList() {
-		
+
 		if (isShowDialog){
 			if(cPd == null ){
 				/*GifMovieView loading_gif = (GifMovieView) progress.findViewById(R.id.loading_gif);
@@ -685,23 +684,23 @@ public class ActivityFragment extends BaseFragment {
 			pd.setContentView(loading_gif);
 			pd.setCancelable(false);
 			pd.setCanceledOnTouchOutside(false);*/
-				
+
 				/*cPd = new CustomDialogProgress(activity);*/
 				Log.d("dialog","生成新的dialog！");
 				/*CustomDialogProgress.createDialog(App.app.getApplicationContext());*/
 				//cPd.customDialogProgress(App.app.getApplicationContext());
 				/*cPd.setMessage("刷新中");*/
 				/*cPd.setCancelable(false);*/
-				
+
 				cPd = CustomDialogProgress.createDialog(activity);
 				cPd.setCanceledOnTouchOutside(false);
-				
+
 				cPd.show();
 			}else{
 				cPd.show();
 			}
 		}
-		
+
 		// 活动列表
 		refreshParams = new LinkedHashMap<>();
 		if (getCurrentCity()[0].equals(getSelectCity()[0])) {
@@ -730,15 +729,10 @@ public class ActivityFragment extends BaseFragment {
 		/*refreshParams.put("site", "310000");//首先默认是在上海 310000*/	
 		refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
 		refreshKey = 4;
-		
+
 		eightPartToRequestCurrentTimeMillis = System.currentTimeMillis();
 		Log.d("八大板块测试", "八大板块页面准备前去访问数据： "+eightPartToRequestCurrentTimeMillis);
-		
-		if (IsNew) {
-			refreshCurrentList(refreshUrl+"site="+getSelectCity()[0]+"&service="+HODLER_TYPE+"&position="+position_bussness+"&intelligent="+intelligentStr+"&type=new"+"&location="+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(),null, refreshKey,lv_activity_list);
-		}else {
-			refreshCurrentList(refreshUrl+"site="+getSelectCity()[0]+"&service="+HODLER_TYPE+"&position="+position_bussness+"&intelligent="+intelligentStr+"&type="+type+"&location="+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon()+"&query="+"",null, refreshKey,lv_activity_list);
-		}
+		refreshCurrentList(refreshUrl+"site="+getSelectCity()[0]+"&service="+HODLER_TYPE+"&position="+position_bussness+"&intelligent="+intelligentStr+"&type="+type+"&location="+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon()+"&query="+"",null, refreshKey,lv_activity_list);
 	}
 
 
@@ -753,7 +747,7 @@ public class ActivityFragment extends BaseFragment {
 		PullToRefreshManager.getInstance().headerEnable();
 		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 		PullToRefreshManager.getInstance().onFooterRefreshComplete();
-		
+
 
 		if (r.getStatus() == FastHttp.result_ok) {
 			if (mViewArray.size() >= 3 && activityList != null) {
@@ -764,36 +758,36 @@ public class ActivityFragment extends BaseFragment {
 			switch (r.getKey()) {
 			case 0:// 全部
 				setFirstValue(r.getContentAsString());
-//				serviceToResponseCurrentTimeMillis = System.currentTimeMillis();
-//				Log.d("八大板块测试", "已获取板块服务列表的数据 "+serviceToResponseCurrentTimeMillis);
-//				Log.d("八大板块测试", "获取板块服务的数据等待时间为： "+(serviceToResponseCurrentTimeMillis-serviceToRequesturrentTimeMillis));
-//				
-//				
-//				Log.i("全部的数据", "拿到最左边列表的展示的全部数据!");
-//				AllService = Handler_Json.JsonToBean(Service.class,
-//						r.getContentAsString());
-//				name = AllService.getName();
-//				if (name == null) {
-//					name = AllService.getData().get(0).getName();
-//				}
-//				ArrayList<String> allGroup = new ArrayList<String>();
-//				SparseArray<LinkedList<String>> allChild = new SparseArray<LinkedList<String>>();
-//				for (int j = 0; j < AllService.getData().size(); j++) {
-//					LinkedList<String> chind = new LinkedList<String>();
-//					allGroup.add(AllService.getData().get(j).getName());
-//					ArrayList<ServiceDataItem> items = AllService.getData()
-//							.get(j).getItems();
-//					if (items != null) {
-//						for (ServiceDataItem item : items) {
-//							chind.add(item.getName());
-//						}
-//					}
-//					allChild.put(j, chind);
-//				}
-//				holder_button.put(0, name);
-//				viewLeft.setGroups(allGroup);
-//				viewLeft.setChildren(allChild);
-//				mViewArray.put(0, viewLeft);
+				//				serviceToResponseCurrentTimeMillis = System.currentTimeMillis();
+				//				Log.d("八大板块测试", "已获取板块服务列表的数据 "+serviceToResponseCurrentTimeMillis);
+				//				Log.d("八大板块测试", "获取板块服务的数据等待时间为： "+(serviceToResponseCurrentTimeMillis-serviceToRequesturrentTimeMillis));
+				//				
+				//				
+				//				Log.i("全部的数据", "拿到最左边列表的展示的全部数据!");
+				//				AllService = Handler_Json.JsonToBean(Service.class,
+				//						r.getContentAsString());
+				//				name = AllService.getName();
+				//				if (name == null) {
+				//					name = AllService.getData().get(0).getName();
+				//				}
+				//				ArrayList<String> allGroup = new ArrayList<String>();
+				//				SparseArray<LinkedList<String>> allChild = new SparseArray<LinkedList<String>>();
+				//				for (int j = 0; j < AllService.getData().size(); j++) {
+				//					LinkedList<String> chind = new LinkedList<String>();
+				//					allGroup.add(AllService.getData().get(j).getName());
+				//					ArrayList<ServiceDataItem> items = AllService.getData()
+				//							.get(j).getItems();
+				//					if (items != null) {
+				//						for (ServiceDataItem item : items) {
+				//							chind.add(item.getName());
+				//						}
+				//					}
+				//					allChild.put(j, chind);
+				//				}
+				//				holder_button.put(0, name);
+				//				viewLeft.setGroups(allGroup);
+				//				viewLeft.setChildren(allChild);
+				//				mViewArray.put(0, viewLeft);
 				break;
 			case 1:// 附近
 				districtToResponseCurrentTimeMillis = System.currentTimeMillis();
@@ -826,7 +820,7 @@ public class ActivityFragment extends BaseFragment {
 				mViewArray.put(1, viewLeft2);
 				break;
 			case 2:// 智能排序
-				
+
 				intelligentToResponseCurrentTimeMillis = System.currentTimeMillis();
 				Log.d("八大板块测试", "已获取智能排序的数据 "+intelligentToResponseCurrentTimeMillis);
 				Log.d("八大板块测试", "获取智能排序的数据等待时间为： "+(intelligentToResponseCurrentTimeMillis-intelligentToRequestCurrentTimeMillis));
@@ -851,11 +845,11 @@ public class ActivityFragment extends BaseFragment {
 				break;
 
 			case 3:// 筛选
-				
+
 				screenToResponseCurrentTimeMillis = System.currentTimeMillis();
 				Log.d("八大板块测试", "已获取筛选排序的数据 "+screenToResponseCurrentTimeMillis);
 				Log.d("八大板块测试", "获取筛选排序的数据等待时间为 ："+(screenToResponseCurrentTimeMillis-screenToRequestCurrentTimeMillis));
-				
+
 				sxintelligent = Handler_Json.JsonToBean(Type.class,r.getContentAsString());
 				name = sxintelligent.getName();
 				ArrayList<String> iconGroup = new ArrayList<String>();
@@ -893,15 +887,15 @@ public class ActivityFragment extends BaseFragment {
 				//TODO
 				eightPartToResponseCurrentTimeMillis = System.currentTimeMillis();
 				Log.d("八大板块测试", "八大板块页面去访问数据现已拿到数据内容的时间：  "+ eightPartToResponseCurrentTimeMillis);
-				
+
 				/*Log.d("八大板块测试", "八大板块页面去访问数据现已拿到数据内容的时间和请求数据的时间差为：  "+(eightPartToResponseCurrentTimeMillis-eightPartToRequestCurrentTimeMillis));*/
 				Log.d("八大板块测试", "等待服务器回复数据的时间：  "+(eightPartToResponseCurrentTimeMillis-eightPartToRequestCurrentTimeMillis));
-				
+
 				if(cPd!=null){
 					cPd.dismiss();
 					cPd = null;
 				}
-				
+
 				try{
 					lv_activity_list.removeFooterView(emptyView);
 				}catch(Exception e ){
@@ -1000,24 +994,24 @@ public class ActivityFragment extends BaseFragment {
 				lv_activity_list.removeFooterView(noNetworkView);
 			}catch(Exception e ){
 			}
-			
+
 			if(cPd!=null){//断网情况下，且还拥有了cPd，表明其走到了loadActivityList，表示之前成功使用过筛选栏进行列表选择过， 实际上是访问不到数据的 
 				cPd.dismiss();
 				cPd = null;
-				
-				
+
+
 				setNetworkView();
 				noNetworkView = setNetworkView();
 				lv_activity_list.addFooterView(noNetworkView);
 				//此时可断开上拉的操作
 				PullToRefreshManager.getInstance().footerUnable();
 				PullToRefreshManager.getInstance().headerUnable();
-				
+
 			}else{//注意下面的两个判断的安放顺序
-				
+
 				if(isFromNoNetworkViewTip){//由ListView添加上的footerview画面点击产生的效果
 					//筛选栏的点击在无网的状态下，点击提示画面，进行尝试联网操作，但依旧是返回统一的检查网络的提示画面
-				/*	ImageView iv_gif_loadingprogress = (ImageView) noNetworkView.findViewById(R.id.iv_gif_loadingprogress);
+					/*	ImageView iv_gif_loadingprogress = (ImageView) noNetworkView.findViewById(R.id.iv_gif_loadingprogress);
 			    	((AnimationDrawable)iv_gif_loadingprogress.getDrawable()).start();*/
 					noNetworkView = setNetworkView();
 					lv_activity_list.addFooterView(noNetworkView);
@@ -1026,12 +1020,12 @@ public class ActivityFragment extends BaseFragment {
 					isFromNoNetworkViewTip = false;
 					return;
 				}
-				
+
 				if(!justFirstClick){//针对 一进来就是无网状态，此时点击container会进行initData()的操作，此时点击一次后，justFirstClick=false，但是为了来网络时点击有效，那么很明显，不可禁掉点击监听，但可以禁掉 点击响应后的操作
 					/*lv_activity_list.addFooterView(noNetworkView);
 					PullToRefreshManager.getInstance().footerUnable();*/
 					justFirstClick = true;
-					
+
 				}
 			}
 		}
@@ -1075,25 +1069,25 @@ public class ActivityFragment extends BaseFragment {
 		}
 	}
 	private RelativeLayout setNetworkView() {
-				noNetworkView = (RelativeLayout) inflater.inflate(R.layout.customdialogprogress1, null);
-				TextView messageTextView = (TextView) noNetworkView.findViewById(R.id.messageText);
-				ImageView iv_gif_loadingprogress = (ImageView) noNetworkView.findViewById(R.id.iv_gif_loadingprogress);
-		    	((AnimationDrawable)iv_gif_loadingprogress.getDrawable()).start();
-				messageTextView.setText("请检查网络连接，确保联网后进入页面");
-				noNetworkView.setOnClickListener(new OnClickListener() {
+		noNetworkView = (RelativeLayout) inflater.inflate(R.layout.customdialogprogress1, null);
+		TextView messageTextView = (TextView) noNetworkView.findViewById(R.id.messageText);
+		ImageView iv_gif_loadingprogress = (ImageView) noNetworkView.findViewById(R.id.iv_gif_loadingprogress);
+		((AnimationDrawable)iv_gif_loadingprogress.getDrawable()).start();
+		messageTextView.setText("请检查网络连接，确保联网后进入页面");
+		noNetworkView.setOnClickListener(new OnClickListener() {
 
-					@Override
-					public void onClick(View arg0) {
-						if(!justFirstClick){
-							isFromNoNetworkViewTip = true;
-							refreshCurrentList(refreshUrl+"site="+getSelectCity()[0]+"&service="+
-						HODLER_TYPE+"&position="+position_bussness+"&intelligent="+intelligentStr+"&type="+type+
-						"&location="+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon()+"&query="+"",
-						null, refreshKey,lv_activity_list);
-						}
-					}
-				});
-				return noNetworkView;
+			@Override
+			public void onClick(View arg0) {
+				if(!justFirstClick){
+					isFromNoNetworkViewTip = true;
+					refreshCurrentList(refreshUrl+"site="+getSelectCity()[0]+"&service="+
+							HODLER_TYPE+"&position="+position_bussness+"&intelligent="+intelligentStr+"&type="+type+
+							"&location="+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon()+"&query="+"",
+							null, refreshKey,lv_activity_list);
+				}
+			}
+		});
+		return noNetworkView;
 	}
 	/**
 	 * 对上拉和下拉操作的处理

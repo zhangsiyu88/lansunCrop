@@ -1,4 +1,7 @@
 package com.lansun.qmyo.adapter.question;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.domain.QuestionDetail;
 import com.lansun.qmyo.utils.GlobalValue;
@@ -6,6 +9,7 @@ import com.lansun.qmyo.view.CircularImage;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
@@ -74,19 +78,52 @@ public class QuestionAnswerAdapter extends Adapter<QuestionAnswerAdapter.MyViewH
 				
 			}
 		});
+		SimpleDateFormat format=new SimpleDateFormat("HH");
+		final int hour=Integer.valueOf(format.format(new Date(System.currentTimeMillis())));
+		Log.e("hour", String.valueOf(hour));
 		if (position==0) {
 			holder.tv_user_question.setText(detail.getContent());
 			String answer=String.valueOf(detail.getAnswer());
 			if ("null".equals(answer)||"".equals(answer)||" ".equals(answer)) {
-				holder.tv_secretary_answer.setText("已经收到您的任务指派哦，2小时内必有回复，请耐心等待哟。如果您对收到的回答不满意，还可以继续追问哦~");
+				if (hour>=9&&hour<18) {
+					holder.tv_secretary_answer.setText("小秘书已经收到您的留言喽，立即开启暴风处理模式~2小时内必定有回复！为保证答复质量，如需更多处理时间，小秘书也将第一时间告知~全心全意为你哟~");
+				}else {
+					holder.tv_secretary_answer.setText("收到您的留言喽~但但但...人家现在正休息呢，为了养足精神更好为您服务哦~小秘书开工后将立即处理（工作日9:00-18:00），谢谢体谅哟~");
+				}
+			}else {
+				holder.tv_secretary_answer.setText(answer);
+			}
+		}else if (position==1) {
+			holder.tv_user_question.setText(detail.getItems().get(0).getContent());
+			String answer=String.valueOf(detail.getItems().get(0).getAnswer());
+			if ("null".equals(answer)||"".equals(answer)||" ".equals(answer)) {
+				if (hour>=9&&hour<18) {
+					holder.tv_secretary_answer.setText("收到啦，给我点点时间来处理~爱你爱你么么哒~");
+				}else {
+					holder.tv_secretary_answer.setText("收到您的留言喽~但但但...人家现在正休息呢，为了养足精神更好为您服务哦~小秘书开工后将立即处理（工作日9:00-18:00），谢谢体谅哟~");
+				}
 			}else {
 				holder.tv_secretary_answer.setText(answer);
 			}
 		}else {
+			//这个地方写的有点多余，后来人可以修改下
 			holder.tv_user_question.setText(detail.getItems().get(position-1).getContent());
 			String answer=String.valueOf(detail.getItems().get(position-1).getAnswer());
+			String previou_answer=String.valueOf(detail.getItems().get(position-2).getAnswer());
 			if ("null".equals(answer)||"".equals(answer)||" ".equals(answer)) {
-				holder.tv_secretary_answer.setText("已经收到您的任务指派哦，2小时内必有回复，请耐心等待哟。如果您对收到的回答不满意，还可以继续追问哦~");
+				if ("null".equals(previou_answer)||"".equals(previou_answer)||" ".equals(previou_answer)) {
+					if (hour>=9&&hour<18) {
+						holder.tv_secretary_answer.setText("收到啦，给我点点时间来处理~爱你爱你么么哒~");
+					}else {
+						holder.tv_secretary_answer.setText("收到您的留言喽~但但但...人家现在正休息呢，为了养足精神更好为您服务哦~小秘书开工后将立即处理（工作日9:00-18:00），谢谢体谅哟~");
+					}
+				}else {
+					if (hour>=9&&hour<18) {
+						holder.tv_secretary_answer.setText("小秘书已经收到您的留言喽，立即开启暴风处理模式~2小时内必定有回复！为保证答复质量，如需更多处理时间，小秘书也将第一时间告知~全心全意为你哟~");
+					}else {
+						holder.tv_secretary_answer.setText("收到您的留言喽~但但但...人家现在正休息呢，为了养足精神更好为您服务哦~小秘书开工后将立即处理（工作日9:00-18:00），谢谢体谅哟~");
+					}
+				}
 			}else {
 				holder.tv_secretary_answer.setText(answer);
 			}

@@ -27,6 +27,7 @@ import com.lansun.qmyo.domain.information.InformationCount;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.listener.RequestCallBack;
 import com.lansun.qmyo.net.OkHttp;
+import com.lansun.qmyo.override.CircleImageView;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.utils.GlobalValue;
@@ -46,7 +47,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 		rl_mine_history, ll_mine_xy_card, ll_mine_yhq, ll_mine_message,
 		rl_mine_about, rl_mine_shared, sc_mine;
 		private RecyclingImageView iv_mine_icon;
-		private CircularImage iv_mine_head;
+		private CircleImageView iv_mine_head;
 	}
 	private Handler handlerOk=new Handler(){
 		public void handleMessage(android.os.Message msg) {

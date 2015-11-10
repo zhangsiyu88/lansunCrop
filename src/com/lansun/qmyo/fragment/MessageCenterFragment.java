@@ -47,7 +47,7 @@ public class MessageCenterFragment extends BaseFragment {
 
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
-		private TextView tv_message_activity, tv_message_maijie;
+		private TextView tv_message_activity, tv_message_maijie,no_data;
 	}
 
 //	@InjectView(down = true, pull = true)
@@ -125,6 +125,8 @@ public class MessageCenterFragment extends BaseFragment {
 			break;
 
 		}
+		setProgress(lv_message_list);
+		startProgress();
 		refreshCurrentList(refreshUrl, null, refreshKey, lv_message_list);
 	}
 
@@ -139,11 +141,14 @@ public class MessageCenterFragment extends BaseFragment {
 	@InjectHttp
 	private void result(ResponseEntity r) {
 		if (r.getStatus() == FastHttp.result_ok) {
+			endProgress();
 			switch (r.getKey()) {
 			case 0:
 				list = Handler_Json.JsonToBean(MessageList.class,
 						r.getContentAsString());
+				endProgress();
 				if (list.getData() != null) {
+					v.no_data.setVisibility(View.GONE);
 					for (MessageData data : list.getData()) {
 						HashMap<String, String> map = new HashMap<String, String>();
 						map.put("tv_message_item_name", data.getTitle());
@@ -175,8 +180,8 @@ public class MessageCenterFragment extends BaseFragment {
 					}
 				} else {
 					lv_message_list.setAdapter(null);
+					v.no_data.setVisibility(View.VISIBLE);
 				}
-				endProgress();
 				break;
 			}
 		}
@@ -200,16 +205,8 @@ public class MessageCenterFragment extends BaseFragment {
 				}
 			}
 			break;
-//		case InjectView.DOWN:
-//			if (list != null) {
-//				dataList.clear();
-//				refreshCurrentList(refreshUrl, null, refreshKey,
-//						lv_message_list);
-//			}
-//			break;
 		}
 	}
-
 	private String getHistoryTime(long mss) {
 		long days = mss / (1000 * 60 * 60 * 24);
 		long hours = (mss % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60);

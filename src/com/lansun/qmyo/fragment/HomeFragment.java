@@ -356,11 +356,6 @@ import com.squareup.okhttp.Response;
 		});
 
 		/*mScrollView = sv_homefrag.getRefreshableView();*/
-
-
-
-		
-		Log.d("exp_secret", App.app.getData("exp_secret"));
 		if (TextUtils.isEmpty(App.app.getData("exp_secret"))
 				&& TextUtils.isEmpty(App.app.getData("secret"))
 				&& !GlobalValue.isFirst){
@@ -445,13 +440,12 @@ import com.squareup.okhttp.Response;
 			v.et_home_search.setHint(R.string.please_enter_search_brand);
 			
 			if ("true".equals(App.app.getData("isExperience"))) {//我拿到了exp_sercret并且也拿到了转换后的access_token ,而且又添加了某张银行卡，那么我就成为了体验用户
-				Log.i("是不是体验用户？",App.app.getData("isExperience"));
 				v.rl_bg.setPressed(true);
 				v.rl_top_bg.setPressed(true);
 
 				//强行将体验字体后面的背景设置为 绿色！
-				v.rl_bg.setBackgroundResource(R.drawable.circle_background_green);
-				v.rl_top_bg.setBackgroundResource(R.drawable.circle_background_green);
+				v.rl_bg.setBackgroundResource(R.drawable.circle_background_gray);
+				v.rl_top_bg.setBackgroundResource(R.drawable.circle_background_gray);
 
 				v.tv_home_experience.setVisibility(View.VISIBLE);
 				v.tv_top_home_experience.setVisibility(View.VISIBLE);
@@ -463,6 +457,8 @@ import com.squareup.okhttp.Response;
 				v.iv_top_card.setVisibility(View.VISIBLE);//滑动出现的右边银行卡可见
 				v.tv_home_experience.setVisibility(View.GONE);//原本  体验不可见
 				v.tv_top_home_experience.setVisibility(View.GONE);//滑动出现的右边 体验二字 不可见
+				v.rl_bg.setBackgroundResource(R.drawable.circle_background_gray);
+				v.rl_top_bg.setBackgroundResource(R.drawable.circle_background_gray);
 				v.rl_bg.setPressed(false);
 				v.rl_top_bg.setPressed(false);
 			}

@@ -13,12 +13,14 @@ import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectInit;
@@ -41,7 +43,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 /**
- * 我的私人秘书 和私人秘书不是同一个界面
+ * 鎴戠殑绉佷汉绉樹功 鍜岀浜虹涔︿笉鏄悓涓�涓晫闈�
  * 
  * @author bhxx
  * 
@@ -64,6 +66,7 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 	}
 	private Handler handleOK=new Handler(){
 		public void handleMessage(android.os.Message msg) {
+			endProgress();
 			switch (msg.what) {
 			case 0:
 				setEmptyView(1);
@@ -123,14 +126,14 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 		});
 	}
 	/**
-	 * 添加或者移除emptyview
+	 * 娣诲姞鎴栬�呯Щ闄mptyview
 	 * @param state 0 add 1 remove
 	 */
 	private void setEmptyView(int state) {
 		if (state==0) {
-			swiperefresh.setVisibility(View.GONE);
+			question_item_recycle.setVisibility(View.GONE);
 		}else {
-			swiperefresh.setVisibility(View.VISIBLE);
+			question_item_recycle.setVisibility(View.VISIBLE);
 		}
 	}
 	private void initView(View rootView) {
@@ -156,7 +159,7 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 
 	private HashMap<Integer, String> holder_button = new HashMap<>();
 	private HashMap<Integer, View> mViewArray = new HashMap<>();
-	private String currentType = ""; //当下这个currentType值为空字符串
+	private String currentType = ""; //褰撲笅杩欎釜currentType鍊间负绌哄瓧绗︿覆
 
 	@InjectInit
 	private void init() {
@@ -196,6 +199,8 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 		while (GlobalValue.mySecretary!=null) {
 			break;
 		}
+		setProgress(question_item_recycle);
+		startProgress();
 		OkHttp.asyncGet(url, "Authorization", "Bearer "+App.app.getData("access_token"), null, new Callback() {
 			@Override
 			public void onResponse(Response response) throws IOException {
@@ -257,11 +262,9 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 	}
 	@Override
 	public void onRefresh() {
+		Log.e("referesh","shuaxin");
 		if (manager.findFirstVisibleItemPosition()==0) {
 			swiperefresh.setRefreshing(false);
-		}else {
-			View view=inflater.inflate(R.layout.refresh_footer, null);
-			question_item_recycle.addView(view, question_adapter.getItemCount());
 		}
 	}
 }

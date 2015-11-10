@@ -22,7 +22,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="@dimen/l_r_35"
             android:layout_marginTop="@dimen/margin_top_12"
-            android:background="@drawable/home_card" >
+            android:background="@drawable/circle_background_gray" >
 
             <com.android.pc.ioc.image.RecyclingImageView
                 android:id="@+id/iv_card"
@@ -38,6 +38,7 @@
                 android:layout_centerInParent="true"
                 android:layout_centerVertical="true"
                 android:text="@string/experience"
+                android:gravity="center"
                 android:textColor="@color/app_white"
                 android:visibility="gone" />
         </RelativeLayout>

@@ -13,7 +13,9 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,7 +58,7 @@ import com.squareup.okhttp.Response;
  * @author bhxx
  * 
  */
-public class QuestionDetailFragment extends BaseFragment implements RequestCallBack{
+public class QuestionDetailFragment extends BaseFragment implements RequestCallBack,OnFocusChangeListener{
 	@InjectView(down = true, pull = false)
 	private RecyclerView my_secretary_question_recycle;
 	@InjectAll
@@ -68,45 +70,24 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	private ProgressDialog pd;
 	private QuestionAnswerAdapter adapter;
 	private TextView btn_secretary_question_commit;
-	protected boolean canSend;
 	class Views {
 		private ImageView iv_activity_back;
 		private View fl_comments_right_iv, tv_activity_shared;
-		private TextView tv_activity_title,tv_mine_secretary_type;
+		private TextView tv_activity_title;
 		private EditText et_secretary_question;
 	}
 	private Handler handleOk=new Handler(){
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
 			case 0:
-				int res_id=switchType(list.getType());
-				v.tv_mine_secretary_type.setText(res_id);
+				String type=switchType(list.getType());
+				v.tv_activity_title.setText(GlobalValue.mySecretary.getName()+"["+type+"]");
 				my_secretary_question_recycle.setAdapter(adapter);
 				my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);
-				if (list.getItems().size()==0) {
-					String answer=String.valueOf(list.getAnswer());
-					if ("".equals(answer)||"null".equals(answer)) {
-						v.et_secretary_question.setFocusable(false);
-						canSend=false;
-					}else {
-						v.et_secretary_question.setFocusable(true);
-						canSend=true;
-					}
-				}else {
-					String answer_item=String.valueOf(list.getItems().get(list.getItems().size()-1).getAnswer());
-					if("".equals(answer_item)||"null".equals(answer_item)){
-						v.et_secretary_question.setFocusable(false);
-						canSend=false;
-					}else{
-						v.et_secretary_question.setFocusable(true);
-						canSend=true;
-					}
-				}
+				v.et_secretary_question.setOnFocusChangeListener(QuestionDetailFragment.this);
 				break;
 			case 1:
 				v.et_secretary_question.setText("");
-				v.et_secretary_question.setFocusable(false);
-				canSend=false;
 				QuestionAnswerDetail detail=new QuestionAnswerDetail();
 				detail.setContent(question);
 				list.getItems().add(list.getItems().size(), detail);
@@ -151,11 +132,7 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		btn_secretary_question_commit.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (canSend) {
-					commit();
-				}else {
-					CustomToast.show(getActivity(), R.string.tip_send_question, "请耐心等待哟");
-				}
+				commit();
 			}
 		});
 	}
@@ -188,7 +165,6 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	@InjectInit
 	private void init() {
 		v.fl_comments_right_iv.setVisibility(View.GONE);
-		v.tv_activity_title.setText(GlobalValue.mySecretary.getName());
 		v.iv_activity_back.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -218,34 +194,26 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		question = v.et_secretary_question.getText().toString();
 		biz.sendQuestion(question, currentType, question_id+"", this);
 	}
-	private int switchType(String type) {
-		int resId = R.string.travel_holiday;
+	private String switchType(String type) {
 		switch (type) {
 		case "travel":
-			resId = R.string.travel_holiday;
-			break;
+			return getResources().getString(R.string.travel_holiday);
 		case "shopping":
-			resId = R.string.new_shopping;
-			break;
+			return getResources().getString(R.string.new_shopping);
 		case "party":
-			resId = R.string.shengyan_part;
-			break;
+			return getResources().getString(R.string.shengyan_part);
 		case "life":
-			resId = R.string.life_quality;
-			break;
+			return getResources().getString(R.string.life_quality);
 		case "student":
-			resId = R.string.studybroad;
-			break;
+			return getResources().getString(R.string.studybroad);
 		case "investment":
-			resId = R.string.investment;
-			break;
+			return getResources().getString(R.string.investment);
 		case "card":
-			resId = R.string.handlecard;
-			break;
+			return getResources().getString(R.string.handlecard);
 		}
-		return resId;
+		return "";
 	}
-	
+
 	@Override
 	public void onResponse(Response response) throws IOException {
 		if (response.isSuccessful()) {
@@ -268,8 +236,13 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if ("com.lansun.qmyo.fragment.questionDetailFragment".equals(intent.getAction())) {
-				
+
 			}
 		}
+	}
+	@Override
+	public void onFocusChange(View v, boolean hasFocus) {
+		Log.e("focus", hasFocus+"");
+		my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);
 	}
 }

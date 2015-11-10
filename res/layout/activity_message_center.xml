@@ -93,12 +93,22 @@
             android:layout_height="1px"
             android:background="@color/app_grey5" />
     </LinearLayout>
-
-    <com.lansun.qmyo.view.MyListView
+	<FrameLayout 
+	    style="@style/w_match_h_match"
+	    >
+	    <com.lansun.qmyo.view.MyListView
         android:id="@+id/lv_message_list"
         style="@style/w_h_full"
         android:cacheColorHint="#00000000"
         android:divider="@null"
         android:scrollbars="none" />
-
+	<TextView 
+	    android:id="@+id/no_data"
+	    android:text="您还未收到最新活动消息哦"
+	    android:gravity="center"
+	    android:visibility="gone"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    />
+	</FrameLayout>
 </LinearLayout>

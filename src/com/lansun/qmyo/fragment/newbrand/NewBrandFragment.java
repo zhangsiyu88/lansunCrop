@@ -57,7 +57,9 @@ import com.lansun.qmyo.fragment.BaseFragment;
 import com.lansun.qmyo.fragment.MineBankcardFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
 import com.lansun.qmyo.listener.RequestCallBack;
+import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.view.CustomDialogProgress;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExpandTabView;
 import com.lansun.qmyo.view.MyListView;
@@ -132,6 +134,11 @@ public class NewBrandFragment extends BaseFragment{
 				PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 				PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				endProgress();
+				lv_activity_list.setVisibility(View.VISIBLE);
+				if(cPd!=null){
+					cPd.dismiss();
+					cPd = null;
+				}
 				if (activityList.getData() != null) {//服务器返回回来的数据中的Data不为null
 					if (!isRemove) {
 						lv_activity_list.removeFooterView(emptyView);
@@ -239,6 +246,8 @@ public class NewBrandFragment extends BaseFragment{
 	private ProgressDialog dialog;
 	private boolean isDownChange;
 	public boolean isSend;
+	private boolean isShowDialog;
+	private CustomDialogProgress cPd;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -348,6 +357,8 @@ public class NewBrandFragment extends BaseFragment{
 			public void getValue(String distance, String showText, int position) {
 				intelligentStr = intelligent.getData().get(position).getKey();
 				shopDataList.clear();
+				isShowDialog=true;
+				endProgress();
 				startSearchData(GlobalValue.URL_ALL_ACTIVITY,App.app.getData("select_cityCode"),HODLER_TYPE,position_bussness,intelligentStr,GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
 				onRefresh(viewMiddle, showText);
 			}
@@ -369,6 +380,8 @@ public class NewBrandFragment extends BaseFragment{
 				if (activityAdapter != null) {
 					activityAdapter.notifyDataSetChanged();
 				}
+				isShowDialog=true;
+				endProgress();
 				startSearchData(GlobalValue.URL_ALL_ACTIVITY,App.app.getData("select_cityCode"),HODLER_TYPE,position_bussness,intelligentStr,GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
 				onRefresh(viewLeft, showText);
 			}
@@ -399,6 +412,8 @@ public class NewBrandFragment extends BaseFragment{
 				if (activityAdapter != null) {
 					activityAdapter.notifyDataSetChanged();
 				}
+				isShowDialog=true;
+				endProgress();
 				startSearchData(GlobalValue.URL_ALL_ACTIVITY,App.app.getData("select_cityCode"),HODLER_TYPE,position_bussness,intelligentStr,GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
 				onRefresh(viewLeft2, showText);
 			}
@@ -430,13 +445,12 @@ public class NewBrandFragment extends BaseFragment{
 		v.tv_activity_title.setText("新品曝光");
 		
 		if ("true".equals(App.app.getData("isExperience"))) {
-			v.rl_bg.setPressed(true);
 			v.tv_home_experience.setVisibility(View.VISIBLE);
 			v.iv_card.setVisibility(View.GONE);
+			v.rl_bg.setBackgroundResource(R.drawable.circle_background_green);
 		} else {
 			v.iv_card.setVisibility(View.VISIBLE);
 			v.tv_home_experience.setVisibility(View.GONE);
-			v.rl_bg.setPressed(false);//含有“体验”两个字的灰色按钮隐藏掉
 		}
 		v.rl_bg.setOnClickListener(new OnClickListener() {
 			@Override
@@ -473,6 +487,16 @@ public class NewBrandFragment extends BaseFragment{
 	 */
 	private void startSearchData(String base_url,String site, String service, String position,
 			String intelligent, String location) {
+		if (isShowDialog){
+			if(cPd == null ){
+				cPd = CustomDialogProgress.createDialog(activity);
+				cPd.setCanceledOnTouchOutside(false);
+				lv_activity_list.setVisibility(View.INVISIBLE);
+				cPd.show();
+			}else{
+				cPd.show();
+			}
+		}
 		setProgress(lv_activity_list);
 		startProgress();
 		String url=base_url+"site="+site+"&service="+service+"&position="+position+"&intelligent="+intelligent+"&location="+location+"&type=new";
@@ -530,6 +554,7 @@ public class NewBrandFragment extends BaseFragment{
 		// 这里的type来判断是否是下拉还是上拉
 		switch (type) {
 		case InjectView.PULL:
+			isShowDialog=false;
 			if (activityList != null) {
 				/*if (TextUtils.isEmpty(activityList.getNext_page_url())) {//下一页为空的时候，加上footerview*/
 				if (activityList.getNext_page_url()== "null"||TextUtils.isEmpty(activityList.getNext_page_url())) {
@@ -549,6 +574,7 @@ public class NewBrandFragment extends BaseFragment{
 			}
 			break;
 		case InjectView.DOWN:
+			isShowDialog=false;
 			if (activityList != null) {
 				isDownChange = true;//下拉更新的标志
 				startSearchData(GlobalValue.URL_ALL_ACTIVITY,App.app.getData("select_cityCode"),HODLER_TYPE,position_bussness,intelligentStr,GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());

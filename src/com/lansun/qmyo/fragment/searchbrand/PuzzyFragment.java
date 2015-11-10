@@ -90,7 +90,6 @@ public class PuzzyFragment extends BaseFragment implements PuzzyItemClickCallBac
 						json="{list:"+json+"}";
 						Gson gson=new Gson();
 						PuzzyData data=gson.fromJson(json, PuzzyData.class);
-						Log.e("lists", json);
 						list=data.getList();
 						h.sendEmptyMessage(0);
 					}else {
@@ -98,7 +97,6 @@ public class PuzzyFragment extends BaseFragment implements PuzzyItemClickCallBac
 						back=back.replace(" ", "");
 						Gson gson=new Gson();
 						PuzzyData data=gson.fromJson(back, PuzzyData.class);
-						Log.e("lists", json);
 						list=data.getList();
 						h.sendEmptyMessage(0);
 					}
@@ -114,7 +112,7 @@ public class PuzzyFragment extends BaseFragment implements PuzzyItemClickCallBac
 	public void onPuzzyItemClick(View v, int position) {
 		String backString=((TextView)v).getText().toString();
 		if (backString.contains("查找：")) {
-			backString=backString.substring(4,backString.length());
+			backString=backString.substring(3,backString.length());
 		}
 		callBack.onPuzzCallBack(backString);
 	}

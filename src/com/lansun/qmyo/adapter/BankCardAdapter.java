@@ -445,9 +445,12 @@ public class BankCardAdapter extends
 
 	public class ViewHolder {
 		@InjectView
-		private RecyclingImageView iv_bank_card_head, iv_bank_card_add;
+		private RecyclingImageView iv_bank_card_head;
 		@InjectView
 		private TextView tv_bank_card_name, tv_bank_card_desc;
+		@InjectView
+		private View iv_bank_card_add;
+		
 	}
 
 	boolean hasAdd = true;

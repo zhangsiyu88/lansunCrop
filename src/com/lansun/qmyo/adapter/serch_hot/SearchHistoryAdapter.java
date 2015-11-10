@@ -22,10 +22,10 @@ public class SearchHistoryAdapter extends Adapter<SearchHistoryAdapter.MyViewHol
 	}
 	public class MyViewHolder extends ViewHolder{
 		public TextView history_tv;
-		public RecyclingImageView iv_history_delete;
+		public View iv_history_delete;
 		public MyViewHolder(View itemView) {
 			super(itemView);
-			iv_history_delete=(RecyclingImageView)itemView.findViewById(R.id.iv_history_delete);
+			iv_history_delete=itemView.findViewById(R.id.iv_history_delete);
 			history_tv=(TextView) itemView.findViewById(R.id.history_tv);
 		}
 	}

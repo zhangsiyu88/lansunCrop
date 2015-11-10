@@ -76,19 +76,20 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 
 		/*一进来就已经将键盘收齐
 		 * activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);*/
-
 		Handler_Inject.injectFragment(this, rootView);
 		initView(rootView);
 		return rootView;
 	}
-
+	/**
+	 * 加载时最先运行
+	 * 首先拿到查询的参数,这个参数是从下一个页面传递过来的主要为了保存和搜索
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		manager=getChildFragmentManager();
 		if (getArguments()!=null) {
 			query=getArguments().getString("query");
-			Log.e("query", query);
 		}
 	}
 
@@ -99,20 +100,6 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 		et_home_search.requestFocus();
 		et_home_search.setCursorVisible(true);
 		et_home_search.addTextChangedListener(this);
-//		et_home_search.setOnFocusChangeListener(new OnFocusChangeListener() {
-//			@Override
-//			public void onFocusChange(View view, boolean hasFocus) {
-//				if (hasFocus) {
-//					InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-//					imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
-//				}else {
-//					InputMethodManager imm = (InputMethodManager) activity
-//							.getSystemService(Context.INPUT_METHOD_SERVICE);
-//					imm.hideSoftInputFromWindow(view.getWindowToken(), 0); 
-//					// 强制隐藏键盘
-//				}	
-//			}
-//		});
 		if (!TextUtils.isEmpty(query)) {
 			et_home_search.setText(query);
 			et_home_search.setSelection(query.length());
@@ -194,28 +181,11 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 		switch (view.getId()) {
 		case R.id.search_tv_cancle:
 			if (getString(R.string.cancle).equals(v.search_tv_cancle.getText())) {//字为“取消”
-				/*EventBus bus = EventBus.getDefault();
-				FragmentEntity entity = new FragmentEntity();
-				entity.setFragment(new HomeFragment());
-				bus.post(entity);*/
-				//				InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-				//				imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
-
-				/*	InputMethodManager imm = (InputMethodManager) activity
-						.getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(view.getWindowToken(), 0); // 强制隐藏键盘
-				 */				
-
 				back();
 
 			} else {//内容为“搜索”二字时
-
 				String search_value=et_home_search.getText().toString().trim();
-
-//				postQuery(search_value);//去查
-
 				startSearch(search_value);//开始搜索
-
 				for (String li:App.search_list_history) {
 					if (search_value.equals(li)) {
 						return;
@@ -244,16 +214,13 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 		}
 		App.app.initHistory();
 	}
+	/**
+	 * 跳转页面
+	 * @param query
+	 */
 	private void startSearch(String query) {
-
-		/*InputMethodManager imm = (InputMethodManager) getActivity()
-				.getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);*/
-
 		et_home_search.setText("");
 		isPuzzy=false;
-		//		SearchBrandListFragment fragment = new SearchBrandListFragment();
-		//		SearchContentFragment fragment = new SearchContentFragment();
 		SearchBrandListOkHttpFragment fragment = new SearchBrandListOkHttpFragment();
 		Bundle args = new Bundle();
 		args.putString("query", query);
@@ -262,41 +229,23 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 		event.setFragment(fragment);
 		EventBus.getDefault().post(event);
 	}
-
-	private void postQuery(String querya) {
+	/**
+	 * 开启搜索
+	 * @param querya
+	 */
+	private void postQuery(String query) {
 		InternetConfig config = new InternetConfig();
 		config.setKey(6);
 		HashMap<String, Object> head = new HashMap<>();
 		head.put("Authorization", "Bearer " + App.app.getData("access_token"));
 		config.setHead(head);
 		LinkedHashMap<String, String> params = new LinkedHashMap<>();
-		params.put("key", querya);
+		params.put("key", query);
 		FastHttpHander.ajaxForm(GlobalValue.URL_USER_USER_QUERY, params, null,config, this);
 	}
-
-	private void startSearchOutAnim(final Context activity, View view,
-			long duration) {
-		Animation search_top_out = AnimationUtils.loadAnimation(activity,R.anim.search_top_out);
-		search_top_out.setDuration(duration);
-		search_top_out.setAnimationListener(new AnimationListener() {
-			@Override
-			public void onAnimationStart(Animation arg0) {
-			}
-
-			@Override
-			public void onAnimationRepeat(Animation arg0) {
-			}
-
-			@Override
-			public void onAnimationEnd(Animation arg0) {
-				EventBus bus = EventBus.getDefault();
-				FragmentEntity entity = new FragmentEntity();
-				entity.setFragment(new HomeFragment());
-				bus.post(entity);
-			}
-		});
-		view.startAnimation(search_top_out);
-	}
+	/**
+	 * 历史和热门搜索的回调方法保存和请求网络
+	 */
 	@Override
 	public void onTextCallBack(View view, int position) {
 		switch (view.getId()) {
