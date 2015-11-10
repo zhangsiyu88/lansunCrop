@@ -79,6 +79,7 @@ public class SharedFragment extends BaseFragment {
 	@InjectAll
 	Views v;
 	private UMSocialService mController = UMServiceFactory.getUMSocialService(GlobalValue.DESCRIPTOR);
+	private String targetUrl = "http://android.myapp.com/myapp/detail.htm?apkName=com.lansun.qmyo";;
 
 	class Views {
 		private TextView tv_activity_title;
@@ -151,9 +152,13 @@ public class SharedFragment extends BaseFragment {
 		weixinContent.setShareContent(content);
 		weixinContent.setTitle(title);
 		
-		weixinContent.setTargetUrl(GlobalValue.TARGET_URL);//--->需要修改为对应的软件下载网址
+		
+		weixinContent.setTargetUrl(targetUrl);//--->需要修改为对应的软件下载网址
 		
 		UMImage urlImage = new UMImage(activity, resId);
+		if (!TextUtils.isEmpty(String.valueOf(resId)))
+			 weixinContent.setShareImage(new UMImage(this.activity, resId));
+		
 		weixinContent.setShareMedia(urlImage);
 		mController.setShareMedia(weixinContent);
 
@@ -164,11 +169,13 @@ public class SharedFragment extends BaseFragment {
 		circleMedia.setShareContent(content);
 		circleMedia.setTitle(title);
 		urlImage = new UMImage(activity, resId);
-		weixinContent.setShareMedia(urlImage);
+		//weixinContent.setShareMedia(urlImage);  //写错啦！
 		// circleMedia.setShareMedia(uMusic);
 		// circleMedia.setShareMedia(video);
 		
-		circleMedia.setTargetUrl(GlobalValue.TARGET_URL);//--->需要修改为对应的软件下载网址
+		if (!TextUtils.isEmpty(String.valueOf(resId)))
+			circleMedia.setShareImage(new UMImage(this.activity, resId));
+		circleMedia.setTargetUrl(targetUrl);//--->需要修改为对应的软件下载网址
 		mController.setShareMedia(circleMedia);
 
 		// 设置QQ空间分享内容
@@ -198,10 +205,10 @@ public class SharedFragment extends BaseFragment {
 		 */
 	    TencentWbShareContent tencentWbShareContent = new TencentWbShareContent();
 	    tencentWbShareContent.setTitle(title);
-	    tencentWbShareContent.setShareContent(content);
-	    /*if (!TextUtils.isEmpty(String.valueOf(resId)))
-	    	tencentWbShareContent.setShareImage(new UMImage(this.activity, resId));*/
-	    tencentWbShareContent.setShareImage(new UMImage(this.activity, resId));
+	    tencentWbShareContent.setShareContent(content+"  "+targetUrl);
+	    if (!TextUtils.isEmpty(String.valueOf(resId)))
+	    	tencentWbShareContent.setShareImage(new UMImage(this.activity, resId));
+	   /* tencentWbShareContent.setShareImage(new UMImage(this.activity, resId));*/
 	    this.mController.setShareMedia(tencentWbShareContent);
 	    
 	    
@@ -210,10 +217,9 @@ public class SharedFragment extends BaseFragment {
 	     */
 	    SinaShareContent sinaShareContent = new SinaShareContent();
 	    sinaShareContent.setTitle(title);
-	    sinaShareContent.setShareContent(content);
-	   /* if (!TextUtils.isEmpty(String.valueOf(resId)))
-	    	sinaShareContent.setShareImage(new UMImage(this.activity, resId));*/
-	    sinaShareContent.setShareImage(new UMImage(this.activity, resId));
+	    sinaShareContent.setShareContent(content+"  "+targetUrl);
+	    if (!TextUtils.isEmpty(String.valueOf(resId)))
+	    	sinaShareContent.setShareImage(new UMImage(this.activity, resId));
 	    this.mController.setShareMedia(sinaShareContent);
 	}
 

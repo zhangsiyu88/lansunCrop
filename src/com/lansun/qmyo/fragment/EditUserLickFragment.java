@@ -15,6 +15,8 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.GridView;
 import android.widget.TextView;
+
+import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
@@ -29,6 +31,7 @@ import com.android.pc.util.Handler_Json;
 import com.lansun.qmyo.adapter.CommonAdapter;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.User;
+import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.R;
@@ -167,7 +170,13 @@ public class EditUserLickFragment extends BaseFragment {
 				GlobalValue.user = Handler_Json.JsonToBean(User.class,
 						r.getContentAsString());
 				CustomToast.show(activity, getString(R.string.tip), "修改成功");
-				back();
+				
+				/*back();*/
+				EditUserFragment editUserFragment = new EditUserFragment();
+				FragmentEntity fEntity = new FragmentEntity();
+				fEntity.setFragment(editUserFragment);
+				EventBus.getDefault().post(fEntity);
+				
 				break;
 			}
 		}

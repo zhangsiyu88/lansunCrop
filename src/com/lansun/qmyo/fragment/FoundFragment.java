@@ -45,7 +45,7 @@ public class FoundFragment extends BaseFragment {
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private View bottom_home, bottom_secretary, bottom_mine, ll_found_v16,
-		ll_found_bangdan, rl_found_activity, rl_found_store,
+		ll_found_bangdan, rl_found_activity, rl_found_store,ll_found_activity,ll_found_store,
 		rl_found_v16, rl_found_maijie;
 		private RecyclingImageView iv_found_icon, iv_found_bg;
 		private TextView tv_found_icon;
@@ -96,7 +96,7 @@ public class FoundFragment extends BaseFragment {
 		case R.id.bottom_home:
 			fragment = new HomeFragment();
 			break;
-		case R.id.rl_found_activity:// 活动收藏
+		case R.id.ll_found_activity:// 活动收藏
 			if(App.app.getData("isExperience").equals("true")){
 				/*CustomToast.show(getActivity(), "迈界小贴士", "总裁大大，要登陆的哟~");*/
 				DialogUtil.createTipAlertDialog(activity,
@@ -127,7 +127,7 @@ public class FoundFragment extends BaseFragment {
 
 			fragment = new MineActivityFragment();
 			break;
-		case R.id.rl_found_store:// 关注门店
+		case R.id.ll_found_store:// 关注门店
 			if(App.app.getData("isExperience").equals("true")||App.app.getData("isExperience").contains("true")){
 				/*CustomToast.show(getActivity(), "迈界小贴士", "总裁大大，要登陆的哟~");*/
 

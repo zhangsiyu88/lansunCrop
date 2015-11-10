@@ -83,17 +83,19 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ll_found_activity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_top_35"
-                android:background="@color/app_white" >
+                android:background="@drawable/found_bcakgroundcolor_selector"
+                >
 
                 <RelativeLayout
-                    android:id="@+id/rl_found_activity"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/item_h_90"
                     android:layout_marginLeft="@dimen/l_r_35"
-                    android:layout_marginRight="@dimen/l_r_35" >
+                    android:layout_marginRight="@dimen/l_r_35" 
+                    android:background="@color/transparent"><!--android:id="@+id/rl_found_activity" -->
 
                     <com.android.pc.ioc.image.RecyclingImageView
                         android:id="@+id/mine_secretary_icon"
@@ -118,16 +120,17 @@
             <View style="@style/line_style_1" />
 
             <LinearLayout
+                android:id="@+id/ll_found_store"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/app_white" >
+                android:background="@drawable/found_bcakgroundcolor_selector">
 
                 <RelativeLayout
-                    android:id="@+id/rl_found_store"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/item_h_90"
                     android:layout_marginLeft="@dimen/l_r_35"
-                    android:layout_marginRight="@dimen/l_r_35" >
+                    android:layout_marginRight="@dimen/l_r_35" 
+                    android:background="@color/transparent"><!--android:id="@+id/rl_found_store" -->
 
                     <com.android.pc.ioc.image.RecyclingImageView
                         android:id="@+id/mine_secretary_icon1"

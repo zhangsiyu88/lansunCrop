@@ -72,7 +72,7 @@ public class HotAddHistoryFragment extends BaseFragment implements HotItemClickC
 						if (response.isSuccessful()) {
 							HotSearchAd searchAd = Handler_Json.JsonToBean(
 									HotSearchAd.class, response.body().string());
-							hot = new ArrayList<>();
+							hot = new ArrayList<String>();
 							for (HotSearchAdData data : searchAd.getData()) {
 								hot.add(data.getName());
 							}

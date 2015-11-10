@@ -47,6 +47,7 @@ import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
+import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.net.OkHttp;
@@ -169,6 +170,8 @@ public class PersonCenterFragment extends BaseFragment{
 			Bundle bundle=new Bundle();
 			bundle.putString("fragment_name", PersonCenterFragment.class.getSimpleName());
 			fragment.setArguments(bundle);
+			
+			App.app.setData("isEmbrassStatus", "");//保证用户知道自己是退出错误的异常登陆状态时，可以再恢复回去进行正常的体验操作
 			/*back();此处无需back，因为主动跳往登录界面*/
 			break;
 		}

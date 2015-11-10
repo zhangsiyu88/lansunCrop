@@ -32,12 +32,15 @@ import com.lansun.qmyo.fragment.HomeFragment;
 import com.lansun.qmyo.fragment.IntroductionPageFragment;
 import com.lansun.qmyo.fragment.MineFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
+import com.lansun.qmyo.fragment.SearchBankCardFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
 import com.lansun.qmyo.service.AccessTokenService;
+import com.lansun.qmyo.service.LocationService;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.ExampleUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
+import com.lansun.qmyo.view.CustomToast;
 @InjectLayer(R.layout.activity_main)
 public class MainActivity extends FragmentActivity {
 	private FragmentTransaction fragmentTransaction;
@@ -45,6 +48,7 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(@Nullable Bundle arg0) {
 		registerMessageReceiver();
+		
 		
 		/*TextView mImei = (TextView) findViewById(R.id.tv_imei);*/
 		String udid =  ExampleUtil.getImei(getApplicationContext(), "");
@@ -141,7 +145,11 @@ public class MainActivity extends FragmentActivity {
 	private void getTokenService() {
 		Intent service = new Intent(this, AccessTokenService.class);
 		startService(service);
+		Intent locationService = new Intent(this, LocationService.class);
+		startService(locationService);
 	}
+	
+	
 
 	public  void startFragmentAdd(Fragment fragment) {
 		FragmentManager fragmentManager = getSupportFragmentManager();
@@ -184,18 +192,34 @@ public class MainActivity extends FragmentActivity {
 		Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
 		
 		if (fragment.getClass().getName().equals(RegisterFragment.class.getName())) {
+			
+			if(App.app.getData("isResetPsw").equals("true")){
+				CustomToast.show(this, "迈界小贴士", "更改新密码后，请登录");
+				return;
+			}
+			
+			if(App.app.getData("isEmbrassStatus").equals("true") ){
+				CustomToast.show(this, "抱歉,请点击登录", "请至少选择一张银行卡作为通行证");
+				return;
+			}
 			if(GlobalValue.user==null && GlobalValue.isFirst){
 				Log.i("物理的back键", "物理返回键的返回操作被转换效果");
 				ExperienceSearchFragment experienceFragment = new ExperienceSearchFragment();
 				FragmentEntity entity = new FragmentEntity();
 				entity.setFragment(experienceFragment);
 				EventBus.getDefault().post(entity);
-			}else{
+				return;
+			}else {
 				getSupportFragmentManager().popBackStack();
+				return;
 			}
-		}else{
-			super.onBackPressed();
+		}else if(fragment.getClass().getName().equals(SearchBankCardFragment.class.getName())){
+			if(App.app.getData("isEmbrassStatus").equals("true") ){
+				CustomToast.show(this, "抱歉,请选择银行卡", "请至少选择一张银行卡作为通行证");
+				return;
+			}
 		}
+		super.onBackPressed();
 		/*else if(fragment.getClass().getName().equals(getSupportFragmentManager().findFragmentByTag("experience"))){
 			if(GlobalValue.user==null && !GlobalValue.isFirst){//在首页，且还没有拿到体验用户的那张卡，那么需要将物理返回键去除掉，强行要求进行填卡操作者，避免三无状态有机会存在
 				//DoNothing !!！
@@ -206,7 +230,6 @@ public class MainActivity extends FragmentActivity {
 				EventBus.getDefault().post(entity);
 			}
 		}*/
-			
 	 }
 	
 	//此方法是重写了Activity(Fragment)的

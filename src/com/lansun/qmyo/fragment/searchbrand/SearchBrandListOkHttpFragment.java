@@ -103,8 +103,8 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 	private ViewMiddle viewMiddle;
 	private ViewLeft viewLeft;
 	private ViewRight viewRight;
-	private HashMap<Integer, View> mViewArray = new HashMap<>();
-	private HashMap<Integer, String> holder_button = new HashMap<>();
+	private HashMap<Integer, View> mViewArray = new HashMap<Integer, View>();
+	private HashMap<Integer, String> holder_button = new HashMap<Integer, String>();
 	private String query;
 	private EditText et_home_search;
 	private ExpandTabView expandtab_view;
@@ -579,7 +579,7 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 				if(isPull){
 					isPull = false;
 				}else{
-					datas = new ArrayList<>();//重新new出来一个新的list
+					datas = new ArrayList<HashMap<String, Object>>();//重新new出来一个新的list
 				}
 
 				if (list.getData() != null && !list.getData().toString().equals("[]") ){

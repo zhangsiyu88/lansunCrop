@@ -25,8 +25,11 @@
     <color name="line_bg1">#EBEBEB</color>
     <color name="app_circle_gray">#9C9C9C</color>
     <color name="text_gray1">#6F6F6F</color>
+    
     <color name="text_gray2">#AFAFAF</color>
     <color name="text_gray3">#898989</color>
+    <color name="text_gray4">#939393</color>
+    
     <color name="text_black_1">#212121</color>
     <color name="text_black_2">#545454</color>
     <color name="images_counts">#75000000</color>

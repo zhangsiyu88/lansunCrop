@@ -30,8 +30,8 @@ public class MyViewPager extends ViewPager {
 
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
-		return super.onInterceptTouchEvent(ev)
-				&& mGestureDetector.onTouchEvent(ev);
+		
+		return super.onInterceptTouchEvent(ev)&& mGestureDetector.onTouchEvent(ev);
 	}
 
 	class YScrollDetector extends SimpleOnGestureListener {

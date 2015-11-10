@@ -37,14 +37,13 @@ public class MyListView extends ListView implements OnScrollListener {
 
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
-		return super.onInterceptTouchEvent(ev)
-				&& mGestureDetector.onTouchEvent(ev);
+		
+		return super.onInterceptTouchEvent(ev)&& mGestureDetector.onTouchEvent(ev);
 	}
 
 	class YScrollDetector extends SimpleOnGestureListener {
 		@Override
-		public boolean onScroll(MotionEvent e1, MotionEvent e2,
-				float distanceX, float distanceY) {
+		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 			if (distanceY != 0 && distanceX != 0) {
 
 			}
@@ -58,6 +57,8 @@ public class MyListView extends ListView implements OnScrollListener {
 
 	}
 
+	
+	
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 	}

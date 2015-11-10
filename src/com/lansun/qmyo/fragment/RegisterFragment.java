@@ -17,6 +17,7 @@ import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.domain.BankCardData;
 import com.lansun.qmyo.domain.ErrorInfo;
 import com.lansun.qmyo.domain.Token;
 import com.lansun.qmyo.domain.User;
@@ -73,18 +74,26 @@ public class RegisterFragment extends BaseFragment{
 	private int type;
 	private int mInitType;
 	private String fragment_name;
+	private boolean isResetPsw;
+	private Token token;
+	private boolean isTheSameCardAsUsual = false;
+	private RecyclingImageView iv_activity_back;
 	class Views {
 		private View fl_register_recode, rl_register_dialog, fl_register_pwd;
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private TextView tv_register_reg_login, tv_register_forget_password;
 
 		private RecyclingImageView register_bg;
+		
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private TimeButton tv_register_send_code;
 		private EditText et_register_phone, et_register_recode,
 		et_register_pwd;
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private TextView btn_register_reg_login;
+		
+		/*@InjectBinder(listeners = { OnClick.class }, method = "click")
+		private RecyclingImageView iv_activity_back;*/
 
 		/*private CloudView iv_register_bg;*/
 	}
@@ -117,6 +126,8 @@ public class RegisterFragment extends BaseFragment{
 		ss.setSpan(ass, 0, ss.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 		v.et_register_pwd.setHint(new SpannedString(ss));*/
 
+		/*iv_activity_back = (RecyclingImageView) rootView.findViewById(R.id.iv_activity_back);*/
+		
 		return rootView;
 	}
 
@@ -129,7 +140,7 @@ public class RegisterFragment extends BaseFragment{
 		if (getArguments() != null) {
 			isReset = getArguments().getBoolean("isReset");
 			isJustLogin = getArguments().getBoolean("isJustLogin");
-			boolean isResetPsw = getArguments().getBoolean("isResetPsw");
+			isResetPsw = getArguments().getBoolean("isResetPsw");
 			isFromMyBankcardFragToRigisterFrag  = getArguments().getBoolean("isFromMyBankcardFragToRigisterFrag");
 			boolean isFromHome = getArguments().getBoolean("isFromHome");
 			boolean isFromEightPart = getArguments().getBoolean("isFromEightPart");
@@ -161,6 +172,10 @@ public class RegisterFragment extends BaseFragment{
 				v.et_register_pwd.setHint("输入密码");
 			}
 			if (isResetPsw) {
+				App.app.setData("isResetPsw", "true");//这个的作用是为了控制拦截物理返回键的作用
+				
+				/*iv_activity_back.setVisibility(View.GONE);*/
+				
 				v.fl_register_pwd.setVisibility(View.VISIBLE);
 				v.fl_register_recode.setVisibility(View.GONE);
 				v.register_bg.setImageResource(R.drawable.log_in);
@@ -187,6 +202,11 @@ public class RegisterFragment extends BaseFragment{
 	/*@InjectMethod(value = { @InjectListener(ids = { R.id.iv_activity_back }, listeners = { OnClick.class }) })*/
 	protected void back() {
 
+		if(App.app.getData("isEmbrassStatus").equals("true") ){
+			CustomToast.show(activity, "抱歉,请点击登录", "请至少选择一张银行卡作为通行证");
+			return;
+		}
+		
 		if(isFromMyBankcardFragToRigisterFrag){
 			MineBankcardFragment fragment = new MineBankcardFragment();
 			Bundle bundle = new Bundle();
@@ -210,6 +230,28 @@ public class RegisterFragment extends BaseFragment{
 			return;
 		}
 
+		/*RegisterFragment fragment = new RegisterFragment();
+		Bundle args = new Bundle();
+		args.putBoolean("isResetPsw", true);
+		args.putString("mobile", mobile);
+		args.putString("password", pwd);
+		fragment.setArguments(args);
+		
+		FragmentEntity entity = new FragmentEntity();
+		entity.setFragment(fragment);
+		EventBus.getDefault().post(entity);*/
+		
+		/**
+		 * 左上角返回键已清，暂时没有进行返回地操作*/
+		  if(isResetPsw){
+			  CustomToast.show(activity, "迈界小贴士", "更改新密码后，请登录");
+			 return;
+			/*MineFragment fragment = new MineFragment();
+			FragmentEntity entity = new FragmentEntity();
+			entity.setFragment(fragment);
+			EventBus.getDefault().post(entity);*/
+			 
+		}
 
 		if(GlobalValue.user==null && GlobalValue.isFirst){
 			ExperienceSearchFragment fragment = new ExperienceSearchFragment();
@@ -345,7 +387,6 @@ public class RegisterFragment extends BaseFragment{
 						resetParams, null, config, this);*/
 
 				FastHttpHander.ajax(GlobalValue.URL_AUTH_CAPTCHA_LOGIN,resetParams,  config, this);
-
 			}
 
 			break;
@@ -464,7 +505,7 @@ public class RegisterFragment extends BaseFragment{
 				}
 				/*App.app.setData("secret", GlobalValue.user.getSecret());*/             //------>是否在一注册成功就进行写入secret的操作？这一步是去是留待考虑
 
-				//点击注册成功后，立即跳转至登录页
+				//点击注册成功后，立即跳转至登录页，虽然是立即跳转至登录页，但是并未真正限制了用户在App中的使用权限
 				v.fl_register_pwd.setVisibility(View.VISIBLE);
 				v.fl_register_recode.setVisibility(View.GONE);
 				v.register_bg.setImageResource(R.drawable.log_in);
@@ -509,6 +550,9 @@ public class RegisterFragment extends BaseFragment{
 						FastHttpHander.ajaxGet(GlobalValue.URL_GET_ACCESS_TOKEN+ App.app.getData("secret"), config, this);
 						CustomToast.show(activity, "迈界欢迎您", "小迈一定会尽心尽力为您服务哦");
 						App.app.setData("isExperience", "false");//将体验用户标示置为 false
+						App.app.getData("isEmbrassStatus").equals("");//此时用户状态不再是尴尬的状态时
+						
+						
 						pushToken(GlobalValue.user.getMobile());//-------------------------------------------> 进行极光推送的token ！！
 					}
 					
@@ -516,15 +560,19 @@ public class RegisterFragment extends BaseFragment{
 				
 				break;
 			case 3:// 拿到了token，燥起来
-				Token token = Handler_Json.JsonToBean(Token.class,r.getContentAsString());
+				token = Handler_Json.JsonToBean(Token.class,r.getContentAsString());
 				App.app.setData("access_token", token.getToken());
+				Log.d("token", "token : "+token.getToken());
+				
 				/*back();*/
 				InternetConfig config1 = new InternetConfig();
 				config1.setKey(6);
-				HashMap<String, Object> head = new HashMap<>();
-				head.put("Authorization", "Bearer " + token.getToken());
-				config1.setHead(head);
-				FastHttpHander.ajaxGet(GlobalValue.URL_FRESHEN_USER, config1, this);
+				HashMap<String, Object> head1 = new HashMap<>();
+				head1.put("Authorization", "Bearer " + token.getToken());
+				config1.setHead(head1);
+				FastHttpHander.ajaxGet(GlobalValue.URL_BANKCARD_CHOSEN, config1, this);
+				
+				
 				//App.app.setData("access_token", token.getToken());
 
 				/*back();*///先于弹窗提醒之前,将界面跳转至上一页(由体验用户去登陆时)
@@ -549,12 +597,49 @@ public class RegisterFragment extends BaseFragment{
 				} else {
 					CustomToast.show(activity, R.string.tip,R.string.code_faild);
 				}
-
 				break;
+				
 			case 6:
+				Log.d("选中的卡","返回回来的选中的Bankcard的id为： "+r.getContentAsString());
+				
+				if(r.getContentAsString().equals("[]")){//表明当前的用户是个没有卡的已登录用户，此时需要提醒他进行加卡操作
+					isHasExpSecretWhenClickToRegister = false;
+					
+				}else{
+					BankCardData theChosenBankCardData  = Handler_Json.JsonToBean(BankCardData.class,r.getContentAsString());
+					int theChosenBankcardIdUnderTheLoginUser = theChosenBankCardData.getBankcard().getId();
+					Log.d("银行卡页的id", "从服务器上拿到的银行卡ID"+theChosenBankcardIdUnderTheLoginUser+"");
+					Log.d("银行卡页的id", "从本地sp中拿到的银行卡ID"+App.app.getData("ExperienceBankcardId"));
+					if(String.valueOf(theChosenBankcardIdUnderTheLoginUser).equals(App.app.getData("ExperienceBankcardId"))){
+						isTheSameCardAsUsual = true; //登陆前后是同一张卡
+					}else{
+						isTheSameCardAsUsual = false;//登陆前后并非是同一张卡
+					}
+					App.app.setData("ExperienceBankcardId","");//将这个体验卡id的本地内容设置为 空
+				}
+				
+				InternetConfig config2 = new InternetConfig();
+				config2.setKey(7);
+				HashMap<String, Object> head2 = new HashMap<>();
+				head2.put("Authorization", "Bearer " + token.getToken());
+				config2.setHead(head2);
+				FastHttpHander.ajaxGet(GlobalValue.URL_FRESHEN_USER, config2, this);
+				
+				break;
+			case 7:
 				GlobalValue.user = Handler_Json.JsonToBean(User.class,r.getContentAsString());
 				pd.dismiss();
 				pd = null;
+				
+				if(isResetPsw){
+					MineFragment mineFragment = new MineFragment();
+					FragmentEntity fEntity = new FragmentEntity();
+					fEntity.setFragment(mineFragment);
+					EventBus.getDefault().post(fEntity);
+					App.app.setData("isResetPsw", "");
+					return;
+				}
+				
 				if(isHasExpSecretWhenClickToRegister){//点击注册时是拥有临时secret的 ,说明是在体验状态下试图去实现登录用户的操作，那么需要登录成功后进入之前跳入的那一页
 					if(isJustLogin){
 						try{
@@ -563,7 +648,6 @@ public class RegisterFragment extends BaseFragment{
 							fEntity.setFragment(homeFragment);
 							EventBus.getDefault().post(fEntity);
 						}catch(Exception e){
-							//				    		   CustomToast.show(activity, "抓异常啦!", "异常已被清除!");
 							HomeFragment homeFragment = new HomeFragment();
 							FragmentEntity fEntity = new FragmentEntity();
 							fEntity.setFragment(homeFragment);
@@ -590,16 +674,24 @@ public class RegisterFragment extends BaseFragment{
 							bundle.putBoolean("isFromRigisterFragToMyBankcardFrag",true);
 							fragment.setArguments(bundle);
 						}else if("ActivityDetailFragment".equals(fragment_name)){
-							fragment=new ActivityDetailFragment();
-							Bundle bundle=new Bundle();
-							bundle.putString("shopId", App.app.getData("shopId"));
-							bundle.putString("activityId", App.app.getData("activityId"));
-							fragment.setArguments(bundle);
+							if(isTheSameCardAsUsual){
+								fragment=new ActivityDetailFragment();
+								Bundle bundle=new Bundle();
+								bundle.putString("shopId", App.app.getData("shopId"));
+								bundle.putString("activityId", App.app.getData("activityId"));
+								fragment.setArguments(bundle);
+							}else{
+								fragment=new HomeFragment();
+							}
 						}else if("StoreDetailFragment".equals(fragment_name)){
-							fragment=new StoreDetailFragment();
-							Bundle bundle=new Bundle();
-							bundle.putString("shopId", App.app.getData("shopId"));
-							fragment.setArguments(bundle);
+							if(isTheSameCardAsUsual){
+								fragment=new StoreDetailFragment();
+								Bundle bundle=new Bundle();
+								bundle.putString("shopId", App.app.getData("shopId"));
+								fragment.setArguments(bundle);
+							}else{
+								fragment=new HomeFragment();
+							}
 						}else if("SecretaryFragment".equals(fragment_name)){
 							fragment=new SecretaryFragment();
 						}else if("SecretaryTravelShowFragment".equals(fragment_name)){
@@ -624,9 +716,16 @@ public class RegisterFragment extends BaseFragment{
 //						back();
 					}
 				}else{//点击注册时是不曾    拥有临时secret的 ,那么需跳转至银行卡搜索页添加一张卡后，再跳入首页
-					SearchBankCardFragment homeFragment = new SearchBankCardFragment();
+					SearchBankCardFragment searchBankCardFragment = new SearchBankCardFragment();
+					Bundle bundle = new Bundle();
+					bundle.putBoolean("isFromRegisterAndHaveNothing",true);
+					Log.d("isFromRegisterAndHaveNothing", "isFromRegisterAndHaveNothing的值为： "+bundle.get("isFromRegisterAndHaveNothing"));
+					
+					App.app.setData("isEmbrassStatus", "true");
+					
+					searchBankCardFragment.setArguments(bundle);
 					FragmentEntity fEntity = new FragmentEntity();
-					fEntity.setFragment(homeFragment);
+					fEntity.setFragment(searchBankCardFragment);
 					EventBus.getDefault().post(fEntity);
 				}
 				break;

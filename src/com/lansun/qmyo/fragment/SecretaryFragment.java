@@ -1,5 +1,6 @@
 package com.lansun.qmyo.fragment;
 import java.io.IOException;
+import java.util.HashMap;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -16,13 +17,17 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.pc.ioc.a.demo.MainActivity;
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.internet.FastHttp;
+import com.android.pc.ioc.internet.FastHttpHander;
+import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
@@ -32,6 +37,8 @@ import com.lansun.qmyo.R;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.MySecretary;
 import com.lansun.qmyo.domain.Secretary;
+import com.lansun.qmyo.domain.Token;
+import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.domain.information.InformationCount;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryCardShowFragment;
@@ -115,6 +122,7 @@ public class SecretaryFragment extends BaseFragment {
 				break;
 			case 1:
 				CustomToast.show(activity, "提示", "信息获取失败,请重试");
+				refreshTokenForExpired();
 				break;
 			case 2:
 				CustomToast.show(activity, "提示", "网络异常,请刷新后重试");
@@ -128,6 +136,8 @@ public class SecretaryFragment extends BaseFragment {
 				break;
 			}
 		}
+
+		
 	};
 	private void setSecretaryInformation() {
 		v.tv_secretary_name.setText(GlobalValue.mySecretary.getName());
@@ -250,6 +260,13 @@ public class SecretaryFragment extends BaseFragment {
 		ll_secretary_setting=(LinearLayout)view.findViewById(R.id.ll_secretary_setting);
 		if (!isExperience()) {
 			OkHttp.asyncGet(GlobalValue.URL_SECRETARY_SAVE, "Authorization","Bearer "+App.app.getData("access_token"), null, new Callback() {
+			
+			/* 下面这一串仅供测试使用
+			 * OkHttp.asyncGet(GlobalValue.URL_SECRETARY_SAVE, "Authorization","Bearer "+"eyJ0eXAiOiJKV1" +
+					"QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxNDU4IiwiaXNzIjoiaHR0cDpcL1wvYXBwYXBpLnFteW8uY29tXC" +
+					"90b2tlblwvMXlsdXdkam9kdiIsImlhdCI6IjE0NDY2MjQ3MDYiLCJleHAiOiIxNDQ2NjI4MzA2IiwibmJmIjoiMT" +
+					"Q0NjYyNDcwNiIsImp0aSI6Ijc3ZWZhNjYwN2EwMWNiYjE2NThhYmM4NzM1YjgwMTI5In0.jJJfDUGde12iPkDW-GMS" +
+					"l9eTqc2gp7meSS6z0DwTv0Y", null, new Callback() {*/
 				@Override
 				public void onResponse(Response response) throws IOException {
 					if (response.isSuccessful()) {
@@ -259,6 +276,7 @@ public class SecretaryFragment extends BaseFragment {
 						handleOk.sendEmptyMessage(0);
 					}else {
 						handleOk.sendEmptyMessage(1);
+						
 					}
 				}
 				@Override
@@ -350,5 +368,24 @@ public class SecretaryFragment extends BaseFragment {
 
 		entity.setFragment(fragment);
 		bus.post(entity);
+	}
+	
+	private void refreshTokenForExpired() {
+		InternetConfig config = new InternetConfig();
+		config.setKey(0);
+		CustomToast.show(activity, "更新访问权限", "重新获取令牌中...");
+		FastHttpHander.ajaxGet(GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"),config, this);
+	}
+	@InjectHttp
+	private void result(ResponseEntity r) {
+		if (r.getStatus() == FastHttp.result_ok) {
+			switch (r.getKey()) {
+			case 0:
+				Token token = Handler_Json.JsonToBean(Token.class,r.getContentAsString());
+				CustomToast.show(activity, "更新权限成功", "已获取最新令牌");
+				App.app.setData("access_token", token.getToken());
+				break;
+			}
+		}
 	}
 }

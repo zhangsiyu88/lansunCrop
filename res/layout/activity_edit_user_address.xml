@@ -18,7 +18,7 @@
 
         <TextView
             android:id="@+id/textView1"
-            style="@style/text_style_big_34"
+            style="@style/text_style_nomal_28"
             android:layout_centerVertical="true"
             android:text="@string/city"
             android:textColor="@color/text_gray1" />
@@ -59,7 +59,7 @@
         android:paddingRight="@dimen/l_r_35" >
 
         <TextView
-            style="@style/text_style_big_34"
+            style="@style/text_style_nomal_28"
             android:text="@string/edit_user_address"
             android:textColor="@color/text_gray1" />
 

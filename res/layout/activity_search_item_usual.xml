@@ -1,23 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout 
+<RelativeLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" 
-    android:background="@drawable/found_bcakgroundcolor_selector"
-    android:orientation="vertical"
-   >
-
-<RelativeLayout 
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" 
-    android:background="@drawable/found_bcakgroundcolor_selector"
-    ><!-- xmlns:android="http://schemas.android.com/apk/res/android" -->
-
+    android:background="@color/app_white"
+    >
     <LinearLayout
         android:id="@+id/list_display_view_container"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/found_bcakgroundcolor_selector"
+        android:background="@color/app_white"
         android:orientation="vertical" >
 
         <RelativeLayout
@@ -147,4 +139,3 @@
     </LinearLayout>
 
 </RelativeLayout>
-</LinearLayout>

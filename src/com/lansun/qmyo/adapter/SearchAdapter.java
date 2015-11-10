@@ -98,17 +98,17 @@ public class SearchAdapter extends
 		
 		
 //		探测首页的标签消失是否和这里的标签移除有关
-//		viewHold.iv_search_activity_discount.setVisibility(View.GONE);
-//		viewHold.iv_search_activity_new.setVisibility(View.GONE);
-//		viewHold.iv_search_activity_point.setVisibility(View.GONE);
-//		viewHold.iv_search_activity_staging.setVisibility(View.GONE);
-//		viewHold.iv_search_activity_coupon.setVisibility(View.GONE);
+		viewHold.iv_search_activity_discount.setVisibility(View.GONE);
+		viewHold.iv_search_activity_new.setVisibility(View.GONE);
+		viewHold.iv_search_activity_point.setVisibility(View.GONE);
+		viewHold.iv_search_activity_staging.setVisibility(View.GONE);
+		viewHold.iv_search_activity_coupon.setVisibility(View.GONE);
 		
-		viewHold.iv_search_activity_discount.setVisibility(View.INVISIBLE);
+		/*viewHold.iv_search_activity_discount.setVisibility(View.INVISIBLE);
 		viewHold.iv_search_activity_new.setVisibility(View.INVISIBLE);
 		viewHold.iv_search_activity_point.setVisibility(View.INVISIBLE);
 		viewHold.iv_search_activity_staging.setVisibility(View.INVISIBLE);
-		viewHold.iv_search_activity_coupon.setVisibility(View.INVISIBLE);
+		viewHold.iv_search_activity_coupon.setVisibility(View.INVISIBLE);*/
 		
 		
 		

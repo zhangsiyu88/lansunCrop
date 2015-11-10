@@ -48,6 +48,7 @@ import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExperienceDialog;
 import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
+import com.lansun.qmyo.view.MyListView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
@@ -96,6 +97,19 @@ public class BankCardAdapter extends
 		
 		Log.d("sssssssss", mIsNotChanged+"");
 		
+	}
+
+	public BankCardAdapter(ListView listView,ArrayList<HashMap<String, String>> dataList,
+			int layout_id,  boolean isNotNeedChange,boolean isFromRegisterAndHaveNoBankcard) {
+		super(listView, dataList, layout_id);
+		
+		options = new DisplayImageOptions.Builder().cacheInMemory(true)
+				.cacheOnDisk(true).considerExifParams(true)
+				.displayer(new FadeInBitmapDisplayer(300))
+				.displayer(new RoundedBitmapDisplayer(10)).build();
+		
+		mIsNotChanged = isNotNeedChange;
+		mIsFromRegisterAndHaveNoBankcard = isFromRegisterAndHaveNoBankcard;
 	}
 
 	/*
@@ -158,11 +172,11 @@ public class BankCardAdapter extends
 										DialogInterface dialog, int which) {
 									InternetConfig config = new InternetConfig();
 									config.setKey(0);
-									HashMap<String, Object> head = new HashMap<>();
+									HashMap<String, Object> head = new HashMap<String, Object>();
 									head.put("Authorization", "Bearer "
 											+ App.app.getData("access_token"));
 									config.setHead(head);
-									LinkedHashMap<String, String> params = new LinkedHashMap<>();
+									LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
 									params.put("bankcard_id", cardId);
 									
 									//TODO
@@ -172,6 +186,10 @@ public class BankCardAdapter extends
 									/*else{//此时是我的银行卡页中列表的点击事件，那么需要将原始卡替换掉
 										App.app.setData("MainBankcard",cardId);
 									}*/
+									if(mIsFromRegisterAndHaveNoBankcard||App.app.getData("isEmbrassStatus").equals("true")){
+										isEmbarrassingStatue = true;
+									}
+									
 									
 									FastHttpHander.ajax(GlobalValue.URL_BANKCARD_ADD,params, config,BankCardAdapter.this);
 									/*FastHttpHander.ajaxForm(GlobalValue.URL_BANKCARD_ADD,params, null, config,BankCardAdapter.this);*/
@@ -297,11 +315,11 @@ public class BankCardAdapter extends
 							
 							InternetConfig config = new InternetConfig();
 							config.setKey(0);
-							HashMap<String, Object> head = new HashMap<>();
+							HashMap<String, Object> head = new HashMap<String, Object>();
 							head.put("Authorization", "Bearer "
 									+ App.app.getData("access_token"));
 							config.setHead(head);
-							LinkedHashMap<String, String> params = new LinkedHashMap<>();
+							LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
 							params.put("bankcard_id", cardId);
 							
 							/*FastHttpHander.ajaxForm(GlobalValue.URL_BANKCARD_ADD,params, null, config,BankCardAdapter.this);*/
@@ -334,6 +352,9 @@ public class BankCardAdapter extends
 			case 0://TODO
 				if ("true".equals(r.getContentAsString())) {
 					CustomToast.show(context, context.getString(R.string.tip),"添加成功");
+					
+					App.app.setData("isEmbrassStatus", "");//这儿已经表明现在用户将不再是尴尬的异常登录状态了
+					
 					/*BackEntity event = new BackEntity();
 					EventBus.getDefault().post(event);*/
 					if(isEmbarrassingStatue){
@@ -343,7 +364,6 @@ public class BankCardAdapter extends
 						EventBus.getDefault().post(event);
 						return;
 					}
-					
 					
 					if(mIsNotChanged){//不需要改变的标签值，即此时的点击操作：是将原始卡替换为欲添卡，但保存于本地的sp中的原始卡数据不需要更改
 						if(addBankcardUnderLoginStatus){
@@ -401,10 +421,10 @@ public class BankCardAdapter extends
 				 */
 				InternetConfig config2 = new InternetConfig();
 				config2.setKey(4);
-				HashMap<String, Object> head = new HashMap<>();
+				HashMap<String, Object> head = new HashMap<String, Object>();
 				head.put("Authorization","Bearer " + App.app.getData("access_token"));
 				config2.setHead(head);
-				LinkedHashMap<String, String> params = new LinkedHashMap<>();
+				LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
 			
 				/*Log.i("从选卡页进入首页后随机分配的银行卡的ID为：","进入首页后随机分配的银行卡的ID为："+	mCardId);
 				if(cardId==0){
@@ -455,6 +475,7 @@ public class BankCardAdapter extends
 
 	boolean hasAdd = true;
 	private boolean mIsNotChanged;
+	private boolean mIsFromRegisterAndHaveNoBankcard = false;
 	
 
 

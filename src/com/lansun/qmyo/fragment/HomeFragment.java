@@ -161,9 +161,6 @@ import com.squareup.okhttp.Response;
 		isPlay = false;
 		v.tv_home_icon.setTextColor(getResources().getColor(R.color.app_green1));
 
-
-
-
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN|WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
 
@@ -452,15 +449,25 @@ import com.squareup.okhttp.Response;
 				v.iv_card.setVisibility(View.GONE);
 				v.iv_top_card.setVisibility(View.GONE);
 
-			} else {//如果不是体验用户,即我已是注册登录用户
-				v.iv_card.setVisibility(View.VISIBLE);//原本右边银行卡可见
-				v.iv_top_card.setVisibility(View.VISIBLE);//滑动出现的右边银行卡可见
-				v.tv_home_experience.setVisibility(View.GONE);//原本  体验不可见
-				v.tv_top_home_experience.setVisibility(View.GONE);//滑动出现的右边 体验二字 不可见
-				v.rl_bg.setBackgroundResource(R.drawable.circle_background_gray);
-				v.rl_top_bg.setBackgroundResource(R.drawable.circle_background_gray);
-				v.rl_bg.setPressed(false);
-				v.rl_top_bg.setPressed(false);
+			} else {
+				if(App.app.getData("isEmbrassStatus").equals("true")){
+					SearchBankCardFragment searchBankCardFragment = new SearchBankCardFragment();
+					Bundle bundle = new Bundle();
+					bundle.putBoolean("isFromRegisterAndHaveNothing",true);//借用这个isFromRegisterAndHaveNothing的标签进行搜索的设置
+					searchBankCardFragment.setArguments(bundle);
+					FragmentEntity fEntity = new FragmentEntity();
+					fEntity.setFragment(searchBankCardFragment);
+					EventBus.getDefault().post(fEntity);
+					return;
+				}else{
+					//如果不是体验用户,即我已是注册登录用户
+					v.iv_card.setVisibility(View.VISIBLE);//原本右边银行卡可见
+					v.iv_top_card.setVisibility(View.VISIBLE);//滑动出现的右边银行卡可见
+					v.tv_home_experience.setVisibility(View.GONE);//原本  体验不可见
+					v.tv_top_home_experience.setVisibility(View.GONE);//滑动出现的右边 体验二字 不可见
+					v.rl_bg.setPressed(false);
+					v.rl_top_bg.setPressed(false);
+				}
 			}
 
 			if (!TextUtils.isEmpty(getSelectCity()[0])) {//设置左上角的城市名称
@@ -888,7 +895,7 @@ import com.squareup.okhttp.Response;
 			// listAdapter.getCount()返回数据项的数目   
 			View listItem = lAdapter.getView(i, null, listView);   
 			// 计算子项View 的宽高   
-			listItem.measure(0, 0);    
+		    listItem.measure(0, 0);  
 			// 统计所有子项的总高度   
 			totalHeight += listItem.getMeasuredHeight();    
 		}   

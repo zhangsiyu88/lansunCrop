@@ -35,6 +35,8 @@ import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
+import com.android.pc.ioc.inject.InjectListener;
+import com.android.pc.ioc.inject.InjectMethod;
 import com.android.pc.ioc.inject.InjectPullRefresh;
 import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.internet.FastHttp;
@@ -141,12 +143,23 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 	private boolean isMove=true;
 	private ProgressDialog dialogpg;
 	private Boolean tagOfSearchBankCardFragment = true;
+	private boolean mIsFromRegisterAndHaveNoBankcard = false;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_search_bank_card,container,false);
 		initView(rootView);
+		
+		if(getArguments()!= null){
+			mIsFromRegisterAndHaveNoBankcard  = getArguments().getBoolean("isFromRegisterAndHaveNoBankcard");
+		}
+		
+		/*
+		 * if(mIsFromRegisterAndHaveNoBankcard){
+			//当我点击银行卡的搜索结果页时，需要直接将卡添置到用户选中的卡上，作为默认的选中卡
+		    }
+		 */
 		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
@@ -159,7 +172,9 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 		band_puzzy_recycle.setAdapter(adapter);
 		del_search_content=(ImageView) rootView.findViewById(R.id.del_search_content);
 		et_home_search=(EditText)rootView.findViewById(R.id.et_home_search);
+		
 		et_home_search.requestFocus();//请求焦点
+		
 		et_home_search.setOnFocusChangeListener(this);//设置焦点改变的监听
 		et_home_search.addTextChangedListener(this);//添加文本改变监听
 		del_search_content.setOnClickListener(new OnClickListener() {//edit 编辑框
@@ -184,7 +199,7 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 	private void onKeyShowAlways() {
 		InputMethodManager imm = (InputMethodManager) getActivity()
 				.getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);//对虚拟键盘进行隐藏
 	}
 
 	/**
@@ -294,6 +309,12 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 	private void click(View view) {
 		switch (view.getId()) {
 		case R.id.tv_search_cancle:
+			
+			if(App.app.getData("isEmbrassStatus").equals("true")&& getString(R.string.cancle).equals(v.tv_search_cancle.getText())){
+				CustomToast.show(activity, "抱歉,请点击登录", "请至少选择一张银行卡作为通行证");
+				onKeyHideAlways(view);
+				return;
+			}
 			if (getString(R.string.cancle).equals(v.tv_search_cancle.getText())) {//文字内容为取消,则取消
 				onKeyHideAlways(view);
 				back();
@@ -516,7 +537,7 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 						
 						if(bankcardAdapter == null){
 							bankcardAdapter = new BankCardAdapter(lv_search_bank_card, dataList,
-									R.layout.activity_bank_card_item, tagOfSearchBankCardFragment);//BankCardAdapter中别有洞天
+									R.layout.activity_bank_card_item, tagOfSearchBankCardFragment,mIsFromRegisterAndHaveNoBankcard);//BankCardAdapter中别有洞天
 							bankcardAdapter.setActivity(SearchBankCardFragment.this);
 							lv_search_bank_card.setAdapter(bankcardAdapter);
 							lv_search_bank_card.setVisibility(View.VISIBLE);
@@ -532,11 +553,21 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 				}else {//拿到的数据为空
 					handlerPuzzy.sendEmptyMessage(1);//-->adapter.notifyDataSetChanged
 				}
-				
 				PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				break;
 
 			}
 		}
+	}
+	
+	@Override//@InjectMethod(@InjectListener(ids = 2131296342, listeners = OnClick.class))
+	protected void back() {
+		if(App.app.getData("isEmbrassStatus").equals("true") ){
+			CustomToast.show(activity, "抱歉,请选择银行卡", "请至少选择一张银行卡作为通行证");
+			return;
+		}else{
+			super.back();
+		}
+		
 	}
 }

@@ -138,7 +138,7 @@ public class NetWorkChangeBroadcastReceiver extends BroadcastReceiver {
 						r.getContentAsString());
 				InternetConfig config = new InternetConfig();
 				config.setKey(1);
-				HashMap<String, Object> head = new HashMap<>();
+				HashMap<String, Object> head = new HashMap<String, Object>();
 				head.put("Authorization", "Bearer " + token.getToken());
 				config.setHead(head);
 				FastHttpHander.ajaxGet(GlobalValue.URL_FRESHEN_USER, config, this);

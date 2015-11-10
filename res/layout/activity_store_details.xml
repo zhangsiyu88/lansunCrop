@@ -49,7 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="1px"
             android:layout_alignParentBottom="true"
-            android:background="@color/line_bg" />
+            android:background="@color/line_bg1" />
     </RelativeLayout>
 
     <ScrollView
@@ -113,7 +113,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1px"
                         android:layout_alignParentBottom="true"
-                        android:background="@color/line_bg" />
+                        android:background="@color/line_bg1" />
                 </RelativeLayout>
 
                 <!-- 按要求添加一条分割线 -->
@@ -121,7 +121,7 @@
                        android:layout_width="match_parent"
                        android:layout_height="1px"
                        android:layout_alignParentBottom="true"
-                       android:background="@color/line_bg" />
+                       android:background="@color/line_bg1" />
                  
                 <RelativeLayout
                     style="@style/w_full_h_wrap"
@@ -255,7 +255,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginBottom="@dimen/margin_top_32"
                         android:layout_marginTop="@dimen/margin_top_32"
-                        android:background="@color/line_bg" /><!--   android:layout_marginLeft="@dimen/l_r_35" -->
+                        android:background="@color/line_bg1" /><!--   android:layout_marginLeft="@dimen/l_r_35" -->
     				 
                     <!--android:layout_width="@dimen/activity_detail_map_w"  -->
                     <LinearLayout
@@ -296,7 +296,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1px"
-                        android:background="@color/line_bg" />
+                        android:background="@color/line_bg1" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -315,7 +315,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1px"
-                        android:background="@color/line_bg" />
+                        android:background="@color/line_bg1" />
                 </RelativeLayout>
 
                 <View
@@ -341,7 +341,7 @@
                 <View
                     android:layout_width="fill_parent"
                     android:layout_height="1px"
-                    android:background="@color/line_bg"
+                    android:background="@color/line_bg1"
                     android:orientation="horizontal" />
 
                 <com.lansun.qmyo.view.MySubListView
