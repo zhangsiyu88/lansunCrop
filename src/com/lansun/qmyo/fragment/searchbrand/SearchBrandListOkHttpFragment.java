@@ -621,6 +621,87 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 			}
 		});
 	}
+	/**
+	 * 开启搜索
+	 * 
+	 * @param string
+	 */
+	private void startSearchNext(String visitUrl) {
+		/*PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+		PullToRefreshManager.getInstance().onFooterRefreshComplete();*/
+		if (isShowDialog){
+			if(cPd == null ){
+				cPd = CustomDialogProgress.createDialog(activity);
+				cPd.setOnCancelListener(new OnCancelListener() {
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						lv_search_content.setVisibility(View.INVISIBLE);
+						if (allready) {
+							
+						}
+					}
+				});
+				lv_search_content.setVisibility(View.INVISIBLE);
+				cPd.setCanceledOnTouchOutside(false);
+				cPd.show();
+			}else{
+				cPd.show();
+			}
+		}else {
+			setProgress(lv_search_content);
+			startProgress();
+			progress_text.setText("正在搜索幸运中");
+		}
+		OkHttp.asyncGet(visitUrl, "Authorization", "Bearer "+App.app.getData("access_token"), "SearchBrandListOkHttpFragment", new Callback() {
+			@Override
+			public void onResponse(Response response) throws IOException {
+				Gson gson=new Gson();
+				list = gson.fromJson(response.body().string(), ActivityList.class);
+				if(isPull){
+					isPull = false;
+				}else{
+					datas = new ArrayList<HashMap<String, Object>>();//重新new出来一个新的list
+				}
+				
+				if (list.getData() != null && !list.getData().toString().equals("[]") ){
+					for (ActivityListData data : list.getData()) {
+						HashMap<String, Object> map = new HashMap<String, Object>();
+						map.put("tv_search_activity_name", data.getShop()
+								.getName());
+						map.put("tv_search_activity_distance", data.getShop()
+								.getDistance());
+						map.put("tv_search_activity_desc", data.getActivity()
+								.getName());
+						map.put("iv_search_activity_head", data.getActivity()
+								.getPhoto());
+						map.put("activityId", data.getActivity().getId());
+						map.put("shopId", data.getShop().getId());
+						map.put("tv_search_tag", data.getActivity().getTag());
+						map.put("icons", data.getActivity().getCategory());
+						datas.add(map);
+					}
+					
+					/* 下面这一步，试图在setAdapter之前将emptyView塞入到ListView控件上，但此处报错
+					 * if(list.getData().size()<10){
+						lv_search_content.addFooterView(emptyView);
+						Log.i("","在此处添加上了尾部EmptyView");
+					}*/
+					
+					handleOkhttp.sendEmptyMessage(1);
+					return;
+				}
+				
+				if(list.getData().toString().equals("[]")){
+					handleOkhttp.sendEmptyMessage(2);//返回的数据解析后为空时
+					return;
+				}
+			}
+			@Override
+			public void onFailure(Request arg0, IOException arg1) {
+				
+			}
+		});
+	}
 
 	/**
 	 * 设置下拉的刷新
@@ -780,45 +861,34 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 		switch (type1) {
 		case InjectView.PULL:
 			isShowDialog=false;
-			Log.i("上拉动作是否可以识别?", "说明上拉动作能够被识别");
 			/*CustomToast.show(activity, "上拉操作", "现在进行上拉操作！");*/
 			if (list != null) {
-				/*if (TextUtils.isEmpty(activityList.getNext_page_url())) {//下一页为空的时候，加上footerview*/
-				if (list.getNext_page_url()== "null"||TextUtils.isEmpty(list.getNext_page_url())) {
-
-					//lv_search_content.addFooterView(emptyView);
-
-					//setEmptityView(true, 1);
+				if ("null".equals(String.valueOf(list.getNext_page_url()))||TextUtils.isEmpty(String.valueOf(list.getNext_page_url()))) {
 					try{
 						//若之前的隶属于View对象是有emptyView对象的，先将其移除掉
 						lv_search_content.removeFooterView(emptyView);
 					}catch(Exception e ){
+						
 					}finally{
-						Log.i("","remove掉ListView中的尾布局失败，抓住异常，还是展示获取的数据，但尾部跟上了emptyView！");
 						lv_search_content.setAdapter(searchBankcardAdapter);
 
 						/*endProgress();*/
 					}
 					lv_search_content.addFooterView(emptyView);
 
-					Log.e("Tag","应该已经添加了空的View");
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
 					CustomToast.show(activity, "到底啦！", "该关键词下暂时只有这么多内容");
-
 				} else {
 					String nextPageUrl = list.getNext_page_url();
-					/*startSearch(defaultVisitUrl,getSelectCity()[0],HODLER_TYPE,"nearby","intelligent","all",GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(),query);*/
-					startSearch(nextPageUrl,getSelectCity()[0], HODLER_TYPE, position_bussness, intelligentStr, type, GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(), query);
+					startSearchNext(nextPageUrl);
 					isPull = true;
-
 				}
 			}
 			break;
-
-
 		case InjectView.DOWN://去做刷新操作
 			isShowDialog=false;
+			
 			startSearch(defaultVisitUrl,getSelectCity()[0], HODLER_TYPE, position_bussness, intelligentStr, type, GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(), query);
 			searchBankcardAdapter = null;
 			//暂时为空

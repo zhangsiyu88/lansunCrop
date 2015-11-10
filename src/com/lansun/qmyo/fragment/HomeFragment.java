@@ -55,6 +55,7 @@ import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.PullToRefreshManager;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.ioc.view.listener.OnItemClick;
+import com.android.pc.util.Gps;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
 import com.google.gson.Gson;
@@ -229,6 +230,8 @@ import com.squareup.okhttp.Response;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		intent = new Intent("com.lansun.qmyo.fragment.newbrand");
+		Log.e("token",App.app.getData("access_token"));
+		Log.e("token",""+GlobalValue.gps.getWgLat()+GlobalValue.gps.getWgLon());
 		LayoutInflater inflater  = LayoutInflater.from(activity);
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
