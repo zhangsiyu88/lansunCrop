@@ -74,7 +74,7 @@ public class NewBrandFragment extends BaseFragment{
 	private Gson gson;
 	private ServiceAllBiz biz;
 	private String[] jsons=new String[8];
-	private Map<String, String> map=new HashMap<>();
+	private Map<String, String> map=new HashMap<String, String>();
 	private String HODLER_TYPE="000000";
 	private View tv_found_secretary;
 	private boolean isPosition;

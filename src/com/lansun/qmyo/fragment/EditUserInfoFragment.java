@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -93,6 +94,7 @@ public class EditUserInfoFragment extends BaseFragment {
 			break;
 		case "nickname":
 			v.et_edit_content.setText(GlobalValue.user.getNickname());
+			
 			break;
 		}
 		autoHiddenKey();
@@ -110,7 +112,7 @@ public class EditUserInfoFragment extends BaseFragment {
 			}
 
 			if ("email".equals(paramName)) {
-				if (!isEmail(v.et_edit_content.getText().toString())) {
+				if (!isEmail(v.et_edit_content.getText().toString())) {//isEail()用来判断是否符合邮件的正则形式
 					CustomToast.show(activity, R.string.tip,R.string.email_faild);
 					return;
 				}
@@ -143,18 +145,33 @@ public class EditUserInfoFragment extends BaseFragment {
 				GlobalValue.user = Handler_Json.JsonToBean(User.class,r.getContentAsString());
 				CustomToast.show(activity, getString(R.string.tip), "修改成功");
 				//App.app.setData("userNickname", paramName);
-				GlobalValue.user.setNickname(v.et_edit_content.getText().toString());
+				
+				if(paramName.equals("nickname")){
+					GlobalValue.user.setNickname(v.et_edit_content.getText().toString());
+				}else if(paramName.equals("truename")){
+					GlobalValue.user.setTruename(v.et_edit_content.getText().toString());
+				}else if(paramName.equals("email")){
+					GlobalValue.user.setEmail(v.et_edit_content.getText().toString());
+				}
+				
 				
 				//BaseFragment中设置的一个方法，功能是：将自己从FragmentManager中弹出，类似于Activity中的销毁操作
 				/*back();*/
-				EditUserFragment editUserFragment = new EditUserFragment();
-				FragmentEntity fEntity = new FragmentEntity();
-				fEntity.setFragment(editUserFragment);
-				EventBus.getDefault().post(fEntity);
+				
+				if(paramName.equals("nickname")){
+					PersonCenterFragment personCenterFragment = new PersonCenterFragment();
+					FragmentEntity fEntity = new FragmentEntity();
+					fEntity.setFragment(personCenterFragment);
+					EventBus.getDefault().post(fEntity);
+				}else{
+					EditUserFragment editUserFragment = new EditUserFragment();
+					FragmentEntity fEntity = new FragmentEntity();
+					fEntity.setFragment(editUserFragment);
+					EventBus.getDefault().post(fEntity);
+				}
 				break;
 			}
 		}
-
 	}
 
 	public static boolean isEmail(String strEmail) {

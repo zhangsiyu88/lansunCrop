@@ -164,7 +164,6 @@ public class MineBankcardFragment extends BaseFragment{
 			return;
 			
 		}else{
-			
 			refreshUrl = GlobalValue.URL_BANKCARD;
 			refreshKey = 0;
 			refresh();//刷新其他银行卡的操作		
@@ -223,7 +222,6 @@ public class MineBankcardFragment extends BaseFragment{
 	}
 
 	private void refresh() {
-
 		//下行代码中的refreshKey为 0
 		refreshCurrentList(refreshUrl, null, refreshKey, lv_ban_card_other);//其他银行卡的页面展示
 		showChosenBankcard();

@@ -91,10 +91,7 @@ public class ResetPwdFragment extends BaseFragment {
 				params.put("code", code);
 				InternetConfig config = new InternetConfig();
 				config.setKey(0);
-				/*FastHttpHander.ajaxForm(GlobalValue.URL_AUTH_RESET, params,
-						null, config, this);*/
-				FastHttpHander.ajax(GlobalValue.URL_AUTH_RESET, params,
-						config, this);
+				FastHttpHander.ajax(GlobalValue.URL_AUTH_RESET, params,config, this);
 			}
 
 			break;

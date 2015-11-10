@@ -94,8 +94,7 @@ public class SharedDialog implements OnClickListener {
 
 			@Override
 			public void onDismiss() {
-				WindowManager.LayoutParams params = activity.getWindow()
-						.getAttributes();
+				WindowManager.LayoutParams params = activity.getWindow().getAttributes();
 				params.alpha = 1f;
 				activity.getWindow().setAttributes(params);
 			}

@@ -51,7 +51,7 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 public class App extends Application {
 	public static final String[] TAGS=new String[]{"shopping","travel","food","car","happy","life","core","investment"};
 	public static App app;
-	public static List<String> search_list_history=new ArrayList<>();
+	public static List<String> search_list_history=new ArrayList<String>();
 	public static App getInstance() {
 		return app;
 	}

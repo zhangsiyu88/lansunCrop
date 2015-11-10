@@ -263,10 +263,6 @@ public class SplashActivity extends FragmentActivity {
 			//版本高于4.4，那么进行系统状态栏透明化处理
 			setTranslucentStatus(true);
 		}
-		
-		
-		
-		
 		new Thread()
 		    {
 		      public void run()
@@ -280,8 +276,6 @@ public class SplashActivity extends FragmentActivity {
 		//------------------
 		    
 		Handler_Inject.injectFragment(this, null);
-		
-		
 		super.onCreate(arg0);
 	}
 
@@ -303,7 +297,7 @@ public class SplashActivity extends FragmentActivity {
     
     
 	/**
-	 * 初始化去获取地理数据
+	 * 初始化去获取物理数据
 	 */
 	@InjectInit
 	private void init() {
@@ -311,7 +305,7 @@ public class SplashActivity extends FragmentActivity {
 		String sdk = android.os.Build.VERSION.SDK;
 		String brand = android.os.Build.BRAND;
 		
-		if(Integer.valueOf(sdk) < 19){
+		if(Integer.valueOf(sdk) < 17){
 			DialogUtil.createTipAlertDialog(SplashActivity.this,
 					"亲爱的 "+brand+" 用户"+"\n"+"请将系统升级至4.4版本后使用",
 					new DialogUtil.TipAlertDialogCallBack() {

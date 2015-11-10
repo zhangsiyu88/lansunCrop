@@ -14,7 +14,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 public class AddQuestionBiz implements IAddQuestionBiz{
-	private Map<String,String> paramas=new HashMap<>();
+	private Map<String,String> paramas=new HashMap<String, String>();
 	@Override
 	public void sendQuestion(String content, String type, String principal,final RequestCallBack callback) {
 		Log.e("paramas", "内容"+content+",type"+type+",principal"+principal);

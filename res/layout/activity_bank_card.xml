@@ -129,7 +129,8 @@
             style="@style/text_style_nomal_28"
             android:gravity="center_horizontal"
             android:text="@string/search_tip"
-            android:textColor="#6F6F6F" />
+            android:textColor="#6F6F6F" 
+            android:lineSpacingExtra="4dp"/>
 
         <View
             android:layout_width="match_parent"

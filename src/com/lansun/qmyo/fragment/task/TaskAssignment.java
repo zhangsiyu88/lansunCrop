@@ -113,7 +113,7 @@ public class TaskAssignment extends BaseFragment implements TextWatcher{
 					return;
 				}
 				Log.e("content", content);
-				Map<String, String> map=new HashMap<>();
+				Map<String, String> map=new HashMap<String, String>();
 				map.put("content", content);
 				map.put("type", type);
 				OkHttp.asyncPost(GlobalValue.URL_SECRETARY_QUESTION, map, new Callback() {

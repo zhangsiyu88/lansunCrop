@@ -56,7 +56,7 @@ public class MaiCommentAdapter extends
 	private Fragment activity;
 	boolean isShow;
 
-	private ArrayList<ViewHolder> holders = new ArrayList<>();
+	private ArrayList<ViewHolder> holders = new ArrayList<ViewHolder>();
 
 	public void setActivity(Fragment fragment) {
 		this.activity = fragment;

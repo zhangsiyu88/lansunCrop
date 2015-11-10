@@ -41,8 +41,7 @@ public class JiWenListAdapter extends
 	public void deal(HashMap<String, Object> data, ViewHolder viewHold,
 			int position) {
 		String photo = data.get("iv_jiwen_item_head").toString().trim();
-		final ArrayList<String> tags = (ArrayList<String>) data
-				.get("iv_jiwen_item_type");
+		final ArrayList<String> tags = (ArrayList<String>) data.get("iv_jiwen_item_type");
 		String tag = data.get("tv_jiwen_item_type_desc").toString().trim();
 		String desc = data.get("tv_jiwen_item_desc").toString().trim();
 		String time = data.get("tv_jiwen_item_time").toString().trim();
@@ -59,6 +58,7 @@ public class JiWenListAdapter extends
 			viewHold.tv_jiwen_item_time.setText(time);
 		}
 		int resId = R.drawable.article_shopping;
+		
 		switch (tags.get(0)) {
 		case "100000":
 			resId = R.drawable.article_shopping_1;

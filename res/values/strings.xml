@@ -136,7 +136,7 @@
     <string name="exit_login">退出登录</string>
     <string name="replay">回复</string>
     <string name="store">门店</string>
-    <string name="qmyo_version">迈界 V1.2.0</string>
+    <string name="qmyo_version">迈界 V1.2.1</string>
     <string name="qmyo_desc">收集世界各地惊喜\n伴随迈友走遍世界</string>
     <string name="qmyo_wx">迈界微信公众号：<Data><![CDATA[<font color="#9DC14F">qmyoclub</font>]]></Data></string>
     <string name="qmyo_net">迈界官网：<Data><![CDATA[<font color="#9DC14F">www.qmyo.com</font>]]></Data></string>
@@ -312,7 +312,7 @@
 
     <string name="jiwen_about">共有%1$s篇文章与<Data><![CDATA[<font color="#9DC14F">%2$s</font>]]></Data>有关</string>
     <string name="look_now">立即查看</string>
-    <string name="search_tip">立即登陆添加多张银行卡\n一键切换最新优质活动</string>
+    <string name="search_tip">立即登录添加多张银行卡\n一键切换最新优质活动</string>
     <string name="is_switch_card">是否替换当前信用卡？</string>
     <string name="please_select_one">请选择一项</string>
     <string name="doing">进行中</string>
@@ -428,7 +428,7 @@ A：你可以在首页的右上角点击查看你的卡包或者通过点击“�
     <string name="bank_empty_title">抱歉,小迈没有找到您的银行卡</string>
     <string name="secretary_empty_title">要不找一下小秘书></string>
      <string name="get_back">银行卡问题反馈  ></string>
-     <string name="registeror_login">总裁大大,想要添加多张银行卡请先登录哟</string>
+     <string name="registeror_login">总裁大大,想要添加多张银行卡\n\r请先登录哟</string>
      <string name="login_to_report">总裁大大,举报要登录的哟</string>
      <string name="login_to_comment">总裁大大,请先登录再发表高见哟</string>
      <string name="login_to_getmessage">总裁大大,登录才可接收消息哟</string>

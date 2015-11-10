@@ -74,6 +74,7 @@ public class MineActivityFragment extends BaseFragment {
 
 	/*@InjectView(binders = { @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick") }, down = true, pull = true)
 	private MyListView lv_mine_activity;*/
+	
 	@InjectView(binders = { @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick") }, pull = true)
 	private MyListView lv_mine_activity;
 
@@ -97,11 +98,14 @@ public class MineActivityFragment extends BaseFragment {
 		refreshParams = new LinkedHashMap<String, String>();
 		v.fl_comments_right_iv.setVisibility(View.GONE);
 		initTitle(v.tv_activity_title, R.string.activity_collection, null, 0);
-		ListViewSwipeGesture touchListener = new ListViewSwipeGesture(
-				lv_mine_activity, swipeListener, getActivity());
+		
+		//listView设置上touchListener，将ListView的控件对象和监听的回调函数关联起来
+		ListViewSwipeGesture touchListener = new ListViewSwipeGesture(lv_mine_activity, swipeListener, getActivity());
+		
 		refreshParams.put("underway", underway);
 		touchListener.SwipeType = ListViewSwipeGesture.Dismiss;
-		lv_mine_activity.setOnTouchListener(touchListener);
+		
+		lv_mine_activity.setOnTouchListener(touchListener);//依旧还是得将生成的触摸监听器和listView控件挂上钩
 		
 		refreshUrl = GlobalValue.URL_USER_ACTIVITY + "?";
 		//去拿刷新出来的数据
@@ -109,6 +113,11 @@ public class MineActivityFragment extends BaseFragment {
 	}
 
 	private int deletePosition;
+	
+	
+	
+	
+	//触摸的回调函数
 	ListViewSwipeGesture.TouchCallbacks swipeListener = new ListViewSwipeGesture.TouchCallbacks() {
 
 		@Override
@@ -145,7 +154,6 @@ public class MineActivityFragment extends BaseFragment {
 
 				@Override
 				public void onFailure(HttpException arg0, String arg1) {
-					
 				}
 
 				@Override
@@ -207,7 +215,7 @@ public class MineActivityFragment extends BaseFragment {
 
 	private ActivityList list;
 
-	private void click(View view) {
+	private void click(View view) {//
 		dataList.clear();
 		adapter = null;
 		v.rl_no_postdelay_activity.setVisibility(View.GONE);
@@ -298,7 +306,7 @@ public class MineActivityFragment extends BaseFragment {
 					}
 					if (adapter == null) {
 						adapter = new SearchAdapter(lv_mine_activity, dataList,
-								R.layout.activity_search_item);
+								R.layout.activity_search_item_usual);
 						lv_mine_activity.setAdapter(adapter);
 					} else {
 						adapter.notifyDataSetChanged();

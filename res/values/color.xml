@@ -15,6 +15,7 @@
     <color name="app_grey5">#B3B3B3</color>
     <color name="app_grey6">#999999</color>
     <color name="app_grey7">#757575</color>
+    <color name="app_grey8">#F5F5F5</color>
     <color name="popup_main_background">#b0000000</color>
     <color name="line_bg">#C9C9C9</color>
     <color name="line_bg_expand">#EBEBEB</color>
@@ -24,8 +25,11 @@
     <color name="line_bg1">#EBEBEB</color>
     <color name="app_circle_gray">#9C9C9C</color>
     <color name="text_gray1">#6F6F6F</color>
+    
     <color name="text_gray2">#AFAFAF</color>
     <color name="text_gray3">#898989</color>
+    <color name="text_gray4">#939393</color>
+    
     <color name="text_black_1">#212121</color>
     <color name="text_black_2">#545454</color>
     <color name="images_counts">#75000000</color>

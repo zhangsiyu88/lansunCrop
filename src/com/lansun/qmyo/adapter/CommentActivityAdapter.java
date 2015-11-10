@@ -184,7 +184,7 @@ public class CommentActivityAdapter extends
 		if (Integer.parseInt(mai_communicate) != 0) {
 			InternetConfig config = new InternetConfig();
 			config.setKey(0);
-			HashMap<String, Object> head = new HashMap<>();
+			HashMap<String, Object> head = new HashMap<String, Object>();
 			head.put("Authorization",
 					"Bearer " + App.app.getData("access_token"));
 			config.setHead(head);
@@ -313,7 +313,7 @@ public class CommentActivityAdapter extends
 
 		InternetConfig config = new InternetConfig();
 		config.setKey(0);
-		HashMap<String, Object> head = new HashMap<>();
+		HashMap<String, Object> head = new HashMap<String, Object>();
 		head.put("Authorization", "Bearer " + App.app.getData("access_token"));
 		config.setHead(head);
 		FastHttp.ajaxGet(String.format(GlobalValue.URL_ACTIVITY_COMMENT,

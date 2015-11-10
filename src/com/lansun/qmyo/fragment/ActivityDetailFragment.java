@@ -128,6 +128,8 @@ public class ActivityDetailFragment extends BaseFragment {
 		//将评论列表的listView 放入到 scrollview 这个父布局中
 		v.lv_comments_list.setParentScrollView(v.sc_activity_detail);
 		
+		AnimUtils.startRotateIn(activity, v.iv_open_activity_detail);
+		
 		shopId = getArguments().getString("shopId");
 		activityId = getArguments().getString("activityId");
 		
@@ -136,13 +138,14 @@ public class ActivityDetailFragment extends BaseFragment {
 		int screenHeight = dm.heightPixels;
 		int cueentHeight = (int) (((double) screenWidth / 720) * v.vp_baner.getLayoutParams().height);
 		
-		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-				screenWidth, cueentHeight);
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(screenWidth, cueentHeight);
+		
 		v.vp_baner.setLayoutParams(params);
 		
 		initData();
 		
 		v.vp_baner.setOnPageChangeListener(pageChangeListener);
+		
 		progress_container.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -247,10 +250,10 @@ public class ActivityDetailFragment extends BaseFragment {
 
 				if (data.getActivity().getContent() != null) {
 
-					ArrayList<HashMap<String, String>> dataList2 = new ArrayList<>();
+					ArrayList<HashMap<String, String>> dataList2 = new ArrayList<HashMap<String, String>>();
 					for (ActivityContent data1 : data.getActivity()
 							.getContent()) {
-						HashMap<String, String> map = new HashMap<>();
+						HashMap<String, String> map = new HashMap<String, String>();
 						map.put("tv_activity_content_mx_title",
 								data1.getTitle());
 						StringBuilder sb = new StringBuilder();
@@ -558,11 +561,11 @@ public class ActivityDetailFragment extends BaseFragment {
 			if (!data.getActivity().isMy_attention()) {//如果不是我收藏过的,点击即收藏
 				InternetConfig config = new InternetConfig();
 				config.setKey(2);
-				HashMap<String, Object> head = new HashMap<>();
+				HashMap<String, Object> head = new HashMap<String, Object>();
 				head.put("Authorization",
 						"Bearer " + App.app.getData("access_token"));
 				config.setHead(head);
-				LinkedHashMap<String, String> params = new LinkedHashMap<>();
+				LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
 				params.put("activity_id", activityId + "");
 				params.put("shop_id", shopId + "");
 				
@@ -576,7 +579,7 @@ public class ActivityDetailFragment extends BaseFragment {
 			} else {
 				InternetConfig config = new InternetConfig();
 				config.setKey(3);
-				HashMap<String, Object> head = new HashMap<>();
+				HashMap<String, Object> head = new HashMap<String, Object>();
 				head.put("Authorization","Bearer " + App.app.getData("access_token"));
 				config.setHead(head);
 				config.setRequest_type(InternetConfig.request_delete);
@@ -691,7 +694,7 @@ public class ActivityDetailFragment extends BaseFragment {
 	//去除掉xxx（店名）举办xxx（活动）中的前半部分
 	private void showDialog() {
 			new SharedDialog().showPopwindow(rootView, getActivity(), data
-			.getShop().getName(), data.getActivity().getName(), data.getActivity().getPhotos()
+			.getShop().getName(), data.getShop().getName()+ " 举办  "+data.getActivity().getName(), data.getActivity().getPhotos()
 			.get(0),data.getActivity().getShare_url());
 }
 	

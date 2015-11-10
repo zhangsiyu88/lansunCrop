@@ -54,14 +54,17 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.database.CursorJoiner.Result;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -73,7 +76,7 @@ import android.widget.TextView;
  * @author bhxx
  * 
  */
-public class MineHistoryFragment extends BaseFragment {
+@SuppressLint("ResourceAsColor") public class MineHistoryFragment extends BaseFragment {
 
 	@InjectAll
 	Views v;
@@ -108,6 +111,18 @@ public class MineHistoryFragment extends BaseFragment {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_mine_history, null);
 		emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_minhistory_recorder1, null);
+		View tv_gotoHomeFrag = emptyView.findViewById(R.id.tv_gotoHomeFrag);
+		tv_gotoHomeFrag.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				HomeFragment fragment = new HomeFragment();
+				FragmentEntity entity = new FragmentEntity();
+				entity.setFragment(fragment);
+				EventBus.getDefault().post(entity);
+			}
+		});
+		
 		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
@@ -115,7 +130,9 @@ public class MineHistoryFragment extends BaseFragment {
 	@InjectInit
 	private void init() {
 		v.fl_comments_right_iv.setVisibility(View.GONE);
-		v.tv_activity_shared.setText(R.string.all_clear);
+		
+		//v.tv_activity_shared.setText(R.string.all_clear);
+		
 		initTitle(v.tv_activity_title, R.string.mine_history, null, 0);
 
 		refreshUrl = GlobalValue.URL_USER_ACTIVITYBROWSES;
@@ -124,6 +141,9 @@ public class MineHistoryFragment extends BaseFragment {
 	}
 
 	private void click(View view) {
+		/**
+		 * 点击前将所有数据清除掉
+		 */
 		activityAdapter = null;
 		storeAdapter = null;
 		v16adapter = null;
@@ -196,6 +216,8 @@ public class MineHistoryFragment extends BaseFragment {
 											CustomToast.show(activity, R.string.tip,R.string.delete_success);
 											activityDataList.clear();
 											storeDataList.clear();
+											setTagColorAndPressed();
+											
 											
 											/* NullPointException
 											 * activityAdapter.notify();
@@ -203,19 +225,26 @@ public class MineHistoryFragment extends BaseFragment {
 											
 											/*refreshCurrentList(refreshUrl, null, refreshKey,
 													lv_mine_history_list);*/
-											
-											
-											back();
-											
 											/*v16DataList.clear();
 											v16adapter.notifyDataSetChanged();*/
+											
+											
+											/**最新需求: 删除后，不要跳转至上一页（我的页面），而是停留在当前页，并显示emptyView内容
+											 * back();
+											 */
+											try{
+												lv_mine_history_list.removeFooterView(emptyView);
+											}catch(Exception e){
+											}
+											lv_mine_history_list.addFooterView(emptyView);
+											PullToRefreshManager.getInstance().footerUnable();
+											
+											
 										} else {
 											CustomToast.show(activity, getString(R.string.tip),
 													getString(R.string.delete_faild));
 										}
 								}
-
-								
 							};
 							RequestParams requestParams = new RequestParams();
 							requestParams.addHeader("Authorization", "Bearer" + App.app.getData("access_token"));
@@ -224,9 +253,6 @@ public class MineHistoryFragment extends BaseFragment {
 							httpUtils.send(HttpMethod.DELETE, 
 									GlobalValue.URL_USER_DELETE_BROWSES,
 									requestParams,requestCallBack );
-							
-							
-							
 						}
 
 						@Override
@@ -294,7 +320,11 @@ public class MineHistoryFragment extends BaseFragment {
 						map.put("tv_search_tag", data.getActivity().getTag());
 						map.put("icons", data.getActivity().getCategory());
 						activityDataList.add(map);
-					}
+						
+						}
+					     setTagColorAndPressed();
+					
+					
 					if (activityAdapter == null) {
 						activityAdapter = new SearchAdapter(lv_mine_history_list,
 								activityDataList, R.layout.activity_search_item);
@@ -350,6 +380,9 @@ public class MineHistoryFragment extends BaseFragment {
 	
 						storeDataList.add(map);
 					}
+					
+					setTagColorAndPressed();
+					
 					if (storeAdapter == null) {
 						storeAdapter = new StoreAdapter(lv_mine_history_list,
 								storeDataList, R.layout.activity_store_item);
@@ -549,5 +582,16 @@ public class MineHistoryFragment extends BaseFragment {
 		storeAdapter = null;
 		activityAdapter = null;
 		super.onPause();
+	}
+	
+	
+	private void setTagColorAndPressed() {
+		if(activityDataList.size()==0 && storeDataList.size()==0){
+			v.tv_activity_shared.setText("");
+		}else {
+			v.tv_activity_shared.setText(R.string.all_clear);
+			/*v.tv_activity_shared.setTextColor(R.color.app_green2);*/
+			v.tv_activity_shared.setTextColor(Color.rgb(157, 193, 79));
+		}
 	}
 }

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -39,7 +40,7 @@ import com.lansun.qmyo.R;
 public class BaseFragment extends Fragment implements OnTouchListener{
 
 	protected LayoutInflater inflater;
-	protected Activity activity;
+	public  Activity activity;
 	protected View progress;
 	protected LinearLayout progress_container;
 	protected ProgressDialog pd;

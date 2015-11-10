@@ -192,7 +192,7 @@ public class EditUserFragment extends BaseFragment {
 		initData();
 	}
 
-	public void selectDialog(ArrayList<String> data, final String paramsName) {
+	public void selectDialog(final ArrayList<String> data, final String paramsName) {
 		View view = inflater.inflate(R.layout.select_sex_dialog, null);
 		PickerView ll_setmovment_pv = (PickerView) view
 				.findViewById(R.id.ll_setmovment_pv);
@@ -226,6 +226,30 @@ public class EditUserFragment extends BaseFragment {
 		
 		
 		dialog.show();
+		
+		//当你还没有进行滑动时，进行点击提交按钮，需要将当前选中位置的数据进行提交
+		tv_set_up.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				InternetConfig config = new InternetConfig();
+				config.setKey(0);
+				HashMap<String, Object> head = new HashMap<>();
+				head.put("Authorization",
+						"Bearer " + App.app.getData("access_token"));
+				config.setHead(head);
+				LinkedHashMap<String, String> params = new LinkedHashMap<>();
+				params.put(paramsName, data.get(data.size()/2));
+				
+				//POST方式提交
+				FastHttpHander.ajax(GlobalValue.URL_USER_SAVE,params, config, EditUserFragment.this);
+				dialog.dismiss();
+			}
+			
+		});
+		
+		
+		//pickerView设置上选中的监听器
 		ll_setmovment_pv.setOnSelectListener(new onSelectListener() {
 
 			@Override
@@ -246,8 +270,7 @@ public class EditUserFragment extends BaseFragment {
 						params.put(paramsName, text);
 						
 						//POST方式提交
-						FastHttpHander.ajax(GlobalValue.URL_USER_SAVE,
-								params, config, EditUserFragment.this);
+						FastHttpHander.ajax(GlobalValue.URL_USER_SAVE,params, config, EditUserFragment.this);
 						
 						dialog.dismiss();
 					}

@@ -89,7 +89,7 @@ public class ExperienceDialog extends DialogFragment {
 	public ExperienceDialog() {
 		super();
 		
-		// 获取当前推荐信用卡
+		// 获取当前推荐信用卡(随机分配的cardID)
 		InternetConfig config = new InternetConfig();
 		config.setKey(1);
 		FastHttpHander.ajaxGet(GlobalValue.URL_BANKCARD_RECOMMEND, config, this);
@@ -191,6 +191,7 @@ public class ExperienceDialog extends DialogFragment {
 				cardId = data.getBankcard().getId();
 				Log.i("进入首页后随机分配的银行卡的ID为：","进入首页后随机分配的银行卡的ID为："+cardId);
 				
+				
 				break;
 			case 2:// 更新 token
 				Token token = Handler_Json.JsonToBean(Token.class,
@@ -198,16 +199,17 @@ public class ExperienceDialog extends DialogFragment {
 				App.app.setData("access_token", token.getToken());
 				
 				Log.i("临时用户拿到token","临时用户拿到的token为："+App.app.getData("access_token"));
+				
 				/**
 				 * 添加银行卡
 				 */
 				InternetConfig config2 = new InternetConfig();
 				config2.setKey(3);
-				HashMap<String, Object> head = new HashMap<>();
+				HashMap<String, Object> head = new HashMap<String, Object>();
 				head.put("Authorization",
 						"Bearer " + App.app.getData("access_token"));
 				config2.setHead(head);
-				LinkedHashMap<String, String> params = new LinkedHashMap<>();
+				LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
 			
 				Log.i("从选卡页进入首页后随机分配的银行卡的ID为：","进入首页后随机分配的银行卡的ID为："+	mCardId);
 				if(cardId==0){
@@ -219,11 +221,14 @@ public class ExperienceDialog extends DialogFragment {
 				
 				/*FastHttpHander.ajaxForm(GlobalValue.URL_BANKCARD_ADD, params,
 						null, config2, this);*/
-				FastHttpHander.ajax(GlobalValue.URL_BANKCARD_ADD, params,
-					       config2, this);
+				FastHttpHander.ajax(GlobalValue.URL_BANKCARD_ADD, params, config2, this);
+				
+				App.app.setData("ExperienceBankcardId", String.valueOf(cardId));
+				Log.d("银行卡页的id", "首页处写入本地sp中的银行卡ID为：" + App.app.getData("ExperienceBankcardId"));
 				
 				//务必将卡提交上去才可以拿到体验用户的标志 ： isExperience = true
 				App.app.setData("isExperience", "true");
+				App.app.getData("isEmbrassStatus").equals("");//此时用户状态不再是尴尬的状态时
 				
 				HomeFragment fragment = new HomeFragment();
 				FragmentEntity entity = new FragmentEntity();

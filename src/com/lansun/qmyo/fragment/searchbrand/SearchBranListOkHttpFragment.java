@@ -93,15 +93,15 @@ public class SearchBranListOkHttpFragment extends BaseFragment implements OnClic
 	private ViewMiddle viewMiddle;
 	private ViewLeft viewLeft;
 	private ViewRight viewRight;
-	private HashMap<Integer, View> mViewArray = new HashMap<>();
-	private HashMap<Integer, String> holder_button = new HashMap<>();
+	private HashMap<Integer, View> mViewArray = new HashMap<Integer, View>();
+	private HashMap<Integer, String> holder_button = new HashMap<Integer, String>();
 	private String query;
 	private EditText et_home_search;
 	private ExpandTabView expandtab_view;
 	private MyListView lv_search_content;
 	private View emptyView;
 	private ActivityList list;
-	private ArrayList<HashMap<String, Object>> dataList = new ArrayList<>();
+	private ArrayList<HashMap<String, Object>> dataList = new ArrayList<HashMap<String, Object>>();
 	private TextView tv_jiwen_about;
 	private ImageView del_search_content;
 	private TextView tv_look_now;
@@ -293,7 +293,7 @@ public class SearchBranListOkHttpFragment extends BaseFragment implements OnClic
 	 * @param string
 	 */
 	private void startSearch() {
-		refreshParams = new LinkedHashMap<>();
+		refreshParams = new LinkedHashMap<String, String>();
 		if (getCurrentCity()[0].equals(getSelectCity()[0])) {
 			// refreshParams.put("location", GlobalValue.gps.toString());
 			refreshParams.put("location", "31.293688,121.524448");
@@ -321,7 +321,7 @@ public class SearchBranListOkHttpFragment extends BaseFragment implements OnClic
 		}
 		refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
 		refreshKey = 4;
-		LinkedHashMap<String, String> paramas=new LinkedHashMap<>();
+		LinkedHashMap<String, String> paramas=new LinkedHashMap<String, String>();
 		try {
 			paramas.put("search", URLEncoder.encode("积分","utf-8"));
 		} catch (UnsupportedEncodingException e) {
@@ -334,7 +334,7 @@ public class SearchBranListOkHttpFragment extends BaseFragment implements OnClic
 	private void refreshAndroidOrder(String url,int key,LinkedHashMap<String,String> params,View view) {
 		InternetConfig config = new InternetConfig();
 		config.setKey(key);
-		HashMap<String, Object> head = new HashMap<>();
+		HashMap<String, Object> head = new HashMap<String, Object>();
 		head.put("Content-Type","application/json");
 		config.setHead(head);
 		FastHttpHander.ajaxGet(url, params, config, this);
@@ -619,7 +619,7 @@ public class SearchBranListOkHttpFragment extends BaseFragment implements OnClic
 					.onFooterRefreshComplete();
 					CustomToast.show(activity, "加载进度", "目前所有内容都已经加载完成");
 				} else {
-					refreshParams = new LinkedHashMap<>();
+					refreshParams = new LinkedHashMap<String, String>();
 					refreshParams.put("location", "31.293688,121.524448");
 					refreshParams.put("site", getSelectCity()[0]);
 
@@ -647,7 +647,7 @@ public class SearchBranListOkHttpFragment extends BaseFragment implements OnClic
 			break;
 		case InjectView.DOWN:
 			if (list != null) {
-				refreshParams = new LinkedHashMap<>();
+				refreshParams = new LinkedHashMap<String, String>();
 				refreshParams.put("location", "31.293688,121.524448");
 				refreshParams.put("site", getSelectCity()[0]);
 				try {

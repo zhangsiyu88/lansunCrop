@@ -247,8 +247,11 @@ public class ActivityFragment extends BaseFragment {
 			v.tv_activity_title.setText("未知");
 		}
 
-		if ("true".equals(App.app.getData("isExperience"))) {
+		if ("true".equals(App.app.getData("isExperience"))) {//体验用户，“体验”字在，背景颜色改为  绿色
 			v.rl_bg.setPressed(true);
+			
+			v.rl_bg.setBackgroundResource(R.drawable.circle_background_green);
+			
 			v.tv_home_experience.setVisibility(View.VISIBLE);
 			v.iv_card.setVisibility(View.GONE);
 		} else {
@@ -331,7 +334,10 @@ public class ActivityFragment extends BaseFragment {
 
 		setProgress(lv_activity_list);
 		startProgress();
-		loadActivityList();//-->加载活动的列表
+		
+		//loadActivityList();//-->加载活动的列表
+		
+		
 		viewLeft = new ViewLeft(activity);
 		viewLeft2 = new ViewLeft(activity);
 		viewMiddle = new ViewMiddle(activity);
@@ -484,6 +490,7 @@ public class ActivityFragment extends BaseFragment {
 //			
 //			intelligentToRequestCurrentTimeMillis = System.currentTimeMillis();
 //			Log.d("八大板块测试", "准备前往获取智能排序的数据 "+intelligentToRequestCurrentTimeMillis);
+			
 			// 筛选
 			InternetConfig config3 = new InternetConfig();
 			config3.setKey(3);
@@ -509,10 +516,6 @@ public class ActivityFragment extends BaseFragment {
 			}
 		});
 
-		
-		
-		
-		
 		//当服务器返回的json中的nextpage_url为空的时候，ListView加上尾部的View操作
 		//lv_activity_list.addFooterView(emptyView);
 
@@ -521,9 +524,7 @@ public class ActivityFragment extends BaseFragment {
 			                   //而筛选栏是直接的进行loadActivityList()的操作，那么在一进入页面就断网的环境下，是没有机会点击筛选栏的，自然也无法 弹出那个customDialogProgress
 			isShowDialog = false;
 		}
-		
 		loadActivityList();//-->加载活动的列表
-		
 		isShowDialog = true;
 
 	}
@@ -1074,6 +1075,7 @@ public class ActivityFragment extends BaseFragment {
 			v.expandtab_view.setValue(holder_button, mViewArray);
 		}
 	}
+	
 	private RelativeLayout setNetworkView() {
 				noNetworkView = (RelativeLayout) inflater.inflate(R.layout.customdialogprogress1, null);
 				TextView messageTextView = (TextView) noNetworkView.findViewById(R.id.messageText);
@@ -1148,7 +1150,32 @@ public class ActivityFragment extends BaseFragment {
 			break;
 		case InjectView.DOWN:
 			if (activityList != null) {
-				loadActivityList();
+					refreshParams = new LinkedHashMap<>();
+
+					if (isPosition) {
+						refreshParams.put("location", GlobalValue.gps.toString());
+					}
+					if (IsNew) {
+						refreshParams.put("type", "new");
+					}
+					//refreshParams.put("distance", distance);
+					refreshParams.put("site", getSelectCity()[0]);
+					/*refreshParams.put("site", "310000");//默认先只跑上海市版本*/	
+					try {
+						refreshParams.put("poistion", URLEncoder.encode(
+								position_bussness, "utf-8"));
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					}
+					refreshParams.put("service", HODLER_TYPE);
+					isDownChange = true;//下拉更新的标志
+					refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_activity_list);
+					lv_activity_list.removeFooterView(emptyView);//不能忘了去除底部的emptyView
+					/*lv_activity_list.invalidate();*/
+				
+				
+				
+				
 			}else{
 				CustomToast.show(activity, "ti", "activityList == null");
 			}

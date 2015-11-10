@@ -69,7 +69,7 @@ public class SearchBankCardOkHttpFragment extends BaseFragment{
 		}
 		InternetConfig config = new InternetConfig();
 		config.setKey(0);
-		HashMap<String, Object> head = new HashMap<>();
+		HashMap<String, Object> head = new HashMap<String, Object>();
 		if (!TextUtils.isEmpty(App.app.getData("access_token"))) {
 			head.put("Authorization","Bearer " + App.app.getData("access_token"));
 		}
