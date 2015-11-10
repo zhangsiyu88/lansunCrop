@@ -466,6 +466,8 @@ import com.squareup.okhttp.Response;
 					v.tv_home_experience.setVisibility(View.GONE);//原本  体验不可见
 					v.tv_top_home_experience.setVisibility(View.GONE);//滑动出现的右边 体验二字 不可见
 					v.rl_bg.setPressed(false);
+					v.rl_bg.setBackgroundResource(R.drawable.circle_background_gray);
+					v.rl_top_bg.setBackgroundResource(R.drawable.circle_background_gray);
 					v.rl_top_bg.setPressed(false);
 				}
 			}

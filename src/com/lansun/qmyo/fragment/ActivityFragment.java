@@ -250,6 +250,7 @@ public class ActivityFragment extends BaseFragment {
 			v.rl_bg.setPressed(true);
 			v.rl_bg.setBackgroundResource(R.drawable.circle_background_green);
 			v.iv_card.setVisibility(View.GONE);
+			v.tv_home_experience.setVisibility(View.VISIBLE);
 		} else {
 			v.iv_card.setVisibility(View.VISIBLE);
 			v.tv_home_experience.setVisibility(View.GONE);
