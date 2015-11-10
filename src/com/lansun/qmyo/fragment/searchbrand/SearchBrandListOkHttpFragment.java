@@ -870,9 +870,6 @@ public class SearchBrandListOkHttpFragment extends BaseFragment implements OnCli
 					}catch(Exception e ){
 						
 					}finally{
-						lv_search_content.setAdapter(searchBankcardAdapter);
-
-						/*endProgress();*/
 					}
 					lv_search_content.addFooterView(emptyView);
 
