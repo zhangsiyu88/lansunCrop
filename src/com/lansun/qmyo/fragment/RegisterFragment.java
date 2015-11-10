@@ -78,6 +78,7 @@ public class RegisterFragment extends BaseFragment{
 	private Token token;
 	private boolean isTheSameCardAsUsual = false;
 	private RecyclingImageView iv_activity_back;
+	private boolean mIsFromRegisterAndHaveNothingThenGoToRegister = false;
 	class Views {
 		private View fl_register_recode, rl_register_dialog, fl_register_pwd;
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
@@ -147,7 +148,10 @@ public class RegisterFragment extends BaseFragment{
 			boolean isFromNewPart = getArguments().getBoolean("isFromNewPart");
 			boolean isFromRigisterFragToMyBankcardFrag = getArguments().getBoolean("isFromRigisterFragToMyBankcardFrag");
 			int initType = getArguments().getInt("type");
-
+			
+			boolean isFromRegisterAndHaveNothingThenGoToRegister = getArguments().getBoolean("isFromRegisterAndHaveNothingThenGoToRegister");
+			
+			mIsFromRegisterAndHaveNothingThenGoToRegister  = isFromRegisterAndHaveNothingThenGoToRegister;
 			mIsFromHome = isFromHome;
 			mIsFromEightPart = isFromEightPart;
 			mIsFromNewPart = isFromNewPart;
@@ -187,6 +191,9 @@ public class RegisterFragment extends BaseFragment{
 			}
 
 
+			if(mIsFromRegisterAndHaveNothingThenGoToRegister){
+				
+			}
 
 			/*SpannableString ss = new SpannableString("输入密码");
 			AbsoluteSizeSpan ass = new AbsoluteSizeSpan(7,true);
@@ -206,6 +213,8 @@ public class RegisterFragment extends BaseFragment{
 			CustomToast.show(activity, "抱歉,请点击登录", "请至少选择一张银行卡作为通行证");
 			return;
 		}
+		
+		
 		
 		if(isFromMyBankcardFragToRigisterFrag){
 			MineBankcardFragment fragment = new MineBankcardFragment();
@@ -605,7 +614,10 @@ public class RegisterFragment extends BaseFragment{
 				if(r.getContentAsString().equals("[]")){//表明当前的用户是个没有卡的已登录用户，此时需要提醒他进行加卡操作
 					isHasExpSecretWhenClickToRegister = false;
 					
+					
+					
 				}else{
+					App.app.setData("isEmbrassStatus", "");//表明登录正常，则将isEmbrassStatus的状态值置为：""
 					BankCardData theChosenBankCardData  = Handler_Json.JsonToBean(BankCardData.class,r.getContentAsString());
 					int theChosenBankcardIdUnderTheLoginUser = theChosenBankCardData.getBankcard().getId();
 					Log.d("银行卡页的id", "从服务器上拿到的银行卡ID"+theChosenBankcardIdUnderTheLoginUser+"");
@@ -641,18 +653,30 @@ public class RegisterFragment extends BaseFragment{
 				}
 				
 				if(isHasExpSecretWhenClickToRegister){//点击注册时是拥有临时secret的 ,说明是在体验状态下试图去实现登录用户的操作，那么需要登录成功后进入之前跳入的那一页
+					
+					if(mIsFromRegisterAndHaveNothingThenGoToRegister){
+						App.app.setData("isEmbrassStatus", "");//虽然在登录界面，但是输入了新的可登录账号，那么将其跳转至首页，必将isEmbrassStatus的状态值置为："" (不再为true)
+						HomeFragment homeFragment = new HomeFragment();
+						FragmentEntity fEntity = new FragmentEntity();
+						fEntity.setFragment(homeFragment);
+						EventBus.getDefault().post(fEntity);
+						return;
+					}
+					
 					if(isJustLogin){
 						try{
 							HomeFragment homeFragment = new HomeFragment();
 							FragmentEntity fEntity = new FragmentEntity();
 							fEntity.setFragment(homeFragment);
 							EventBus.getDefault().post(fEntity);
+							
 						}catch(Exception e){
 							HomeFragment homeFragment = new HomeFragment();
 							FragmentEntity fEntity = new FragmentEntity();
 							fEntity.setFragment(homeFragment);
 							EventBus.getDefault().post(fEntity);
 						}
+						return;
 					}else{
 						Fragment fragment=null;
 						Log.e("fragment_name", fragment_name.getClass().getSimpleName());

@@ -113,6 +113,7 @@ public class MineBankcardFragment extends BaseFragment{
 	private void init() {
 		ListViewSwipeGesture touchListener = new ListViewSwipeGesture(
 				lv_ban_card_other, swipeListener, getActivity());
+		
 		touchListener.SwipeType = ListViewSwipeGesture.Dismiss;
 
 		lv_ban_card_other.setOnTouchListener(touchListener);
@@ -184,8 +185,6 @@ public class MineBankcardFragment extends BaseFragment{
 	}
 
 	public void decideHowToShow() {
-		
-		
 		if (isExperience()) {//体验用户就只有一张卡并且显示是体验状态,那么下面的显示是那只猫头鹰
 			v.ll_bank_card_other.setVisibility(View.GONE);
 
@@ -216,9 +215,6 @@ public class MineBankcardFragment extends BaseFragment{
 			v.ll_bank_card_exp.setVisibility(View.GONE);
 			v.tv_bank_card_exp.setText(getString(R.string.current));
 		}
-
-	
-
 	}
 
 	private void refresh() {
@@ -260,6 +256,7 @@ public class MineBankcardFragment extends BaseFragment{
 			httpUtils.send(HttpMethod.DELETE, GlobalValue.URL_BANKCARD_DELETE + id, requestParams,new RequestCallBack<String>(){
 				@Override
 				public void onFailure(HttpException arg0, String arg1) {
+					
 				}
 
 				@Override

@@ -450,13 +450,20 @@ import com.squareup.okhttp.Response;
 				v.iv_top_card.setVisibility(View.GONE);
 
 			} else {
-				if(App.app.getData("isEmbrassStatus").equals("true")){
-					SearchBankCardFragment searchBankCardFragment = new SearchBankCardFragment();
+				if(App.app.getData("isEmbrassStatus").equals("true")){//当判断为尴尬用户状态时，强制要求其进入登录注册页，要么使用其他可使用号码进行登录，要么再使用原有号码登录后再跳至搜索银行卡页
+					/*SearchBankCardFragment searchBankCardFragment = new SearchBankCardFragment();
 					Bundle bundle = new Bundle();
 					bundle.putBoolean("isFromRegisterAndHaveNothing",true);//借用这个isFromRegisterAndHaveNothing的标签进行搜索的设置
 					searchBankCardFragment.setArguments(bundle);
 					FragmentEntity fEntity = new FragmentEntity();
 					fEntity.setFragment(searchBankCardFragment);
+					EventBus.getDefault().post(fEntity);*/
+					RegisterFragment registerFragment = new RegisterFragment();
+					Bundle bundle = new Bundle();
+					bundle.putBoolean("isFromRegisterAndHaveNothingThenGoToRegister",true);//借用这个isFromRegisterAndHaveNothing的标签进行搜索的设置
+					registerFragment.setArguments(bundle);
+					FragmentEntity fEntity = new FragmentEntity();
+					fEntity.setFragment(registerFragment);
 					EventBus.getDefault().post(fEntity);
 					return;
 				}else{
