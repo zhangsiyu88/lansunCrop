@@ -83,7 +83,7 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 				String type=switchType(list.getType());
 				v.tv_activity_title.setText(GlobalValue.mySecretary.getName()+"["+type+"]");
 				my_secretary_question_recycle.setAdapter(adapter);
-				my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);
+				my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);//刷新后强制滑动至消息列表上的最后一个位置
 				v.et_secretary_question.setOnFocusChangeListener(QuestionDetailFragment.this);
 				break;
 			case 1:
@@ -105,11 +105,15 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		};
 	};
 
-	private String question;	@Override
+	private String question;	
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments()!=null) {
 			question_id=getArguments().getString("question_id");
+			
+			Log.d("question_id", "question_id"+question_id);
+			
 			refreshUrl = GlobalValue.URL_SECRETARY_QUESTION_DETAIL + question_id;
 		}
 	}
@@ -120,7 +124,9 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		View rootView = inflater.inflate(
 				R.layout.activity_secretary_question_detail,container,false);
 		initView(rootView);
+		
 		getNewAnswer(refreshUrl);
+		
 		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
@@ -129,7 +135,7 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		LinearLayoutManager manager=new LinearLayoutManager(getActivity());
 		my_secretary_question_recycle.setLayoutManager(manager);
 		btn_secretary_question_commit=(TextView)view.findViewById(R.id.btn_secretary_question_commit);
-		btn_secretary_question_commit.setOnClickListener(new OnClickListener() {
+		btn_secretary_question_commit.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View view) {
 				commit();
@@ -141,8 +147,10 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	 * @param url
 	 */
 	private void getNewAnswer(String url) {
+		
 		setProgress(my_secretary_question_recycle);
 		startProgress();
+		
 		OkHttp.asyncGet(url, new Callback() {
 			@Override
 			public void onResponse(Response response) throws IOException {
@@ -161,6 +169,8 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 
 			}
 		});
+		
+		
 	}
 	@InjectInit
 	private void init() {
@@ -190,7 +200,8 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		pd = new ProgressDialog(activity);
 		pd.setMessage(getString(R.string.up_dataing));
 		pd.show();
-		AddQuestionBiz biz=new AddQuestionBiz();
+		
+		AddQuestionBiz biz=new AddQuestionBiz();//封装特定的业务逻辑(网络访问)层
 		question = v.et_secretary_question.getText().toString();
 		biz.sendQuestion(question, currentType, question_id+"", this);
 	}
@@ -214,6 +225,11 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		return "";
 	}
 
+	
+	
+	/**
+	 * 下面的网络访问成功和失败的回调函数具体实现，是由AddQuestionBiz中进行问题提交时完成的引起的
+	 */
 	@Override
 	public void onResponse(Response response) throws IOException {
 		if (response.isSuccessful()) {
@@ -232,6 +248,10 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	public void onFailure(Request request, IOException exception) {
 		handleOk.sendEmptyMessage(2);
 	}
+	
+	
+	
+	
 	class MessageReplayBraodCast extends BroadcastReceiver{
 		@Override
 		public void onReceive(Context context, Intent intent) {

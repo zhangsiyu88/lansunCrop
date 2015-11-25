@@ -53,6 +53,7 @@ import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CircularImage;
 import com.lansun.qmyo.view.CustomToast;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
@@ -89,15 +90,16 @@ public class SecretarySettingFragment extends BaseFragment implements OnClickLis
 				}
 				CustomToast.show(activity, R.string.tip,
 						R.string.save_secretary_success);
-				fragment=new SecretaryFragment();
-				
+				/*fragment=new SecretaryFragment();*/
+				fragment=new MainFragment(1);
 				break;
 			case 1:
 				if (dialogpg!=null) {
 					dialogpg.dismiss();
 				}
 				CustomToast.show(activity, R.string.tip,"提交失败");
-				fragment=new SecretaryFragment();
+				/*fragment=new SecretaryFragment();*/
+				fragment=new MainFragment(1);
 				break;
 			case 2:
 				CustomToast.show(activity,"提示","数据异常，请检查网络。");

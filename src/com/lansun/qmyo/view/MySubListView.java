@@ -43,6 +43,10 @@ public class MySubListView extends ListView {
 		this.parentListView = parentListView;
 	}
 
+	/**
+	 * ！Notice！
+	 * 这是MySubListView的核心代码，这里的测量方式决定了 ListView中的子对象完全展示展示出来
+	 */
 	@Override
 	public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 

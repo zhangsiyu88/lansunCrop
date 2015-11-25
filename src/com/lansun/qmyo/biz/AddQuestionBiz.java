@@ -21,6 +21,8 @@ public class AddQuestionBiz implements IAddQuestionBiz{
 		paramas.put("content", content);
 		paramas.put("type", type);
 		paramas.put("principal", principal);
+		
+		//在当前类中进行另一个类中的方法，需要实现回调函数
 		OkHttp.asyncPost(GlobalValue.URL_SECRETARY_QUESTION, paramas, new Callback() {
 			@Override
 			public void onResponse(Response response) throws IOException {

@@ -15,18 +15,55 @@
         
         /><!--style="@style/text_style_small_24"  -->
 
+
+     <com.lansun.qmyo.view.MySubListView
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:id="@+id/lv_singleItemInnerListView"
+         android:divider="@null"
+         android:layout_marginBottom="@dimen/l_r_35"
+       />
+
+     
+     
+   <!--  <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        
+      <TextView
+        android:id="@+id/left_point"
+        style="@style/text_style_nomal_28"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginTop="@dimen/margin_top_15"
+        android:textColor="#6F6F6F" 
+        android:text="\u2022"
+        android:lineSpacingExtra="6dp"
+        android:gravity="left"
+        android:singleLine="false"
+        />
+        
+    
     <TextView
+        android:layout_toRightOf="@id/left_point"
         android:id="@+id/tv_activity_content_mx_content"
         style="@style/text_style_nomal_28"
         android:layout_marginLeft="@dimen/l_r_35"
         android:layout_marginRight="@dimen/l_r_35"
         android:layout_marginTop="@dimen/margin_top_15"
         android:textColor="#6F6F6F" 
-        android:lineSpacingExtra="3dp"
+        android:lineSpacingExtra="6dp"
         android:textIsSelectable="true"
-        android:autoLink="all"/>
+        android:autoLink="web|email|phone" 
+        android:gravity="left"
+        android:singleLine="false"
+        android:text="什么叫乱七八糟什么叫乱七八糟什么叫乱七八糟什么叫乱七八糟什么叫乱七八糟什么叫乱七八糟八糟什么叫乱七八糟什么叫乱七八糟"
+        
+        />
+    </RelativeLayout> -->
 
     <View
+        
         android:id="@+id/line"
         android:layout_width="match_parent"
         android:layout_height="1px"

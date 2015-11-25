@@ -3,5 +3,8 @@
 
     <item android:drawable="@drawable/bottom_1" android:state_pressed="false"/>
     <item android:drawable="@drawable/bottom_press_1" android:state_pressed="true"/>
-    <item android:drawable="@drawable/bottom_press_1" android:state_focused="true"/>
+    <item android:drawable="@drawable/bottom_press_1" android:state_focused="true"/>
+    
+        <item android:drawable="@drawable/bottom_press_1" android:state_selected="true"/>
+    <item android:drawable="@drawable/bottom_press_1" android:state_checked="true"/>
 </selector>

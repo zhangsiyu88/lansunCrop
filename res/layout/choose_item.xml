@@ -35,9 +35,9 @@
         android:id="@+id/iv_choose_divider"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/line_bg2"
+        android:background="@color/app_bg"
         android:clickable="false"
         android:focusable="false"
-        android:focusableInTouchMode="false" />
+        android:focusableInTouchMode="false" /><!-- android:background="@color/line_bg2" -->
 
 </LinearLayout>

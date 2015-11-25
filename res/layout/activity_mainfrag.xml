@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/w_match_h_match"
+    android:orientation="vertical" 
+    android:background="@color/app_bg">
+	   
+    <com.lansun.qmyo.view.MainViewPager
+                android:id="@+id/vp_mainfrag"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                /> 
+	 
+	 <LinearLayout 
+	    android:layout_weight="0"
+	    android:id="@+id/bottom"
+	    android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+	    android:orientation="vertical">
+
+		    <View
+		        android:layout_width="match_parent"
+		        android:layout_height="1px"
+		        android:background="@color/line_bg1" />
+		
+		    <LinearLayout
+		        android:layout_width="match_parent"
+		        android:layout_height="@dimen/bottom_menu_h"
+		        android:background="@color/app_white" >
+		
+		        <LinearLayout
+		            android:id="@+id/bottom_home"
+		            style="@style/w_weight_h_wrap"
+		            android:layout_gravity="center"
+		            android:layout_weight="1"
+		            android:orientation="vertical" >
+		
+		            <com.android.pc.ioc.image.RecyclingImageView
+		                android:id="@+id/iv_home_icon"
+		                style="@style/w_wrap_h_wrap"
+		                android:layout_gravity="center"
+		                android:background="@drawable/home_bottom_1"
+		                android:focusable="false" />
+		
+		            <TextView
+		                android:id="@+id/tv_home_icon"
+		                style="@style/text_style_small_20"
+		                android:layout_gravity="bottom|center_horizontal"
+		                android:clickable="false"
+		                android:focusable="false"
+		                android:text="@string/home"
+		                android:textColor="@color/text_nomal" />
+		        </LinearLayout>
+		
+		        <LinearLayout
+		            android:id="@+id/bottom_secretary"
+		            style="@style/w_weight_h_wrap"
+		            android:layout_gravity="center"
+		            android:layout_weight="1"
+		            android:orientation="vertical" >
+		
+		            <com.android.pc.ioc.image.RecyclingImageView
+		                android:id="@+id/iv_secretary_icon"
+		                style="@style/w_wrap_h_wrap"
+		                android:layout_gravity="center"
+		                android:background="@drawable/home_bottom_2"
+		                android:focusable="false" />
+		
+		            <TextView
+		                android:id="@+id/tv_secretary_icon"
+		                style="@style/text_style_small_20"
+		                android:layout_gravity="bottom|center_horizontal"
+		                android:clickable="false"
+		                android:focusable="false"
+		                android:text="@string/secretary"
+		                android:textColor="@color/text_nomal" />
+		        </LinearLayout>
+		
+		        <LinearLayout
+		            android:id="@+id/bottom_found"
+		            style="@style/w_weight_h_wrap"
+		            android:layout_gravity="center"
+		            android:layout_weight="1"
+		            android:orientation="vertical" >
+		
+		            <com.android.pc.ioc.image.RecyclingImageView
+		                android:id="@+id/iv_found_icon"
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:layout_gravity="center"
+		                android:background="@drawable/home_bottom_3"
+		                android:focusable="false" />
+		
+		            <TextView
+		                android:id="@+id/tv_found_icon"
+		                style="@style/text_style_small_20"
+		                android:layout_gravity="bottom|center_horizontal"
+		                android:clickable="false"
+		                android:focusable="false"
+		                android:text="@string/found"
+		                android:textColor="@color/text_nomal" />
+		        </LinearLayout>
+		
+		     <LinearLayout
+		            android:id="@+id/bottom_mine"
+		            style="@style/w_weight_h_wrap"
+		            android:layout_gravity="center"
+		            android:layout_weight="1"
+		            android:orientation="vertical" >
+		
+		           <RelativeLayout 
+		               style="@style/w_match_h_match"
+		               android:gravity="center"
+		               >
+		               
+		             <LinearLayout 
+		                android:id="@+id/ll_mineicon"
+		                style="@style/w_wrap_h_wrap"
+			            android:orientation="vertical" >
+			            
+			              <com.android.pc.ioc.image.RecyclingImageView
+			                android:id="@+id/iv_mine_icon"
+			                style="@style/w_wrap_h_wrap"
+			                android:background="@drawable/home_bottom_4"
+			                android:layout_gravity="center_horizontal"
+			                android:focusable="false" />
+			              <TextView
+			                android:id="@+id/tv_mine_icon"
+			                style="@style/text_style_small_20"
+			                android:layout_gravity="bottom|center_horizontal"
+			                android:clickable="false"
+			                android:focusable="false"
+			                android:text="@string/mine"
+			                android:textColor="@color/text_nomal" />
+		            </LinearLayout>  
+		            
+			        <TextView
+				            android:id="@+id/point"
+				            android:layout_alignRight="@id/ll_mineicon"
+				            android:layout_width="10dp"
+				            android:layout_height="10dp"
+				            android:background="@drawable/circle_shape"
+				            /> <!-- android:text=""   android:textColor="@android:color/white"  android:textSize="10sp"  -->
+		           </RelativeLayout>
+		           
+		        </LinearLayout>
+		    </LinearLayout>
+		</LinearLayout>
+</LinearLayout>

@@ -29,6 +29,7 @@ import com.android.pc.util.Handler_Inject;
 import com.lansun.qmyo.adapter.CommonPagerAdapter;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 
 /**
@@ -62,7 +63,7 @@ public class IntroductionPageFragment extends BaseFragment implements
 	}
 
 	private void click(View view) {
-		HomeFragment fragment = new HomeFragment();
+		MainFragment fragment = new MainFragment();
 		FragmentEntity event = new FragmentEntity();
 		event.setFragment(fragment);
 		EventBus.getDefault().post(event);

@@ -37,6 +37,7 @@ public class QuestionAdapter extends Adapter<QuestionAdapter.MyViewHolder> {
 		private View view;
 		private CircularImage c_iv;
 		private TextView tv_title,tv_type,tv_time,tv_question,tv_answer,have_information;
+		
 		public MyViewHolder(View itemView) {
 			super(itemView);
 			view=itemView;

@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/w_wrap_h_wrap"
-    android:background="@color/app_white"
-    android:orientation="vertical" >
+    android:background="@drawable/found_bcakgroundcolor_selector"
+    android:orientation="vertical" ><!-- android:background="@color/app_white" -->
 
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/l_r_35" >
+        android:layout_marginLeft="@dimen/l_r_35" 
+        android:background="@drawable/found_bcakgroundcolor_selector"
+        >
 
         <TextView
             android:id="@+id/tv_message_item_name"
@@ -37,6 +39,7 @@
             android:layout_marginTop="@dimen/margin_top_10" />
 
         <TextView
+            android:gravity="center"
             android:id="@+id/tv_message_item_count"
             android:layout_width="15dp"
             android:layout_height="15dp"

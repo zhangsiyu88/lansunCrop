@@ -124,10 +124,12 @@ public class StoreListFragment extends BaseFragment {
 	 * @param arg3
 	 */
 	private void itemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		Shop shop = list.getData().get(arg2);
+		/*Shop shop = list.getData().get(arg2);*/
+		
 		StoreDetailFragment fragment = new StoreDetailFragment();
 		Bundle args = new Bundle();
-		args.putString("shopId", shop.getId() + "");
+		String shop_id = dataList.get(arg2).get("shop_id");
+		args.putString("shopId", shop_id);
 		fragment.setArguments(args);
 		FragmentEntity event = new FragmentEntity();
 		event.setFragment(fragment);
@@ -136,12 +138,9 @@ public class StoreListFragment extends BaseFragment {
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
-		
 		emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_search_empty_storelist1, null);
-		
 		super.onCreate(savedInstanceState);
 	}
-	
 	
 	
 	@InjectInit
@@ -299,12 +298,13 @@ public class StoreListFragment extends BaseFragment {
 				if(isPull){
 					isPull = false;
 				}else{
-					dataList = new ArrayList<HashMap<String, String>>();
+					dataList=new ArrayList<HashMap<String, String>>();
 				}
 				
 				if (list.getData() != null ) {
 					for (Shop s : list.getData()) {
 						HashMap<String, String> map = new HashMap<String, String>();
+						map.put("shop_id", s.getId()+"");
 						map.put("tv_store_item_name", s.getName());
 						map.put("tv_store_item_num", s.getAttention() + "");
 						map.put("tv_store_item_distance", s.getDistance());
@@ -316,7 +316,7 @@ public class StoreListFragment extends BaseFragment {
 						adapter = new StoreAdapter(lv_stores_content, dataList,R.layout.activity_store_item);
 						
 						try{
-							lv_stores_content.setAdapter(adapter);//先将adapter和ListView挂上钩
+							//lv_stores_content.setAdapter(adapter);//先将adapter和ListView挂上钩
 							lv_stores_content.removeFooterView(emptyView);
 						}catch(Exception e ){
 						}
@@ -449,7 +449,6 @@ public class StoreListFragment extends BaseFragment {
 	 * 加载活动列表,最后走的都是refreshCurrentList,只不过携带的参数不同
 	 */
 	private void loadActivityList() {
-		
 		
 	/** 参考页面初始化中的内容
 	 * 	refreshUrl = String.format(GlobalValue.URL_ACTIVITY_SHOPS, activityId+ "");

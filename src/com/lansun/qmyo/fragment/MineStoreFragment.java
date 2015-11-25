@@ -145,6 +145,9 @@ public class MineStoreFragment extends BaseFragment {
 					if ("true".equals(arg0.result.toString())) {
 							dataList.remove(deletePosition);
 							adapter.notifyDataSetChanged();
+							if(dataList.size()==0){//删除后数据列表为零
+								  v.rl_no_postdelay_store.setVisibility(View.VISIBLE);
+							}
 							CustomToast.show(activity, getString(R.string.tip),
 									getString(R.string.delete_success));
 						} else {
@@ -219,7 +222,6 @@ public class MineStoreFragment extends BaseFragment {
 					Log.i("list的值为多少？", "list的值为多少？"+r.getContentAsString().toString());
 				}
 				
-				
 				Log.i("从服务器上获取的list",r.getContentAsString());
 				
 				if (list.getData() != null) {//返回数据正常，则将其数据存到dataList
@@ -229,8 +231,8 @@ public class MineStoreFragment extends BaseFragment {
 						map.put("shop_id", s.getId() + "");
 						map.put("tv_store_item_num", s.getAttention() + "");
 
-						long time = Handler_Time.getInstance(
-								s.getCollection_time()).getTimeInMillis();
+						long time = Handler_Time.getInstance(s.getCollection_time()).getTimeInMillis();
+						
 						String historyTime = "";
 						if ((System.currentTimeMillis() - time)/ (1000 * 24 * 60 * 60) > 1) {
 							
@@ -250,17 +252,36 @@ public class MineStoreFragment extends BaseFragment {
 					 if (adapter == null) {
 							adapter = new StoreAdapter(lv_mine_store, dataList,R.layout.activity_store_item);
 							lv_mine_store.setAdapter(adapter);
+							
 					 } else {
 						    adapter.notifyDataSetChanged();
 						}
-					
-					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+					 
+					 
+					if(dataList.size()==0){//删除后数据列表为零
+						  v.rl_no_postdelay_store.setVisibility(View.VISIBLE);
+					}
+					 
+					PullToRefreshManager.getInstance().footerEnable();
+					/*PullToRefreshManager.getInstance().headerEnable();
+					PullToRefreshManager.getInstance().onHeaderRefreshComplete();*/
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					
 			   }else{//未拿到数据，即表明数据返回为空，那么可以在这个地方添加上 背景图片
 				   Log.i("从服务器未拿到数据！","list.getData() 很可能等于 null");
+				   
+				   if(dataList.size()>0){
+					   //DoNothing
+				   }else{
+					   if(adapter!=null){
+						   adapter.notifyDataSetChanged();
+					   }
+					   v.rl_no_postdelay_store.setVisibility(View.VISIBLE);
+				   }
+				   
 				    //adapter = null;
 					//lv_mine_store.setAdapter(adapter);
+				
 				   /*adapter.notifyDataSetChanged();
 				   TextView textView = new TextView(activity);
 				   textView.setTextSize(10);
@@ -269,13 +290,12 @@ public class MineStoreFragment extends BaseFragment {
 				   textView.setLayoutParams(layoutParams);
 				   textView.setGravity(Gravity.CENTER_VERTICAL);
 				   lv_mine_store.addFooterView(textView);*/
-				   v.rl_no_postdelay_store.setVisibility(View.VISIBLE);
 				   
-				  /* lv_mine_store.setVisibility(View.GONE);
+				   
+				   /*lv_mine_store.setVisibility(View.GONE);
 				   progress.setVisibility(View.VISIBLE);
 				   progress_container.setVisibility(View.VISIBLE);
 				   progress_text.setText("您关注的门店中暂无过期的店铺");*/
-				   
 				   
 				   /*DisplayMetrics dm = getResources().getDisplayMetrics();
 					int screenWidth = dm.widthPixels;
@@ -286,6 +306,7 @@ public class MineStoreFragment extends BaseFragment {
 							screenWidth, cueentHeight);
 					v.vp_baner.setLayoutParams(params);*/
 					
+				   //刷到
 					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				}
@@ -315,7 +336,6 @@ public class MineStoreFragment extends BaseFragment {
 	private void click(View view) {
 		switch (view.getId()) {
 		case R.id.tv_store_has:
-			
 			v.rl_no_postdelay_store.setVisibility(View.GONE);
 			currentType = "1";
 			changeTextColor(v.tv_store_has);
@@ -325,6 +345,7 @@ public class MineStoreFragment extends BaseFragment {
 			refreshCurrentList(refreshUrl, refreshParams, refreshKey, lv_mine_store);
 			break;
 		case R.id.tv_store_no:
+			v.rl_no_postdelay_store.setVisibility(View.GONE);
 			currentType = "0";
 			changeTextColor(v.tv_store_no);
 			refreshUrl = GlobalValue.URL_USER_GZ_SHOP + "?";
@@ -363,6 +384,7 @@ public class MineStoreFragment extends BaseFragment {
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					CustomToast.show(activity, "到底啦！", "您只关注了以上的门店哦");
 					PullToRefreshManager.getInstance().footerUnable();
+					PullToRefreshManager.getInstance().headerUnable();
 				} else {
 					refreshParams = new LinkedHashMap<String, String>();
 					refreshParams.put("underway", currentType);
@@ -373,12 +395,12 @@ public class MineStoreFragment extends BaseFragment {
 			}
 			break;
 		case InjectView.DOWN:
-			if (list != null) {
+			/*if (list != null) {
 				LinkedHashMap<String, String> refreshParams = new LinkedHashMap<String, String>();
 				refreshParams.put("underway", currentType);
 				refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_mine_store);
 				PullToRefreshManager.getInstance().footerEnable();
-			}
+			}*/
 			break;
 		}
 	}

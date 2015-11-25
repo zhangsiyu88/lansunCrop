@@ -27,14 +27,14 @@
 	        android:layout_centerHorizontal="true"
 	        android:text="暂无浏览记录"
 	        android:textColor="#AFAFAF" 
-	        android:layout_marginTop="20dp"/>
+	        android:layout_marginTop="30dp"/>
 	     
 	     <TextView
 	         android:id="@+id/tv_gotoHomeFrag"
 	        android:layout_below="@id/tv_nohistory"
 	        style="@style/text_style_nomal_28"
 	        android:layout_centerHorizontal="true"
-	        android:text="先去瞅瞅吧  "
+	        android:text="先去瞅瞅吧"
 	        android:textColor="@color/app_green1"
 	        android:layout_marginTop="10dp"
 	        />

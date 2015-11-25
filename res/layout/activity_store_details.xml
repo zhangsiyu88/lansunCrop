@@ -5,6 +5,7 @@
     android:background="#EBEBEB"
     android:orientation="vertical" >
 
+    <!-- 顶部标题：门店详情  -->
     <RelativeLayout
         android:id="@+id/rl_title"
         android:layout_width="match_parent"
@@ -64,6 +65,7 @@
             style="@style/w_full_h_wrap"
             android:orientation="vertical" >
 
+            <!-- 店名 -->
             <LinearLayout
                 style="@style/w_full_h_wrap"
                 android:layout_height="wrap_content"
@@ -81,6 +83,7 @@
                     android:textColor="#6F6F6F" />
             </LinearLayout>
 
+            <!-- 头部的照片集合 -->
             <com.android.pc.ioc.view.HorizontalListView
                 android:id="@+id/lv_store_detail_head"
                 style="@style/w_full_h_wrap"
@@ -93,7 +96,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical" >
-				<!--  -->
+				
+				<!-- 网址部分 -->
                 <RelativeLayout
                     android:id="@+id/rl_url"
                     style="@style/w_full_h_wrap"
@@ -361,6 +365,7 @@
         </LinearLayout>
     </ScrollView>
     
+    <!-- 下面这是个什么 -->
 	<LinearLayout 
          android:layout_width="match_parent"
          android:layout_height= "0dp"

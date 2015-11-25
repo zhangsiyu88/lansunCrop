@@ -167,7 +167,7 @@ public class SharedFragment extends BaseFragment {
 		 */
 		CircleShareContent circleMedia = new CircleShareContent();
 		circleMedia.setShareContent(content);
-		circleMedia.setTitle(title);
+		circleMedia.setTitle(title +"-" +content);
 		urlImage = new UMImage(activity, resId);
 		//weixinContent.setShareMedia(urlImage);  //写错啦！
 		// circleMedia.setShareMedia(uMusic);

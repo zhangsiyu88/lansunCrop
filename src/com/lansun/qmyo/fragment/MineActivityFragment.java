@@ -245,8 +245,8 @@ public class MineActivityFragment extends BaseFragment {
 
 	@Override
 	public void onPause() {
-		dataList.clear();
-		adapter = null;
+		/*dataList.clear();
+		adapter = null;*/
 		super.onPause();
 	}
 
@@ -317,7 +317,6 @@ public class MineActivityFragment extends BaseFragment {
 					
 				} else {
 					v.rl_no_postdelay_activity.setVisibility(View.VISIBLE);
-					
 					lv_mine_activity.setAdapter(null);
 				}
 				break;

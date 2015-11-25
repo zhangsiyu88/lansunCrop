@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -24,6 +28,8 @@ import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
+import com.android.pc.ioc.inject.InjectListener;
+import com.android.pc.ioc.inject.InjectMethod;
 import com.android.pc.ioc.internet.FastHttp;
 import com.android.pc.ioc.internet.FastHttpHander;
 import com.android.pc.ioc.internet.InternetConfig;
@@ -31,16 +37,23 @@ import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.HorizontalListView;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.ioc.view.listener.OnItemClick;
+import com.android.pc.util.Gps;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
+import com.lansun.qmyo.adapter.ActivityDetailPagerAdapter;
 import com.lansun.qmyo.adapter.DetailHeaderAdapter;
 import com.lansun.qmyo.adapter.DetailHeaderPagerAdapter;
 import com.lansun.qmyo.adapter.SearchAdapter;
+import com.lansun.qmyo.adapter.TipAdapter;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.Activity;
+import com.lansun.qmyo.domain.ActivityContent;
+import com.lansun.qmyo.domain.ActivityListData;
+import com.lansun.qmyo.domain.CouponsData;
 import com.lansun.qmyo.domain.Shop;
 import com.lansun.qmyo.domain.ShopActivity;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.fragment.ActivityFragment.ActivityRefreshBroadCastReceiver;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
@@ -55,6 +68,7 @@ import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 
 /**
@@ -77,6 +91,9 @@ public class StoreDetailFragment extends BaseFragment {
 	private int tempShopAttention;
 	private Fragment fragment;
 	private Bundle args;
+	private String mRefreshTip = "";
+	private boolean isRefreshTheActivityDetailsFrag = false;
+	private IntentFilter filter;
 
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
@@ -92,6 +109,8 @@ public class StoreDetailFragment extends BaseFragment {
 		@InjectBinder(listeners = { OnItemClick.class }, method = "fendianClick")
 		private MySubListView lv_activity_detail_fendian;
 		private RatingBar rb_store_details;
+		
+		
 		@InjectBinder(listeners = { OnItemClick.class }, method = "headItemClick")
 		private HorizontalListView lv_store_detail_head;
 	}
@@ -102,8 +121,36 @@ public class StoreDetailFragment extends BaseFragment {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_store_details, null);
 		Handler_Inject.injectFragment(this, rootView);
+		
+		
+		ActivityDetailsFragRefreshBroadCastReceiver broadCastReceiver = new ActivityDetailsFragRefreshBroadCastReceiver();
+		System.out.println("注册广播 ing");
+		filter = new IntentFilter();
+		filter.addAction("com.lansun.qmyo.refreshTheIcon");
+		getActivity().registerReceiver(broadCastReceiver, filter);
 		return rootView;
 	}
+	
+	
+/** 暂时并不重写 back的返回操作，依旧使用广播机制前去部分更新icon
+ * 	@Override
+	@InjectMethod(@InjectListener(ids = 2131296342, listeners = OnClick.class))
+	protected void back() {
+		getFragmentManager().popBackStack();
+		
+		if(isRefreshTheActivityDetailsFrag){
+			ActivityDetailFragment activtiyDetailFragment = new ActivityDetailFragment();
+			Bundle args = new Bundle();
+			args.putString("shopId", "5467");
+			args.putString("activityId", "105408");
+			FragmentEntity fEntity = new FragmentEntity();
+			fEntity.setFragment(activtiyDetailFragment);
+			EventBus.getDefault().post(fEntity);
+		}
+	}*/
+	
+	
+	
 
 	/**
 	 * 按钮的点击事件
@@ -151,121 +198,8 @@ public class StoreDetailFragment extends BaseFragment {
 					shopAddress, shop.getPhotos().get(0));
 			break;
 		case R.id.iv_store_detail_gz_store://关注门店
-			if(App.app.getData("isExperience").equals("true")){
-				DialogUtil.createTipAlertDialog(getActivity(),
-						R.string.logintofllow, new TipAlertDialogCallBack() {
-					@Override
-					public void onPositiveButtonClick(
-							DialogInterface dialog, int which) {
-						dialog.dismiss();
-						RegisterFragment fragment = new RegisterFragment();
-						FragmentEntity event = new FragmentEntity();
-						Bundle bundle = new Bundle();
-						App.app.setData("shopId", shopId);
-						bundle.putString("fragment_name", StoreDetailFragment.class.getSimpleName());
-						fragment.setArguments(bundle);
-						event.setFragment(fragment);
-						EventBus.getDefault().post(event);
-					}
-					@Override
-					public void onNegativeButtonClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
-			}else{
-				if (shop.isMy_attention()) { 						//-->点击则取消关注
-				DialogUtil.createTipAlertDialog(activity, R.string.gz_cancle,
-						new TipAlertDialogCallBack() {
+			clickToCollectStore();
 
-							@Override
-							public void onPositiveButtonClick(
-									DialogInterface dialog, int which) {
-								InternetConfig config = new InternetConfig();
-								config.setKey(3);
-								HashMap<String, Object> head = new HashMap<>();
-								head.put("Authorization",
-										"Bearer "+ App.app.getData("access_token"));
-								config.setHead(head);
-								config.setMethod("DELETE");
-								
-								/*点击删除后，我们应该要有的返回提示
-								 * if ("true".equals(r.getContentAsString())) {
-									CustomToast.show(
-											getActivity(),
-											getActivity().getString(R.string.tip),
-											getActivity().getString(
-													R.string.gz_qx_sucess_content));
-									v.tv_store_fans_num.setText(shop.getAttention() - 1 + "");
-									shop.setMy_attention(false);
-									v.iv_store_detail_gz_store.setPressed(false);
-								} else {
-									CustomToast.show(activity,
-											activity.getString(R.string.tip),
-											activity.getString(R.string.gz_qx_faild_content));
-								}
-								break;*/
-								
-								
-								
-								// 上述代码的副本！！
-								//暂时关闭了取消收藏的按钮，这样避免不能提供足够数据进行测试
-								  HttpUtils httpUtils = new HttpUtils();
-								  RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
-
-									@Override
-									public void onFailure(HttpException arg0, String arg1) {
-										Log.i("取消门店关注失败返回的结果","访问是失败的!");
-										CustomToast.show(activity,
-												activity.getString(R.string.tip),
-												activity.getString(R.string.gz_qx_faild_content));
-									}
-									@Override
-									public void onSuccess(ResponseInfo<String> arg0) {
-										CustomToast.show(
-												getActivity(),
-												getActivity().getString(R.string.tip2),
-												getActivity().getString(
-														R.string.gz_qx_sucess_content));
-										//v.tv_store_fans_num.setText(shop.getAttention() - 1 + "");
-										
-										v.tv_store_fans_num.setText((tempShopAttention-1) + "");
-										tempShopAttention =  tempShopAttention-1;
-										
-										shop.setMy_attention(false);
-										v.iv_store_detail_gz_store.setPressed(false);
-									}
-								};
-								RequestParams requestParams = new RequestParams();
-								requestParams.addHeader("Authorization", "Bearer" + App.app.getData("access_token"));
-								httpUtils.send(HttpMethod.DELETE, 
-										GlobalValue.URL_QX_GZ_SHOP+ shopId,
-										requestParams,requestCallBack );
-								
-								/* 实则无效的 删除 提交
-								 * FastHttpHander.ajax(GlobalValue.URL_QX_GZ_SHOP+ shopId, null, config,StoreDetailFragment.this);*/
-								dialog.dismiss();
-							}
-							@Override
-							public void onNegativeButtonClick(
-									DialogInterface dialog, int which) {
-								dialog.dismiss();
-							}
-						});
-			} else {
-				InternetConfig config = new InternetConfig();
-				config.setKey(2);
-				HashMap<String, Object> head = new HashMap<>();
-				head.put("Authorization",
-						"Bearer " + App.app.getData("access_token"));
-				config.setHead(head);
-
-				LinkedHashMap<String, String> params = new LinkedHashMap<>();
-				params.put("shop_id", shopId + "");
-				
-				/*FastHttpHander.ajaxForm(GlobalValue.URL_USER_GZ_SHOP, params,null, config, this);*/
-				FastHttpHander.ajax(GlobalValue.URL_USER_GZ_SHOP, params, config, this);
-			}
-		}
 			break;
 
 		case R.id.iv_store_detail_map://地图
@@ -290,10 +224,12 @@ public class StoreDetailFragment extends BaseFragment {
 		}
 	}
 
+
 	@InjectInit
 	private void init() {
 		if (getArguments() != null) {
 			shopId = getArguments().getString("shopId");
+			mRefreshTip = getArguments().getString("refreshTip");
 		}
 		v.tv_report_content.setText(R.string.store_report);
 		refreshUrl = GlobalValue.URL_SHOP + shopId;
@@ -313,11 +249,11 @@ public class StoreDetailFragment extends BaseFragment {
 			@Override
 			public void onClick(View arg0) {
 				refreshCurrentList(refreshUrl, null, 0, v.sc_store_detail);
-				//refreshCurrentList(String.format(GlobalValue.URL_SHOP_ACTIVITYS, shopId),null, 1, null);
 			}
 		});
 
 		v.tv_report_content.setText(getString(R.string.store_report));//门店不靠谱，我要投诉！
+		
 	}
 
 	@InjectHttp
@@ -418,7 +354,6 @@ public class StoreDetailFragment extends BaseFragment {
 				
 				for (Activity data : shopActivity.getData()) {
 					HashMap<String, Object> map = new HashMap<>();
-					
 					map.put("tv_search_activity_name", shopName);
 					map.put("tv_search_activity_desc", data.getName());//实际接口返回数据格式为Name值，应该是 desc位置的内容
 					map.put("iv_search_activity_head", data.getPhoto());
@@ -430,12 +365,26 @@ public class StoreDetailFragment extends BaseFragment {
 				}
 				//dataList中存储了分店的信息
 				v.lv_activity_detail_fendian.setAdapter(new SearchAdapter(v.lv_activity_detail_fendian, dataList,R.layout.activity_search_item));
-			
+				
+				
+				//当分店列表信息展示开来时，且从登陆页回来，需要模拟点击后的操作
+				if(mRefreshTip.equals("true")){
+					//执行更新界面的操作
+					clickToCollectStore();
+
+					//自己给自己发送一个广播
+					Intent intent=new Intent("com.lansun.qmyo.refreshTheIcon");
+					getActivity().sendBroadcast(intent);
+					System.out.println("从门店详情页过来，发送广播！");
+				}
+				
+				
+				
 				
 				break;
 			case 2: // 关注门店
 				//但获取网络反馈后，要弹出提示关注成功
-				if ("true".equals(r.getContentAsString())) {
+				if ("true".equals(r.getContentAsString())){
 					CustomToast.show(getActivity(),
 									getActivity().getString(R.string.tip1),
 									getActivity().getString(R.string.gz_sucess_content1));
@@ -449,7 +398,10 @@ public class StoreDetailFragment extends BaseFragment {
 					tempShopAttention = tempShopAttention +1;
 					
 					shop.setMy_attention(true);
+					
+					//关注成功后，将背景图设置为点击后的状态
 					v.iv_store_detail_gz_store.setPressed(true);
+					v.iv_store_detail_gz_store.setBackgroundResource(R.drawable.gz_store_press1);
 				} else {
 					CustomToast.show(activity,
 							activity.getString(R.string.tip),
@@ -479,12 +431,39 @@ public class StoreDetailFragment extends BaseFragment {
 							activity.getString(R.string.gz_qx_faild_content));
 				}
 				break;*/
+				
+			case 5://去获取前一页的活动的页面是否为我当前卡的收藏活动
+				
+				ActivityListData data = Handler_Json.JsonToBean(ActivityListData.class,
+						r.getContentAsString());
+				System.out.println("拿到前一页活动详情内容了，现在判断是否为我关注的状态： "+ data.getActivity().isMy_attention()+"");
+				
+				if (data.getActivity().isMy_attention()) {//如果前一页的活动的确是我曾经关注的，需要发送广播，让活动详情页进行   活动已被收藏icon  的刷新
+					
+					Intent intent1 =new Intent("com.lansun.qmyo.refreshTheActivityDetailsFrag");
+					getActivity().sendBroadcast(intent1);
+					System.out.println("门店详情页  发送广播给  活动详情页！");
+					
+					/*v.iv_activity_collection.setPressed(true);
+					v.ll_activity_collection.setBackgroundResource(R.drawable.circle_background_green);*/
+				}
+
+			
+				break;
 			}
+			
 		} else {
 			progress_text.setText(R.string.net_error_refresh);
 		}
 	}
 
+	/**
+	 * 头部的纵向ListView的点击事件
+	 * @param arg0
+	 * @param arg1
+	 * @param position
+	 * @param arg3
+	 */
 	private void headItemClick(AdapterView<?> arg0, View arg1, int position,
 			long arg3) {
 		DetailHeaderPagerAdapter headPagerAdapter = new DetailHeaderPagerAdapter(
@@ -494,6 +473,14 @@ public class StoreDetailFragment extends BaseFragment {
 		dialog.show(getFragmentManager(), "gallery");
 	}
 
+	
+	/**
+	 * 门店活动的ListView的点击事件
+	 * @param arg0
+	 * @param arg1
+	 * @param position
+	 * @param arg3
+	 */
 	private void fendianClick(AdapterView<?> arg0, View arg1, int position,
 			long arg3) {
 		Activity activity = shopActivity.getData().get(position);
@@ -507,4 +494,146 @@ public class StoreDetailFragment extends BaseFragment {
 		EventBus.getDefault().post(event);
 	}
 
+
+	/**
+	 * 点击关注按钮，进行关注
+	 */
+	private void clickToCollectStore() {
+		if(App.app.getData("isExperience").equals("true")){
+			DialogUtil.createTipAlertDialog(getActivity(),
+					R.string.logintofllow, new TipAlertDialogCallBack() {
+				@Override
+				public void onPositiveButtonClick(
+						DialogInterface dialog, int which) {
+					dialog.dismiss();
+					RegisterFragment fragment = new RegisterFragment();
+					FragmentEntity event = new FragmentEntity();
+					Bundle bundle = new Bundle();
+					App.app.setData("shopId", shopId);
+					bundle.putString("fragment_name", StoreDetailFragment.class.getSimpleName());
+					fragment.setArguments(bundle);
+					event.setFragment(fragment);
+					EventBus.getDefault().post(event);
+				}
+				@Override
+				public void onNegativeButtonClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+				}
+			});
+		}else{
+			if (shop.isMy_attention()) { 						//-->点击则取消关注
+			DialogUtil.createTipAlertDialog(activity, R.string.gz_cancle,
+					new TipAlertDialogCallBack() {
+
+						@Override
+						public void onPositiveButtonClick(
+								DialogInterface dialog, int which) {
+							InternetConfig config = new InternetConfig();
+							config.setKey(3);
+							HashMap<String, Object> head = new HashMap<>();
+							head.put("Authorization",
+									"Bearer "+ App.app.getData("access_token"));
+							config.setHead(head);
+							config.setMethod("DELETE");
+							
+							/*点击删除后，我们应该要有的返回提示
+							 * if ("true".equals(r.getContentAsString())) {
+								CustomToast.show(
+										getActivity(),
+										getActivity().getString(R.string.tip),
+										getActivity().getString(
+												R.string.gz_qx_sucess_content));
+								v.tv_store_fans_num.setText(shop.getAttention() - 1 + "");
+								shop.setMy_attention(false);
+								v.iv_store_detail_gz_store.setPressed(false);
+							} else {
+								CustomToast.show(activity,
+										activity.getString(R.string.tip),
+										activity.getString(R.string.gz_qx_faild_content));
+							}
+							break;*/
+							
+							
+							
+							// 上述代码的副本！！
+							//暂时关闭了取消收藏的按钮，这样避免不能提供足够数据进行测试
+							  HttpUtils httpUtils = new HttpUtils();
+							  RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
+
+								@Override
+								public void onFailure(HttpException arg0, String arg1) {
+									Log.i("取消门店关注失败返回的结果","访问是失败的!");
+									CustomToast.show(activity,
+											activity.getString(R.string.tip),
+											activity.getString(R.string.gz_qx_faild_content));
+								}
+								@Override
+								public void onSuccess(ResponseInfo<String> arg0) {
+									CustomToast.show(
+											getActivity(),
+											getActivity().getString(R.string.tip2),
+											getActivity().getString(
+													R.string.gz_qx_sucess_content));
+									//v.tv_store_fans_num.setText(shop.getAttention() - 1 + "");
+									
+									v.tv_store_fans_num.setText((tempShopAttention-1) + "");
+									tempShopAttention =  tempShopAttention-1;
+									
+									shop.setMy_attention(false);
+									//v.iv_store_detail_gz_store.setPressed(false);
+									v.iv_store_detail_gz_store.setBackgroundResource(R.drawable.gz_store1);
+									
+								}
+							};
+							RequestParams requestParams = new RequestParams();
+							requestParams.addHeader("Authorization", "Bearer" + App.app.getData("access_token"));
+							httpUtils.send(HttpMethod.DELETE, 
+									GlobalValue.URL_QX_GZ_SHOP+ shopId,
+									requestParams,requestCallBack );
+							
+							/* 实则无效的 删除 提交
+							 * FastHttpHander.ajax(GlobalValue.URL_QX_GZ_SHOP+ shopId, null, config,StoreDetailFragment.this);*/
+							dialog.dismiss();
+						}
+						@Override
+						public void onNegativeButtonClick(
+								DialogInterface dialog, int which) {
+							v.iv_store_detail_gz_store.setBackgroundResource(R.drawable.gz_store_press1);//是我关注的，但点击后问我要不要取消关注，决定还是算了，不取消关注了吧
+							dialog.dismiss();
+						}
+					});
+		} else {
+			InternetConfig config = new InternetConfig();
+			config.setKey(2);
+			HashMap<String, Object> head = new HashMap<>();
+			head.put("Authorization",
+					"Bearer " + App.app.getData("access_token"));
+			config.setHead(head);
+
+			LinkedHashMap<String, String> params = new LinkedHashMap<>();
+			params.put("shop_id", shopId + "");
+			
+			/*FastHttpHander.ajaxForm(GlobalValue.URL_USER_GZ_SHOP, params,null, config, this);*/
+			FastHttpHander.ajax(GlobalValue.URL_USER_GZ_SHOP, params, config, this);
+		}
+	  }
+	}
+	 class ActivityDetailsFragRefreshBroadCastReceiver extends BroadcastReceiver{
+
+			@Override
+			public void onReceive(Context ctx, Intent intent) {
+				if(intent.getAction().equals("com.lansun.qmyo.refreshTheIcon")){
+					System.out.println("门店详情页面  收到刷新Icon的广播了");
+					isRefreshTheActivityDetailsFrag = true;
+					
+					String shopId = App.app.getData("shop_id");
+					String activityId = App.app.getData("activity_id");
+					
+					refreshUrl = String.format(GlobalValue.URL_ACTIVITY_SHOP, activityId+ "", shopId + "");
+					refreshCurrentList(refreshUrl, null, 5, null);//获取活动详情
+				
+				}
+			}
+		 }
+	
 }

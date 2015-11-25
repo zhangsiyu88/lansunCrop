@@ -189,6 +189,7 @@
         </LinearLayout>
     </ScrollView>
 
-    <include layout="@layout/bottom_menu" />
+    <include layout="@layout/bottom_menu" 
+        android:visibility="gone"/> 
 
 </RelativeLayout>

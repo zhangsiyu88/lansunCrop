@@ -72,6 +72,7 @@ import com.lansun.qmyo.view.MyListView;
 import com.lansun.qmyo.view.ViewLeft;
 import com.lansun.qmyo.view.ViewMiddle;
 import com.lansun.qmyo.view.ViewRight;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 
 public class ActivityFragment1 extends BaseFragment {
@@ -495,7 +496,9 @@ public class ActivityFragment1 extends BaseFragment {
 			@Override
 			public void onClick(View arg0) {
 				/*SecretaryDetailFragment fragment = new SecretaryDetailFragment();*/
-				SecretaryFragment fragment = new SecretaryFragment();
+				/*SecretaryFragment fragment = new SecretaryFragment();*/
+				MainFragment fragment = new MainFragment(1);
+				
 				Bundle args = new Bundle();
 				args.putString("type", typeStr);
 				args.putString("title", secretaryTitle[secretaryPosition]);

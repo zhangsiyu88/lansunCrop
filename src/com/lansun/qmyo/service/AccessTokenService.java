@@ -35,8 +35,14 @@ import com.lansun.qmyo.event.entity.RefreshTokenEntity;
 import com.lansun.qmyo.fragment.BaseFragment;
 import com.lansun.qmyo.fragment.ExperienceSearchFragment;
 import com.lansun.qmyo.fragment.MineFragment;
-import com.lansun.qmyo.listener.RequestCallBack;
+import com.lansun.qmyo.utils.CustomDialog;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.view.CustomToast;
+import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.ResponseInfo;
+import com.lidroid.xutils.http.callback.RequestCallBack;
+import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
@@ -47,7 +53,9 @@ import com.squareup.okhttp.Response;
  * 
  */
 public class AccessTokenService extends Service {
-	private int delay = 1000 * 60 * 30;
+	private int delay = 1000 * 60 * 15;
+	public static Timer timer = new Timer();
+	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		return null;
@@ -75,19 +83,45 @@ public class AccessTokenService extends Service {
 		InternetConfig config = new InternetConfig();
 		config.setKey(0);
 		FastHttpHander.ajaxGet(GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"),config, this);
+		
+		/*HttpUtils httpUtils = new HttpUtils();
+		RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
+			@Override
+			public void onFailure(HttpException e, String result ) {
+			}
+			@Override
+			public void onSuccess(ResponseInfo<String> result) {
+				Token token = Handler_Json.JsonToBean(Token.class,result.toString());
+				App.app.setData("access_token", token.getToken());
+				CustomToast.show(getApplicationContext(), "提示", "令牌更新成功！");
+			}
+		};
+		httpUtils.send(HttpMethod.GET, GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"), null,requestCallBack );*/
+	   
 	}
 
 	@Override
 	public void onCreate() {
 		EventBus.getDefault().register(this);
-		Timer timer = new Timer();
+		
+		
+		/*timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				RefreshTokenEntity event = new RefreshTokenEntity();
+				event.setRefresh(true);
+				EventBus.getDefault().post(event);
+			}
+		}, delay,delay);*/
+	
 		timer.schedule(new TimerTask() {
+			@Override
 			public void run() {
 				try {
 					RefreshTokenEntity event = new RefreshTokenEntity();
 					event.setRefresh(true);
 					EventBus.getDefault().post(event);
-				} catch (Exception ie) {
+				} catch (Exception e) {
 				}
 			}
 		}, delay, delay);
@@ -133,6 +167,8 @@ public class AccessTokenService extends Service {
 				Token token = Handler_Json.JsonToBean(Token.class,
 						r.getContentAsString());
 				App.app.setData("access_token", token.getToken());
+				//CustomToast.show(getApplicationContext(), "提示", "令牌更新成功！");
+				
 				InternetConfig config = new InternetConfig();
 				config.setKey(1);
 				HashMap<String, Object> head = new HashMap<String, Object>();

@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ActionBarDrawerToggle.Delegate;
@@ -22,6 +26,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -87,6 +93,7 @@ public class ActivityDetailFragment extends BaseFragment {
 	private String activityId;
 	private String shopId;
 	private boolean HasComment = true;
+	private String mRefreshTip="";
 
 	class Views {
 		private ScrollView sc_activity_detail;
@@ -120,6 +127,14 @@ public class ActivityDetailFragment extends BaseFragment {
 		this.inflater = inflater;
 		rootView = inflater.inflate(R.layout.activity_activity_detail, null);
 		Handler_Inject.injectFragment(this, rootView);
+		
+		
+		broadCastReceiver = new ActivityDetailsRefreshBroadCastReceiver();
+		System.out.println("注册广播 ing");
+		IntentFilter filter = new IntentFilter();
+		filter.addAction("com.lansun.qmyo.refreshTheActivityDetailsFrag");
+		getActivity().registerReceiver(broadCastReceiver, filter);
+		
 		return rootView;
 	}
 
@@ -130,12 +145,16 @@ public class ActivityDetailFragment extends BaseFragment {
 		
 		AnimUtils.startRotateIn(activity, v.iv_open_activity_detail);
 		
-		shopId = getArguments().getString("shopId");
-		activityId = getArguments().getString("activityId");
+		if(getArguments()!=null){
+			shopId = getArguments().getString("shopId");
+			activityId = getArguments().getString("activityId");
+			mRefreshTip = getArguments().getString("refreshTip");
+		}
 		
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		int screenWidth = dm.widthPixels;
 		int screenHeight = dm.heightPixels;
+		
 		int cueentHeight = (int) (((double) screenWidth / 720) * v.vp_baner.getLayoutParams().height);
 		
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(screenWidth, cueentHeight);
@@ -154,11 +173,10 @@ public class ActivityDetailFragment extends BaseFragment {
 		});
 	}
 
+
 	private void initData() {
 		refreshUrl = String.format(GlobalValue.URL_ACTIVITY_SHOP, activityId+ "", shopId + "");
-		
 		refreshCurrentList(refreshUrl, null, 0, v.sc_activity_detail);//获取活动详情
-		
 		refreshCurrentList(String.format(GlobalValue.URL_ACTIVITY_COMMENTS, activityId),null, 1, null);//获取评论内容
 	}
 
@@ -205,8 +223,7 @@ public class ActivityDetailFragment extends BaseFragment {
 				}
 				
 				//优惠券返回暂时为空的！
-				ArrayList<CouponsData> coupons = data.getActivity()
-						.getCoupons();
+				ArrayList<CouponsData> coupons = data.getActivity().getCoupons();
 				if (coupons != null) {
 					if (coupons.size() > 1) {
 						v.tv_activity_coupons_denomination_1.setText(coupons
@@ -250,27 +267,47 @@ public class ActivityDetailFragment extends BaseFragment {
 
 				if (data.getActivity().getContent() != null) {
 
-					ArrayList<HashMap<String, String>> dataList2 = new ArrayList<HashMap<String, String>>();
-					for (ActivityContent data1 : data.getActivity()
-							.getContent()) {
+					/*ArrayList<HashMap<String, String>> dataList2 = new ArrayList<HashMap<String, String>>();*/
+					
+					
+					ArrayList<HashMap<String, String>> dataList3 = new ArrayList<HashMap<String, String>>();
+					
+					for (ActivityContent data1 : data.getActivity().getContent()) {//data.getActivity().getContent()和标题数目一致
+						
 						HashMap<String, String> map = new HashMap<String, String>();
-						map.put("tv_activity_content_mx_title",
-								data1.getTitle());
-						StringBuilder sb = new StringBuilder();
-						for (int i = 0; i < data1.getContent().size(); i++) {
+						map.put("tv_activity_content_mx_title",data1.getTitle());
+						
+						/*StringBuilder sb = new StringBuilder();
+						  for (int i = 0; i < data1.getContent().size(); i++) {
 							if (i == data1.getContent().size()) {
 								sb.append("\u2022  "+ data1.getContent().get(i));
 							} else {
-								sb.append("\u2022  "+ data1.getContent().get(i) + "\r\n");
+								sb.append("\u2022  "+ data1.getContent().get(i) + "\r\n\r\n");
+							}
+						}*/
+						/*
+						for (int i = 0; i < data1.getContent().size(); i++) {
+							if (i == data1.getContent().size()) {
+								sb.append(data1.getContent().get(i));
+							} else {
+								sb.append(data1.getContent().get(i) + "\r\n\r\n");
 							}
 						}
-						map.put("tv_activity_content_mx_content", sb.toString());
-						dataList2.add(map);
+						map.put("tv_activity_content_mx_content", sb.toString());*/
+						
+						for (int i = 0; i < data1.getContent().size(); i++) {
+							map.put("tv_activity_content_mx_content"+i, data1.getContent().get(i));
+						}
+						dataList3.add(map);
+						/*dataList2.add(map);*/
 					}
+					
+					
 					//活动详情页下面的MySubListView对应的适配器
 					TipAdapter adapter = new TipAdapter(v.lv_tip_list,
-							dataList2, R.layout.activity_activity_tip_item);
+							dataList3, R.layout.activity_activity_tip_item, activity);
 					v.lv_tip_list.setAdapter(adapter);
+					
 				}
 				
 				switchIcon(icons);
@@ -282,6 +319,10 @@ public class ActivityDetailFragment extends BaseFragment {
 				
 				v.vp_baner.setAdapter(pagerAdapter);
 				
+				if(mRefreshTip.equals("true")){
+					//执行更新界面的操作
+					clickToCollectActivity();
+				}
 				break;
 			case 1:
 				CommentList list = Handler_Json.JsonToBean(CommentList.class,
@@ -321,6 +362,8 @@ public class ActivityDetailFragment extends BaseFragment {
 					HasComment = false;
 				}
 
+				
+				
 				break;
 			case 2:
 				if ("true".equals(r.getContentAsString())) {
@@ -413,6 +456,12 @@ public class ActivityDetailFragment extends BaseFragment {
 			break;
 			
 		case R.id.iv_activity_shop_detail:
+			
+			if(App.app.getData("isExperience")=="true"){//为了保证，在体验用户的状态下，后面在门店详情页登陆完之后，可能需要重新获取一次当前活动是否为收藏的信息
+				App.app.setData("shop_id", shopId);
+				App.app.setData("activity_id", activityId);
+			}
+			
 			fragment = new StoreDetailFragment();
 			bundle.putString("shopId", shopId);
 			fragment.setArguments(bundle);
@@ -531,145 +580,8 @@ public class ActivityDetailFragment extends BaseFragment {
 			bus.post(entity);
 			break;
 		case R.id.ll_activity_collection: // 活动详情收藏
-			Log.d("异常处的isExperience的值为： ", "异常处的isExperience的值为： "+App.app.getData("isExperience"));
 			
-			if(App.app.getData("isExperience").equals("true")){
-				DialogUtil.createTipAlertDialog(getActivity(),
-						R.string.logintocollectactivity, new TipAlertDialogCallBack() {
-					@Override
-					public void onPositiveButtonClick(
-							DialogInterface dialog, int which) {
-						dialog.dismiss();
-						RegisterFragment fragment = new RegisterFragment();
-						FragmentEntity event = new FragmentEntity();
-						App.app.setData("shopId", shopId);
-						App.app.setData("activityId", activityId);
-						Bundle bundle = new Bundle();
-						bundle.putString("fragment_name", ActivityDetailFragment.class.getSimpleName());
-						fragment.setArguments(bundle);
-						event.setFragment(fragment);
-						EventBus.getDefault().post(event);
-					}
-					@Override
-					public void onNegativeButtonClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
-				return;
-			}
-			
-			if (!data.getActivity().isMy_attention()) {//如果不是我收藏过的,点击即收藏
-				InternetConfig config = new InternetConfig();
-				config.setKey(2);
-				HashMap<String, Object> head = new HashMap<String, Object>();
-				head.put("Authorization",
-						"Bearer " + App.app.getData("access_token"));
-				config.setHead(head);
-				LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
-				params.put("activity_id", activityId + "");
-				params.put("shop_id", shopId + "");
-				
-				/*FastHttpHander.ajaxForm(GlobalValue.URL_USER_ACTIVITY, params,
-						null, config, this);*/
-				
-				//使用post方式去提交
-				FastHttpHander.ajax(GlobalValue.URL_USER_ACTIVITY, params,
-						config, this);
-				
-			} else {
-				InternetConfig config = new InternetConfig();
-				config.setKey(3);
-				HashMap<String, Object> head = new HashMap<String, Object>();
-				head.put("Authorization","Bearer " + App.app.getData("access_token"));
-				config.setHead(head);
-				config.setRequest_type(InternetConfig.request_delete);
-				config.setMethod("DELETE");
-				
-				String url = "http://appapi.qmyo.com/activity/"+data.getActivity().getId()+"?shop_id="+data.getShop().getId();
-				
-				/*FastHttpHander.ajax(String.format(GlobalValue.URL_USER_ACTIVITY_DELETE,data.getActivity().getId(), data.getShop().getId()), 
-				  config, this);*/
-				
-				//提交方式的设置是在config中的setMethod上,也就是说config.setRequest_type(InternetConfig.request_delete)没啥实用
-				/*	FastHttpHander.ajax(url,config, this);
-				
-				FastHttpHander.ajaxForm(url, config, this);
-				AjaxCallBack callBack = new AjaxCallBack(){
-
-					@Override
-					public void callBack(ResponseEntity status) {
-						Log.i("ajaxCallBack_callBack", "CallBack");
-					}
-					@Override
-					public boolean stop() {
-						Log.i("ajaxCallBack_stop", "CallBack");
-						return false;
-					}
-				};
-				FastHttp.ajaxWebServer(url, "DELETE", config, callBack );*/
-				
-				/*暂时关闭了取消收藏的按钮，这样避免不能提供足够数据进行测试
-				 * 
-				 * HttpUtils httpUtils = new HttpUtils();
-				RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
-
-					@Override
-					public void onFailure(HttpException arg0, String arg1) {
-						Log.i("Activity取消收藏失败返回的结果","访问是失败的!");
-					}
-					@Override
-					public void onSuccess(ResponseInfo<String> arg0) {
-						Log.i("Activity取消收藏成功返回的结果",arg0.result.toString());
-						if ("true".equals(arg0.result.toString())) {
-							v.iv_activity_collection.setPressed(false);
-							v.ll_activity_collection.setBackgroundResource(R.drawable.circle_background_gray);
-							data.getActivity().setMy_attention(false);
-							CustomToast.show(activity,
-									getString(R.string.sc_sucess_cancle),
-									getString(R.string.sc_sucess_content_cancle));
-						}
-					}
-				};
-				RequestParams requestParams = new RequestParams();
-				requestParams.addHeader("Authorization", "Bearer" + App.app.getData("access_token"));
-				httpUtils.send(HttpMethod.DELETE, 
-						"http://appapi.qmyo.com/activity/"+data.getActivity().getId()+"?shop_id="+data.getShop().getId(),
-						requestParams,requestCallBack );*/
-				
-				
-				
-				
-				// 上述代码的副本！！ 将其打开
-				//暂时关闭了取消收藏的按钮，这样避免不能提供足够数据进行测试
-				  HttpUtils httpUtils = new HttpUtils();
-				  RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
-
-					@Override
-					public void onFailure(HttpException arg0, String arg1) {
-						Log.i("Activity取消收藏失败返回的结果","访问是失败的!");
-					}
-					@Override
-					public void onSuccess(ResponseInfo<String> arg0) {
-						Log.i("Activity取消收藏成功返回的结果",arg0.result.toString());
-						if ("true".equals(arg0.result.toString())) {
-							v.iv_activity_collection.setPressed(false);
-							v.ll_activity_collection.setBackgroundResource(R.drawable.circle_background_gray);
-							data.getActivity().setMy_attention(false);
-							CustomToast.show(activity,
-									getString(R.string.sc_sucess_cancle_collection),
-									getString(R.string.sc_sucess_content_cancle_collection));
-						}
-					}
-				};
-				RequestParams requestParams = new RequestParams();
-				requestParams.addHeader("Authorization", "Bearer" + App.app.getData("access_token"));
-				/*httpUtils.send(HttpMethod.DELETE, 
-						GlobalValue.IP+"activity/"+data.getActivity().getId()+"?shop_id="+data.getShop().getId(),
-						requestParams,requestCallBack );*/
-				
-				httpUtils.send(HttpMethod.DELETE,String.format(GlobalValue.URL_USER_ACTIVITY_DELETE,data.getActivity().getId(), data.getShop().getId()),
-						requestParams,requestCallBack );
-			}
+			clickToCollectActivity();
 
 			break;
 		case R.id.tv_activity_shop_telephone:
@@ -683,9 +595,9 @@ public class ActivityDetailFragment extends BaseFragment {
 			break;
 		}
 	}
-
-/*	private void showDialog() {
-		new SharedDialog().showPopwindow(rootView, getActivity(), data
+		/*	
+		private void showDialog() {
+			new SharedDialog().showPopwindow(rootView, getActivity(), data
 				.getShop().getName(), data.getShop().getName() + "举办"
 				+ data.getActivity().getName(), data.getActivity().getPhotos()
 				.get(0),data.getActivity().getShare_url());
@@ -712,7 +624,6 @@ public class ActivityDetailFragment extends BaseFragment {
 				}
 			}
 		}
-
 		@Override
 		public void onPageScrolled(int arg0, float arg1, int arg2) {
 		}
@@ -723,6 +634,7 @@ public class ActivityDetailFragment extends BaseFragment {
 	};
 	private View rootView;
 	private ActivityListData data;
+	private ActivityDetailsRefreshBroadCastReceiver broadCastReceiver;
 
 	
 	/*
@@ -756,4 +668,162 @@ public class ActivityDetailFragment extends BaseFragment {
 		this.position = position;
 	}
 
+	/**
+	 * 点击收藏之前看的活动
+	 */
+	private void clickToCollectActivity() {
+		Log.d("异常处的isExperience的值为： ", "异常处的isExperience的值为： "+App.app.getData("isExperience"));
+		
+		if(App.app.getData("isExperience").equals("true")){
+			DialogUtil.createTipAlertDialog(getActivity(),
+					R.string.logintocollectactivity, new TipAlertDialogCallBack() {
+				@Override
+				public void onPositiveButtonClick(
+						DialogInterface dialog, int which) {
+					dialog.dismiss();
+					RegisterFragment fragment = new RegisterFragment();
+					FragmentEntity event = new FragmentEntity();
+					App.app.setData("shopId", shopId);
+					App.app.setData("activityId", activityId);
+					Bundle bundle = new Bundle();
+					bundle.putString("fragment_name", ActivityDetailFragment.class.getSimpleName());
+					fragment.setArguments(bundle);
+					event.setFragment(fragment);
+					EventBus.getDefault().post(event);
+				}
+				@Override
+				public void onNegativeButtonClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+				}
+			});
+			return;
+		}
+		
+		if (!data.getActivity().isMy_attention()) {//如果不是我收藏过的,点击即收藏
+			InternetConfig config = new InternetConfig();
+			config.setKey(2);
+			HashMap<String, Object> head = new HashMap<String, Object>();
+			head.put("Authorization",
+					"Bearer " + App.app.getData("access_token"));
+			config.setHead(head);
+			LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
+			params.put("activity_id", activityId + "");
+			params.put("shop_id", shopId + "");
+			
+			/*FastHttpHander.ajaxForm(GlobalValue.URL_USER_ACTIVITY, params,
+					null, config, this);*/
+			
+			//使用post方式去提交
+			FastHttpHander.ajax(GlobalValue.URL_USER_ACTIVITY, params,
+					config, this);
+			
+		} else {
+			InternetConfig config = new InternetConfig();
+			config.setKey(3);
+			HashMap<String, Object> head = new HashMap<String, Object>();
+			head.put("Authorization","Bearer " + App.app.getData("access_token"));
+			config.setHead(head);
+			config.setRequest_type(InternetConfig.request_delete);
+			config.setMethod("DELETE");
+			
+			String url = "http://appapi.qmyo.com/activity/"+data.getActivity().getId()+"?shop_id="+data.getShop().getId();
+			
+			/*FastHttpHander.ajax(String.format(GlobalValue.URL_USER_ACTIVITY_DELETE,data.getActivity().getId(), data.getShop().getId()), 
+			  config, this);*/
+			
+			//提交方式的设置是在config中的setMethod上,也就是说config.setRequest_type(InternetConfig.request_delete)没啥实用
+			/*	FastHttpHander.ajax(url,config, this);
+			
+			FastHttpHander.ajaxForm(url, config, this);
+			AjaxCallBack callBack = new AjaxCallBack(){
+
+				@Override
+				public void callBack(ResponseEntity status) {
+					Log.i("ajaxCallBack_callBack", "CallBack");
+				}
+				@Override
+				public boolean stop() {
+					Log.i("ajaxCallBack_stop", "CallBack");
+					return false;
+				}
+			};
+			FastHttp.ajaxWebServer(url, "DELETE", config, callBack );*/
+			
+			/*暂时关闭了取消收藏的按钮，这样避免不能提供足够数据进行测试
+			 * 
+			 * HttpUtils httpUtils = new HttpUtils();
+			RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
+
+				@Override
+				public void onFailure(HttpException arg0, String arg1) {
+					Log.i("Activity取消收藏失败返回的结果","访问是失败的!");
+				}
+				@Override
+				public void onSuccess(ResponseInfo<String> arg0) {
+					Log.i("Activity取消收藏成功返回的结果",arg0.result.toString());
+					if ("true".equals(arg0.result.toString())) {
+						v.iv_activity_collection.setPressed(false);
+						v.ll_activity_collection.setBackgroundResource(R.drawable.circle_background_gray);
+						data.getActivity().setMy_attention(false);
+						CustomToast.show(activity,
+								getString(R.string.sc_sucess_cancle),
+								getString(R.string.sc_sucess_content_cancle));
+					}
+				}
+			};
+			RequestParams requestParams = new RequestParams();
+			requestParams.addHeader("Authorization", "Bearer" + App.app.getData("access_token"));
+			httpUtils.send(HttpMethod.DELETE, 
+					"http://appapi.qmyo.com/activity/"+data.getActivity().getId()+"?shop_id="+data.getShop().getId(),
+					requestParams,requestCallBack );*/
+			
+			
+			
+			
+			// 上述代码的副本！！ 将其打开
+			//暂时关闭了取消收藏的按钮，这样避免不能提供足够数据进行测试
+			  HttpUtils httpUtils = new HttpUtils();
+			  RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
+
+				@Override
+				public void onFailure(HttpException arg0, String arg1) {
+					Log.i("Activity取消收藏失败返回的结果","访问是失败的!");
+				}
+				@Override
+				public void onSuccess(ResponseInfo<String> arg0) {
+					Log.i("Activity取消收藏成功返回的结果",arg0.result.toString());
+					if ("true".equals(arg0.result.toString())) {
+						v.iv_activity_collection.setPressed(false);
+						v.ll_activity_collection.setBackgroundResource(R.drawable.circle_background_gray);
+						data.getActivity().setMy_attention(false);
+						CustomToast.show(activity,
+								getString(R.string.sc_sucess_cancle_collection),
+								getString(R.string.sc_sucess_content_cancle_collection));
+					}
+				}
+			};
+			RequestParams requestParams = new RequestParams();
+			requestParams.addHeader("Authorization", "Bearer" + App.app.getData("access_token"));
+			/*httpUtils.send(HttpMethod.DELETE, 
+					GlobalValue.IP+"activity/"+data.getActivity().getId()+"?shop_id="+data.getShop().getId(),
+					requestParams,requestCallBack );*/
+			httpUtils.send(HttpMethod.DELETE,String.format(GlobalValue.URL_USER_ACTIVITY_DELETE,data.getActivity().getId(), data.getShop().getId()),
+					requestParams,requestCallBack);
+		}
+	}
+	
+	 class ActivityDetailsRefreshBroadCastReceiver extends BroadcastReceiver{
+			@Override
+			public void onReceive(Context ctx, Intent intent) {
+				if(intent.getAction().equals("com.lansun.qmyo.refreshTheActivityDetailsFrag")){
+					System.out.println("活动详情页面   收到来自  门店详情页刷新Icon的广播了");
+					v.iv_activity_collection.setPressed(true);
+					v.ll_activity_collection.setBackgroundResource(R.drawable.circle_background_green);
+				
+				}
+			}
+		 }
+
+		
+		
 }

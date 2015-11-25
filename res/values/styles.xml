@@ -22,6 +22,7 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
+        <!-- <item name="android:windowIsTranslucent">true</item> -->
     </style>
     
     
@@ -45,6 +46,14 @@
         <!-- 指定消失的动画xml -->
     </style>
 
+      <!-- popwidnow界面上的多级子菜单展开时的 显示和消失的动画-->
+ 	<style name="popwindow_anim_style">
+   		 <item name="android:windowEnterAnimation">@anim/popupwindow_show</item> <!-- 指定的多级子菜单显示的动画xml  -->
+  		 <item name="android:windowExitAnimation">@anim/popupwindow_exit</item> <!-- 指定的多级子菜单消失的动画xml  -->
+ 	</style>
+    
+    
+    
     <style name="myDialogStyle" parent="@android:style/Theme.Dialog">
         <item name="android:windowFrame">@null</item>
         <item name="android:windowIsFloating">true</item>
@@ -80,6 +89,11 @@
     </style>  
     
     
+    <style name="CustomDialogForNewUserTip" >  
+       <!--  <item name="android:windowFullscreen">true</item>  -->
+        <item name="android:windowBackground">@android:color/transparent</item>  
+        <item name="android:windowNoTitle">true</item>  
+    </style>  
     
     
     

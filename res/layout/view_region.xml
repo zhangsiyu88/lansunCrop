@@ -7,7 +7,8 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/line_bg" />
+        android:background="@color/app_bg" 
+        /><!-- android:background="@color/line_bg"  -->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,10 +20,10 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/expandTabView_lv_h"
             android:layout_weight="3"
-            android:background="@color/line_bg2"
+            android:background="@color/app_bg"
             android:cacheColorHint="@android:color/transparent"
             android:divider="@null"
-            android:scrollbars="none" >
+            android:scrollbars="none" ><!-- android:background="@color/line_bg2" -->
         </ListView>
 
         <View

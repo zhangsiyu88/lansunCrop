@@ -38,7 +38,7 @@
         style="@style/w_full_h_wrap"
         android:background="@color/app_white"
         android:cacheColorHint="#00000000"
-        android:divider="@color/line_bg"
+        android:divider="@color/line_bg1"
         android:dividerHeight="1px"
         android:listSelector="@android:color/transparent"
         android:scrollbars="none" />

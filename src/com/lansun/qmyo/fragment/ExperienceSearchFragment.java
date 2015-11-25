@@ -31,6 +31,7 @@ import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
 import com.lansun.qmyo.MainActivity;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.event.entity.FragmentEntity;
@@ -85,7 +86,8 @@ public class ExperienceSearchFragment extends BaseFragment {
 		switch (view.getId()) {
 		case R.id.btn_experience_jump:
 			GlobalValue.isFirst = false;//走的时候已将isFirst设置为false
-			fragment = new HomeFragment();
+			/*fragment = new HomeFragment();*/
+			fragment = new MainFragment(0);
 			break;
 		case R.id.ll_experience_login:
 			fragment = new RegisterFragment();

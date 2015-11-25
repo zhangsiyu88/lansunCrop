@@ -39,7 +39,7 @@ public class ActivityDetailPagerAdapter extends CommonPagerAdapter {
 	public Object instantiateItem(ViewGroup view, int position) {
 		ImageView iv = new ImageView(context);
 		iv.setBackgroundResource(R.drawable.default_details);
-		iv.setScaleType(ImageView.ScaleType.FIT_XY);
+		iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
 		ImageLoader.getInstance().displayImage(photos.get(position), iv,
 				options);
 		pageMap.put(position, iv);

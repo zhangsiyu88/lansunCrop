@@ -34,6 +34,8 @@ public class QuestionAnswerAdapter extends Adapter<QuestionAnswerAdapter.MyViewH
 	}
 	@Override
 	public void onBindViewHolder(MyViewHolder holder, int position) {
+		
+		//在位置上放上需要的图片
 		ImageLoader.getInstance().displayImage(GlobalValue.user.getAvatar(), holder.iv_user_head, new ImageLoadingListener() {
 			@Override
 			public void onLoadingStarted(String arg0, View arg1) {
@@ -78,6 +80,9 @@ public class QuestionAnswerAdapter extends Adapter<QuestionAnswerAdapter.MyViewH
 				
 			}
 		});
+		
+		
+		
 		SimpleDateFormat format=new SimpleDateFormat("HH");
 		final int hour=Integer.valueOf(format.format(new Date(System.currentTimeMillis())));
 		Log.e("hour", String.valueOf(hour));
@@ -109,7 +114,9 @@ public class QuestionAnswerAdapter extends Adapter<QuestionAnswerAdapter.MyViewH
 			//这个地方写的有点多余，后来人可以修改下
 			holder.tv_user_question.setText(detail.getItems().get(position-1).getContent());
 			String answer=String.valueOf(detail.getItems().get(position-1).getAnswer());
+			
 			String previou_answer=String.valueOf(detail.getItems().get(position-2).getAnswer());
+			
 			if ("null".equals(answer)||"".equals(answer)||" ".equals(answer)) {
 				if ("null".equals(previou_answer)||"".equals(previou_answer)||" ".equals(previou_answer)) {
 					if (hour>=9&&hour<18) {
@@ -136,6 +143,8 @@ public class QuestionAnswerAdapter extends Adapter<QuestionAnswerAdapter.MyViewH
 		MyViewHolder holder=new MyViewHolder(view, viewType);
 		return holder;
 	}
+	
+	
 	public class MyViewHolder extends ViewHolder{
 		private CircularImage iv_secretary_head,iv_user_head;
 		private TextView tv_secretary_answer,tv_user_question;

@@ -8,7 +8,7 @@
         android:id="@+id/list_display_view_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/app_white"
+         android:background="@drawable/found_bcakgroundcolor_selector"
         android:orientation="vertical" >
 
         <TextView
@@ -80,7 +80,7 @@
             android:layout_height="1px"
             android:layout_marginLeft="@dimen/l_r_35"
             android:layout_marginRight="@dimen/l_r_35"
-            android:background="@color/line_bg" />
+            android:background="@color/line_bg1" />
     </LinearLayout>
 
 </RelativeLayout>

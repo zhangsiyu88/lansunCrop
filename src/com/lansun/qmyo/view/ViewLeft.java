@@ -109,6 +109,7 @@ public class ViewLeft extends LinearLayout implements ViewBaseAction {
 		inflater.inflate(R.layout.view_region, this, true);
 		regionListView = (ListView) findViewById(R.id.listView);
 		plateListView = (ListView) findViewById(R.id.listView2);
+		
 		earaListViewAdapter = new TextAdapter(context, groups,
 				R.drawable.choose_item_selected, 0);
 		earaListViewAdapter.setSelectedPositionNoNotify(tEaraPosition);

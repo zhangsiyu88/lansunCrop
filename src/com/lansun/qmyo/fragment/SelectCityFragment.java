@@ -34,6 +34,7 @@ import com.lansun.qmyo.domain.City;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CustomToast;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 
 public class SelectCityFragment extends BaseFragment {
@@ -111,7 +112,8 @@ public class SelectCityFragment extends BaseFragment {
 			long arg3) {
 		if (citys != null) {
 			City city = citys.get(position);
-			HomeFragment fragment = new HomeFragment();
+			/*HomeFragment fragment = new HomeFragment();*/
+			MainFragment fragment = new MainFragment(0);
 			saveSelectCity(city.getCode(), city.getName());
 			saveCurrentCity(city.getCode(), city.getName());
 			Bundle args = new Bundle();

@@ -35,7 +35,10 @@
 
             <ImageView
                 android:id="@+id/mHeaderArrowImageView"
-                style="@style/w_wrap_h_wrap" />
+                android:layout_width="40px"
+                android:layout_height="40px"
+                 />
+                <!-- style="@style/w_wrap_h_wrap" -->
 
             <ProgressBar
                 android:id="@+id/mHeaderProgressBar"

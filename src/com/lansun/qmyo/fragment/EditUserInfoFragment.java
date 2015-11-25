@@ -141,6 +141,10 @@ public class EditUserInfoFragment extends BaseFragment {
 		if (r.getStatus() == FastHttp.result_ok) {
 			switch (r.getKey()) {
 			case 0:
+				if(pd!=null ){
+					pd.dismiss();
+				}
+				
 				GlobalValue.user = Handler_Json.JsonToBean(User.class,r.getContentAsString());
 				CustomToast.show(activity, getString(R.string.tip), "修改成功");
 				//App.app.setData("userNickname", paramName);

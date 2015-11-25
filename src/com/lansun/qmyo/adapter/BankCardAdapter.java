@@ -31,6 +31,7 @@ import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
 import com.lansun.qmyo.MainActivity;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.adapter.BankCardAdapter.ViewHolder;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.Secret;
@@ -358,7 +359,9 @@ public class BankCardAdapter extends
 					/*BackEntity event = new BackEntity();
 					EventBus.getDefault().post(event);*/
 					if(isEmbarrassingStatue){
-						HomeFragment fragment = new HomeFragment();
+						
+						/*HomeFragment fragment = new HomeFragment();*/
+						MainFragment fragment = new MainFragment(0);
 						FragmentEntity event = new FragmentEntity();
 						event.setFragment(fragment);
 						EventBus.getDefault().post(event);
@@ -391,7 +394,6 @@ public class BankCardAdapter extends
 					event.setFragment(fragment);
 					EventBus.getDefault().post(event);
 					
-					
 				} else {
 					CustomToast.show(context, context.getString(R.string.tip),"卡种已重复");
 				}
@@ -403,6 +405,8 @@ public class BankCardAdapter extends
 				App.app.setData("exp_secret", secret.getSecret());
 				Log.i("临时用户拿到exp_secret","临时用户拿到的exp_secret为："+App.app.getData("exp_secret"));
 				CustomToast.show(App.app, R.string.tip4,R.string.tiyan_cuccess_welcome);
+				
+				App.app.setData("ExperienceBankcardId",selectCardId);
 				
 				// 再次前往获取临时的access_token
 				InternetConfig config = new InternetConfig();
@@ -444,7 +448,8 @@ public class BankCardAdapter extends
 				//务必将卡提交上去才可以拿到体验用户的标志 ： isExperience = true
 				App.app.setData("isExperience", "true");
 				
-				HomeFragment fragment = new HomeFragment();
+				/*HomeFragment fragment = new HomeFragment();*/
+				MainFragment fragment = new MainFragment(0);
 				FragmentEntity entity = new FragmentEntity();
 				entity.setFragment(fragment);
 				EventBus.getDefault().post(entity);

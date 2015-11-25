@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.BaseFragment;
@@ -34,6 +35,7 @@ import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.LoginDialog;
 import com.squareup.okhttp.Callback;
@@ -66,10 +68,20 @@ public class TaskAssignment extends BaseFragment implements TextWatcher{
 					@Override
 					public void onClick(View v) {
 						dialog.dismiss();
-						FragmentEntity entity=new FragmentEntity();
-						Fragment f=new SecretaryFragment(); 
-						entity.setFragment(f);
-						EventBus.getDefault().post(entity);
+						
+						try{
+							FragmentEntity entity=new FragmentEntity();
+							/*Fragment f=new SecretaryFragment(); */
+							Fragment f=new MainFragment(1); 
+							entity.setFragment(f);
+							EventBus.getDefault().post(entity);
+						}catch (Exception e) {
+							FragmentEntity entity=new FragmentEntity();
+							Fragment f=new MainFragment(1); 
+							entity.setFragment(f);
+							EventBus.getDefault().post(entity);
+							LogUtils.toDebugLog("catch", "提交成功后弹出的反馈页面 报出 异常");
+						}
 					}
 				});
 				break;

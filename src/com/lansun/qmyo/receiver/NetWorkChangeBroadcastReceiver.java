@@ -82,7 +82,7 @@ public class NetWorkChangeBroadcastReceiver extends BroadcastReceiver {
 						/*Toast.makeText(context, "已接入移动网络！", 2000).show();*/
 					}
 					if(networkInfos[i].getType()==1){
-						Toast.makeText(context, "已接入无线WiFi网络！", 2000).show();
+						//Toast.makeText(context, "已接入无线WiFi网络！", 2000).show();
 					}
 					/*Toast.makeText(context, "已接入网络！", 2000).show();*/
 					/*return;*/

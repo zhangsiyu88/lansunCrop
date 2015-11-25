@@ -19,14 +19,17 @@
         android:layout_marginLeft="@dimen/l_r_15"
         android:background="@null"
         android:hint="@string/search_all_hint"
-        android:imeOptions="actionDone"
+       
+         android:imeOptions="actionSearch"
+         android:inputType="text"
+         
         android:maxLines="1"
         android:singleLine="true"
         android:paddingRight="@dimen/l_r_15"
         android:layout_weight="1"
         android:textColor="@color/app_white"
         android:textColorHint="@color/app_white"
-        android:textCursorDrawable="@null" >
+        android:textCursorDrawable="@null" > <!-- android:imeOptions="actionDone" -->
     </EditText>
 	<ImageView  
 	    android:id="@+id/del_search_content"

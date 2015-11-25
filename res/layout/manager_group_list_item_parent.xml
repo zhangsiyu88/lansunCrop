@@ -1,8 +1,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    
+    android:background="@drawable/found_bcakgroundcolor_selector"
     android:orientation="vertical" >
+    <!-- android:background="#FFFFFF" -->
 
     <LinearLayout
         android:id="@+id/list_display_view_container"

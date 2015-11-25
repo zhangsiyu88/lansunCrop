@@ -5,15 +5,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimerTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.GpsStatus.Listener;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -58,6 +62,7 @@ import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
 import com.android.pc.util.Handler_Ui;
 import com.lansun.qmyo.MainActivity;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.SplashActivity;
 import com.lansun.qmyo.adapter.CityListAdapter;
 import com.lansun.qmyo.adapter.SearchHotAdapter;
@@ -65,6 +70,7 @@ import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.AdCode;
 import com.lansun.qmyo.domain.City;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
@@ -124,13 +130,15 @@ public class GpsFragment extends BaseFragment {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.city_list, null);
 		Handler_Inject.injectFragment(this, rootView);
+	
 		
 		tv_city_header_current_city.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
 				//将城市数据放入到
-				HomeFragment fragment = new HomeFragment();
+				/*HomeFragment fragment = new HomeFragment();*/
+				MainFragment fragment = new MainFragment(0);
 				Bundle args = new Bundle();
 				saveSelectCity(localCityCode, localCity);
 				
@@ -195,6 +203,36 @@ public class GpsFragment extends BaseFragment {
 		}
 		FastHttpHander.ajaxGet(String.format(GlobalValue.URL_GPS_ADCODE,116.950404 ,
 				31.043848), config1, this);*/
+		
+	if(App.app.getData("gpsIsNotAccurate").equals("true")){
+		
+		DialogUtil.createTipAlertDialog(activity,
+				"您还未开启精确定位哦\n\r请前往应用权限页开启",
+				new DialogUtil.TipAlertDialogCallBack() {
+					@Override
+					public void onPositiveButtonClick(
+							DialogInterface dialog, int which) {
+						  Intent localIntent = new Intent("android.settings.APPLICATION_DETAILS_SETTINGS");
+				          localIntent.setData(Uri.fromParts("package", "com.lansun.qmyo", null));
+				          activity.startActivity(localIntent);//前往权限设置的页面
+				          
+				          if(App.app.getData("firstEnter").isEmpty()){
+								App.app.setData("gpsIsNotAccurate","");//将gps的提醒标签置为空
+								App.app.setData("firstEnter","notblank");//但此时已不是第一次进入
+							}
+				          dialog.dismiss();
+						
+					}
+
+					@Override
+					public void onNegativeButtonClick(
+							DialogInterface dialog, int which) {
+						dialog.dismiss();
+						
+						
+					}
+				});
+		}
 	}
 
 	/**
@@ -447,7 +485,11 @@ public class GpsFragment extends BaseFragment {
 		/*
 		 * Notice!!! 这里定位使用的是LocationManagerProxy.NETWORK_PROVIDER !!!,没有使用高德地图的 混合定位
 		 */
-		aMapLocManager.requestLocationData(LocationManagerProxy.NETWORK_PROVIDER, 2000, 10, locationListener);
+		aMapLocManager.requestLocationData(LocationProviderProxy.AMapNetwork, 1000, 10, locationListener);
+		/*aMapLocManager.requestLocationData(LocationManagerProxy.NETWORK_PROVIDER, 2000, 10, locationListener);*///此处使用的是网络（硬件）定位，故会产生偏差
+		aMapLocManager.setGpsEnable(true);
+		
+		
 		
 	}
 	private AMapLocationListener locationListener = new AMapLocationListener() {
@@ -488,7 +530,11 @@ public class GpsFragment extends BaseFragment {
 				
 				
 				/*将定位到的数据存到了GlobalValue.gps上 */
-				GlobalValue.gps = new Gps(location.getLatitude(),location.getLongitude());
+				if(location.getLatitude()==0||location.getLongitude()==0){
+					GlobalValue.gps = new Gps(31.230431, 121.473705);
+				}else{
+					GlobalValue.gps = new Gps(location.getLatitude(),location.getLongitude());
+				}
 				Log.i("location的地址信息: ",GlobalValue.gps.getWgLat() +" & "+ GlobalValue.gps.getWgLon());
 				
 				/*if (aMapLocation != null) {
@@ -644,7 +690,9 @@ public class GpsFragment extends BaseFragment {
 				args.putString("code", city.getCode());
 				currentState = "all";
 			} else {
-				fragment = new HomeFragment();
+				
+				/*fragment = new HomeFragment();*/
+				fragment = new MainFragment(0);
 				saveSelectCity(city.getCode(), city.getName());
 				saveCurrentCity(city.getCode(), city.getName());
 			}
@@ -672,7 +720,8 @@ public class GpsFragment extends BaseFragment {
 			args.putString("code", city.getCode());
 			currentState = "all";
 		} else {
-			fragment = new HomeFragment();
+			/*fragment = new HomeFragment();*/
+			fragment = new MainFragment(0);
 			saveSelectCity(city.getCode(), city.getName());
 			saveCurrentCity(city.getCode(), city.getName());
 		}
@@ -703,7 +752,9 @@ public class GpsFragment extends BaseFragment {
 				args.putString("code", city.getCode());
 				currentState = "all";
 			} else {
-				fragment = new HomeFragment();
+				/*fragment = new HomeFragment();*/
+				
+				fragment = new MainFragment(0);
 				saveSelectCity(city.getCode(), city.getName());
 				saveCurrentCity(city.getCode(), city.getName());
 			}
@@ -735,7 +786,9 @@ public class GpsFragment extends BaseFragment {
 				args.putString("code", city.getCode());
 				currentState = "all";
 			} else {
-				fragment = new HomeFragment();
+				
+				/*fragment = new HomeFragment();*/
+				fragment = new MainFragment(0);
 				saveSelectCity(city.getCode(), city.getName());
 				saveCurrentCity(city.getCode(), city.getName());
 			}

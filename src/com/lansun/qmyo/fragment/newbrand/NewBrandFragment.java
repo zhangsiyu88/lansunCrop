@@ -8,6 +8,13 @@ import java.util.Map;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.drawable.AnimationDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -16,6 +23,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewParent;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -23,19 +31,25 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
+import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectPullRefresh;
 import com.android.pc.ioc.inject.InjectView;
+import com.android.pc.ioc.internet.FastHttp;
+import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.GifMovieView;
 import com.android.pc.ioc.view.PullToRefreshManager;
 import com.android.pc.ioc.view.listener.OnItemClick;
 import com.android.pc.util.Handler_Inject;
 import com.google.gson.Gson;
+import com.lansun.qmyo.MainActivity;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.SearchAdapter;
 import com.lansun.qmyo.app.App;
@@ -58,7 +72,9 @@ import com.lansun.qmyo.fragment.MineBankcardFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
 import com.lansun.qmyo.listener.RequestCallBack;
 import com.lansun.qmyo.net.OkHttp;
+import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomDialogProgress;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExpandTabView;
@@ -80,6 +96,9 @@ public class NewBrandFragment extends BaseFragment{
 	private String HODLER_TYPE="000000";
 	private View tv_found_secretary;
 	private boolean isPosition;
+	private boolean justFirstClick = true;
+	private boolean isFromNoNetworkViewTip = false;
+	
 	@InjectAll
 	Views v;
 	private View loadView;
@@ -135,13 +154,26 @@ public class NewBrandFragment extends BaseFragment{
 				PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				endProgress();
 				lv_activity_list.setVisibility(View.VISIBLE);
+				
 				if(cPd!=null){
 					cPd.dismiss();
 					cPd = null;
 				}
+				try{
+					lv_activity_list.removeFooterView(emptyView);
+				}catch(Exception e ){
+				}
+				try{
+					lv_activity_list.removeFooterView(noNetworkView);
+				}catch(Exception e ){
+				}
+				
 				if (activityList.getData() != null) {//服务器返回回来的数据中的Data不为null
 					if (!isRemove) {
-						lv_activity_list.removeFooterView(emptyView);
+						try{
+							lv_activity_list.removeFooterView(emptyView);
+						}catch(Exception e){
+						}
 						isRemove=true;
 					}
 					if(isDownChange){//下拉刷新时,需要将数据重新获取,即将shopDataList清空掉
@@ -175,7 +207,11 @@ public class NewBrandFragment extends BaseFragment{
 							}
 						}else {
 							if (!isRemove) {
-								lv_activity_list.removeFooterView(emptyView);
+								try{
+									lv_activity_list.removeFooterView(emptyView);
+								}catch(Exception e){
+									
+								}
 								isRemove=true;
 							}
 						}
@@ -189,12 +225,17 @@ public class NewBrandFragment extends BaseFragment{
 							}
 						}else {
 							if (!isRemove) {
-								lv_activity_list.removeFooterView(emptyView);
-								isRemove=true;
+								try{
+									lv_activity_list.removeFooterView(emptyView);
+									isRemove=true;
+								}catch(Exception e){
+								}
 							}
 						}
 						/*activityAdapter.notifyDataSetChanged();*/
 					}
+					PullToRefreshManager.getInstance().headerEnable();
+					PullToRefreshManager.getInstance().footerEnable();
 					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 
@@ -233,6 +274,61 @@ public class NewBrandFragment extends BaseFragment{
 			case 9:
 				setFirstValue();
 				break;
+			case 10:  //无网络的时候进行的操作//TODO
+				//CustomToast.show(activity, "提示", "断网 ");
+				progress_text.setText(R.string.net_error_refresh);
+				
+				lv_activity_list.setVisibility(View.VISIBLE);
+				
+				//针对在断网后再次点击上部筛选栏的自己菜单时，做出的重复添加无效的 noNetworkView界面操作
+				try{
+					lv_activity_list.removeFooterView(noNetworkView);
+				}catch(Exception e ){
+				}
+				try{
+					lv_activity_list.removeFooterView(emptyView);
+				}catch(Exception e ){
+				}
+
+				if(cPd!=null){//断网情况下，且还拥有了cPd，表明其走到了loadActivityList，表示之前成功使用过筛选栏进行列表选择过， 实际上是访问不到数据的 
+					cPd.dismiss();
+					cPd = null;
+
+					//setNetworkView();
+					noNetworkView = setNetworkView();
+					
+					lv_activity_list.addFooterView(noNetworkView);
+					activityAdapter.notifyDataSetChanged();
+					
+					//此时可断开上拉的操作
+					PullToRefreshManager.getInstance().footerUnable();
+					PullToRefreshManager.getInstance().headerUnable();
+
+				}else{//注意下面的两个判断的安放顺序//TODO
+					
+					
+					if(isFromNoNetworkViewTip){//由ListView添加上的footerview画面点击产生的效果
+						//筛选栏的点击在无网的状态下，点击提示画面，进行尝试联网操作，但依旧是返回统一的检查网络的提示画面
+						/*	ImageView iv_gif_loadingprogress = (ImageView) noNetworkView.findViewById(R.id.iv_gif_loadingprogress);
+				    	((AnimationDrawable)iv_gif_loadingprogress.getDrawable()).start();*/
+						noNetworkView = setNetworkView();
+						lv_activity_list.addFooterView(noNetworkView);
+						PullToRefreshManager.getInstance().footerUnable();
+						PullToRefreshManager.getInstance().headerUnable();
+						isFromNoNetworkViewTip = false;
+						return;
+					}
+					
+					justFirstClick = true;
+					/*if(justFirstClick){//针对 一进来就是无网状态，此时点击container会进行initData()的操作，此时点击一次后，justFirstClick=false，但是为了来网络时点击有效，那么很明显，不可禁掉点击监听，但可以禁掉 点击响应后的操作
+						lv_activity_list.addFooterView(noNetworkView);
+						PullToRefreshManager.getInstance().footerUnable();
+						justFirstClick = false;
+
+					}*/
+				}
+				break;
+				
 			}
 			if (holder_button.size() == 3) {
 				if (!allready) {
@@ -248,14 +344,36 @@ public class NewBrandFragment extends BaseFragment{
 	public boolean isSend;
 	private boolean isShowDialog;
 	private CustomDialogProgress cPd;
+	private IntentFilter filter;
+	private NewBrandRefreshBroadCastReceiver broadCastReceiver;
+	private RelativeLayout noNetworkView;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		broadCastReceiver = new NewBrandRefreshBroadCastReceiver();
+		System.out.println("注册广播 ing");
+		filter = new IntentFilter();
+		filter.addAction("com.lansun.qmyo.refreshTheIcon");
+		getActivity().registerReceiver(broadCastReceiver, filter);
+		
+		
+		
 		biz_all = new AllNewDataBiz();
 		gson = new Gson();
 		viewLeft=new ViewLeft(getActivity());
 		viewLeft2=new ViewLeft(getActivity());
 		viewMiddle=new ViewMiddle(getActivity());
+		
+		//从本地或网络上获取筛选栏的值
+		getAllBannerContentFromNetOrLocal();//详见下方的封装起来的方法
+	}
+
+	/**
+	 * 从本地或网络上获取筛选栏得值
+	 */
+	public void getAllBannerContentFromNetOrLocal() {
+		
 		//导航栏5小时更新一次
 		String time=App.app.getData("in_this_fragment_time");
 		if (!"".equals(time)) {
@@ -271,6 +389,15 @@ public class NewBrandFragment extends BaseFragment{
 			getAllServer();
 			App.app.setData("in_this_fragment_time",String.valueOf(System.currentTimeMillis()));
 		}
+		
+		/*if("".equals(App.app.getData(App.TAGS[0]))|| "".equals(App.app.getData(App.TAGS[1]))||
+				 "".equals(App.app.getData(App.TAGS[2]))|| "".equals(App.app.getData(App.TAGS[3]))||
+				 "".equals(App.app.getData(App.TAGS[4]))|| "".equals(App.app.getData(App.TAGS[5]))||
+				 "".equals(App.app.getData(App.TAGS[6]))|| "".equals(App.app.getData(App.TAGS[7]))){  //之前本地json被清掉之后，重新访问网络
+			getAllServer();
+			App.app.setData("in_this_fragment_time",String.valueOf(System.currentTimeMillis()));
+		}*/
+		
 		PositionBiz pBiz=new PositionBiz();
 		pBiz.getPostion(App.app.getData("select_cityCode"), new RequestCallBack() {
 			@Override
@@ -302,6 +429,7 @@ public class NewBrandFragment extends BaseFragment{
 			}
 			@Override
 			public void onFailure(Request request, IOException exception) {
+				
 
 			}
 		});
@@ -333,6 +461,14 @@ public class NewBrandFragment extends BaseFragment{
 			}
 		});
 	}
+	
+	
+	
+	
+	
+	
+	
+	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -343,6 +479,35 @@ public class NewBrandFragment extends BaseFragment{
 		Handler_Inject.injectFragment(this, view);//Handler_Inject就会去调用invoke，invoke中会调用Inject_View,而Inject_View中又会调用applyTo()
 		initView(view);
 		initListener();
+		
+		if(App.app.getData("gpsIsNotAccurate").equals("true")){
+			
+			DialogUtil.createTipAlertDialog(activity,
+					"您还未开启精确定位哦\n\r请前往应用权限页开启",
+					new DialogUtil.TipAlertDialogCallBack() {
+						@Override
+						public void onPositiveButtonClick(
+								DialogInterface dialog, int which) {
+							  Intent localIntent = new Intent("android.settings.APPLICATION_DETAILS_SETTINGS");
+					          localIntent.setData(Uri.fromParts("package", "com.lansun.qmyo", null));
+					          activity.startActivity(localIntent);//前往权限设置的页面
+					          
+					          if(App.app.getData("firstEnter").isEmpty()){
+									App.app.setData("gpsIsNotAccurate","");//将gps的提醒标签置为空
+									App.app.setData("firstEnter","notblank");//但此时已不是第一次进入
+								}
+					          dialog.dismiss();
+						}
+
+						@Override
+						public void onNegativeButtonClick(
+								DialogInterface dialog, int which) {
+							dialog.dismiss();
+							
+							
+						}
+					});
+			}
 		return view;
 	}
 	/**
@@ -440,8 +605,19 @@ public class NewBrandFragment extends BaseFragment{
 		}
 		return -1;
 	}
+	
 	private void initView(View view) {
+	    //一进入界面时，就进行上拉和下拉刷新头的准备工作
+		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+		PullToRefreshManager.getInstance().onFooterRefreshComplete();
+		
+		
+		//去获取列表
 		startSearchData(GlobalValue.URL_ALL_ACTIVITY,App.app.getData("select_cityCode"),HODLER_TYPE,position_bussness,intelligentStr,GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
+		
+		
+		
+		
 		v.tv_activity_title.setText("新品曝光");
 		
 		if ("true".equals(App.app.getData("isExperience"))) {
@@ -469,13 +645,46 @@ public class NewBrandFragment extends BaseFragment{
 		tv_found_secretary.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				SecretaryFragment fragment = new SecretaryFragment();
+				/*SecretaryFragment fragment = new SecretaryFragment();*/
+				MainFragment fragment=new MainFragment(1);
 				FragmentEntity event = new FragmentEntity();
 				event.setFragment(fragment);
 				EventBus.getDefault().post(event);
 			}
 		});
 	}
+	
+	private RelativeLayout setNetworkView() {
+		LogUtils.toDebugLog("设置NoNetView", "设置NoNetView");
+		
+		noNetworkView = (RelativeLayout) inflater.inflate(R.layout.customdialogprogress1, null);
+		TextView messageTextView = (TextView) noNetworkView.findViewById(R.id.messageText);
+		ImageView iv_gif_loadingprogress = (ImageView) noNetworkView.findViewById(R.id.iv_gif_loadingprogress);
+		((AnimationDrawable)iv_gif_loadingprogress.getDrawable()).start();
+		messageTextView.setText("请检查网络连接，确保联网后进入页面");
+		noNetworkView.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View view ) {//TODO
+				if(justFirstClick){
+					isFromNoNetworkViewTip = true;
+					
+					/*refreshCurrentList(refreshUrl+"site="+getSelectCity()[0]+"&service="+
+							HODLER_TYPE+"&position="+position_bussness+"&intelligent="+intelligentStr+"&type="+"new"+
+							"&location="+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon()+"&query="+"",
+							null, refreshKey,lv_activity_list);*/
+					startSearchData(GlobalValue.URL_ALL_ACTIVITY,
+							App.app.getData("select_cityCode"),
+							HODLER_TYPE,position_bussness,intelligentStr,
+							GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
+					justFirstClick = false;
+				}
+			}
+		});
+		return noNetworkView;
+	}
+	
+	
 	/**
 	 * 启动搜索带全部参数
 	 * @param base_url
@@ -485,12 +694,13 @@ public class NewBrandFragment extends BaseFragment{
 	 * @param intelligent
 	 * @param location
 	 */
-	private void startSearchData(String base_url,String site, String service, String position,
+	private void startSearchData(String base_url,String site, String service, String position,//TODO
 			String intelligent, String location) {
 		if (isShowDialog){
 			if(cPd == null ){
 				cPd = CustomDialogProgress.createDialog(activity);
 				cPd.setCanceledOnTouchOutside(false);
+				
 				lv_activity_list.setVisibility(View.INVISIBLE);
 				cPd.show();
 			}else{
@@ -507,14 +717,22 @@ public class NewBrandFragment extends BaseFragment{
 					String json=response.body().string();
 					activityList=gson.fromJson(json, ActivityList.class);
 					handleOk.sendEmptyMessage(1);
+					/*if(justFirstClick){//已经拿到数据的情况下
+						justFirstClick = !justFirstClick;
+					}*/
 				}
 			}
 			@Override
 			public void onFailure(Request request, IOException exception) {
-
+				handleOk.sendEmptyMessage(10);
+				if(!justFirstClick){//未拿到数据的时候，要让点击操作有响应，故在此 开放标志信号justFirstClick
+					justFirstClick = !justFirstClick;
+				}
+				
 			}
 		});
 	}
+	
 	/**
 	 * 上拉刷新url服务端已经拼接
 	 * @param base_url
@@ -527,6 +745,7 @@ public class NewBrandFragment extends BaseFragment{
 					String json=response.body().string();
 					activityList=gson.fromJson(json, ActivityList.class);
 					handleOk.sendEmptyMessage(1);
+					
 				}
 			}
 			@Override
@@ -542,8 +761,12 @@ public class NewBrandFragment extends BaseFragment{
 	public void onPause() {
 		super.onPause();
 		v.expandtab_view.onPressBack();
-		shopDataList.clear();
-		activityAdapter = null;
+		/*shopDataList.clear();
+		activityAdapter = null;*/
+		
+		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+		PullToRefreshManager.getInstance().onFooterRefreshComplete();
+		
 	}
 	/**
 	 * 对上拉和下拉操作的处理
@@ -580,7 +803,7 @@ public class NewBrandFragment extends BaseFragment{
 				startSearchData(GlobalValue.URL_ALL_ACTIVITY,App.app.getData("select_cityCode"),HODLER_TYPE,position_bussness,intelligentStr,GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
 				lv_activity_list.removeFooterView(emptyView);//不能忘了去除底部的emptyView
 			}else{
-				CustomToast.show(activity, "ti", "activityList == null");
+				CustomToast.show(activity, "提示", "activityList == null");
 			}
 			break;
 		}
@@ -768,5 +991,93 @@ public class NewBrandFragment extends BaseFragment{
 			viewLeft.setChildren(allChild);
 			mViewArray.put(0, viewLeft);
 		}
-	};
+	}
+	
+	@Override
+	public void onStop() {
+		PullToRefreshManager.getInstance().headerUnable();
+		super.onStop();
+	}
+	@Override
+	public void onDestroy() {
+		PullToRefreshManager.getInstance().headerUnable();
+	    getActivity().unregisterReceiver(broadCastReceiver);
+		super.onDestroy();
+	}
+	
+     class NewBrandRefreshBroadCastReceiver extends BroadcastReceiver{
+		
+		@Override
+		public void onReceive(Context ctx, Intent intent) {
+			if(intent.getAction().equals("com.lansun.qmyo.refreshTheIcon")){
+				System.out.println("新品曝光板块刷新页面 收到刷新Icon的广播了");
+				v.iv_card.setVisibility(View.VISIBLE);
+				v.tv_home_experience.setVisibility(View.GONE);
+				v.rl_bg.setBackgroundResource(R.drawable.circle_background_gray);
+			
+			}
+		}
+	 }
+     
+     
+     
+     /**
+      * 重写BaseFragment中的setProgress的方法，重点是改变progress_container这里的点击事件
+      */
+     @Override
+     protected void setProgress(View view) {
+ 		if (progress != null) {
+ 			return;
+ 		}
+ 		loadView = view;
+ 		LayoutParams lp = (LayoutParams) view.getLayoutParams();
+ 		ViewParent parent = view.getParent();
+ 		FrameLayout container = new FrameLayout(activity);
+ 		ViewGroup group = (ViewGroup) parent;
+ 		int index = group.indexOfChild(view);
+ 		group.removeView(view);
+ 		group.addView(container, index, lp);
+ 		container.addView(view);
+ 		if (inflater != null) {
+ 			progress = inflater.inflate(R.layout.fragment_progress, null);
+ 			progress_container = (LinearLayout) progress
+ 					.findViewById(R.id.progress_container);
+
+ 			progress_text = (TextView) progress.findViewById(R.id.progress_text);//动态猫头鹰底部显示：内容正在加载中
+ 			
+ 			progress_container.setOnClickListener(new OnClickListener() {
+
+ 				@Override
+ 				public void onClick(View arg0) {
+ 					try{
+ 						//refreshCurrentList(refreshUrl, refreshParams, refreshKey,loadView);
+ 						if(justFirstClick){//一旦点击一次后，即下次点击不产生实际效果，避免列表重复加载的情况   （即只是第一次点击的时候才有效）
+ 							justFirstClick = false;
+ 							//initData();
+ 							
+ 							progress_text.setText("内容正在加载中...");
+ 	 						startSearchData(GlobalValue.URL_ALL_ACTIVITY,
+ 	 								App.app.getData("select_cityCode"),HODLER_TYPE,
+ 	 								position_bussness,intelligentStr,
+ 	 								GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
+ 	 						
+ 	 						getAllBannerContentFromNetOrLocal();
+ 						}
+ 						
+ 						
+ 					}catch(Exception e){
+ 						App.app.startActivity(new Intent(App.app,MainActivity.class));
+ 					}
+ 					
+ 				}
+ 			});
+ 			GifMovieView loading_gif = (GifMovieView) progress.findViewById(R.id.loading_gif);
+ 			loading_gif.setMovieResource(R.drawable.loading);
+ 			container.addView(progress);
+ 			progress_container.setTag(view);
+ 			view.setVisibility(View.GONE);
+ 		}
+ 		group.invalidate();
+ 	}
+     
 }

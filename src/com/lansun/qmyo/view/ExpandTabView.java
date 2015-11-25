@@ -6,7 +6,9 @@ import java.util.HashMap;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -83,27 +85,34 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 		if (mContext == null) {
 			return;
 		}
-		LayoutInflater inflater = (LayoutInflater) mContext
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-		for (int i = 0; i < textArray.size(); i++) {
+		for (int i = 0; i < textArray.size(); i++) {          //设置textArray.size()个RelativeLayout
 			final RelativeLayout r = new RelativeLayout(mContext);
 			r.removeAllViews();
+			
 			int maxHeight = (int) (displayHeight);
+			System.out.println("displayHeight的值为： "+ displayHeight);
+		    /*int maxHeight = 50;*/                         												   //  --->by Yeun 11.13
+			
 			RelativeLayout.LayoutParams rl = new RelativeLayout.LayoutParams(
 					RelativeLayout.LayoutParams.FILL_PARENT, maxHeight);
-			r.addView(viewArray.get(i), rl);
-			mViewArray.add(r);
+			
+			r.addView(viewArray.get(i), rl);//r 布局添加入viewArray中的第i个View，并且是rl的布局设置
+			
+			mViewArray.add(r);//相对布局控件的列表，布局的源，供后面的
 			r.setTag(SMALL);
+			
+			
+			//下面的这个是 ExpandTabView的四个或三个点击钮
 			RelativeLayout mRl = (RelativeLayout) inflater.inflate(
 					R.layout.toggle_button, this, false);
-			final TextView tv_expand_name = (TextView) mRl
-					.findViewById(R.id.tv_expand_name);
-			final RecyclingImageView iv_expand_more = (RecyclingImageView) mRl
-					.findViewById(R.id.iv_expand_more);
+			final TextView tv_expand_name = (TextView) mRl.findViewById(R.id.tv_expand_name);
+			final RecyclingImageView iv_expand_more = (RecyclingImageView) mRl.findViewById(R.id.iv_expand_more);
+			
 			addView(mRl);
-			mToggleButton.add(tv_expand_name);
-			ivs.add(iv_expand_more);
+			mToggleButton.add(tv_expand_name);//TextView控件的列表
+			ivs.add(iv_expand_more);//标签图标RecycleImageView控件对象的列表
 			tv_expand_name.setTag(i);
 			tv_expand_name.setText(textArray.get(i).toString());
 
@@ -117,22 +126,20 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 			mRl.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View view) {
-					if (popupWindow != null && popupWindow.isShowing()) {
+					if (popupWindow != null && popupWindow.isShowing()) {      //展开状态，当点击后，将箭头置为 朝下
 						for (int i = 0; i < mToggleButton.size(); i++) {
-							mToggleButton.get(i).setTextColor(
-									mContext.getResources().getColor(
-											R.color.text_gray1));
+							mToggleButton.get(i).setTextColor(mContext.getResources().getColor(R.color.text_gray1));
 							ivs.get(i).setImageResource(R.drawable.arrow_down);
 						}
 					}
 					// initPopupWindow();
-					if (isShow) {
+					if (isShow) {												//同上；  展开状态，当点击后，将箭头置为 朝下
 						tv_expand_name.setTextColor(mContext.getResources()
 								.getColor(R.color.text_gray1));
 						view.setTag("true");
 						iv_expand_more.setImageResource(R.drawable.arrow_down);
 						isShow = false;
-					} else {
+					} else {                                                   //非展示状态，点击后需要做展开操作
 						tv_expand_name.setTextColor(mContext.getResources()
 								.getColor(R.color.app_green1));
 						iv_expand_more.setImageResource(R.drawable.arrow_up);
@@ -142,7 +149,7 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 					selectedButton = tv_expand_name;
 					selectPosition = (Integer) selectedButton.getTag();
 					startAnimation();
-					if (mOnButtonClickListener != null && isShow) {
+					if (mOnButtonClickListener != null && isShow) {               //展开状态时，且监听器监听
 						mOnButtonClickListener.onClick(selectPosition);
 					}
 				}
@@ -152,17 +159,41 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 
 	private boolean isShow = false;
 
+	
+	/**
+	 * 设置添加屏幕的背景透明度
+	 * @param bgAlpha
+	 */
+/*	public void backgroundAlpha(float bgAlpha)
+	{
+		WindowManager.LayoutParams lp = getWindow().getAttributes();
+        　　　　lp.alpha = bgAlpha; //0.0-1.0
+        getWindow().setAttributes(lp);
+	}*/
+	
+	
 	private void startAnimation() {
 
 		if (popupWindow == null) {
-			popupWindow = new PopupWindow(mViewArray.get(selectPosition),
-					displayWidth, displayHeight, false);
-			popupWindow.setAnimationStyle(R.style.PopupWindowAnimation);
+			//这里的PopupView是基于mViewArray.get(selectPosition)的RelativeLayout获取的
+			popupWindow = new PopupWindow(mViewArray.get(selectPosition),displayWidth, displayHeight, false);
+			/*popupWindow = new PopupWindow(mViewArray.get(selectPosition),displayWidth, 50, false);  */                      // --->by Yeun 11.13          
+			
+			
+			
+			ColorDrawable dw = new ColorDrawable(Color.argb(00, 255, 255, 255)); 										//--->by Yeun 11.13
+			popupWindow.setBackgroundDrawable(dw); 
+			//popupWindow.update();
+			
+			/*popupWindow.setAnimationStyle(R.style.PopupWindowAnimation);*/
+			popupWindow.setAnimationStyle(R.style.popwindow_anim_style);//更换一个新的popupWindow的动画展示方式                                                            
 			popupWindow.setFocusable(false);
 			popupWindow.setOutsideTouchable(true);
 		}
-		if (isShow) {
-			if (!popupWindow.isShowing()) {
+		
+		
+		if (isShow) {//展示状态
+			if (!popupWindow.isShowing()) {  //但popupWidow非展开,须立即将这个popoupWindow立即展开显示
 				showPopup(selectPosition);
 			} else {
 				popupWindow.setOnDismissListener(this);
@@ -192,12 +223,12 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 	public boolean onPressBack() {
 		if (popupWindow != null && popupWindow.isShowing()) {
 			for (int i = 0; i < mToggleButton.size(); i++) {
-				mToggleButton.get(i).setTextColor(
-						mContext.getResources().getColor(R.color.text_gray1));
+				mToggleButton.get(i).setTextColor(mContext.getResources().getColor(R.color.text_gray1));
 				ivs.get(i).setImageResource(R.drawable.arrow_down);
 			}
 			popupWindow.dismiss();
-			hideView();
+			
+			hideView();//
 			if (selectedButton != null) {
 				isShow = false;
 			}
@@ -220,12 +251,12 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 	private void init(Context context) {
 		mContext = context;
 		mToggleButton.clear();
-		displayWidth = ((Activity) mContext).getWindowManager()
-				.getDefaultDisplay().getWidth();
-		displayHeight = ((Activity) mContext).getWindowManager()
-				.getDefaultDisplay().getHeight();
+		//拿到屏幕的宽和高
+		displayWidth = ((Activity) mContext).getWindowManager().getDefaultDisplay().getWidth();
+		displayHeight = ((Activity) mContext).getWindowManager().getDefaultDisplay().getHeight();
+		
 		setOrientation(LinearLayout.HORIZONTAL);
-		setBackground(null);
+		setBackground(null);//这个地方设置的是ExpandTabView的整体横栏的背景色
 		setDividerDrawable(null);
 	}
 
@@ -242,6 +273,8 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 		popupWindow.setOnDismissListener(null);
 	}
 
+	
+	
 	private OnButtonClickListener mOnButtonClickListener;
 
 	/**

@@ -1,6 +1,7 @@
 package com.lansun.qmyo.view;
 
 import com.lansun.qmyo.view.MyListView.YScrollDetector;
+import com.umeng.socialize.utils.Log;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;
@@ -36,18 +37,32 @@ public class MyViewPager extends ViewPager {
 
 	class YScrollDetector extends SimpleOnGestureListener {
 		@Override
-		public boolean onScroll(MotionEvent e1, MotionEvent e2,
-				float distanceX, float distanceY) {
+		public boolean onScroll(MotionEvent e1, MotionEvent e2,float distanceX, float distanceY) {
+			
 			if (distanceY != 0 && distanceX != 0) {
-				requestDisallowInterceptTouchEvent(false);
+				/*requestDisallowInterceptTouchEvent(false);*/
+				
+				requestDisallowInterceptTouchEvent(true);//请求父控件不要拦截触摸操作                                                    //------------->by Yeun 11.13
 			}
+			
+			
 			if (Math.abs(distanceY) >= Math.abs(distanceX)) {
 				requestDisallowInterceptTouchEvent(false);
+				Log.d("sliding","MyViewPager中的纵向位移大于横向位移");
 				return false;
+			}																			   //------------->by Yeun 11.13
+			if (Math.abs(distanceY) <= Math.abs(distanceX)) {
+				requestDisallowInterceptTouchEvent(true );
+				Log.d("sliding","MyViewPager中的横向位移大于纵向位移");
+				return true;
 			}
 			return true;
 		}
 
 	}
-
+  
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		return super.dispatchTouchEvent(ev);
+	}
 }

@@ -83,8 +83,8 @@ public class SecretaryInvestmentShowFragment extends BaseFragment{
 						}
 					});
 				}else {
-					if (GlobalValue.user!=null) {
-						if (GlobalValue.mySecretary==null) {
+					if (GlobalValue.user!=null) {//登陆后 且 拥有用户user信息
+						if (GlobalValue.mySecretary==null) {//私人秘书 的信息为空
 							final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
 							dialog.show();
 							dialog.setContentView(R.layout.dialog_setting_secretary);
@@ -100,7 +100,7 @@ public class SecretaryInvestmentShowFragment extends BaseFragment{
 								}
 							});
 						}else {
-							if ("false".equals(GlobalValue.mySecretary.getHas())) {
+							if ("false".equals(GlobalValue.mySecretary.getHas())) {//没有私人秘书
 								final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
 								dialog.show();
 								dialog.setContentView(R.layout.dialog_setting_secretary);
@@ -115,7 +115,7 @@ public class SecretaryInvestmentShowFragment extends BaseFragment{
 										EventBus.getDefault().post(entity);
 									}
 								});
-							}else {
+							}else {//有私人秘书页
 								FragmentEntity entity=new FragmentEntity();
 								Fragment fragment=new TaskAssignment();
 								Bundle bundle=new Bundle();

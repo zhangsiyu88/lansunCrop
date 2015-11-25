@@ -84,7 +84,7 @@ public class HotAddHistoryFragment extends BaseFragment implements HotItemClickC
 
 					@Override
 					public void onFailure(Request arg0, IOException arg1) {
-
+						//CustomToast.show(activity, "提示", "服务器正在维护");
 					}
 				});
 	}

@@ -10,25 +10,24 @@
         android:id="@+id/iv"
         style="@style/w_wrap_h_wrap"
         android:layout_gravity="center_vertical"
-        android:layout_marginLeft="@dimen/search_left"
-        android:src="@drawable/search" />
+       
+        android:src="@drawable/search" /><!-- android:layout_marginLeft="@dimen/search_left"  -->
 
     <EditText
         android:layout_toRightOf="@id/iv"
         android:id="@+id/et_home_search"
         style="@style/text_style_small_26"
         android:layout_gravity="center_vertical"
-        android:layout_marginLeft="@dimen/l_r_15"
+        android:layout_marginLeft="5dp"
         android:background="@null"
         android:hint="@string/search_all_hint"
         android:imeOptions="actionDone"
         android:maxLines="1"
         android:singleLine="true"
         android:gravity="center_vertical"
-        android:paddingRight="@dimen/l_r_15"
-        android:layout_weight="1"
         android:textColor="@color/app_white"
         android:textColorHint="@color/app_white"
-        android:textCursorDrawable="@null" >
+        android:textCursorDrawable="@null" ><!-- android:layout_weight="1"    android:layout_marginLeft="@dimen/l_r_15"    android:paddingRight="@dimen/l_r_15"-->
+        
     </EditText>
 </RelativeLayout>

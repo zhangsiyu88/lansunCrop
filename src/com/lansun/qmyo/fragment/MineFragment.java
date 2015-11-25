@@ -1,6 +1,8 @@
 package com.lansun.qmyo.fragment;
 import java.io.IOException;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,7 +11,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
 import com.android.pc.ioc.event.EventBus;
@@ -67,7 +71,11 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 	private InformationCount count;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		//App.app.setData("firstEnterBankcardAndAddAnotherBankcard","");
 		super.onCreate(savedInstanceState);
+		
+		
+		
 		initMySecretary();
 		initInformation();
 	}

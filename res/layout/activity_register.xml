@@ -46,8 +46,9 @@
                     android:id="@+id/register_bg"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/log_in" />
+                    android:src="@drawable/log_in" /><!-- 趴在窗口上的小猫头鹰 -->
 
+			  	<!-- 输入手机号  -->
                 <FrameLayout
                     android:id="@+id/fl_register_name"
                     android:layout_width="@dimen/register_edit_w"
@@ -84,7 +85,7 @@
                 </FrameLayout>
             </FrameLayout>
 
-            <!-- 输入验证码 -->
+            <!-- 输入验证码  暂时被隐藏，等待注册时展现出来-->
             <FrameLayout
                 android:id="@+id/fl_register_recode"
                 android:layout_width="@dimen/register_edit_w"

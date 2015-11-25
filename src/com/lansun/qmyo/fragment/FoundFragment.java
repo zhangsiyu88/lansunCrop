@@ -125,7 +125,9 @@ public class FoundFragment extends BaseFragment {
 				return;
 			}
 
-			fragment = new MineActivityFragment();
+			/*fragment = new MineActivityFragment();*/
+			fragment = new TestMineActivityFragment();
+			
 			break;
 		case R.id.ll_found_store:// 关注门店
 			if(App.app.getData("isExperience").equals("true")||App.app.getData("isExperience").contains("true")){

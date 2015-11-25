@@ -149,6 +149,11 @@ public class EditUserAddressFragment1 extends BaseFragment
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		if(getArguments()!=null){
+			mUserAddressCity = getArguments().getString("userAddressCity");
+			mUserAddressArea = getArguments().getString("userAddressArea");
+		}
 		DisplayMetrics metrics = new DisplayMetrics();
 		activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 		height = metrics.heightPixels;
@@ -166,7 +171,7 @@ public class EditUserAddressFragment1 extends BaseFragment
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 		rootView = inflater.inflate(R.layout.activity_edit_user_address,null);
-		tv_edit_city = (TextView) rootView.findViewById(R.id.tv_edit_city);
+		
 		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
@@ -176,6 +181,12 @@ public class EditUserAddressFragment1 extends BaseFragment
 		v.fl_comments_right_iv.setVisibility(View.GONE);
 		v.tv_activity_shared.setVisibility(View.GONE);
 		initTitle(v.tv_activity_title, R.string.edit_address, null, 0);
+		tv_edit_city = (TextView) rootView.findViewById(R.id.tv_edit_city);
+		
+		if((mUserAddressCity!=null&&mUserAddressCity!="" )||(mUserAddressArea!=null&&mUserAddressArea!="")){
+			tv_edit_city.setText(mUserAddressCity);
+			v.et_edit_user_address.setText(mUserAddressArea);
+		}
 	}
 	
 
@@ -196,7 +207,7 @@ public class EditUserAddressFragment1 extends BaseFragment
 						"Bearer " + App.app.getData("access_token"));
 				config.setHead(head);
 				LinkedHashMap<String, String> params = new LinkedHashMap<>();
-				params.put("address", tv_edit_city.getText().toString()
+				params.put("address", tv_edit_city.getText().toString()+" "
 						+ v.et_edit_user_address.getText().toString());
 				
 				/*FastHttpHander.ajaxForm(GlobalValue.URL_USER_SAVE, params,
@@ -406,6 +417,8 @@ public class EditUserAddressFragment1 extends BaseFragment
 	private TextView tv_region_select;
     private View rootView;
 	private TextView tv_edit_city;
+	private String mUserAddressCity;
+	private String mUserAddressArea;
 
 	@Override
 	public void onClick(View v) {

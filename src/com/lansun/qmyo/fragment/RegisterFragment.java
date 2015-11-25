@@ -1,6 +1,9 @@
 package com.lansun.qmyo.fragment;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import cn.jpush.android.api.JPushInterface;
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
@@ -32,14 +35,17 @@ import com.lansun.qmyo.fragment.secretary_detail.SecretaryTravelShowFragment;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CloudView;
 import com.lansun.qmyo.view.CustomToast;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -213,8 +219,6 @@ public class RegisterFragment extends BaseFragment{
 			CustomToast.show(activity, "抱歉,请点击登录", "请至少选择一张银行卡作为通行证");
 			return;
 		}
-		
-		
 		
 		if(isFromMyBankcardFragToRigisterFrag){
 			MineBankcardFragment fragment = new MineBankcardFragment();
@@ -561,12 +565,9 @@ public class RegisterFragment extends BaseFragment{
 						App.app.setData("isExperience", "false");//将体验用户标示置为 false
 						App.app.getData("isEmbrassStatus").equals("");//此时用户状态不再是尴尬的状态时
 						
-						
 						pushToken(GlobalValue.user.getMobile());//-------------------------------------------> 进行极光推送的token ！！
 					}
-					
 				}
-				
 				break;
 			case 3:// 拿到了token，燥起来
 				token = Handler_Json.JsonToBean(Token.class,r.getContentAsString());
@@ -620,6 +621,7 @@ public class RegisterFragment extends BaseFragment{
 					App.app.setData("isEmbrassStatus", "");//表明登录正常，则将isEmbrassStatus的状态值置为：""
 					BankCardData theChosenBankCardData  = Handler_Json.JsonToBean(BankCardData.class,r.getContentAsString());
 					int theChosenBankcardIdUnderTheLoginUser = theChosenBankCardData.getBankcard().getId();
+					
 					Log.d("银行卡页的id", "从服务器上拿到的银行卡ID"+theChosenBankcardIdUnderTheLoginUser+"");
 					Log.d("银行卡页的id", "从本地sp中拿到的银行卡ID"+App.app.getData("ExperienceBankcardId"));
 					if(String.valueOf(theChosenBankcardIdUnderTheLoginUser).equals(App.app.getData("ExperienceBankcardId"))){
@@ -627,7 +629,7 @@ public class RegisterFragment extends BaseFragment{
 					}else{
 						isTheSameCardAsUsual = false;//登陆前后并非是同一张卡
 					}
-					App.app.setData("ExperienceBankcardId","");//将这个体验卡id的本地内容设置为 空
+					App.app.setData("ExperienceBankcardId","");//不管前后是不是一张卡，我们都需要将这个体验卡id的本地内容设置为 空
 				}
 				
 				InternetConfig config2 = new InternetConfig();
@@ -644,9 +646,10 @@ public class RegisterFragment extends BaseFragment{
 				pd = null;
 				
 				if(isResetPsw){
-					MineFragment mineFragment = new MineFragment();
+					/*MineFragment mineFragment = new MineFragment();*/
+					MainFragment mainFragment = new MainFragment(3);
 					FragmentEntity fEntity = new FragmentEntity();
-					fEntity.setFragment(mineFragment);
+					fEntity.setFragment(mainFragment);
 					EventBus.getDefault().post(fEntity);
 					App.app.setData("isResetPsw", "");
 					return;
@@ -656,25 +659,24 @@ public class RegisterFragment extends BaseFragment{
 					
 					if(mIsFromRegisterAndHaveNothingThenGoToRegister){
 						App.app.setData("isEmbrassStatus", "");//虽然在登录界面，但是输入了新的可登录账号，那么将其跳转至首页，必将isEmbrassStatus的状态值置为："" (不再为true)
-						HomeFragment homeFragment = new HomeFragment();
+						/*HomeFragment homeFragment = new HomeFragment();*/
+						MainFragment mainFragment = new MainFragment(0);
 						FragmentEntity fEntity = new FragmentEntity();
-						fEntity.setFragment(homeFragment);
+						fEntity.setFragment(mainFragment);
 						EventBus.getDefault().post(fEntity);
 						return;
 					}
 					
 					if(isJustLogin){
 						try{
-							HomeFragment homeFragment = new HomeFragment();
+							/*HomeFragment homeFragment = new HomeFragment();*/
+							MainFragment mainFragment = new MainFragment(0);
 							FragmentEntity fEntity = new FragmentEntity();
-							fEntity.setFragment(homeFragment);
+							fEntity.setFragment(mainFragment);
 							EventBus.getDefault().post(fEntity);
 							
 						}catch(Exception e){
-							HomeFragment homeFragment = new HomeFragment();
-							FragmentEntity fEntity = new FragmentEntity();
-							fEntity.setFragment(homeFragment);
-							EventBus.getDefault().post(fEntity);
+							
 						}
 						return;
 					}else{
@@ -685,7 +687,8 @@ public class RegisterFragment extends BaseFragment{
 						if ("PersonCenterFragment".equals(fragment_name)) {
 							fragment=new PersonCenterFragment();
 						}else if ("MineFragment".equals(fragment_name)) {
-							fragment=new MineFragment();
+							/*fragment=new MineFragment();*/
+							fragment=new MainFragment(3);
 						}else if("MineBankcardFragment".equals(fragment_name)){
 							fragment=new MineBankcardFragment();
 							Bundle bundle=new Bundle();
@@ -703,21 +706,36 @@ public class RegisterFragment extends BaseFragment{
 								Bundle bundle=new Bundle();
 								bundle.putString("shopId", App.app.getData("shopId"));
 								bundle.putString("activityId", App.app.getData("activityId"));
+								bundle.putString("refreshTip", "true");
 								fragment.setArguments(bundle);
+								
+								Intent intent=new Intent("com.lansun.qmyo.refreshTheIcon");
+								getActivity().sendBroadcast(intent);
+								System.out.println("从活动详情页过来，发送广播！");
 							}else{
-								fragment=new HomeFragment();
+								fragment = new MainFragment(0);
+								/*fragment=new HomeFragment();*/
 							}
 						}else if("StoreDetailFragment".equals(fragment_name)){
 							if(isTheSameCardAsUsual){
 								fragment=new StoreDetailFragment();
 								Bundle bundle=new Bundle();
 								bundle.putString("shopId", App.app.getData("shopId"));
+								bundle.putString("refreshTip", "true");
 								fragment.setArguments(bundle);
+								
+								Intent intent=new Intent("com.lansun.qmyo.refreshTheIcon");
+								getActivity().sendBroadcast(intent);
+								System.out.println("从门店详情页过来，发送广播！");
+								
 							}else{
-								fragment=new HomeFragment();
+								/*fragment=new HomeFragment();*/
+								fragment = new MainFragment(0);
+								
 							}
 						}else if("SecretaryFragment".equals(fragment_name)){
-							fragment=new SecretaryFragment();
+							/*fragment=new SecretaryFragment();*/
+							fragment=new MainFragment(1);
 						}else if("SecretaryTravelShowFragment".equals(fragment_name)){
 							fragment=new SecretaryTravelShowFragment();
 						}else if("SecretaryShoppingShowFragment".equals(fragment_name)){
@@ -733,10 +751,24 @@ public class RegisterFragment extends BaseFragment{
 						}else if("SecretaryCardShowFragment".equals(fragment_name)){
 							fragment=new SecretaryCardShowFragment();
 						}else if("FoundFragment".equals(fragment_name)){
-							fragment=new FoundFragment();
+							/*fragment=new FoundFragment();*/
+							fragment=new MainFragment(2);
+							
 						}
+						if (isTheSameCardAsUsual) {//登陆前后为同一张卡，故而无需消除写在本地的 筛选栏数据
+							
+						}else{
+							//需要将之前是体验用户时， 在本地存好的筛选栏的json串删除掉,首次访问标签置为""
+							for(int i = 0;i<8;i++){
+								App.app.setData((App.TAGS[i]),"");
+							}
+							App.app.setData("in_this_fragment_time","");
+						}
+						
 						fEntity.setFragment(fragment);
 						EventBus.getDefault().post(fEntity);
+						
+						
 //						back();
 					}
 				}else{//点击注册时是不曾    拥有临时secret的 ,那么需跳转至银行卡搜索页添加一张卡后，再跳入首页

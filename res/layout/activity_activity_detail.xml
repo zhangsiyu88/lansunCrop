@@ -320,12 +320,14 @@
                     android:id="@+id/yh_detail_header1"
                     android:layout_width="fill_parent"
                     android:layout_height="@dimen/item_h_90"
-                    android:gravity="center_vertical" >
+                    android:gravity="center_vertical" 
+                    android:background="@drawable/found_bcakgroundcolor_selector">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true" >
+                        android:layout_centerVertical="true" 
+                        >
 
                         <com.android.pc.ioc.image.RecyclingImageView
                             android:id="@+id/huodongyouhui"
@@ -378,7 +380,8 @@
                 android:id="@+id/iv_activity_shop_detail"
                 android:layout_width="fill_parent"
                 android:layout_height="@dimen/item_h_90"
-                android:gravity="center_vertical" >
+                android:gravity="center_vertical" 
+                android:background="@drawable/found_bcakgroundcolor_selector">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -481,13 +484,12 @@
 
             
             
-            
-            
             <!-- 参与此活动的分店 -->
             <RelativeLayout
                 android:id="@+id/iv_activity_detail_join_store"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/item_h_90" >
+                android:layout_height="@dimen/item_h_90" 
+                android:background="@drawable/found_bcakgroundcolor_selector">
 
                 <LinearLayout
                     android:layout_width="wrap_content"

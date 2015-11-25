@@ -9,20 +9,58 @@
 
         <RelativeLayout style="@style/w_full_h_wrap" >
 
-            <com.android.pc.ioc.image.RecyclingImageView
-                android:id="@+id/iv_home_ad"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/home_ad_h"
-                android:scaleType="fitXY"
-                android:src="@drawable/default_home" />
+          <FrameLayout 
+              android:id="@+id/fl_home_ad"
+               android:layout_width="match_parent"
+               android:layout_height="@dimen/home_ad_h"
+               >
+	             <com.android.pc.ioc.image.RecyclingImageView
+	                android:id="@+id/iv_home_ad"
+	                android:layout_width="match_parent"
+	                android:layout_height="@dimen/home_ad_h"
+	                android:scaleType="fitXY"
+	                android:src="@drawable/default_home" 
+	                android:visibility="gone"/> 
+	                
+	             <android.support.v4.view.ViewPager
+	                    android:id="@+id/vp_home_ad"
+	                    android:layout_width="match_parent"
+	                    android:layout_height="@dimen/home_ad_h"
+	                    android:layout_gravity="center_vertical"
+	                    android:scaleType="fitXY" /> 
+                
+                <LinearLayout
+                    style="@style/w_full_h_wrap"
+                    android:gravity="center_horizontal"
+                    android:layout_gravity="bottom"
+                    android:layout_marginBottom="25dp"
+                    android:orientation="horizontal" >
+
+                    <com.android.pc.ioc.image.RecyclingImageView
+                        android:id="@+id/iv_homead_point"
+                        style="@style/point_style"
+                        android:background="@drawable/oval_select" />
+
+                    <com.android.pc.ioc.image.RecyclingImageView
+                        android:id="@+id/iv_homead_point2"
+                        style="@style/point_style"
+                        android:background="@drawable/oval_nomal" />
+                    
+                    <com.android.pc.ioc.image.RecyclingImageView
+                        android:id="@+id/iv_homead_point3"
+                        style="@style/point_style"
+                        android:background="@drawable/oval_nomal" />
+                </LinearLayout>
+          </FrameLayout>
+            
 
             <LinearLayout
                 android:id="@+id/rl_vp"
                 style="@style/w_full_h_wrap"
-                android:layout_below="@id/iv_home_ad"
+                android:layout_below="@id/fl_home_ad"
                 android:background="@color/app_white"
                 android:gravity="center_vertical"
-                android:orientation="vertical" >
+                android:orientation="vertical" ><!-- android:layout_below="@id/iv_home_ad" -->
 
               <com.lansun.qmyo.view.MyViewPager 
                     android:id="@+id/vp_home_pager"
@@ -98,8 +136,11 @@
                 android:layout_marginLeft="@dimen/l_r_35"
                 android:layout_marginRight="@dimen/l_r_35"
                 android:layout_marginTop="@dimen/margin_top_30"
-                android:gravity="center_horizontal" >
+                android:gravity="center_horizontal" 
+                android:focusable="true"
+                android:focusableInTouchMode="true">
 
+                <!-- 新品曝光 按钮 -->
                 <LinearLayout
                     android:id="@+id/ll_activity_home_new"
                     style="@style/w_wrap_h_wrap"
@@ -118,6 +159,7 @@
                         android:textColor="@color/app_white" />
                 </LinearLayout>
 
+                <!-- 优惠券按钮 -->
                 <LinearLayout
                     android:id="@+id/ll_activity_home_yhq"
                     style="@style/w_wrap_h_wrap"

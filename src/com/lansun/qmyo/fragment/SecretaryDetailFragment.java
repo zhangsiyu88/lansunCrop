@@ -252,6 +252,7 @@ public class SecretaryDetailFragment extends BaseFragment implements
 							public void onFailure(HttpException arg0,String arg1) {
 								Log.i("拿到的结果","返回结果错误拿到的结果:"+arg1.toString());
 							}
+							
 							@Override
 							public void onSuccess(ResponseInfo<String> arg0) {
 								Log.i("拿到的结果","返回结果成功拿到的结果:"+arg0.result.toString());

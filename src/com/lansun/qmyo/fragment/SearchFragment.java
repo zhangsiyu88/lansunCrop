@@ -13,6 +13,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,10 +23,15 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.TextView.OnEditorActionListener;
+
+import cn.jpush.android.util.h;
 
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
@@ -96,6 +102,7 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 	private void initView(View root) {
 		del_search_content=(ImageView)root.findViewById(R.id.del_search_content);
 		//
+		
 		et_home_search=(EditText)root.findViewById(R.id.et_home_search);
 		et_home_search.requestFocus();
 		et_home_search.setCursorVisible(true);
@@ -114,8 +121,25 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 			}
 		});
 		if (query==null) {
-			setFragmentChose(new HotAddHistoryFragment(this));
+			setFragmentChose(new HotAddHistoryFragment(this));//当query为空的时候，需要将界面替换为热门搜索加历史搜索页
 		}
+		
+		et_home_search.setOnEditorActionListener(new OnEditorActionListener(){
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				if(actionId ==EditorInfo.IME_ACTION_SEARCH){
+					String search_value=et_home_search.getText().toString().trim();
+					if(search_value.equals("")){
+						Toast.makeText(activity, "请输入搜索内容", 2000).show();
+					}else{
+						startSearch(search_value);//开始搜索
+					}
+					return true;
+				}
+				return false;
+			}
+			
+		});
 	}
 	/**
 	 * 搜索内容监听
@@ -129,12 +153,14 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 		Log.e("change", s.toString());
 
 		if (TextUtils.isEmpty(s)) {
+			et_home_search.setImeOptions(EditorInfo.IME_ACTION_DONE);
+			
 			v.search_tv_cancle.setText(R.string.cancle);
 			v.search_tv_cancle.setTextColor(Color.parseColor("#939393"));
-			setFragmentChose(new HotAddHistoryFragment(this));//输入框为空，则进入HotAddHistoryFragment部分                   setFragmentChose切换页面的数据
+			//setFragmentChose(new HotAddHistoryFragment(this));//输入框为空，则进入HotAddHistoryFragment部分                   setFragmentChose切换页面的数据
 			del_search_content.setVisibility(View.GONE);
-
 			isPuzzy=false;
+			
 		} else {
 			del_search_content.setVisibility(View.VISIBLE);
 			if (!isPuzzy) {
@@ -142,8 +168,11 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 				Bundle bundle = new Bundle();  
 				bundle.putString("searchName",s.toString().trim());  
 				fragment.setArguments(bundle);  
-				setFragmentChose(fragment);//当输入框不为空即将其转至PuzzyFragment
+				setFragmentChose(fragment);//                       -->当输入框不为空即将其转至PuzzyFragment
 				et_home_search.setFocusable(true);
+				
+				//当搜索栏中的内容不为空的时候，需要将
+				et_home_search.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 				isPuzzy=true;
 			}
 			v.search_tv_cancle.setText(R.string.search);
@@ -170,13 +199,14 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 		initData();
 		et_home_search.setHint(R.string.search_all_hint);
-		AnimUtils.startTopInAnim(activity, v.ll_search_top_menu, 300,
-				et_home_search);
+		AnimUtils.startTopInAnim(activity, v.ll_search_top_menu, 300,et_home_search);
 	}
 	private void initData() {
 		refreshCurrentList(GlobalValue.URL_USER_QUERYS, null, 0, null);
 		refreshCurrentList(GlobalValue.URL_ADVERTISEMENT_SEARCH, null, 1, null);
 	}
+	
+	
 	private void click(View view) {
 		switch (view.getId()) {
 		case R.id.search_tv_cancle:
@@ -191,7 +221,7 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 						return;
 					}
 				}
-				addSearchHistory(search_value);
+				addSearchHistory(search_value);//将刚刚搜索的关键字写入到历史记录中去
 			}
 			break;
 		}
@@ -257,7 +287,8 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 			imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 
 			startSearch(search_name);
-			postQuery(search_name);
+			
+			//postQuery(search_name);
 			for (String li:App.search_list_history) {
 				if (search_name.equals(li)) {
 					return;

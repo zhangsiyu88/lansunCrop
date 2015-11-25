@@ -121,7 +121,7 @@ public class SecretaryFragment extends BaseFragment {
 				}
 				break;
 			case 1:
-				CustomToast.show(activity, "提示", "信息获取失败,请重试");
+				//CustomToast.show(activity, "提示", "信息获取失败,请重试");              //这是由于缺失token和token过期造成的提示
 				refreshTokenForExpired();
 				break;
 			case 2:
@@ -373,7 +373,7 @@ public class SecretaryFragment extends BaseFragment {
 	private void refreshTokenForExpired() {
 		InternetConfig config = new InternetConfig();
 		config.setKey(0);
-		CustomToast.show(activity, "更新访问权限", "重新获取令牌中...");
+		//CustomToast.show(activity, "更新访问权限", "重新获取令牌中...");
 		FastHttpHander.ajaxGet(GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"),config, this);
 	}
 	@InjectHttp
@@ -382,7 +382,7 @@ public class SecretaryFragment extends BaseFragment {
 			switch (r.getKey()) {
 			case 0:
 				Token token = Handler_Json.JsonToBean(Token.class,r.getContentAsString());
-				CustomToast.show(activity, "更新权限成功", "已获取最新令牌");
+				CustomToast.show(activity, "权限更新成功", "已获取最新令牌");
 				App.app.setData("access_token", token.getToken());
 				break;
 			}

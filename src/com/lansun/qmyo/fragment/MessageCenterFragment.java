@@ -68,11 +68,13 @@ public class MessageCenterFragment extends BaseFragment {
 	private void init() {
 		ListViewSwipeGesture touchListener = new ListViewSwipeGesture(
 				lv_message_list, swipeListener, getActivity());
+		
 		touchListener.SwipeType = ListViewSwipeGesture.Dismiss;
-		lv_message_list.setOnTouchListener(touchListener);
+		
+		/* 这个listView暂时关闭，不进行横向的滑移
+		 * lv_message_list.setOnTouchListener(touchListener);*/
 
-		refreshUrl = GlobalValue.URL_USER_MESSAGE_LIST
-				+ GlobalValue.MESSAGE.activity;
+		refreshUrl = GlobalValue.URL_USER_MESSAGE_LIST+ GlobalValue.MESSAGE.activity;
 		refreshKey = 0;
 		refreshCurrentList(refreshUrl, null, refreshKey, lv_message_list);
 	}

@@ -86,14 +86,14 @@ public class PuzzyFragment extends BaseFragment implements PuzzyItemClickCallBac
 			public void onResponse(Response response) throws IOException {
 				if (response.isSuccessful()) {
 					String json=response.body().string();
-					if (json.contains("{")&&json.contains("}")) {
+					if (json.contains("{")&&json.contains("}")) {       //对服务器返回回来的json重新做了拼接，并解析操作
 						json="{list:"+json+"}";
 						Gson gson=new Gson();
 						PuzzyData data=gson.fromJson(json, PuzzyData.class);
 						list=data.getList();
 						h.sendEmptyMessage(0);
 					}else {
-						String back="{list:[{"+"name: "+"查找："+searchName+"}]}";
+						String back="{list:[{"+"name: "+"查找："+searchName+"}]}";   //返回值为 空 
 						back=back.replace(" ", "");
 						Gson gson=new Gson();
 						PuzzyData data=gson.fromJson(back, PuzzyData.class);
@@ -122,8 +122,10 @@ public class PuzzyFragment extends BaseFragment implements PuzzyItemClickCallBac
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if(intent.getAction().equals("com.qmyo.puzzysearch")){
+				//当输入框产生字符修改时，需实时将修改完的字符跑过去访问服务器
 				searchName = intent.getStringExtra("searchName");
 				ontextChange(searchName);
+				
 			}
 		}
 	}

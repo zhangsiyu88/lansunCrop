@@ -103,10 +103,10 @@
         android:divider="@null"
         android:scrollbars="none" />
 	<TextView 
+	    android:visibility="gone"
 	    android:id="@+id/no_data"
 	    android:text="您还未收到最新活动消息哦"
 	    android:gravity="center"
-	    android:visibility="gone"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
 	    />

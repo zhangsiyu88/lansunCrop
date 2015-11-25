@@ -75,12 +75,55 @@
 
     <View style="@style/line_style_1" />
 
+  <FrameLayout 
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+      >
+    
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/rl_new_emptyview"
+        
+        >
+		    <ImageView
+		        android:id="@+id/bt_close"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_marginTop="@dimen/margin_top_30"
+		        android:layout_gravity="center"
+		        android:src="@drawable/lv_empty" 
+		        android:layout_centerInParent="true"/>
+		    <TextView
+		        android:id="@+id/tv_nohistory"
+		        style="@style/text_style_nomal_28"
+		        android:layout_below="@id/bt_close"
+		        android:layout_centerHorizontal="true"
+		        android:text="暂无您的浏览记录哦"
+		        android:textColor="#AFAFAF" 
+		        android:layout_marginTop="15dp"/>
+		     <TextView
+		         android:id="@+id/tv_gotoHomeFrag"
+		        android:layout_below="@id/tv_nohistory"
+		        style="@style/text_style_nomal_28"
+		        android:layout_centerHorizontal="true"
+		        android:text="先去瞅瞅吧"
+		        android:textColor="@color/app_green1"
+		        android:layout_marginTop="10dp"
+		        />
+	   </RelativeLayout>
+	   
     <com.lansun.qmyo.view.MyListView
         android:id="@+id/lv_mine_history_list"
-        style="@style/w_h_full"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:cacheColorHint="#00000000"
         android:divider="@null"
         android:listSelector="@android:color/transparent"
-        android:scrollbars="none" />
+        android:scrollbars="none" 
+        /><!-- style="@style/w_h_full" -->
+    
+ </FrameLayout>   
+   
 
 </LinearLayout>

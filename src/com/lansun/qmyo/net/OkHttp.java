@@ -55,7 +55,7 @@ public class OkHttp {
 	 * @throws IOException
 	 */
 	private static Response execute(Request request) throws IOException {
-		return okHttpClient.newCall(request).execute();
+		return okHttpClient.newCall(request).execute(); 
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class OkHttp {
 	 * @param responseCallback
 	 */
 	private static void enqueue(Request request, Callback responseCallback) {
-		okHttpClient.newCall(request).enqueue(responseCallback);
+		okHttpClient.newCall(request).enqueue(responseCallback);   
 	}
 	/**
 	 * 异步get
@@ -98,7 +98,7 @@ public class OkHttp {
 		enqueue(request, callback);
 	}
 
-	// post without file with tag
+	// post without file with tag  without header
 	public static void asyncPost(String url, Map<String, String> body, String tag, Callback callback) {
 		FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
 		for (String key : body.keySet()) {
@@ -137,7 +137,7 @@ public class OkHttp {
 		.addHeader(key, value)
 		.tag(tag)
 		.build();
-		enqueue(request, callback);
+		enqueue(request, callback);//将request和callback入队列
 	}
 	/**
 	 * 上传json数据
@@ -169,6 +169,7 @@ public class OkHttp {
 		Request request = new Request.Builder()
 		.url(url)
 		.addHeader(key, value)
+		.tag(tag)
 		.build();
 		enqueue(request, callback);
 	}

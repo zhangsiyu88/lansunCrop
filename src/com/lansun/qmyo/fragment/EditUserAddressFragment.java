@@ -239,7 +239,6 @@ public class EditUserAddressFragment extends BaseFragment {
 				
 				FastHttpHander.ajax(GlobalValue.URL_USER_SAVE, params,config,
 						       EditUserAddressFragment.this);
-				
 			} else {
 				CustomToast.show(activity, getString(R.string.tip), "内容不能为空");
 			}

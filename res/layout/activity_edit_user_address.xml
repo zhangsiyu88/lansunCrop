@@ -33,8 +33,11 @@
                 android:id="@+id/tv_edit_city"
                 style="@style/text_style_nomal_28"
                 android:layout_width="match_parent"
+                android:layout_alignParentRight="true"
+                android:gravity="right"
+                
                 android:layout_marginLeft="@dimen/l_r_14"
-                android:layout_marginRight="@dimen/l_r_20"
+                android:layout_marginRight="30dp"
                 android:background="@color/app_white" />
 
             <com.android.pc.ioc.image.RecyclingImageView

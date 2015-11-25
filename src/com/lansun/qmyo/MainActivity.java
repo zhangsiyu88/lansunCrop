@@ -29,11 +29,13 @@ import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.ExperienceSearchFragment;
 import com.lansun.qmyo.fragment.FoundFragment;
 import com.lansun.qmyo.fragment.HomeFragment;
+import com.lansun.qmyo.fragment.HomeFragmentOld;
 import com.lansun.qmyo.fragment.IntroductionPageFragment;
 import com.lansun.qmyo.fragment.MineFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.fragment.SearchBankCardFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
+import com.lansun.qmyo.fragment.TestMineActivityFragment;
 import com.lansun.qmyo.service.AccessTokenService;
 import com.lansun.qmyo.service.LocationService;
 import com.lansun.qmyo.utils.DialogUtil;
@@ -104,7 +106,11 @@ public class MainActivity extends FragmentActivity {
 		if (TextUtils.isEmpty(App.app.getData("isFirst"))) {
 			startFragmentAdd(new IntroductionPageFragment());
 		} else {
-			startFragmentAdd(new HomeFragment());
+			/*startFragmentAdd(new HomeFragment());    */                 //--------------------->by Yeun 11.16//TODO
+			/*startFragmentAdd(new HomeFragmentOld());*/					//--------------------->by Yeun 11.13//TODO
+			/*startFragmentAdd(new MainFragment());*/
+			startFragmentAdd(new TestMineActivityFragment());
+			
 			getTokenService();
 		}
 		
@@ -261,7 +267,8 @@ public class MainActivity extends FragmentActivity {
 					.equals(HomeFragment.class.getName())||fragment.getClass().getName()
 					.equals(FoundFragment.class.getName())||fragment.getClass().getName()
 					.equals(MineFragment.class.getName())||fragment.getClass().getName()
-					.equals(SecretaryFragment.class.getName())) {
+					.equals(SecretaryFragment.class.getName())||fragment.getClass().getName()
+					.equals(MainFragment.class.getName())) {
 
 				DialogUtil.createTipAlertDialog(MainActivity.this,R.string.is_exit, new TipAlertDialogCallBack() {
 
@@ -371,4 +378,29 @@ public class MainActivity extends FragmentActivity {
 				 msgText.setVisibility(android.view.View.VISIBLE);
 	         }
 		}*/
+		
+		@Override
+		public boolean onSearchRequested() {
+			return super.onSearchRequested();
+		}
+		@Override
+		protected void onRestoreInstanceState(Bundle savedInstanceState) {
+			super.onRestoreInstanceState(savedInstanceState);
+		}
+		/* protected void onSaveInstanceState(Bundle outState) {
+			  outState.putString(loginname, App.app.LOGINNAME);
+			  outState.putInt(classId, Application.classId);
+			  outState.putSerializable(classinfos, (ArrayList<classinfo>)App.app.getInstance().getClassInfos());
+			  super.onSaveInstanceState(outState);
+			 }
+			 
+			 @Override
+			 protected void onRestoreInstanceState(Bundle savedInstanceState) {
+			  super.onRestoreInstanceState(savedInstanceState);
+			  if (savedInstanceState != null) {
+			   Application.LOGINNAME = savedInstanceState.getString(loginname);
+			   Application.classId = savedInstanceState.getInt(classId);
+			   Application.getInstance().setClassInfos((List<classinfo>)savedInstanceState.getSerializable(classinfos));
+			  }
+			 }*/
 }

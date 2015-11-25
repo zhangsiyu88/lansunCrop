@@ -10,9 +10,14 @@ import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.DialogInterface.OnDismissListener;
 import android.graphics.drawable.AnimationDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -46,6 +51,7 @@ import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.GifMovieView;
 import com.android.pc.ioc.view.PullToRefreshManager;
+import com.android.pc.ioc.view.PullToRefreshView;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.ioc.view.listener.OnItemClick;
 import com.android.pc.util.Handler_Inject;
@@ -64,6 +70,8 @@ import com.lansun.qmyo.domain.position.Position;
 import com.lansun.qmyo.domain.screening.DataScrolling;
 import com.lansun.qmyo.domain.screening.Type;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+
+import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CustomDialogProgress;
 import com.lansun.qmyo.view.CustomToast;
@@ -72,6 +80,7 @@ import com.lansun.qmyo.view.MyListView;
 import com.lansun.qmyo.view.ViewLeft;
 import com.lansun.qmyo.view.ViewMiddle;
 import com.lansun.qmyo.view.ViewRight;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 
 public class ActivityFragment extends BaseFragment {
@@ -154,8 +163,20 @@ public class ActivityFragment extends BaseFragment {
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_activity, null);
+		
+		PullToRefreshManager.getInstance().headerEnable();
+		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+		
 		Handler_Inject.injectFragment(this, rootView);//Handler_Inject就会去调用invoke，invoke中会调用Inject_View,而Inject_View中又会调用applyTo()
 
+		broadCastReceiver = new ActivityRefreshBroadCastReceiver();
+		System.out.println("注册广播 ing");
+		filter = new IntentFilter();
+		filter.addAction("com.lansun.qmyo.refreshTheIcon");
+		getActivity().registerReceiver(broadCastReceiver, filter);
+		
+		
+		
 		return rootView;
 	}
 	private String typeStr;
@@ -187,6 +208,12 @@ public class ActivityFragment extends BaseFragment {
 
 
 	private int type_index;
+
+	private IntentFilter filter;
+
+	private ActivityRefreshBroadCastReceiver broadCastReceiver;
+
+	private String position_bussnessAfterEncode;
 
 	@InjectInit
 	private void init() {
@@ -252,6 +279,7 @@ public class ActivityFragment extends BaseFragment {
 			v.iv_card.setVisibility(View.GONE);
 			v.tv_home_experience.setVisibility(View.VISIBLE);
 		} else {
+			
 			v.iv_card.setVisibility(View.VISIBLE);
 			v.tv_home_experience.setVisibility(View.GONE);
 		}
@@ -273,6 +301,35 @@ public class ActivityFragment extends BaseFragment {
 				}
 			}
 		});
+		
+		if(App.app.getData("gpsIsNotAccurate").equals("true")){
+			
+			DialogUtil.createTipAlertDialog(activity,
+					"您还未开启精确定位哦\n\r请前往应用权限页开启",
+					new DialogUtil.TipAlertDialogCallBack() {
+						@Override
+						public void onPositiveButtonClick(DialogInterface dialog, int which) {
+							
+							  Intent localIntent = new Intent("android.settings.APPLICATION_DETAILS_SETTINGS");
+					          localIntent.setData(Uri.fromParts("package", "com.lansun.qmyo", null));
+					          activity.startActivity(localIntent);//前往权限设置的页面
+					          
+					          if(App.app.getData("firstEnter").isEmpty()){
+									App.app.setData("gpsIsNotAccurate","");//将gps的提醒标签置为空
+									App.app.setData("firstEnter","notblank");//但此时已不是第一次进入
+								}
+					          dialog.dismiss();
+						}
+
+						@Override
+						public void onNegativeButtonClick(
+								DialogInterface dialog, int which) {
+							dialog.dismiss();
+							
+							
+						}
+					});
+			}
 	}
 
 	private void click(View view) {
@@ -346,7 +403,7 @@ public class ActivityFragment extends BaseFragment {
 			if ("".equals(shopping)||shopping==null) {
 				getServerBanner();
 			}else {
-				setFirstValue(shopping);
+				setFirstValue(shopping);//将之前写在本地的json写到当前的AllService中，共删选使用
 			}
 			break;
 		case "200000":
@@ -416,6 +473,9 @@ public class ActivityFragment extends BaseFragment {
 
 
 		//判断Activity的类型是不是新品的内容，新内容时只展示三个模块，若为其他的八个板块时，那么需要的是展示四个TextView
+		
+		
+		
 		// 附近 固定
 		InternetConfig config1 = new InternetConfig();
 		config1.setKey(1);
@@ -425,67 +485,10 @@ public class ActivityFragment extends BaseFragment {
 		InternetConfig config2 = new InternetConfig();
 		config2.setKey(2);
 		FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_INTELLIGENT,config2, this);
+		
 		if ("700000".equals(HODLER_TYPE)||"800000".equals(HODLER_TYPE)) {
 
 		}else {
-			//			InternetConfig config = new InternetConfig();
-			//			config.setKey(0);
-			//			//---->调整接口连接器,此处需要将Token加入到config里面的head中去
-			//			HashMap<String, Object> head = new HashMap<>();
-			//			head.put("Authorization","Bearer " + App.app.getData("access_token"));
-			//			config.setHead(head);
-			//
-			//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SERVICE
-			//					+ HODLER_TYPE, config, this);
-			//			// 附近 固定
-			//			InternetConfig config1 = new InternetConfig();
-			//			config1.setKey(1);
-			//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_DISTRICT
-			//					+ App.app.getData("select_cityCode"), config1, this);
-			//			// 智能排序
-			//			InternetConfig config2 = new InternetConfig();
-			//			config2.setKey(2);
-			//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_INTELLIGENT,
-			//					config2, this);
-			//		} else {//八大板块中任意一个点击进入后的list
-			//			// 服务板块
-			//			InternetConfig config = new InternetConfig();
-			//			config.setKey(0);
-			//
-			//			//---->调整接口连接器,此处需要将Token加入到config里面的head中去
-			//			HashMap<String, Object> head = new HashMap<>();
-			//			head.put("Authorization",
-			//					"Bearer " + App.app.getData("access_token"));
-			//			config.setHead(head);
-			//
-			//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SERVICE
-			//					+ HODLER_TYPE, config, this);
-			//			
-			//			
-			//			serviceToRequesturrentTimeMillis = System.currentTimeMillis();
-			//			Log.d("八大板块测试", "准备前往获取板块服务列表的数据 "+serviceToRequesturrentTimeMillis);
-			//
-			//			// 附近 固定
-			//			InternetConfig config1 = new InternetConfig();
-			//			config1.setKey(1);
-			//
-			//			Log.i("选择城市的code为:", App.app.getData("select_cityCode"));
-			//
-			//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_DISTRICT
-			//					+ App.app.getData("select_cityCode"), config1, this);
-			//			
-			//			
-			//			districtToRequestCurrentTimeMillis = System.currentTimeMillis();
-			//			Log.d("八大板块测试", "准备前往获取商圈的数据 "+districtToRequestCurrentTimeMillis);
-			//
-			//
-			//			// 智能排序
-			//			InternetConfig config2 = new InternetConfig();
-			//			config2.setKey(2);
-			//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_INTELLIGENT,config2, this);
-			//			
-			//			intelligentToRequestCurrentTimeMillis = System.currentTimeMillis();
-			//			Log.d("八大板块测试", "准备前往获取智能排序的数据 "+intelligentToRequestCurrentTimeMillis);
 //			InternetConfig config = new InternetConfig();
 //			config.setKey(0);
 //			//---->调整接口连接器,此处需要将Token加入到config里面的head中去
@@ -544,13 +547,78 @@ public class ActivityFragment extends BaseFragment {
 //			
 //			intelligentToRequestCurrentTimeMillis = System.currentTimeMillis();
 //			Log.d("八大板块测试", "准备前往获取智能排序的数据 "+intelligentToRequestCurrentTimeMillis);
-			// 筛选
+//			InternetConfig config = new InternetConfig();
+//			config.setKey(0);
+//			//---->调整接口连接器,此处需要将Token加入到config里面的head中去
+//			HashMap<String, Object> head = new HashMap<>();
+//			head.put("Authorization","Bearer " + App.app.getData("access_token"));
+//			config.setHead(head);
+//
+//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SERVICE
+//					+ HODLER_TYPE, config, this);
+//			// 附近 固定
+//			InternetConfig config1 = new InternetConfig();
+//			config1.setKey(1);
+//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_DISTRICT
+//					+ App.app.getData("select_cityCode"), config1, this);
+//			// 智能排序
+//			InternetConfig config2 = new InternetConfig();
+//			config2.setKey(2);
+//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_INTELLIGENT,
+//					config2, this);
+//		} else {//八大板块中任意一个点击进入后的list
+//			// 服务板块
+//			InternetConfig config = new InternetConfig();
+//			config.setKey(0);
+//
+//			//---->调整接口连接器,此处需要将Token加入到config里面的head中去
+//			HashMap<String, Object> head = new HashMap<>();
+//			head.put("Authorization",
+//					"Bearer " + App.app.getData("access_token"));
+//			config.setHead(head);
+//
+//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SERVICE
+//					+ HODLER_TYPE, config, this);
+//			
+//			
+//			serviceToRequesturrentTimeMillis = System.currentTimeMillis();
+//			Log.d("八大板块测试", "准备前往获取板块服务列表的数据 "+serviceToRequesturrentTimeMillis);
+//
+//			// 附近 固定
+//			InternetConfig config1 = new InternetConfig();
+//			config1.setKey(1);
+//
+//			Log.i("选择城市的code为:", App.app.getData("select_cityCode"));
+//
+//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_DISTRICT
+//					+ App.app.getData("select_cityCode"), config1, this);
+//			
+//			
+//			districtToRequestCurrentTimeMillis = System.currentTimeMillis();
+//			Log.d("八大板块测试", "准备前往获取商圈的数据 "+districtToRequestCurrentTimeMillis);
+//
+//
+//			// 智能排序
+//			InternetConfig config2 = new InternetConfig();
+//			config2.setKey(2);
+//			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_INTELLIGENT,config2, this);
+//			
+//			intelligentToRequestCurrentTimeMillis = System.currentTimeMillis();
+//			Log.d("八大板块测试", "准备前往获取智能排序的数据 "+intelligentToRequestCurrentTimeMillis);
+			
+			
+			/**
+			 *  筛选    
+			 *  下面这段不可删去，若删去会出现，八大板块筛选栏无法展示的情况
+			 */
 			InternetConfig config3 = new InternetConfig();
 			config3.setKey(3);
 			FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SCREENING,config3, this);
-			//			screenToRequestCurrentTimeMillis = System.currentTimeMillis();
-			//			Log.d("八大板块测试", "准备前往获取筛选的数据 "+screenToRequestCurrentTimeMillis);
+			screenToRequestCurrentTimeMillis = System.currentTimeMillis();
+			Log.d("八大板块测试", "准备前往获取筛选的数据 "+screenToRequestCurrentTimeMillis);
+			
 		}
+		
 		emptyView = inflater.inflate(R.layout.activity_search_empty, null);
 		tv_found_secretary = emptyView.findViewById(R.id.tv_found_secretary);
 		tv_found_secretary.setOnClickListener(new OnClickListener() {
@@ -558,7 +626,9 @@ public class ActivityFragment extends BaseFragment {
 			@Override
 			public void onClick(View arg0) {
 				/*SecretaryDetailFragment fragment = new SecretaryDetailFragment();*/
-				SecretaryFragment fragment = new SecretaryFragment();
+				
+				/*SecretaryFragment fragment = new SecretaryFragment();*/
+				MainFragment fragment = new MainFragment(1);
 				Bundle args = new Bundle();
 				args.putString("type", typeStr);
 				fragment.setArguments(args);
@@ -587,12 +657,10 @@ public class ActivityFragment extends BaseFragment {
 
 		//---->调整接口连接器,此处需要将Token加入到config里面的head中去
 		HashMap<String, Object> head = new HashMap<>();
-		head.put("Authorization",
-				"Bearer " + App.app.getData("access_token"));
+		head.put("Authorization","Bearer " + App.app.getData("access_token"));
 		config.setHead(head);
 
-		FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SERVICE
-				+ HODLER_TYPE, config, this);
+		FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_SERVICE+ HODLER_TYPE, config, this);
 	}
 
 	/**
@@ -606,10 +674,7 @@ public class ActivityFragment extends BaseFragment {
 			@Override
 			public void getValue(String distance, String showText, int position) {
 				intelligentStr = intelligent.getData().get(position).getKey();
-				shopDataList.clear();
-				if (activityAdapter != null) {
-					activityAdapter.notifyDataSetChanged();
-				}
+				
 				try{
 					lv_activity_list.removeFooterView(emptyView);
 				}catch(Exception e ){
@@ -617,6 +682,12 @@ public class ActivityFragment extends BaseFragment {
 				try{
 					lv_activity_list.removeFooterView(noNetworkView);
 				}catch(Exception e ){
+				}
+				
+				shopDataList.clear();
+				if (activityAdapter != null) {
+					activityAdapter.notifyDataSetChanged();
+					activityAdapter=null;
 				}
 				PullToRefreshManager.getInstance().footerEnable();
 				loadActivityList();
@@ -637,10 +708,9 @@ public class ActivityFragment extends BaseFragment {
 					HODLER_TYPE = AllService.getData().get(parentId).getItems()
 							.get(position).getKey();
 				}
-				shopDataList.clear();
-				if (activityAdapter != null) {
-					activityAdapter.notifyDataSetChanged();
-				}
+				
+				
+				
 				try{
 					lv_activity_list.removeFooterView(emptyView);
 				}catch(Exception e ){
@@ -648,6 +718,12 @@ public class ActivityFragment extends BaseFragment {
 				try{
 					lv_activity_list.removeFooterView(noNetworkView);
 				}catch(Exception e ){
+				}
+				
+				shopDataList.clear();
+				if (activityAdapter != null) {
+					activityAdapter.notifyDataSetChanged();
+					activityAdapter=null;
 				}
 				PullToRefreshManager.getInstance().footerEnable();
 				loadActivityList();
@@ -676,10 +752,7 @@ public class ActivityFragment extends BaseFragment {
 					position_bussness = nearService.getData()
 							.get(parentId).getItems().get(position).getKey();
 				}
-				shopDataList.clear();
-				if (activityAdapter != null) {
-					activityAdapter.notifyDataSetChanged();
-				}
+				
 				try{
 					lv_activity_list.removeFooterView(emptyView);
 				}catch(Exception e ){
@@ -687,6 +760,12 @@ public class ActivityFragment extends BaseFragment {
 				try{
 					lv_activity_list.removeFooterView(noNetworkView);
 				}catch(Exception e ){
+				}
+				
+				shopDataList.clear();
+				if (activityAdapter != null) {
+					activityAdapter.notifyDataSetChanged();
+					activityAdapter=null;
 				}
 				PullToRefreshManager.getInstance().footerEnable();
 				loadActivityList();
@@ -700,9 +779,7 @@ public class ActivityFragment extends BaseFragment {
 				type = sxintelligent.getData().get(position).getKey();
 				shopDataList.clear();
 
-				if (activityAdapter != null) {
-					activityAdapter.notifyDataSetChanged();
-				}
+				
 				try{
 					lv_activity_list.removeFooterView(emptyView);
 				}catch(Exception e ){
@@ -711,6 +788,12 @@ public class ActivityFragment extends BaseFragment {
 					lv_activity_list.removeFooterView(noNetworkView);
 				}catch(Exception e ){
 				}
+				
+				if (activityAdapter != null) {
+					activityAdapter.notifyDataSetChanged();
+					activityAdapter=null;
+				}
+				
 				PullToRefreshManager.getInstance().footerEnable();
 				loadActivityList();
 				onRefresh(viewRight, showText);
@@ -728,26 +811,9 @@ public class ActivityFragment extends BaseFragment {
 
 		if (isShowDialog){
 			if(cPd == null ){
-				/*GifMovieView loading_gif = (GifMovieView) progress.findViewById(R.id.loading_gif);
-			loading_gif.setMovieResource(R.drawable.loading);
-			pd = new ProgressDialog(activity);
-			pd.setMessage("小迈努力加载中... ...");
-			LayoutParams layoutParams = new LayoutParams(getActivity());
-			pd.getWindow().addContentView(loading_gif, arg1)
-			pd.setContentView(loading_gif);
-			pd.setCancelable(false);
-			pd.setCanceledOnTouchOutside(false);*/
-
-				/*cPd = new CustomDialogProgress(activity);*/
 				Log.d("dialog","生成新的dialog！");
-				/*CustomDialogProgress.createDialog(App.app.getApplicationContext());*/
-				//cPd.customDialogProgress(App.app.getApplicationContext());
-				/*cPd.setMessage("刷新中");*/
-				/*cPd.setCancelable(false);*/
-
 				cPd = CustomDialogProgress.createDialog(activity);
 				cPd.setCanceledOnTouchOutside(false);
-
 				cPd.show();
 			}else{
 				cPd.show();
@@ -760,7 +826,14 @@ public class ActivityFragment extends BaseFragment {
 			isPosition = true;
 			refreshParams.put("location", GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());//问题在这儿!这个location 拼接在了服务器访问接口里面
 		}
-		refreshParams.put("poistion",position_bussness);
+		
+		try {
+			position_bussnessAfterEncode = URLEncoder.encode(position_bussness, "utf-8");
+			
+		} catch (UnsupportedEncodingException e) {
+		}
+		refreshParams.put("position",position_bussnessAfterEncode);
+		
 		if (IsNew) {// 新品曝光 固定为NEW
 			refreshParams.put("type", "new");
 			refreshParams.put("site", getSelectCity()[0]);
@@ -774,8 +847,8 @@ public class ActivityFragment extends BaseFragment {
 			refreshParams.put("service", HODLER_TYPE);
 		}
 
-		//		if (!TextUtils.isEmpty(intelligentStr)) {//目前貌似只有 智能排序 是可产生点击结果的,并且是展示 所有活动 的操作请求
-		//		}
+//		if (!TextUtils.isEmpty(intelligentStr)) {//目前貌似只有 智能排序 是可产生点击结果的,并且是展示 所有活动 的操作请求
+//		}
 		refreshParams.put("intelligent", intelligentStr);
 		//首先来获取到所有活动的列表,展示在litView上
 		refreshParams.put("site", getSelectCity()[0]);
@@ -785,10 +858,9 @@ public class ActivityFragment extends BaseFragment {
 
 		eightPartToRequestCurrentTimeMillis = System.currentTimeMillis();
 		Log.d("八大板块测试", "八大板块页面准备前去访问数据： "+eightPartToRequestCurrentTimeMillis);
-		refreshCurrentList(refreshUrl+"site="+getSelectCity()[0]+"&service="+HODLER_TYPE+"&position="+position_bussness+"&intelligent="+intelligentStr+"&type="+type+"&location="+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon()+"&query="+"",null, refreshKey,lv_activity_list);
+		/*refreshCurrentList(refreshUrl+"site="+getSelectCity()[0]+"&service="+HODLER_TYPE+"&position="+position_bussness+"&intelligent="+intelligentStr+"&type="+type+"&location="+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon()+"&query="+"",null, refreshKey,lv_activity_list);*/
+		refreshCurrentList(refreshUrl+"site="+getSelectCity()[0]+"&service="+HODLER_TYPE+"&position="+position_bussnessAfterEncode+"&intelligent="+intelligentStr+"&type="+type+"&location="+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon()+"&query="+"",null, refreshKey,lv_activity_list);
 	}
-
-
 
 	/**
 	 * 所有网络访问的结果处理
@@ -810,37 +882,41 @@ public class ActivityFragment extends BaseFragment {
 
 			switch (r.getKey()) {
 			case 0:// 全部
+				
+				//将从网络端获取到的值写到本地中去
 				setFirstValue(r.getContentAsString());
-				//				serviceToResponseCurrentTimeMillis = System.currentTimeMillis();
-				//				Log.d("八大板块测试", "已获取板块服务列表的数据 "+serviceToResponseCurrentTimeMillis);
-				//				Log.d("八大板块测试", "获取板块服务的数据等待时间为： "+(serviceToResponseCurrentTimeMillis-serviceToRequesturrentTimeMillis));
-				//				
-				//				
-				//				Log.i("全部的数据", "拿到最左边列表的展示的全部数据!");
-				//				AllService = Handler_Json.JsonToBean(Service.class,
-				//						r.getContentAsString());
-				//				name = AllService.getName();
-				//				if (name == null) {
-				//					name = AllService.getData().get(0).getName();
-				//				}
-				//				ArrayList<String> allGroup = new ArrayList<String>();
-				//				SparseArray<LinkedList<String>> allChild = new SparseArray<LinkedList<String>>();
-				//				for (int j = 0; j < AllService.getData().size(); j++) {
-				//					LinkedList<String> chind = new LinkedList<String>();
-				//					allGroup.add(AllService.getData().get(j).getName());
-				//					ArrayList<ServiceDataItem> items = AllService.getData()
-				//							.get(j).getItems();
-				//					if (items != null) {
-				//						for (ServiceDataItem item : items) {
-				//							chind.add(item.getName());
-				//						}
-				//					}
-				//					allChild.put(j, chind);
-				//				}
-				//				holder_button.put(0, name);
-				//				viewLeft.setGroups(allGroup);
-				//				viewLeft.setChildren(allChild);
-				//				mViewArray.put(0, viewLeft);
+				
+				
+//				serviceToResponseCurrentTimeMillis = System.currentTimeMillis();
+//				Log.d("八大板块测试", "已获取板块服务列表的数据 "+serviceToResponseCurrentTimeMillis);
+//				Log.d("八大板块测试", "获取板块服务的数据等待时间为： "+(serviceToResponseCurrentTimeMillis-serviceToRequesturrentTimeMillis));
+//				
+//				
+//				Log.i("全部的数据", "拿到最左边列表的展示的全部数据!");
+//				AllService = Handler_Json.JsonToBean(Service.class,
+//						r.getContentAsString());
+//				name = AllService.getName();
+//				if (name == null) {
+//					name = AllService.getData().get(0).getName();
+//				}
+//				ArrayList<String> allGroup = new ArrayList<String>();
+//				SparseArray<LinkedList<String>> allChild = new SparseArray<LinkedList<String>>();
+//				for (int j = 0; j < AllService.getData().size(); j++) {
+//					LinkedList<String> chind = new LinkedList<String>();
+//					allGroup.add(AllService.getData().get(j).getName());
+//					ArrayList<ServiceDataItem> items = AllService.getData()
+//							.get(j).getItems();
+//					if (items != null) {
+//						for (ServiceDataItem item : items) {
+//							chind.add(item.getName());
+//						}
+//					}
+//					allChild.put(j, chind);
+//				}
+//				holder_button.put(0, name);
+//				viewLeft.setGroups(allGroup);
+//				viewLeft.setChildren(allChild);
+//				mViewArray.put(0, viewLeft);
 				break;
 			case 1:// 附近
 				districtToResponseCurrentTimeMillis = System.currentTimeMillis();
@@ -908,36 +984,40 @@ public class ActivityFragment extends BaseFragment {
 				ArrayList<String> iconGroup = new ArrayList<String>();
 				ArrayList<String> sxGroup = new ArrayList<String>();
 				List<DataScrolling> sxData = sxintelligent.getData();
-				for (DataScrolling d : sxData) {
+			/*	for (DataScrolling d : sxData) {
 					if (!"积分兑换".equals(d.getName())) {
 						sxGroup.add(d.getName());
 						iconGroup.add(d.getKey());
 					}
+				}*/  							//--->暂时将积分兑换再放出来           
+				for (DataScrolling d : sxData) {
+					sxGroup.add(d.getName());
+					iconGroup.add(d.getKey());
 				}
 				holder_button.put(3, name);
 				viewRight.setICons(iconGroup);
 				viewRight.setItems(sxGroup);
 				mViewArray.put(3, viewRight);
 
-
-				//				
-				//				sxintelligent = Handler_Json.JsonToBean(Intelligent.class,r.getContentAsString());
-				//				
-				//				name = sxintelligent.getName();
-				//				ArrayList<String> iconGroup = new ArrayList<String>();
-				//				ArrayList<String> sxGroup = new ArrayList<String>();
-				//				ArrayList<Data> sxData = sxintelligent.getData();
-				//				for (Data d : sxData) {
-				//					sxGroup.add(d.getName());
-				//					iconGroup.add(d.getKey());
-				//				}
-				//				holder_button.put(3, name);
-				//				viewRight.setICons(iconGroup);
-				//				viewRight.setItems(sxGroup);
-				//				mViewArray.put(3, viewRight);
+//				
+//				sxintelligent = Handler_Json.JsonToBean(Intelligent.class,r.getContentAsString());
+//				
+//				name = sxintelligent.getName();
+//				ArrayList<String> iconGroup = new ArrayList<String>();
+//				ArrayList<String> sxGroup = new ArrayList<String>();
+//				ArrayList<Data> sxData = sxintelligent.getData();
+//				for (Data d : sxData) {
+//					sxGroup.add(d.getName());
+//					iconGroup.add(d.getKey());
+//				}
+//				holder_button.put(3, name);
+//				viewRight.setICons(iconGroup);
+//				viewRight.setItems(sxGroup);
+//				mViewArray.put(3, viewRight);
 				break;
 			case 4:// 活动列表
 				//TODO
+				
 				eightPartToResponseCurrentTimeMillis = System.currentTimeMillis();
 				Log.d("八大板块测试", "八大板块页面去访问数据现已拿到数据内容的时间：  "+ eightPartToResponseCurrentTimeMillis);
 
@@ -957,6 +1037,8 @@ public class ActivityFragment extends BaseFragment {
 					lv_activity_list.removeFooterView(noNetworkView);
 				}catch(Exception e ){
 				}
+				endProgress();
+				
 				//从服务器端拿到数据
 				activityList = Handler_Json.JsonToBean(ActivityList.class,
 						r.getContentAsString());
@@ -970,10 +1052,10 @@ public class ActivityFragment extends BaseFragment {
 
 					//无论activityList是否为空 都应该在后面进行拼接上去,shopList不需要删除掉
 					//shopDataList.clear();
-
-					if (activityAdapter != null) {
-						activityAdapter.notifyDataSetChanged();
-					}
+//																						---by Yeun 11-24
+//					if (activityAdapter != null) {
+//						activityAdapter.notifyDataSetChanged();
+//					}
 
 					for (ActivityListData data : activityList.getData()) {
 						HashMap<String, Object> map = new HashMap<String, Object>();
@@ -991,33 +1073,62 @@ public class ActivityFragment extends BaseFragment {
 					if (activityAdapter == null) {
 						activityAdapter = new SearchAdapter(lv_activity_list,
 								shopDataList, R.layout.activity_search_item);
-
-						lv_activity_list.setAdapter(activityAdapter);
-						expandTabViewButtomLine.setVisibility(View.VISIBLE);//当拿到数据加载到ListView上后，再将下面的Line线条展示出来
-						long linkToAdapterCurrentTimeMillis = System.currentTimeMillis();
-						Log.d("八大板块测试", "八大板块页面去访问数据现已拿到数据内容，已连接上适配器： "+linkToAdapterCurrentTimeMillis);
-						/*Log.d("八大板块测试", "八大板块页面去访问数据现已拿到数据展示到界面上与获取数据的时间差：  "+(linkToAdapterCurrentTimeMillis-eightPartToResponseCurrentTimeMillis));*/
-						Log.d("八大板块测试", "展示花费时间：  "+(linkToAdapterCurrentTimeMillis-eightPartToResponseCurrentTimeMillis));
+						
+						//expandTabViewButtomLine.setVisibility(View.VISIBLE);//当拿到数据加载到ListView上后，再将下面的Line线条展示出来
+						
+//						long linkToAdapterCurrentTimeMillis = System.currentTimeMillis();
+//						Log.d("八大板块测试", "八大板块页面去访问数据现已拿到数据内容，已连接上适配器： "+linkToAdapterCurrentTimeMillis);
+//						Log.d("八大板块测试", "八大板块页面去访问数据现已拿到数据展示到界面上与获取数据的时间差：  "+(linkToAdapterCurrentTimeMillis-eightPartToResponseCurrentTimeMillis));
+//						Log.d("八大板块测试", "展示花费时间：  "+(linkToAdapterCurrentTimeMillis-eightPartToResponseCurrentTimeMillis));
+						
 						if(activityList.getData().size()<10){
-							lv_activity_list.addFooterView(emptyView);
+							try{ lv_activity_list.removeFooterView(emptyView); 
+							}catch(Exception e ){ 
+								
+							}finally{
+								lv_activity_list.addFooterView(emptyView);
+							}
 						}
+						lv_activity_list.setAdapter(activityAdapter);
+						
 						endProgress();//当ListView链接上适配器时,我们需要将gif的动画关掉
-
 					} else {
 						//adapter并不为空时
-						activityAdapter.notifyDataSetChanged();
 						if(activityList.getData().size()<10){
-							lv_activity_list.addFooterView(emptyView);
+							try{
+								lv_activity_list.removeFooterView(emptyView);
+							}catch(Exception e ){
+								//CustomToast.show(activity, "提示", "emptyView移除失败哦");
+							}finally{
+								lv_activity_list.addFooterView(emptyView);
+								activityAdapter.notifyDataSetChanged();
+								//lv_activity_list.setAdapter(activityAdapter);
+							}
+						}else{
+							activityAdapter.notifyDataSetChanged();
 						}
-						/*activityAdapter.notifyDataSetChanged();*/
+						
+						
+						
 					}
 					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 
 				} else {//因为上拉前去获取到的数据为null，此时需要将之前的值保留住并展示
 					//lv_activity_list.setAdapter(null);
-					activityAdapter.notifyDataSetChanged();
+					endProgress();
+					
+					/*
+					 //activityAdapter之前的进行过notifyDataSetChanged，，此时再进行notify是没有数据变化的
+					   activityAdapter.notifyDataSetChanged();
+					 */
+					try{
+						lv_activity_list.removeFooterView(emptyView);
+					}catch(Exception e ){
+					}
 					lv_activity_list.addFooterView(emptyView);
+					lv_activity_list.setAdapter(activityAdapter);
+					
 					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 
@@ -1053,7 +1164,7 @@ public class ActivityFragment extends BaseFragment {
 				cPd = null;
 
 
-				setNetworkView();
+				//setNetworkView();
 				noNetworkView = setNetworkView();
 				lv_activity_list.addFooterView(noNetworkView);
 				//此时可断开上拉的操作
@@ -1082,9 +1193,11 @@ public class ActivityFragment extends BaseFragment {
 				}
 			}
 		}
+		
 		if (pd!=null) {
 			pd.dismiss();
 		}
+		
 		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 		PullToRefreshManager.getInstance().onFooterRefreshComplete();
 	}
@@ -1092,8 +1205,7 @@ public class ActivityFragment extends BaseFragment {
 	private void setFirstValue(String json) {
 		App.app.setData(App.TAGS[type_index], json);
 		String name;
-		AllService = Handler_Json.JsonToBean(Service.class,
-				json);
+		AllService = Handler_Json.JsonToBean(Service.class,json);
 		name = AllService.getName();
 		Log.e("name===", name);
 		if (name == null) {
@@ -1104,8 +1216,7 @@ public class ActivityFragment extends BaseFragment {
 		for (int j = 0; j < AllService.getData().size(); j++) {
 			LinkedList<String> chind = new LinkedList<String>();
 			allGroup.add(AllService.getData().get(j).getName());
-			ArrayList<ServiceDataItem> items = AllService.getData()
-					.get(j).getItems();
+			ArrayList<ServiceDataItem> items = AllService.getData().get(j).getItems();
 			if (items != null) {
 				for (ServiceDataItem item : items) {
 					chind.add(item.getName());
@@ -1148,9 +1259,9 @@ public class ActivityFragment extends BaseFragment {
 	 * @param type
 	 */
 	@InjectPullRefresh
-	public void call(int type) {
+	public void call(int Actiontype) {
 		// 这里的type来判断是否是下拉还是上拉
-		switch (type) {
+		switch (Actiontype) {
 		case InjectView.PULL:
 			if (activityList != null) {
 				/*if (TextUtils.isEmpty(activityList.getNext_page_url())) {//下一页为空的时候，加上footerview*/
@@ -1165,7 +1276,7 @@ public class ActivityFragment extends BaseFragment {
 					lv_activity_list.addFooterView(emptyView);
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
-					CustomToast.show(activity, "到底啦！", "小迈会加油搜集更多惊喜哦");
+					CustomToast.show(activity, "到底啦！", "小迈会加油搜集更多惊喜哦");3
 
 				} else {
 					/* 下面这一步代码应该耽误了半天时间
@@ -1203,24 +1314,28 @@ public class ActivityFragment extends BaseFragment {
 					}
 					if (IsNew) {
 						refreshParams.put("type", "new");
+					}else{
+						refreshParams.put("type", type);
 					}
 					//refreshParams.put("distance", distance);
 					refreshParams.put("site", getSelectCity()[0]);
 					/*refreshParams.put("site", "310000");//默认先只跑上海市版本*/	
 					try {
-						refreshParams.put("poistion", URLEncoder.encode(
+						refreshParams.put("position", URLEncoder.encode(
 								position_bussness, "utf-8"));
 					} catch (UnsupportedEncodingException e) {
 						e.printStackTrace();
 					}
 					refreshParams.put("service", HODLER_TYPE);
+					refreshParams.put("intelligent", intelligentStr);
+					refreshParams.put("query", "");
 					isDownChange = true;//下拉更新的标志
+					
+					//此时的下拉应该是在上一次的距离上进行的刷新操作
 					refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_activity_list);
+					
 					lv_activity_list.removeFooterView(emptyView);//不能忘了去除底部的emptyView
 					/*lv_activity_list.invalidate();*/
-				
-				
-				
 				
 			}else{
 				CustomToast.show(activity, "ti", "activityList == null");
@@ -1235,9 +1350,13 @@ public class ActivityFragment extends BaseFragment {
 			activityAdapter = null;
 			shopDataList.clear();
 		}*/
+		
+		PullToRefreshManager.getInstance().headerEnable();
+		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 		super.onResume();
 
 	}
+	
 
 	@Override
 	public void onPause() {
@@ -1245,6 +1364,8 @@ public class ActivityFragment extends BaseFragment {
 		v.expandtab_view.onPressBack();
 		/*shopDataList.clear();
 		activityAdapter = null;*/
+		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+		PullToRefreshManager.getInstance().onFooterRefreshComplete();
 		super.onPause();
 	}
 
@@ -1275,14 +1396,43 @@ public class ActivityFragment extends BaseFragment {
 	@Override/*@InjectMethod(@InjectListener(ids = 2131296342, listeners = OnClick.class))*/
 	protected void back() {
 		if(mIsHasChangeTheBankcardInMineBankcardPage){
-			Log.d("", "");
-			HomeFragment homeFragment = new HomeFragment();
+			
+			/*HomeFragment homeFragment = new HomeFragment();*/
+			MainFragment mainFragment = new MainFragment(0);
 			FragmentEntity fEntity = new FragmentEntity();
-			fEntity.setFragment(homeFragment);
+			fEntity.setFragment(mainFragment);
 			EventBus.getDefault().post(fEntity);
 			return;
 		}
 		super.back();
 	}
 
+	@Override
+	public void onStop() {
+		PullToRefreshManager.getInstance().headerUnable();
+		super.onStop();
+	}
+	@Override
+	public void onDestroy() {
+		PullToRefreshManager.getInstance().headerUnable();
+	    getActivity().unregisterReceiver(broadCastReceiver);
+		super.onDestroy();
+	}
+	
+
+	 class ActivityRefreshBroadCastReceiver extends BroadcastReceiver{
+		
+		@Override
+		public void onReceive(Context ctx, Intent intent) {
+			if(intent.getAction().equals("com.lansun.qmyo.refreshTheIcon")){
+				System.out.println("八大板块刷新页面  收到刷新Icon的广播了");
+				v.iv_card.setVisibility(View.VISIBLE);
+				v.tv_home_experience.setVisibility(View.GONE);
+				//v.rl_bg.setPressed(true);
+				v.rl_bg.setBackgroundResource(R.drawable.circle_background_gray);
+				
+			
+			}
+		}
+	 }
 }

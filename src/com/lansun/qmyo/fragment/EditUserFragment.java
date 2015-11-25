@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.R.integer;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -55,6 +56,8 @@ public class EditUserFragment extends BaseFragment {
 
 	@InjectAll
 	Views v;
+	private String userAddressCity;
+	private String userAddressArea;
 
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
@@ -127,7 +130,24 @@ public class EditUserFragment extends BaseFragment {
 			break;
 		case R.id.rl_edit_user_address://地址
 			/*fragment = new EditUserAddressFragment();*/
+			
 			fragment = new EditUserAddressFragment1();
+			Bundle bundle = new Bundle();
+
+			if(GlobalValue.user.getAddress()!=null&&(GlobalValue.user.getAddress()!="")){
+				String longAddress = GlobalValue.user.getAddress();
+				if(!longAddress.contains(" ")){
+					userAddressCity = longAddress;
+					userAddressArea = "";
+				}else{
+					int blankIndex = longAddress.indexOf(" ");
+					userAddressCity  = longAddress.substring(0, blankIndex); 
+					userAddressArea = longAddress.substring(blankIndex+1, longAddress.length());
+				}
+				bundle.putString("userAddressCity",userAddressCity);
+				bundle.putString("userAddressArea",userAddressArea);
+			}
+			fragment.setArguments(bundle);
 			event = new FragmentEntity();
 			event.setFragment(fragment);
 			EventBus.getDefault().post(event);

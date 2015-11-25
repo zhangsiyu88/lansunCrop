@@ -50,7 +50,7 @@ public class HomePagerAdapter extends CommonPagerAdapter implements
 
 	public Object instantiateItem(ViewGroup view, int position) {
 		View item = null;
-		//不是China的话，则只有四个页面的
+		                                             //不是China的话，则只有四个页面的
 		if (!isChina) {
 			item = inflater.inflate(R.layout.activity_home_pager_item3, null);
 			item.findViewById(R.id.ll_shopping_carnival).setOnClickListener(this);
@@ -62,21 +62,38 @@ public class HomePagerAdapter extends CommonPagerAdapter implements
 			return item;
 		}
 		
-		if (position == 0) {
+		
+		
+		
+		/*if (position == 0) {
 			item = inflater.inflate(R.layout.activity_home_pager_item, null);
 			item.findViewById(R.id.ll_shopping_carnival).setOnClickListener(this);
 			item.findViewById(R.id.ll_travel_holiday).setOnClickListener(this);
 			item.findViewById(R.id.ll_dining).setOnClickListener(this);
-			/*item.findViewById(R.id.ll_courtesy_car).setOnClickListener(this);汽车礼遇 改为 休闲娱乐*/
 			item.findViewById(R.id.ll_entertainment).setOnClickListener(this);
 		}
 		if (position == 1) {
 			item = inflater.inflate(R.layout.activity_home_pager_item2, null);
 			item.findViewById(R.id.ll_lift_service).setOnClickListener(this);
-			/*item.findViewById(R.id.ll_entertainment).setOnClickListener(this);休闲娱乐 改为 汽车礼遇*/
 			item.findViewById(R.id.ll_courtesy_car).setOnClickListener(this);
 			item.findViewById(R.id.ll_integral).setOnClickListener(this);
 			item.findViewById(R.id.ll_investment).setOnClickListener(this);
+		}*/
+		
+		if (position == 0) {												//-->修改为新的板块顺序            -by Yeun 11.16  
+			item = inflater.inflate(R.layout.activity_home_pager_item5, null);
+			item.findViewById(R.id.ll_shopping_carnival).setOnClickListener(this);
+			item.findViewById(R.id.ll_integral).setOnClickListener(this);
+			item.findViewById(R.id.ll_investment).setOnClickListener(this);
+			item.findViewById(R.id.ll_dining).setOnClickListener(this);
+		}
+		if (position == 1) {
+			item = inflater.inflate(R.layout.activity_home_pager_item6, null);
+			item.findViewById(R.id.ll_travel_holiday).setOnClickListener(this);
+			item.findViewById(R.id.ll_entertainment).setOnClickListener(this);
+			item.findViewById(R.id.ll_lift_service).setOnClickListener(this);
+			item.findViewById(R.id.ll_courtesy_car).setOnClickListener(this);
+			
 		}
 
 		pageMap.put(position, item);
@@ -118,9 +135,7 @@ public class HomePagerAdapter extends CommonPagerAdapter implements
 		
 		//NB的ActivityFragment带上需要的类型参数，去生成自己的造型去了
 		
-		
 		ActivityFragment fragment = new ActivityFragment();//TODO
-		
 		/*ActivityFragment1 fragment = new ActivityFragment1();*/
 		
 		Bundle args = new Bundle();

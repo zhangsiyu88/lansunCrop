@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/l_r_45"
+    android:paddingRight="@dimen/l_r_45" >
+
+ 
+   
+
+     <LinearLayout
+        android:id="@+id/ll_lift_service"
+        style="@style/w_wrap_h_wrap"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            style="@style/w_wrap_h_wrap"
+            android:background="@drawable/lift_service" />
+
+        <TextView
+            style="@style/text_style_small_24"
+            android:layout_marginTop="@dimen/margin_top_20"
+            android:text="@string/life_service"
+            android:textColor="#6F6F6F" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_entertainment"
+        style="@style/w_wrap_h_wrap"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            style="@style/w_wrap_h_wrap"
+            android:background="@drawable/entertainment" />
+
+        <TextView
+            style="@style/text_style_small_24"
+            android:layout_marginTop="@dimen/margin_top_20"
+            android:text="@string/entertainment"
+            android:textColor="#6F6F6F" />
+    </LinearLayout>
+    
+  <LinearLayout
+        android:id="@+id/ll_travel_holiday"
+        style="@style/w_wrap_h_wrap"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            style="@style/w_wrap_h_wrap"
+            android:background="@drawable/travel_holiday" />
+
+        <TextView
+            style="@style/text_style_small_24"
+            android:layout_marginTop="@dimen/margin_top_20"
+            android:text="@string/travel_holiday"
+            android:textColor="#6F6F6F" />
+    </LinearLayout>
+
+    
+    <LinearLayout
+        android:id="@+id/ll_courtesy_car"
+        style="@style/w_wrap_h_wrap"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <com.android.pc.ioc.image.RecyclingImageView
+            style="@style/w_wrap_h_wrap"
+            android:background="@drawable/courtesy_car" />
+
+        <TextView
+            style="@style/text_style_small_24"
+            android:layout_marginTop="@dimen/margin_top_20"
+            android:text="@string/courtesy_car"
+            android:textColor="#6F6F6F" />
+    </LinearLayout>
+    
+  
+  
+
+    
+    
+    
+
+</LinearLayout>

@@ -141,6 +141,8 @@ public class TextAdapter extends ArrayAdapter<String> {
 			convertView = lmap.get(position);
 			holder = (Holder) convertView.getTag();
 		}
+		
+		
 		holder = (Holder) convertView.getTag();
 		holder.position = position;
 		convertView.setTag(holder);
@@ -155,7 +157,7 @@ public class TextAdapter extends ArrayAdapter<String> {
 			}
 		}
 
-		if (hasIcon) {
+		if (hasIcon) {//含有icon的item
 			holder.iv_choose_item.setVisibility(View.VISIBLE);
 			LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
 					LinearLayout.LayoutParams.MATCH_PARENT, 1);
@@ -178,7 +180,6 @@ public class TextAdapter extends ArrayAdapter<String> {
 					holder.iv_choose_item.setImageResource(R.drawable.all);
 				}
 			}
-
 		}
 
 		// if (mString.contains("不限"))
@@ -197,8 +198,10 @@ public class TextAdapter extends ArrayAdapter<String> {
 			}
 		} else {
 			if (normalDrawbleId == 0) {
+				/*holder.tv_choose_item.setBackgroundColor(mContext
+						.getResources().getColor(R.color.line_bg2));*/
 				holder.tv_choose_item.setBackgroundColor(mContext
-						.getResources().getColor(R.color.line_bg2));
+						.getResources().getColor(R.color.app_bg));
 				// 文字绿色？
 			} else if (normalDrawbleId == 1) {
 				holder.tv_choose_item.setBackgroundColor(mContext

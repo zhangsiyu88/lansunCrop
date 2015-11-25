@@ -30,6 +30,7 @@ import com.android.pc.ioc.inject.InjectMethod;
 import com.android.pc.ioc.internet.FastHttpHander;
 import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.view.GifMovieView;
+import com.android.pc.ioc.view.PullToRefreshManager;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.lansun.qmyo.MainActivity;
 import com.lansun.qmyo.app.App;
@@ -39,7 +40,7 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.lansun.qmyo.R;
 public class BaseFragment extends Fragment implements OnTouchListener{
 
-	protected LayoutInflater inflater;
+	protected LayoutInflater inflater ;
 	public  Activity activity;
 	protected View progress;
 	protected LinearLayout progress_container;
@@ -47,7 +48,7 @@ public class BaseFragment extends Fragment implements OnTouchListener{
 	protected DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.cacheInMemory(true).cacheOnDisk(true).considerExifParams(true)
 			.displayer(new FadeInBitmapDisplayer(300)).build();
-	private View loadView;
+	protected View loadView;
 
 	protected String refreshUrl;
 	protected int refreshKey ;
@@ -58,6 +59,7 @@ public class BaseFragment extends Fragment implements OnTouchListener{
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		this.activity = activity;
+		inflater = LayoutInflater.from(getActivity());
 		this.pd = new ProgressDialog(activity);
 	    this.pd.setMessage("小迈努力加载中... ...");
 	    this.pd.setCancelable(false);
@@ -349,6 +351,13 @@ public class BaseFragment extends Fragment implements OnTouchListener{
 	public void onViewCreated(View view,Bundle savedInstanceState) {
 		view.setOnTouchListener(this);
 		super.onViewCreated(view, savedInstanceState);
+	}
+	
+	@Override
+	public void onDestroy() {
+		
+		
+		super.onDestroy();
 	}
 	
 	

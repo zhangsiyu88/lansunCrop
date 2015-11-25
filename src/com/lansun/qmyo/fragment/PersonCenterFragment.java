@@ -59,6 +59,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 public class PersonCenterFragment extends BaseFragment{
 	private String path;
@@ -90,7 +91,6 @@ public class PersonCenterFragment extends BaseFragment{
 					dialogpg.dismiss();
 				}
 				CustomToast.show(activity,"提示", "头像修改成功");
-
 				break;
 			case 1:
 				if (dialogpg!=null) {
@@ -115,18 +115,22 @@ public class PersonCenterFragment extends BaseFragment{
 	private void init() {
 		v.fl_comments_right_iv.setVisibility(View.GONE);
 
-		if (!TextUtils.isEmpty(GlobalValue.user.getNickname())) {
+		if (!TextUtils.isEmpty(GlobalValue.user.getNickname())&&!GlobalValue.user.getNickname().equals("null")&&!GlobalValue.user.getNickname().contains("null")) {
 			v.tv_person_center_nickname.setText(GlobalValue.user.getNickname());
+		}else{
+			v.tv_person_center_nickname.setText("请设置昵称");
 		}
 		if (!TextUtils.isEmpty(GlobalValue.user.getAvatar())) {
 			loadPhoto(GlobalValue.user.getAvatar(), v.iv_person_center_head);
 		}
 		initTitle(v.tv_activity_title, R.string.person_info, null, 0);
+		
 		iv_activity_back.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				FragmentEntity entity=new FragmentEntity();
-				Fragment fragment=new MineFragment();
+				/*Fragment fragment=new MineFragment();*/
+				MainFragment fragment=new MainFragment(3);
 				entity.setFragment(fragment);
 				EventBus.getDefault().post(entity);
 			}

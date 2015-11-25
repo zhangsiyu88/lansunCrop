@@ -1,6 +1,7 @@
 package com.lansun.qmyo.fragment;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -10,12 +11,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.TextUtils;
@@ -27,14 +33,17 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnScrollChangedListener;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -47,18 +56,21 @@ import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
+import com.android.pc.ioc.inject.InjectPullRefresh;
 import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.internet.FastHttp;
 import com.android.pc.ioc.internet.FastHttpHander;
 import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.PullToRefreshManager;
+import com.android.pc.ioc.view.PullToRefreshView;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.ioc.view.listener.OnItemClick;
 import com.android.pc.util.Gps;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
 import com.google.gson.Gson;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.HomeListAdapter;
 import com.lansun.qmyo.adapter.HomePagerAdapter;
@@ -67,6 +79,7 @@ import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.biz.ServiceAllBiz;
 import com.lansun.qmyo.domain.ActivityList;
 import com.lansun.qmyo.domain.ActivityListData;
+import com.lansun.qmyo.domain.HomeAdPhotoData;
 import com.lansun.qmyo.domain.HomePromote;
 import com.lansun.qmyo.domain.HomePromoteData;
 import com.lansun.qmyo.domain.MySecretary;
@@ -75,10 +88,15 @@ import com.lansun.qmyo.fragment.newbrand.NewBrandFragment;
 import com.lansun.qmyo.listener.RequestCallBack;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.AnimUtils;
+import com.lansun.qmyo.utils.CustomDialog;
+import com.lansun.qmyo.utils.DialogUtil;
+import com.lansun.qmyo.utils.FixedSpeedScroller;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExperienceDialog;
 import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
+import com.lansun.qmyo.view.MyListView;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -95,6 +113,7 @@ import com.squareup.okhttp.Response;
 	Views v;
 	private View head;
 	private SearchAdapter adapter;
+	private InternalHandler handler = new InternalHandler();
 	private ImageView iv_point2;
 	private ImageView iv_point, iv_home_ad;
 	private View ll_activity_home_new, ll_activity_home_yhq;// 新品曝光
@@ -103,23 +122,16 @@ import com.squareup.okhttp.Response;
 	private boolean onlyOne = true;
 	private boolean hasFooterview;
 	private String nextPageUrl = "";
+	private boolean isDeleteShopData = false;
+	private View searchView;
+	private static int currY;
+	private static int hiddenY;
 
 	/**
 	 * LoonAndroid框架规定，上拉和下拉刷新只能针对ListView进行设置，其他的View类型不可识别
 	 */
-	@InjectView(binders = { @InjectBinder(listeners ={ OnItemClick.class }, method = "itemClick")})  //, pull = true
-	private ListView lv_home_list;
-
-	/* @InjectView(pull = true)
-	private ScrollView  sv_homefrag;*/
-
-
-	@InjectView
-	private ScrollView sv_homefrag;
-
-	/*@InjectView(pull = true)
-	private  LinearLayout ll_homefrag;*/
-
+	@InjectView(binders = { @InjectBinder(listeners ={ OnItemClick.class }, method = "itemClick")}, pull = true) 
+	private  MyListView lv_home_list;
 
 
 	class Views {
@@ -153,21 +165,48 @@ import com.squareup.okhttp.Response;
 
 	@Override
 	public void onResume() {
-		// imm.hideSoftInputFromWindow(activity.getWindow().getCurrentFocus()
-		// .getWindowToken(), 0);
-
-
-
+		
+		//v.rl_top_r_top_menu.setVisibility(View.GONE);
+		
+		justComeBackFromHome = true;
+		
+		if(searchView!=null){
+			
+			justComeBackFromHome = true;
+			//currY = getLocation(searchView);
+			if (hiddenY > currY + 66) {
+				//AnimUtils.startTopInAnim(activity, v.fl_home_top_menu);
+				//v.fl_home_top_menu.setVisibility(View.VISIBLE);
+			} else {
+				
+				//startTopOutAnim(activity, v.fl_home_top_menu);
+				//v.fl_home_top_menu.setVisibility(View.GONE);
+				LogUtils.toDebugLog("回到后台测试", "重新进入首页界面");
+				
+				
+				//v.fl_home_top_menu.setVisibility(View.GONE);
+			}
+		}
+	
+		//v.fl_home_top_menu.setVisibility(View.GONE);
+		
 		v.iv_home_icon.setPressed(true);//底部的首页定位button
-		isPlay = false;
+		
+		//isPlay = false;
+		
+		
 		v.tv_home_icon.setTextColor(getResources().getColor(R.color.app_green1));
 
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN|WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
 
-
 		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(sv_homefrag.getWindowToken(), 0); 
+		imm.hideSoftInputFromWindow(lv_home_list.getWindowToken(), 0); 
+		
+		PullToRefreshManager.getInstance().headerUnable();
+		PullToRefreshManager.getInstance().onFooterRefreshComplete();
+		/*PullToRefreshManager.getInstance().footerUnable(); */ //底部刷新不可用
+		
 		/*v.rl_bg.setPressed(true);
 		v.rl_top_bg.setPressed(true);*/
 		super.onResume();
@@ -175,19 +214,28 @@ import com.squareup.okhttp.Response;
 
 	@Override
 	public void onPause() {
-		super.onPause();
-		if (adapter != null) {
+		
+		PullToRefreshManager.getInstance().headerUnable();
+		//v.fl_home_top_menu.setVisibility(View.GONE);
+		LogUtils.toDebugLog("回到后台测试", "离开首页界面");
+		/*if (adapter != null) {                  //adapter若置为空，在退出后台时，再进去页面进行刷新，会导致刷新后至顶部 
 			adapter = null;
-		}
+		}*/ 
+		
 		if (promoteAdapter != null) {
 			promoteAdapter = null;
 		}
-		isPlay = false;
+		
+		
+		//isPlay = false;
+		
+		
 		v.iv_home_icon.setPressed(true);
 		v.tv_home_icon.setTextColor(getResources().getColor(R.color.app_green1));
 
 		/*v.rl_bg.setPressed(true);
 		v.rl_top_bg.setPressed(true);*/
+		super.onPause();
 	}
 
 	/**
@@ -204,7 +252,7 @@ import com.squareup.okhttp.Response;
 		if (isChina) {//--> 选择是中国的地域情况下,打开活动详情页面
 			/*HashMap<String, Object> data = shopDataList.get(arg2 - 1);*/
 			//arg2的参数应为position，上步故意将位置向下偏移
-			HashMap<String, Object> data = shopDataList.get(arg2);
+			HashMap<String, Object> data = shopDataList.get(arg2 - 1);                     //添加了头的ListView，注意位置的偏移
 
 			fragment = new ActivityDetailFragment();
 			Bundle args = new Bundle();
@@ -213,10 +261,10 @@ import com.squareup.okhttp.Response;
 
 			String  shopId = args.getString("shopId");
 			String  activityId = args.getString("activityId");
-			Log.i("你点的位置上的Item","门店Id: "+shopId +"活动Id: "+activityId );
+			Log.i("你点的位置上的Item","门店Id: "+shopId +"活动Id: "+activityId);
 			fragment.setArguments(args);
 		} else {
-			HomePromoteData data = promoteList.getData().get(arg2 - 1);//----------------------这儿也需要注意，将来位置需要替换
+			HomePromoteData data = promoteList.getData().get(arg2);//----------------------这儿也需要注意，将来位置需要替换
 			fragment = new PromoteDetailFragment();
 			Bundle args = new Bundle();
 			args.putSerializable("promote", data);
@@ -229,133 +277,29 @@ import com.squareup.okhttp.Response;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		
+		broadCastReceiver = new HomeRefreshBroadCastReceiver();
+		System.out.println("注册广播 ing");
+		filter = new IntentFilter();
+		filter.addAction("com.lansun.qmyo.refreshHome");
+		filter.addAction("com.lansun.qmyo.refreshTheIcon");
+		getActivity().registerReceiver(broadCastReceiver, filter);
+		
+		
 		intent = new Intent("com.lansun.qmyo.fragment.newbrand");
 		Log.e("token",App.app.getData("access_token"));
 		Log.e("token",""+GlobalValue.gps.getWgLat()+GlobalValue.gps.getWgLon());
 		LayoutInflater inflater  = LayoutInflater.from(activity);
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-		rootView = inflater.inflate(R.layout.activity_home, null, false);
-		head =  rootView.findViewById(R.id.head_banner);
+		
+		rootView = inflater.inflate(R.layout.activity_home_old, null, false);  //填充其home界面，由于activity_home.xml已被修改为了含ScrollView的界面，故使用原有的xml布局
+		
+		/*head =  rootView.findViewById(R.id.head_banner);*/
 		Handler_Inject.injectFragment(this, rootView);//当前的fragment里面使用 自动去注入组件
 
 		refresh_footer = inflater.inflate(R.layout.refresh_footer, null);
 
-		sv_homefrag.scrollTo(0, 0);
-		sv_homefrag.setSmoothScrollingEnabled(true);
-
-		/*sv_homefrag.setOnRefreshListener(new OnRefreshListener<ScrollView>() {
-			@Override
-			public void onRefresh(PullToRefreshBase<ScrollView> refreshView) {
-				new GetDataTask().execute();				
-			}
-		});*/
-		/*sv_homefrag.setOnPullEventListener(new OnPullEventListener<ScrollView>(){
-
-			@Override
-			public void onPullEvent(PullToRefreshBase<ScrollView> refreshView,
-					State state, Mode direction) {
-				new GetDataTask().execute();
-			}
-		});*/
-
-		
-	
-		//TODO 首页刷新的位置监听
-		sv_homefrag.setOnTouchListener(new OnTouchListener() {
-
-			@SuppressLint("ClickableViewAccessibility")
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				switch(event.getAction()){
-				case MotionEvent.ACTION_DOWN:
-
-					break;
-				case MotionEvent.ACTION_MOVE:
-					int scrollY = v.getScrollY();
-					int height = v.getHeight();
-					int measuredHeight = sv_homefrag.getChildAt(0).getMeasuredHeight();
-					//Log.i("滑动中", "measuredHeight = sv_homefrag.getChildAt(1).getMeasuredHeight(): "+sv_homefrag.getChildAt(1).getMeasuredHeight());
-
-					View childAt1 = sv_homefrag.getChildAt(0);
-					int childAt1Height1 = childAt1.getLayoutParams().height;
-					if(scrollY+height == measuredHeight){ // 滑出屏幕外的高度+ 当前距离屏幕的高度 =sv_homefag的实测高度 
-						/*CustomToast.show(activity, "滑到底了", "到底了!");*/
-						/*sv_homefrag.setOnTouchListener(null);*/
-						if (list != null) {
-							if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url()=="null") {
-								CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
-								sv_homefrag.setOnTouchListener(null);
-								try{
-									lv_home_list.removeFooterView(refresh_footer);
-								}catch(Exception e){
-									e.printStackTrace();
-								}
-								//在最后一页刷不出数据时，需要将底部的footerview去除掉
-								lv_home_list.setAdapter(adapter);
-								setListViewHeightBasedOnChildren(lv_home_list);
-
-							} else {//下一页仍然拥有数据
-								
-								/*if(onlyOne){*/
-									//只给ListView加一次FooterView
-									/*onlyOne = false;*/
-								/*	onlyOne = true;*/
-								
-								if(list.getNext_page_url()==nextPageUrl){
-									
-								}else{
-									try{
-										lv_home_list.removeFooterView(refresh_footer);
-										//hasFooterview = false;
-									}catch(Exception e){
-									}
-									
-									lv_home_list.addFooterView(refresh_footer);
-									//hasFooterview = true ;
-									/*adapter.notifyDataSetChanged();*/		
-									//setListViewHeightBasedOnChildrenByDataList(lv_home_list,shopDataList); 
-									setListViewHeightBasedOnChildren(lv_home_list);
-									
-									refreshParams = new LinkedHashMap<>();
-									if (isChina) {//如果是国内活动，需要进行刷新操作
-										refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
-										refreshParams.put("site", getSelectCity()[0]);
-										refreshParams.put("intelligent", "home");
-									} else {
-										refreshParams = null;
-										refreshUrl = String.format(GlobalValue.URL_ARTICLE_PROMOTE,getSelectCity()[0]);
-									}
-									
-									refreshCurrentList(list.getNext_page_url(), refreshParams,1, lv_home_list);
-									CustomToast.show(activity, "努力加载中", "总裁大大,稍等哟");
-								    nextPageUrl = list.getNext_page_url();
-								}
-								
-//									if(list.getNext_page_url()==nextPageUrl){
-//										 //DoNothing!
-//									}else{
-//										refreshCurrentList(list.getNext_page_url(), refreshParams,1, lv_home_list);
-//										CustomToast.show(activity, "努力加载中", "总裁大大,稍等哟");
-//										nextPageUrl = list.getNext_page_url();
-//									}
-								}
-							/*}*/
-						}
-					}
-					break;
-				case MotionEvent.ACTION_UP:
-
-					break;	
-				}
-
-
-
-				return false;
-			}
-		});
-
-		/*mScrollView = sv_homefrag.getRefreshableView();*/
 		if (TextUtils.isEmpty(App.app.getData("exp_secret"))
 				&& TextUtils.isEmpty(App.app.getData("secret"))
 				&& !GlobalValue.isFirst){
@@ -394,38 +338,28 @@ import com.squareup.okhttp.Response;
 		}
 
 
-		/*final SwipeRefreshLayout refreshlayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
-		//初始化刷新头
-		final TextView tv = (TextView)refreshlayout.findViewById(R.id.textView1);
-
-		Log.i("", refreshlayout==null?"为空":"不为空");
-        //设置刷新时动画的颜色，可以设置4个
-		refreshlayout.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
-		refreshlayout.setOnRefreshListener(new OnRefreshListener() {
-
-            @Override
-            public void onRefresh() {
-                tv.setText("正在刷新");
-
-                new Handler().postDelayed(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        tv.setText("刷新完成");
-                        refreshlayout.setRefreshing(false);
-                    }
-                }, 6000);
-            }
-        });*/
-
-
-
 		return rootView;
 	}
 	boolean canscoll = false;
+	
+	private ArrayList<HomeAdPhotoData> homeAdPhotoList = new ArrayList<HomeAdPhotoData>();
+	
+	public void setDataIntoHomeAdPhotoList(){
+		HomeAdPhotoData homeAdPhotoData1 = new HomeAdPhotoData();
+    	homeAdPhotoData1.setPhoto("http://lansuntest.qiniudn.com/201507201746_143738561397");
+    	HomeAdPhotoData homeAdPhotoData2 = new HomeAdPhotoData();
+    	homeAdPhotoData2.setPhoto("http://lansuntest.qiniudn.com/201507201746_143738561397");
+    	homeAdPhotoList.add(homeAdPhotoData1);
+    	homeAdPhotoList.add(homeAdPhotoData2);
+	}
+	
 
 	@InjectInit
 	private void init() {
+		//模拟图片的数据源
+		setDataIntoHomeAdPhotoList();
+	
+		
 		v.tv_home_icon.setTextColor(getResources().getColor(R.color.app_green2));
 		v.et_home_search.setFocusable(false);
 		if (TextUtils.isEmpty(App.app.getData("access_token"))/*没有拿到access_Token,isFirst也为true的时候，则跳至体验搜索页*/
@@ -487,33 +421,27 @@ import com.squareup.okhttp.Response;
 				v.tv_home_top_location.setText(getSelectCity()[1]);
 			}
 
-			/*head = inflater.inflate(R.layout.activity_home_banner, null);*/
-
-
+			head = inflater.inflate(R.layout.activity_home_banner, null);
 			/*尝试在head被充起来的瞬间就将其放到ListView的头上*/
-			/*lv_home_list.addHeaderView(head, null, true);*/
-
-
-
-
-			Log.i("","head的值为： "+head.toString());
-
+			lv_home_list.addHeaderView(head, null, true);
 
 			ViewTreeObserver vto = head.getViewTreeObserver();
 			vto.addOnScrollChangedListener(new OnScrollChangedListener() {
 
+
 				@Override
 				public void onScrollChanged() {
-
+					
 					int[] location = new int[2];
 					v.iv_home_location.getLocationInWindow(location);
-					int hiddenY = location[1] + v.iv_home_location.getHeight();
+					
+					hiddenY = location[1] + v.iv_home_location.getHeight();//hiddenY Y轴方向上的坐标值
 
 					/**
 					 * View searchView = lv_home_list.findViewById(R.id.ll_search);
 					 * */
 
-					View searchView = head.findViewById(R.id.ll_search);//在head这个View中拿到对应的搜索栏对象
+					searchView = head.findViewById(R.id.ll_search);
 					searchView.setOnClickListener(new OnClickListener() {
 
 						@Override
@@ -524,23 +452,51 @@ import com.squareup.okhttp.Response;
 							EventBus.getDefault().post(event);
 						}
 					});
-					int currY = getLocation(searchView);
+					
+					currY = getLocation(searchView);
 					if (currY == 0) {
 						return;
 					}
-					if (hiddenY > currY + 66) {
+					if (hiddenY > currY + 66) {//隐藏起来的HiddenY已经很多了，此时需要展示出上面隐藏的内容
+						//LogUtils.toDebugLog("isPlay", "isPlay的值为： "+isPlay);
 						if (isPlay) {
 							isPlay = false;
+							LogUtils.toDebugLog("isPlay", "isPlay的值为： "+isPlay);
 							Animation search_top_in = AnimationUtils.loadAnimation(activity, R.anim.home_top_in);
+							
 							AnimUtils.startTopInAnim(activity,v.fl_home_top_menu);
-
 							v.rl_top_r_top_menu.setVisibility(View.GONE);
+						}else{//从后台回来，isPlay == false
+							if(justComeBackFromHome){
+								//仅仅保持当前的样式不动
+								isPlay =false;
+								justComeBackFromHome=false;
+							}
+							
+							
 						}
 					} else {
-						if (!isPlay) {
-							isPlay = true;
-							startTopOutAnim(activity, v.fl_home_top_menu);
-							v.rl_top_r_top_menu.setVisibility(View.VISIBLE);
+						//LogUtils.toDebugLog("isPlay", "isPlay的值为： "+isPlay);
+						
+						if (!isPlay) {//顶部搜索栏  非展示  状态
+							
+							if(justComeBackFromHome){//只对 刚从后台回来和刚进入app时，这一下不做动画操作
+								//startTopOutAnim(activity, v.fl_home_top_menu);
+								isPlay = true;
+								v.rl_top_r_top_menu.setVisibility(View.VISIBLE);
+								justComeBackFromHome = false;
+							}else{
+								isPlay = true;
+								startTopOutAnim(activity, v.fl_home_top_menu);
+								v.rl_top_r_top_menu.setVisibility(View.VISIBLE);
+							}
+						}else{//顶部搜索栏  展示  状态
+							if(justComeBackFromHome){//刚从后台回来
+								//isPlay = false;
+								//startTopOutAnim(activity, v.fl_home_top_menu);
+								v.rl_top_r_top_menu.setVisibility(View.VISIBLE);
+								justComeBackFromHome = false;
+							}
 						}
 					}
 				}
@@ -655,6 +611,10 @@ import com.squareup.okhttp.Response;
 
 			iv_point = (ImageView) head.findViewById(R.id.iv_point);
 			iv_point2 = (ImageView) head.findViewById(R.id.iv_point2);
+			iv_homead_point = (ImageView) head.findViewById(R.id.iv_homead_point);
+			iv_homead_point2 = (ImageView) head.findViewById(R.id.iv_homead_point2);
+			iv_homead_point3 = (ImageView) head.findViewById(R.id.iv_homead_point3);
+			
 
 			//放了个ViewPager的头在ListView上面
 			/*final ViewPager banner = (ViewPager) lv_home_list.findViewById(R.id.vp_home_pager);*/
@@ -693,9 +653,77 @@ import com.squareup.okhttp.Response;
 			banner.setAdapter(adapter); //banner是ListView里面的上部的ViewPager
 			banner.setOnPageChangeListener(pageChangeListener);
 		}
+		
+		
+		
+		
+		
+		
+		vp_home_ad = (ViewPager) head.findViewById(R.id.vp_home_ad);
+		//1.给ViewPager设置上资源适配器
+		MyHomeAdPagerAdapter homeAdPagerAdapter = new MyHomeAdPagerAdapter(homeAdPhotoList);
+		
+		//2.给Viewpager设置上页面切换的监听器
+		OnPageChangeListener homeAdPageChangeListener = new OnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				//NTD1.改变对应的小圆点的颜色
+				changeHomeAdPointColor(position);
+		
+			}
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+			}
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+			}
+		};
+		
+		
+		//3.给Viewpager设置上轮播的无限循环效果
+		//4.给Viewpager设置上页面的点击效果        -->在Adapter中，对View进行设置
+		
+		vp_home_ad.setAdapter(homeAdPagerAdapter);
+		
+		
+//		vp_home_ad.setOnTouchListener(new MyOnTouchListener());
+		
+		
+		try {
+			Field mField = ViewPager.class.getDeclaredField("mScroller");
+			mField.setAccessible(true);//允许暴力反射
+			mScroller = new FixedSpeedScroller(vp_home_ad.getContext(),new AccelerateInterpolator());
+			mScroller.setmDuration(3000);
+			mField.set(vp_home_ad, mScroller);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		mScroller.setmDuration(3000);
+		vp_home_ad.setOnPageChangeListener(homeAdPageChangeListener);
+		handler.removeCallbacksAndMessages(null);
+		handler.postDelayed(new InternalTask(), 5000);
+		vp_home_ad.setCurrentItem(1000*3);
 
 	}
-
+	
+	private void changeHomeAdPointColor(int position) {
+		if (position%3 == 0) {
+			iv_homead_point.setBackgroundResource(R.drawable.oval_select);
+			iv_homead_point2.setBackgroundResource(R.drawable.oval_nomal);
+			iv_homead_point3.setBackgroundResource(R.drawable.oval_nomal);
+		}
+		if (position%3 == 1) {
+			iv_homead_point2.setBackgroundResource(R.drawable.oval_select);
+			iv_homead_point.setBackgroundResource(R.drawable.oval_nomal);
+			iv_homead_point3.setBackgroundResource(R.drawable.oval_nomal);
+		}
+		if (position%3 == 2) {
+			iv_homead_point3.setBackgroundResource(R.drawable.oval_select);
+			iv_homead_point.setBackgroundResource(R.drawable.oval_nomal);
+			iv_homead_point2.setBackgroundResource(R.drawable.oval_nomal);
+		}
+	}
+	
 	private void changePointColor(int position) {
 		if (position == 0) {
 			iv_point.setBackgroundResource(R.drawable.oval_select);
@@ -721,6 +749,7 @@ import com.squareup.okhttp.Response;
 		@Override
 		public void onPageSelected(int position) {
 			changePointColor(position);
+			
 		}
 
 	};
@@ -731,10 +760,21 @@ import com.squareup.okhttp.Response;
 	private String photoUrl;
 	private boolean isFirstRequest = true;
 	private View rootView;
-	private ScrollView mScrollView;
+	//private ScrollView mScrollView;
 	private View refresh_footer;
 	private ServiceAllBiz biz;
 	protected Intent intent;
+	private ImageView iv_homead_point;
+	private ImageView iv_homead_point2;
+	private ImageView iv_homead_point3;
+	private ViewPager vp_home_ad;
+	private HomeRefreshBroadCastReceiver broadCastReceiver;
+	private IntentFilter filter;
+	private FixedSpeedScroller mScroller;
+	/*
+	 * 标签属性： 标示 首页刚刚从后台回来
+	 */
+	private boolean justComeBackFromHome = false;
 
 	public int getLocation(View v) {
 		int[] loc = new int[4];
@@ -742,7 +782,7 @@ import com.squareup.okhttp.Response;
 		v.getLocationOnScreen(location);
 		loc[0] = location[0];
 		loc[1] = location[1];
-		return loc[1];
+		return loc[1]; //只需要返回Y轴方向的坐标
 	}
 
 	/*
@@ -751,6 +791,7 @@ import com.squareup.okhttp.Response;
 	public static void startTopOutAnim(Context activity, View v) {
 		Animation search_top_in = AnimationUtils.loadAnimation(activity,
 				R.anim.home_top_out);
+		//search_top_in.setDuration(1000);
 		v.setAnimation(search_top_in);
 		v.startAnimation(search_top_in);
 		v.setVisibility(View.GONE);
@@ -758,13 +799,13 @@ import com.squareup.okhttp.Response;
 
 	@InjectHttp
 	private void result(ResponseEntity r) {
-
-		/*PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-		PullToRefreshManager.getInstance().onFooterRefreshComplete();*/
-
+		
+		PullToRefreshManager.getInstance().headerUnable();
+		PullToRefreshManager.getInstance().onFooterRefreshComplete();
+		PullToRefreshManager.getInstance().footerEnable();
 
 		if (r.getStatus() == FastHttp.result_ok) {
-			endProgress();
+			/*endProgress();*/
 			switch (r.getKey()) {
 			case 0://拿到顶头上的图
 				try {
@@ -777,22 +818,30 @@ import com.squareup.okhttp.Response;
 					JSONObject obj = new JSONObject(r.getContentAsString());
 					photoUrl = obj.get("photo").toString();
 					//loadPhoto(photoUrl, iv_home_ad);
-
-					/*	for(HashMap<String, Object> shopData: shopDataList){
+					
+					
+					//目前返回的只是一个对象,下面是针对数组使用的
+					//ArrayList<HomeAdPhotoData> photoList = new ArrayList<HomeAdPhotoData>();
+					
+					
+					HomeAdPhotoData singlePhotoData = Handler_Json.JsonToBean(HomeAdPhotoData.class,r.getContentAsString());
+					String singlePhotoUrl = singlePhotoData.getPhoto();
+					loadPhoto(singlePhotoUrl, iv_home_ad);  
+					
+					
+					for(HashMap<String, Object> shopData: shopDataList){
 						System.out.println(shopData.toString());
 					}
-
 					adapter = new SearchAdapter(lv_home_list, shopDataList, R.layout.activity_search_item);
 					lv_home_list.setAdapter(adapter);
-					adapter = null;*/
-
-					//}
+					endProgress();
+					PullToRefreshManager.getInstance().headerUnable();
+					//adapter = null;
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
+				
 				loadPhoto(photoUrl, iv_home_ad);
-
-
 				break;
 			case 1:// 极文列表
 
@@ -814,12 +863,9 @@ import com.squareup.okhttp.Response;
 						if (promoteAdapter == null) {//第一次进入,Adapter为null,将其设置到ListView对象上去
 							promoteAdapter = new HomeListAdapter(lv_home_list,
 									dataList, R.layout.home_item);
-
 							lv_home_list.setAdapter(promoteAdapter);
-
 						} else {
-
-							PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+							//PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 							PullToRefreshManager.getInstance().onFooterRefreshComplete();
 							promoteAdapter.notifyDataSetChanged();
 						}
@@ -828,35 +874,29 @@ import com.squareup.okhttp.Response;
 					}
 
 				} else {//如果选择的城市是China的城市,换句话说,常规进来的界面是走下面的代码的
-
 					list = Handler_Json.JsonToBean(ActivityList.class,r.getContentAsString());
-
+					
+					if(isDeleteShopData){
+						shopDataList.clear();
+						isDeleteShopData=!isDeleteShopData;
+					}
 					if (list.getData() != null) {
 						for (ActivityListData data : list.getData()) {
 							HashMap<String, Object> map = new HashMap<String, Object>();
-
 							map.put("tv_search_activity_name", data.getShop().getName());
-
 							map.put("tv_search_activity_distance", data.getShop().getDistance());
-
 							map.put("tv_search_activity_desc", data.getActivity().getName());
-
 							map.put("iv_search_activity_head", data.getActivity().getPhoto());
-
 							map.put("activityId", data.getActivity().getId());
 							map.put("shopId", data.getShop().getId());
 							map.put("tv_search_tag", data.getActivity().getTag());
 
 							map.put("icons", data.getActivity().getCategory());//拿到category的icons列表
-
 							shopDataList.add(map);//店铺的数据源List
 						}
 						if (adapter == null) {
 							adapter = new SearchAdapter(lv_home_list,shopDataList, R.layout.activity_search_item);
 							lv_home_list.setAdapter(adapter);
-
-							setListViewHeightBasedOnChildren(lv_home_list);   
-							//setListViewHeightBasedOnChildrenByDataList(lv_home_list, shopDataList);
 
 						} else {
 							try{
@@ -866,21 +906,17 @@ import com.squareup.okhttp.Response;
 							}
 							//TODO
 							adapter.notifyDataSetChanged();
-							/*adapter.notifyAll();*/
-							lv_home_list.setAdapter(adapter); //少了这段代码，仅仅只有新刷出来的数据是拥有标签的
+							PullToRefreshManager.getInstance().headerUnable();
 							
-							setListViewHeightBasedOnChildren(lv_home_list);  
-							//setListViewHeightBasedOnChildrenByDataList(lv_home_list, shopDataList);
+							/*adapter.notifyAll();*/
+							//lv_home_list.setAdapter(adapter); //当ScrollView包裹ListView时，少了这段代码，仅仅只有新刷出来的数据是拥有标签的
 						}
 						//上面的图还是要加载上去的
-						/*loadPhoto(photoUrl, iv_home_ad);*/
-						isFirstRequest = false;
-
-
+						//loadPhoto(photoUrl, iv_home_ad);
+						PullToRefreshManager.getInstance().headerUnable();
+						PullToRefreshManager.getInstance().footerEnable();
 						PullToRefreshManager.getInstance().onFooterRefreshComplete();
-						PullToRefreshManager.getInstance().footerUnable();
-
-
+						isFirstRequest = false;
 					}
 				}
 				break;
@@ -890,60 +926,6 @@ import com.squareup.okhttp.Response;
 		}
 	}
 
-	/**
-	 * 动态自动测量ListView的高度
-	 * @param listView
-	 */
-	private void setListViewHeightBasedOnChildren(ListView listView ) {
-
-		ListAdapter lAdapter = listView.getAdapter(); 
-		// 获取ListView对应的Adapter  
-		if (lAdapter == null) {   
-			return;   
-		}   
-
-		int totalHeight = 0;   
-		for (int i = 0, len = lAdapter.getCount(); i < len; i++) {   
-			// listAdapter.getCount()返回数据项的数目   
-			View listItem = lAdapter.getView(i, null, listView);   
-			// 计算子项View 的宽高   
-		    listItem.measure(0, 0);  
-			// 统计所有子项的总高度   
-			totalHeight += listItem.getMeasuredHeight();    
-		}   
-
-		ViewGroup.LayoutParams params = listView.getLayoutParams();   
-		// listView.getDividerHeight()获取子项间分隔符占用的高度   
-		// params.height最后得到整个ListView完整显示需要的高度   
-		/*params.height = totalHeight+ (listView.getDividerHeight() * (lAdapter.getCount() - 1) + refresh_footer.getMeasuredHeight());   */
-	    params.height = totalHeight+ (listView.getDividerHeight() * (lAdapter.getCount() - 1));   
-	    
-		listView.setLayoutParams(params);  
-	}
-	
-	/**
-	 * 动态自动测量ListView的高度
-	 * @param listView
-	 */
-	private void setListViewHeightBasedOnChildrenByDataList(ListView listView, List dataList ) {
-
-		ListAdapter lAdapter = listView.getAdapter(); 
-		int totalHeight = 0;   
-		int len = dataList.size(); 
-		// listAdapter.getCount()返回数据项的数目   
-		View listItem = lAdapter.getView(0, null, listView);   
-		// 计算子项View 的宽高   
-		listItem.measure(0, 0);    
-		// 统计所有子项的总高度   
-		totalHeight = listItem.getMeasuredHeight() * len;
-		ViewGroup.LayoutParams params = listView.getLayoutParams();   
-		if(hasFooterview){
-			params.height = totalHeight+ (listView.getDividerHeight() *len-1)+refresh_footer.getMeasuredHeight();   
-		}else{
-			params.height = totalHeight+ (listView.getDividerHeight() *len-1);   
-		}
-		listView.setLayoutParams(params);  
-	}
 
 	public void click(View v) {
 		EventBus bus = EventBus.getDefault();
@@ -1011,7 +993,7 @@ import com.squareup.okhttp.Response;
 	 * 
 	 * @param type
 	 */
-	/*	@InjectPullRefresh
+   @InjectPullRefresh
 	public void call(int type) {
 		// 首页是没有下拉加载的
 		switch (type) {
@@ -1036,78 +1018,197 @@ import com.squareup.okhttp.Response;
 				}
 			}else{//针对第一次进来用户急于去刷新操作，但此时的list对象是为空的
 				CustomToast.show(activity, "让网速飞一会儿，biu~biu~", "总裁大大，请给我一首歌的时间");
-				refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
+				/*refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
 				refreshParams.put("site", getSelectCity()[0]);
 				refreshParams.put("intelligent", "home");
 				refreshCurrentList(refreshUrl, refreshParams,1, lv_home_list);
-				PullToRefreshManager.getInstance().onFooterRefreshComplete();
+				PullToRefreshManager.getInstance().onFooterRefreshComplete();*/
 
 			}
 			break;
 		}
 	}
-	 */
+   class MyHomeAdPagerAdapter extends PagerAdapter {
+		private Context context;
+		private ArrayList<HomeAdPhotoData> mList;//传递进入数据源
 
-	/**
-	 * 下面的方法原本是针对PullTorefresh进行的滑动监听的
-	 * @author Yeun.Zhang
-	 *
-	 */
-	private class GetDataTask extends AsyncTask<Void, Void, String[]> {
-
+		public MyHomeAdPagerAdapter(ArrayList<HomeAdPhotoData> homeAdPhotoList) {
+			this.mList = homeAdPhotoList;
+		}
 		@Override
-		protected String[] doInBackground(Void... params) {
-			// Simulates a background job.
-			try {
-
-
-				Thread.sleep(4000);
-
-
-			} catch (InterruptedException e) {
-			}
-			return null;
+		public int getCount() {
+			/*return mList.size();*/
+			return Integer.MAX_VALUE;
 		}
 
 		@Override
-		protected void onPostExecute(String[] result) {
-			// Do some stuff here
-			if (list != null) {
-				if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url()=="null") {
-					PullToRefreshManager.getInstance().onFooterRefreshComplete();
-					PullToRefreshManager.getInstance().footerUnable();
-					CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
-
-					/*sv_homefrag.setOnPullEventListener(null);
-					sv_homefrag.setPullToRefreshEnabled(false);
-					sv_homefrag.setPullToRefreshOverScrollEnabled(false);*/
-
-
-				} else {
-					refreshParams = new LinkedHashMap<>();
-					if (isChina) {//如果是国内活动，需要进行刷新操作
-						refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
-						refreshParams.put("site", getSelectCity()[0]);
-						refreshParams.put("intelligent", "home");
-					} else {
-						refreshParams = null;
-						refreshUrl = String.format(GlobalValue.URL_ARTICLE_PROMOTE,getSelectCity()[0]);
-					}
-					refreshCurrentList(list.getNext_page_url(), refreshParams,1, lv_home_list);
-				}
-			}else{//针对第一次进来用户急于去刷新操作，但此时的list对象是为空的
-				CustomToast.show(activity, "让网速飞一会儿，biu~biu~", "总裁大大，请给我一首歌的时间");
-				refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
-				refreshParams.put("site", getSelectCity()[0]);
-				refreshParams.put("intelligent", "home");
-				refreshCurrentList(refreshUrl, refreshParams,1, lv_home_list);
-
-				/*PullToRefreshManager.getInstance().onFooterRefreshComplete();*/
+		public boolean isViewFromObject(View view, Object object) {
+			return view == object;
+		}
+		@Override
+		public Object instantiateItem(ViewGroup container, int position) {
+			ImageView imageView = new ImageView(activity);
+			
+			imageView.setScaleType(ScaleType.CENTER_CROP);
+			
+			/* 暂时将 根据uri加载图片的方法停掉，但以后需打开
+			 * loadPhoto(mList.get(position).getPhoto(), imageView);//把图片放到container中的ImageView控件上
+			 */
+			
+			if(position%3==0){
+				imageView.setBackgroundResource(R.drawable.home_ad_poster1);
+			}else if(position%3==1){
+				imageView.setBackgroundResource(R.drawable.home_ad_poster2);
+			}else if(position%3==2){
+				imageView.setBackgroundResource(R.drawable.home_ad_poster3);
 			}
-			// Call onRefreshComplete when the list has been refreshed.
-			/*sv_homefrag.onRefreshComplete();*/
-
-			super.onPostExecute(result);
+			/*
+			 * 以后的服务器返回回来的数据需要拥有这张图外接的连接地址，目前暂时将其设置为点击第二张图片进入私人秘书页
+			   imageView.setOnTouchListener(new MyOnTouchListener());
+			   touch事件很恶心地拦截掉了点击事件的DOWN操作*/
+			imageView.setOnTouchListener(new MyOnTouchListener());
+			
+			imageView.setOnClickListener(new MyOnClickListener(position));
+			
+			container.addView(imageView);
+			return imageView;
+		}
+		@Override
+		public void destroyItem(ViewGroup container, int position, Object object) {
+			container.removeView((View) object);
 		}
 	}
+  
+   /**
+    * 触摸事件未被使用，由于其DOWN操作和点击事件产生
+    * @author Yeun.Zhang
+    *
+    */
+	class MyOnTouchListener implements OnTouchListener{
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+				handler.removeCallbacksAndMessages(null);
+				handler.removeMessages(0);
+				LogUtils.toDebugLog("点击", "onTouch中的点击");
+				break;
+				
+			case MotionEvent.ACTION_CANCEL:
+				handler.postDelayed(new InternalTask(), 5000);
+				LogUtils.toDebugLog("点击", "onTouch中的ACTION_CANCEL");
+				break;
+			case MotionEvent.ACTION_UP:
+				handler.postDelayed(new InternalTask(), 5000);
+				LogUtils.toDebugLog("点击", "onTouch中的ACTION_UP");
+				break;
+			}
+			/*return true;*/
+			return false;
+		}
+	}
+	class InternalTask implements Runnable{
+		@Override
+		public void run() {
+			handler.sendEmptyMessage(0);
+		}
+	}
+	
+	@SuppressLint("HandlerLeak")
+	class InternalHandler extends Handler{
+		@Override
+		public void handleMessage(Message msg) {
+			/*int nextIndex = (vp_home_ad.getCurrentItem()+1)%homeAdPhotoList.size();*/
+			int nextIndex = vp_home_ad.getCurrentItem()+1;
+			mScroller.setmDuration(3000);
+			vp_home_ad.setCurrentItem(nextIndex);
+			//vp_home_ad.setFadingEdgeLength(100);
+			handler.postDelayed(new InternalTask(), 5000);//自己给自己发信息，哈哈
+		}
+	}
+	
+	//页面图片的点击事件
+	class MyOnClickListener implements OnClickListener{
+		public int mPosition ;
+		public MyOnClickListener(int position){
+			this.mPosition = position;
+		}
+		@Override
+		public void onClick(View v) {
+			LogUtils.toDebugLog("点击", "点击监听中的点击事件");
+			if(mPosition%3 == 0){
+				MainFragment mineFragment = new MainFragment(1);
+				FragmentEntity fEntity = new FragmentEntity();
+				fEntity.setFragment(mineFragment);
+				EventBus.getDefault().post(fEntity);
+			}else if(mPosition%3 == 1){
+				ActivityFragment activityFragment = new ActivityFragment();
+				Bundle args = new Bundle();
+				args.putInt("type", R.string.investment);
+				activityFragment.setArguments(args);
+				FragmentEntity fEntity = new FragmentEntity();
+				fEntity.setFragment(activityFragment);
+				EventBus.getDefault().post(fEntity);
+			}else if(mPosition%3 == 2){
+				ActivityFragment activityFragment = new ActivityFragment();
+				Bundle args = new Bundle();
+				args.putInt("type", R.string.integral);
+				activityFragment.setArguments(args);
+				FragmentEntity fEntity = new FragmentEntity();
+				fEntity.setFragment(activityFragment);
+				EventBus.getDefault().post(fEntity);
+			}
+		}
+		
+	}
+	
+	
+	@Override
+	public void onDestroy() {
+		getActivity().unregisterReceiver(broadCastReceiver);
+		super.onDestroy();
+	}
+	
+	 class HomeRefreshBroadCastReceiver extends BroadcastReceiver{
+
+		
+
+		@Override
+		public void onReceive(Context ctx, Intent intent) {
+			if(intent.getAction().equals("com.lansun.qmyo.refreshHome")){
+				System.out.println("收到广播了");
+				
+				refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_home_list);
+				v.iv_card.setVisibility(View.VISIBLE);//原本右边银行卡可见
+				v.iv_top_card.setVisibility(View.VISIBLE);//滑动出现的右边银行卡可见
+				v.tv_home_experience.setVisibility(View.GONE);//原本  体验不可见
+				v.tv_top_home_experience.setVisibility(View.GONE);//滑动出现的右边 体验二字 不可见
+				v.rl_bg.setPressed(false);
+				v.rl_bg.setBackgroundResource(R.drawable.circle_background_gray);
+				v.rl_top_bg.setBackgroundResource(R.drawable.circle_background_gray);
+				v.rl_top_bg.setPressed(false);
+				
+				/*adapter = null;*/
+				isDeleteShopData = true;
+				/*
+				 * shopDataList.clear();
+				   adapter.notifyDataSetChanged();
+				 */
+			}
+			if(intent.getAction().equals("com.lansun.qmyo.refreshTheIcon")){
+				v.iv_card.setVisibility(View.VISIBLE);//原本右边银行卡可见
+				v.iv_top_card.setVisibility(View.VISIBLE);//滑动出现的右边银行卡可见
+				v.tv_home_experience.setVisibility(View.GONE);//原本  体验不可见
+				v.tv_top_home_experience.setVisibility(View.GONE);//滑动出现的右边 体验二字 不可见
+				v.rl_bg.setPressed(false);
+				v.rl_bg.setBackgroundResource(R.drawable.circle_background_gray);
+				v.rl_top_bg.setBackgroundResource(R.drawable.circle_background_gray);
+				v.rl_top_bg.setPressed(false);
+				System.out.println("首页收到刷新Icon的广播了");
+				
+			}
+			
+		}
+	 }
+
 }

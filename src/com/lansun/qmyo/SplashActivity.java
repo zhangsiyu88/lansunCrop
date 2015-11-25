@@ -117,7 +117,7 @@ public class SplashActivity extends FragmentActivity {
 				
 				 /** 如果定位失败,没拿到定位地点,那么自动将其转向默认地址(暂定为上海)去加载数据*/
 				 
-				if(location.getLatitude()==0||location.getLongitude()==0){//只要高德地图定位正常,就不会走下面的操作
+				if(location.getLatitude()==0||location.getLongitude()==0){//只要高德地图定位正常,就不会走下面的操作           //Gps的权限被关闭后
 					
 					/*geoLat = 31.293688;
 					geoLng = 121.524448;*/
@@ -129,26 +129,40 @@ public class SplashActivity extends FragmentActivity {
 					
 					Log.i("走默认地址的纬度", String.valueOf(String.valueOf(GlobalValue.gps.getWgLat())));
 					Log.i("走默认地址的经度", String.valueOf(String.valueOf(GlobalValue.gps.getWgLon())));
+					
+					if(App.app.getData("firstEnter").isEmpty()){
+						App.app.setData("gpsIsNotAccurate","true");
+					}
+					
 					FastHttpHander.ajaxGet(String.format(GlobalValue.URL_GPS_ADCODE, geoLng,
 							geoLat), null, config, SplashActivity.this);
 					
-				}else{//否则,按照地位地点进行加载
+				}else{//否则,按照地位地点进行加载                                                                                                                     //两种情况：1. Gps关闭，但网络定位开启    2.GPS开启，网络定位也是开启的
 					Log.i("首页GPS", "走定位地址");
 					String url = "http://mo.amap.com/service/geo/getadcode.json?";
 						  /*longitude=%1$s&latitude=%2$s 
 							location.getLongitude(),
 							location.getLatitude())*/
 					
+					/*if(App.app.getData("firstEnter").isEmpty()){
+						App.app.setData("gpsIsNotAccurate","true");
+					}*/
+					
 					FastHttpHander.ajaxGet( url+"longitude="+GlobalValue.gps.getWgLon()+"&latitude="+GlobalValue.gps.getWgLat(), null, config,
 							SplashActivity.this);
 					
 					
 				}
-			}else{
+			}else{//关掉了 GPS定位和网络定位  
 				//TODO
 				Log.i("Location是不是为空？", "location居然是空！！！location == null");
 				
 				Log.i("首页GPS", "location为空时走默认地址: 人民广场");
+				
+				if(App.app.getData("firstEnter").isEmpty()){
+					App.app.setData("gpsIsNotAccurate","true");
+				}
+				
 				InternetConfig config = new InternetConfig();
 				config.setKey(0);
 				double baseLat = 31.230431;
@@ -293,9 +307,6 @@ public class SplashActivity extends FragmentActivity {
         win.setAttributes(winParams);  
     }  
     
-    
-    
-    
 	/**
 	 * 初始化去获取物理数据
 	 */
@@ -374,6 +385,11 @@ public class SplashActivity extends FragmentActivity {
 	/*	aMapLocManager.requestLocationData("lbs", 2000L, 10.0F, this.locationListener);*/
 		/*aMapLocManager.requestLocationData(LocationManagerProxy.NETWORK_PROVIDER, 60*1000 , 10, locationListener);*/
 		aMapLocManager.requestLocationData(LocationProviderProxy.AMapNetwork, 60*1000 , 10, locationListener);
+		
+		/*三种情况： 允许后便开启了高德的定位服务；
+				 未开启高德定位服务，走的是默认的地址“人民广场”
+				
+		*/
 	}
 
 	@Override

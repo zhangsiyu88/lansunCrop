@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -119,6 +120,25 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 			case 10:
 				CustomToast.show(activity,"提示","网络连接异常请刷新后重试");
 				break;
+			case 11:
+			//在一进入我的这个界面时，将其展示出Dialog
+			LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			final Dialog dialog2 = new Dialog(activity,R.style.CustomDialogForNewUserTip);
+			View layout2 = inflater.inflate(R.layout.dialog_addbankcard, null);
+			dialog2.setContentView(layout2, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+			layout2.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View arg0) {
+					//一旦点击就要将其置为 true，下一次进入不再执行下面的弹框操作
+					App.app.setData("firstEnterBankcardToSearch","true");
+					dialog2.dismiss();
+				}
+			});
+			dialog2.show();
+			dialog2.setCanceledOnTouchOutside(true);
+			dialog2.setCancelable(true);
+			   break;
 			}
 			PullToRefreshManager.getInstance().onFooterRefreshComplete();
 			PullToRefreshManager.getInstance().footerEnable();
@@ -383,6 +403,9 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 						}
 						//更新查询列表页
 						handlerPuzzy.sendEmptyMessage(2);
+						if(App.app.getData("firstEnterBankcardToSearch").isEmpty()){//第一次进入搜索页，并且搜索出了结果
+							handlerPuzzy.sendEmptyMessage(11);
+						}
 					}else {
 						handlerPuzzy.sendEmptyMessage(3);
 					} 
@@ -520,7 +543,7 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 					if(isPull){
 						isPull = false;
 					}else{
-						dataList = new ArrayList<>();
+						dataList.clear();
 					}
 					if (bankList.getData().size()!=0) {//服务器返回了值
 						isFirst = false;

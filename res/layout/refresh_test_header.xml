@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <RelativeLayout 
+        style="@style/w_match_h_wrap"
+        android:layout_gravity="center"
+        >
+    <FrameLayout
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content" 
+	        android:id="@+id/fr_close_open_eyes"
+	        >
+	
+	        <ImageView
+	            android:id="@+id/iv_close_eyes"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:background="@drawable/close_eyes" />
+	        
+	       <ImageView
+	            android:id="@+id/iv_open_eyes"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:background="@drawable/open_eyes" />
+	    </FrameLayout>
+        
+        
+	    <!-- <FrameLayout
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content" 
+	        android:id="@+id/fr_refresh_left"
+	        >
+	
+	        <ImageView
+	            android:id="@+id/iv_refresh_arrow"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:background="@drawable/refresh_arrow" />
+	
+	        <ProgressBar
+	            android:id="@+id/pb_refresh_progress"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:indeterminateDrawable="@drawable/progressbar_color"
+	            android:visibility="invisible" />
+	    </FrameLayout> -->
+
+	    <LinearLayout
+	        android:id="@+id/ll_center_text"
+	        android:layout_width="wrap_content"
+	        android:gravity="center"
+	        android:layout_height="wrap_content"
+	        android:layout_centerInParent="true"
+	        android:orientation="horizontal" >
+	
+	       <FrameLayout
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content" 
+	        android:id="@+id/fr_refresh_left"
+	        >
+	
+	        <ImageView
+	            android:id="@+id/iv_refresh_arrow"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:background="@drawable/refresh_arrow" />
+	
+	        <ProgressBar
+	            android:id="@+id/pb_refresh_progress"
+	            android:layout_width="40px"
+                android:layout_height="40px"
+	            android:layout_gravity="center"
+	            android:indeterminateDrawable="@drawable/progressbar_color"
+	            android:visibility="invisible" />
+	    </FrameLayout> 
+	        
+	        <TextView
+	            android:layout_marginLeft="5dp"
+	            android:id="@+id/iv_refresh_state"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            style="@style/text_style_nomal_30"
+	            android:text="正在加载"
+	            android:textColor="@color/text_gray2" />
+	        
+	        <TextView
+	            android:id="@+id/tv_refresh_time"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="上次刷新时间:1999-09-09 12:12:12"
+	            android:layout_marginTop="5dp"
+	            android:textColor="@android:color/darker_gray"
+	            android:textSize="10sp" 
+	            android:visibility="gone"/>
+	        
+	    </LinearLayout>
+    
+	     <ImageView
+	            android:layout_alignParentRight="true"
+	            android:layout_alignParentBottom="true"
+	            android:layout_marginRight="@dimen/l_r_35"
+	            style="@style/w_wrap_h_wrap"
+	            android:layout_gravity="center_vertical"
+	            android:src="@drawable/loading_right" />
+     
+  </RelativeLayout>   
+
+</LinearLayout>

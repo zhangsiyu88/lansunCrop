@@ -72,7 +72,10 @@
                         android:id="@+id/textView2"
                         style="@style/text_style_big_43"
                         android:layout_marginTop="@dimen/margin_top_45"
-                        android:text="@string/qmyo_desc" />
+                        android:text="@string/qmyo_desc" 
+                        android:textSize="17dp"
+                        android:textColor="#6F6F6F"
+                        android:lineSpacingExtra="4dp"/>
                 </LinearLayout>
             </RelativeLayout>
 

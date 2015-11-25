@@ -312,6 +312,8 @@ public class SearchBranListOkHttpFragment extends BaseFragment implements OnClic
 		refreshParams.put("site", getSelectCity()[0]);
 		try {
 			refreshParams.put("query", URLEncoder.encode(query, "utf-8"));
+			Log.d("utf-8", query);
+			
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}

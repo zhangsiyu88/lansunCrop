@@ -1,10 +1,8 @@
 package com.lansun.qmyo.fragment;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -13,19 +11,18 @@ import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.util.Handler_Inject;
 import com.google.gson.Gson;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.question.QuestionAdapter;
 import com.lansun.qmyo.adapter.question.QuestionAdapter.OnItemClickCallBack;
@@ -35,6 +32,7 @@ import com.lansun.qmyo.domain.SecretaryQuestions;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExpandTabView;
 import com.lansun.qmyo.view.ViewRight;
@@ -43,7 +41,6 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 /**
- * 鎴戠殑绉佷汉绉樹功 鍜岀浜虹涔︿笉鏄悓涓�涓晫闈�
  * 
  * @author bhxx
  * 
@@ -66,7 +63,6 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 	}
 	private Handler handleOK=new Handler(){
 		public void handleMessage(android.os.Message msg) {
-			endProgress();
 			switch (msg.what) {
 			case 0:
 				setEmptyView(1);
@@ -111,11 +107,15 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 						}else {
 							swiperefresh.setRefreshing(true);
 							String refresh=String.valueOf(list.getNext_page_url());
+							
+							
 							if ("".equals(refresh)||"null".equals(refresh)) {
 								CustomToast.show(getActivity(), R.string.none_data_tip,R.string.none_data_content);
 								swiperefresh.setRefreshing(false);
 							}else {
 								startSearch(refresh+"&type="+currentType);
+								
+								LogUtils.toDebugLog("refreshUrl", refresh+"&type="+currentType);
 							}
 						}
 					}else {
@@ -142,13 +142,17 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 		question_item_recycle=(RecyclerView)rootView.findViewById(R.id.lv_secretary_list);
 		manager=new LinearLayoutManager(getActivity());
 		question_item_recycle.setLayoutManager(manager);
+		
 		question_adapter=new QuestionAdapter(lists,MineSecretaryFragment.this);
+		
 		question_item_recycle.setAdapter(question_adapter);
 		rootView.findViewById(R.id.look_help).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				FragmentEntity entity=new FragmentEntity();
-				Fragment fragment=new SecretaryFragment();
+				
+				/*Fragment fragment=new SecretaryFragment();*/
+				MainFragment fragment=new MainFragment(1);
 				entity.setFragment(fragment);
 				EventBus.getDefault().post(entity);
 			}
@@ -176,12 +180,13 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 		sxGroup.add(getString(R.string.studybroad));
 		sxGroup.add(getString(R.string.licai_touzi));
 		sxGroup.add(getString(R.string.handlecard));
-		viewRight.setItems(sxGroup);
+		viewRight.setItems(sxGroup);//将列表数据塞入到控件的接收者里去
 		holder_button.put(0, getString(R.string.all));
 		mViewArray.put(0, viewRight);
 		v.exp_mine_secretary.setValue(holder_button, mViewArray);
 		refreshUrl = GlobalValue.URL_SECRETARY_QUESTIONS;
 		startSearch(refreshUrl+"type="+currentType);
+		
 		viewRight.setOnSelectListener(new ViewRight.OnSelectListener() {
 			@Override
 			public void getValue(String distance, String showText, int position) {
@@ -199,31 +204,34 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 		while (GlobalValue.mySecretary!=null) {
 			break;
 		}
-		setProgress(question_item_recycle);
-		startProgress();
-		OkHttp.asyncGet(url, "Authorization", "Bearer "+App.app.getData("access_token"), null, new Callback() {
-			@Override
-			public void onResponse(Response response) throws IOException {
-				if (response.isSuccessful()) {
-					String json=response.body().string();
-					Gson gson=new Gson();
-					list = gson.fromJson(json, SecretaryQuestions.class);
-					if (list.getData().size()==0) {
-						handleOK.sendEmptyMessage(10);
-					}else {
-						for (QuestionDetailItem item:list.getData()) {
-							lists.add(item);
+		try{
+			OkHttp.asyncGet(url, "Authorization", "Bearer "+App.app.getData("access_token"), null, new Callback() {
+				@Override
+				public void onResponse(Response response) throws IOException {
+					if (response.isSuccessful()) {
+						String json=response.body().string();
+						Gson gson=new Gson();
+						list = gson.fromJson(json, SecretaryQuestions.class);
+						if (list.getData().size()==0) {
+							handleOK.sendEmptyMessage(10);
+						}else {
+							for (QuestionDetailItem item:list.getData()) {
+								lists.add(item);
+							}
+							handleOK.sendEmptyMessage(0);
 						}
-						handleOK.sendEmptyMessage(0);
 					}
 				}
-			}
-			@Override
-			public void onFailure(Request request, IOException exception) {
-
-			}
-		});
+				@Override
+				public void onFailure(Request request, IOException exception) {
+					
+				}
+			});
+		}catch(Exception e){
+			
+		}
 	}
+	
 	boolean isGreen = false;
 	private ViewRight viewRight;
 	private ArrayList<HashMap<String, String>> dataList;
@@ -262,7 +270,6 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 	}
 	@Override
 	public void onRefresh() {
-		Log.e("referesh","shuaxin");
 		if (manager.findFirstVisibleItemPosition()==0) {
 			swiperefresh.setRefreshing(false);
 		}

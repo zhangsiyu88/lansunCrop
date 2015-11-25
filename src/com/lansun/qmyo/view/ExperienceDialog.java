@@ -44,6 +44,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 
 /**
@@ -206,8 +207,7 @@ public class ExperienceDialog extends DialogFragment {
 				InternetConfig config2 = new InternetConfig();
 				config2.setKey(3);
 				HashMap<String, Object> head = new HashMap<String, Object>();
-				head.put("Authorization",
-						"Bearer " + App.app.getData("access_token"));
+				head.put("Authorization","Bearer " + App.app.getData("access_token"));
 				config2.setHead(head);
 				LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
 			
@@ -215,13 +215,16 @@ public class ExperienceDialog extends DialogFragment {
 				if(cardId==0){
 					cardId = Integer.valueOf(mCardId);
 				}
-				
 				Log.i("作为体验用户实际提交上去的银行卡的ID为：","作为体验用户实际提交上去的银行卡的ID为："+cardId);
 				params.put("bankcard_id", cardId + "");
 				
-				/*FastHttpHander.ajaxForm(GlobalValue.URL_BANKCARD_ADD, params,
-						null, config2, this);*/
+				
+				
+				
 				FastHttpHander.ajax(GlobalValue.URL_BANKCARD_ADD, params, config2, this);
+				
+				
+				
 				
 				App.app.setData("ExperienceBankcardId", String.valueOf(cardId));
 				Log.d("银行卡页的id", "首页处写入本地sp中的银行卡ID为：" + App.app.getData("ExperienceBankcardId"));
@@ -230,10 +233,12 @@ public class ExperienceDialog extends DialogFragment {
 				App.app.setData("isExperience", "true");
 				App.app.getData("isEmbrassStatus").equals("");//此时用户状态不再是尴尬的状态时
 				
-				HomeFragment fragment = new HomeFragment();
+				/*HomeFragment fragment = new HomeFragment();*/
+				MainFragment fragment = new MainFragment();
 				FragmentEntity entity = new FragmentEntity();
 				entity.setFragment(fragment);
 				EventBus.getDefault().post(entity);
+				
 				
 				break;
 			}

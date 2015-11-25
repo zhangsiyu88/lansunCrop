@@ -3,18 +3,27 @@ package com.lansun.qmyo.fragment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -38,6 +47,7 @@ import com.android.pc.ioc.view.PullToRefreshManager;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.BankCardAdapter;
 import com.lansun.qmyo.app.App;
@@ -73,6 +83,54 @@ public class MineBankcardFragment extends BaseFragment{
 	private int type;
 	private int mInitType;
 	private String bankCardId;
+	private Handler handler=new Handler(){
+		public void handleMessage(android.os.Message msg) {
+			switch (msg.what) {
+			case 0:
+					//在一进入我的这个界面时，将其展示出Dialog
+					LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+					final Dialog dialog2 = new Dialog(activity,R.style.CustomDialogForNewUserTip);
+					View layout2 = inflater.inflate(R.layout.dialog_changebankcard, null);
+					dialog2.setContentView(layout2, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+					
+					final ImageView iv_dialog_changebankcard = (ImageView) layout2.findViewById(R.id.iv_dialog_changebankcard);
+					final ImageView iv_dialog_deletebankcard = (ImageView) layout2.findViewById(R.id.iv_dialog_deletebankcard);
+					
+					iv_dialog_changebankcard.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View arg0) {
+							Log.d("click", "触摸产生点击事件");
+							iv_dialog_changebankcard.setVisibility(View.GONE);
+							iv_dialog_deletebankcard.setVisibility(View.VISIBLE);
+							
+							iv_dialog_deletebankcard.setOnClickListener(new OnClickListener() {
+								
+								@Override
+								public void onClick(View arg0) {
+									dialog2.dismiss();
+								}
+							});
+						};
+					});
+					dialog2.show();
+					dialog2.setCanceledOnTouchOutside(true);
+					dialog2.setCancelable(true);
+				break;
+			case 2:
+				//此处表示换卡成功，需将之前存在本地的json置为""
+				for(int i = 0;i<8;i++){
+					App.app.setData((App.TAGS[i]),"");
+				}
+				App.app.setData("in_this_fragment_time","");
+				
+				MineBankcardFragment.this.back();
+				break;
+			}
+			
+		};
+	};
+	
 	
 	private DisplayImageOptions options = new DisplayImageOptions.Builder()
 	.cacheInMemory(true).cacheOnDisk(true).considerExifParams(true)
@@ -172,6 +230,8 @@ public class MineBankcardFragment extends BaseFragment{
 		    showChosenBankcard();
 	  }
 		
+	  //坐等展示出需要的Dialog
+		
 	}
 
 	public void showChosenBankcard() {
@@ -193,19 +253,37 @@ public class MineBankcardFragment extends BaseFragment{
 			search_click.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
+//					RegisterFragment fragment = new RegisterFragment();
+//					FragmentEntity entity = new FragmentEntity();
+//					Bundle bundle=new Bundle();
+//					bundle.putString("fragment_name", MineBankcardFragment.class.getSimpleName());//TODO
+//					bundle.putBoolean("isFromEightPart",mIsFromEightPart);
+//					bundle.putBoolean("isFromNewPart",mIsFromNewPart);
+//					bundle.putBoolean("isFromHome",mIsFromHome);
+//					if(mIsFromEightPart){
+//						bundle.putInt("type", mInitType);
+//					}
+					
+					//TODO
 					RegisterFragment fragment = new RegisterFragment();
-					FragmentEntity entity = new FragmentEntity();
-					Bundle bundle=new Bundle();
-					bundle.putString("fragment_name", MineBankcardFragment.class.getSimpleName());//TODO
-					bundle.putBoolean("isFromEightPart",mIsFromEightPart);
-					bundle.putBoolean("isFromNewPart",mIsFromNewPart);
-					bundle.putBoolean("isFromHome",mIsFromHome);
-					if(mIsFromEightPart){
+					Bundle bundle = new Bundle();
+					bundle.putString("fragment_name", MineBankcardFragment.class.getSimpleName());
+					//下面的数据直接写到Register页面中
+					if(mIsFromHome&&!mIsFromEightPart&&!mIsFromNewPart){//来自HomeFrag
+						bundle.putBoolean("isFromHome", mIsFromHome);
+					}else if(!mIsFromHome&&mIsFromEightPart&&!mIsFromNewPart){//来自八大板块
+						bundle.putBoolean("isFromEightPart", mIsFromEightPart);
 						bundle.putInt("type", mInitType);
+					}else if(!mIsFromHome&&!mIsFromEightPart&&mIsFromNewPart){//来自New界面
+						bundle.putBoolean("isFromNewPart", mIsFromNewPart);
+						bundle.putBoolean("IsNew", true);
+						bundle.putInt("type", R.string.new_exposure);
 					}
+					bundle.putBoolean("isFromMyBankcardFragToRigisterFrag", true);
 					fragment.setArguments(bundle);
-					entity.setFragment(fragment);
-					EventBus.getDefault().post(entity);
+					FragmentEntity event = new FragmentEntity();
+					event.setFragment(fragment);
+					EventBus.getDefault().post(event);
 				}
 			});
 			v.tv_bank_card_exp.setText(getString(R.string.experience));
@@ -286,7 +364,6 @@ public class MineBankcardFragment extends BaseFragment{
 			DialogUtil.createTipAlertDialog(activity, R.string.is_switch_card,
 					new TipAlertDialogCallBack() {
 
-				
 
 				@Override
 				public void onPositiveButtonClick(
@@ -302,9 +379,6 @@ public class MineBankcardFragment extends BaseFragment{
 					LinkedHashMap<String, String> params = new LinkedHashMap<>();
 					params.put("bankcard_id", bankCardId);
 
-					/*FastHttpHander.ajaxForm(
-									GlobalValue.URL_SELECT_BANKCARD, params,
-									null, config, MineBankcardFragment.this);*/
 
 					//使用post方式去提交，是选中其中的卡作为选中卡 
 					FastHttpHander.ajax(GlobalValue.URL_SELECT_BANKCARD, params,
@@ -340,6 +414,7 @@ public class MineBankcardFragment extends BaseFragment{
 
 	private boolean isChangeTheChoseCard = false;
 	private boolean isChangeTheChoseCardUnderSearchBankcardPage = false;
+	private TimerTask timerTask;
 
 	@InjectHttp
 	private void result(ResponseEntity r) {
@@ -354,7 +429,6 @@ public class MineBankcardFragment extends BaseFragment{
 				}
 				
 				list = Handler_Json.JsonToBean(BankCardList.class,r.getContentAsString());
-				
 				if (list.getData() != null) {
 					for (BankCardData data : list.getData()) {
 						HashMap<String, String> map = new HashMap<>();
@@ -376,14 +450,19 @@ public class MineBankcardFragment extends BaseFragment{
 					} else {
 						adapter.notifyDataSetChanged();
 					}
-					PullToRefreshManager.getInstance()
-					.onHeaderRefreshComplete();
-					PullToRefreshManager.getInstance()
-					.onFooterRefreshComplete();
+					
+					if(App.app.getData("firstEnterBankcardAndAddAnotherBankcard").isEmpty()){//证明是第一次
+						if(list.getData().size()==1){
+							//一旦进来就将其设置为 本地标签赋上值
+							App.app.setData("firstEnterBankcardAndAddAnotherBankcard","true");
+						    handler.sendEmptyMessage(0);//TODO
+				    	}
+					}
+					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				} else {
 					lv_ban_card_other.setAdapter(null);
 				}
-
 				break;
 
 			case 1:
@@ -404,7 +483,9 @@ public class MineBankcardFragment extends BaseFragment{
 					
 					App.app.setData("MainBankcard", bankCardId);
 					
-					if(mIsFromInsertBankcardAdapterPage){
+					
+					
+					if(mIsFromInsertBankcardAdapterPage){//从换卡页回来，并且进行了换卡操作
 						//刷下页面
 						refreshUrl = GlobalValue.URL_BANKCARD;
 						refreshKey = 0;
@@ -412,36 +493,50 @@ public class MineBankcardFragment extends BaseFragment{
 						decideHowToShow();
 						showChosenBankcard();
 						isChangeTheChoseCardUnderSearchBankcardPage = true;
+						
+						//从选卡页回来，且更换当前主卡后自动回跳至首页
+						Timer timer = new Timer();
+						 timerTask = new TimerTask() {
+								@Override
+								public void run() {
+									handler.sendEmptyMessage(2);
+								}
+							 };
+						 timer.schedule(timerTask, 1200);
 						return;
 					}
+					
 					
 					
 					refresh();
 					//上面的refresh()操作完成后，表明已经进行了换卡的操作
 					 isChangeTheChoseCard  = true;
-					
+					 
+					 Timer timer = new Timer();
+					 timerTask = new TimerTask() {
+							@Override
+							public void run() {
+								handler.sendEmptyMessage(2);
+							}
+						 };
+					 timer.schedule(timerTask, 1200);
 				} else {
-					CustomToast.show(activity, R.string.tip,
-							R.string.select_bank_card_faild);
+					CustomToast.show(activity, R.string.tip,R.string.select_bank_card_faild);
 				}
 				break;
 				
 			
 			case 3:// 获取当前银行卡
-				BankCardData data = Handler_Json.JsonToBean(BankCardData.class,
-						r.getContentAsString());
+				BankCardData data = Handler_Json.JsonToBean(BankCardData.class,r.getContentAsString());
 				
 				currentCardId = data.getBankcard().getId();
-				
 				App.app.setData("MainBankcard", currentCardId+"");//只要进入就将当前的原始主卡ID写入到本地文件中
-				
 				Log.d("","存入到本地的MainBankcard为: "+App.app.getData("MainBankcard"));
 				
 				v.ll_bank_currentCard.setVisibility(View.VISIBLE);
 				v.tv_bank_card_name.setText(data.getBank().getName());
 				v.tv_bank_card_desc.setText(data.getBankcard().getName());
-				ImageLoader.getInstance().displayImage(data.getBankcard().getPhoto(), v.iv_ban_card_head,
-						options);
+				ImageLoader.getInstance().displayImage(data.getBankcard().getPhoto(), v.iv_ban_card_head,options);
 				
 
 				/**
@@ -468,8 +563,8 @@ public class MineBankcardFragment extends BaseFragment{
 				break;
 			case 4://从银行卡搜索页并且完成添卡操作后，需要将主卡id恢复到本地
 				if ("true".equals(r.getContentAsString())) {
-					CustomToast.show(activity, R.string.tip,
-							R.string.select_bank_card_success);
+					/*CustomToast.show(activity, R.string.tip,
+							R.string.select_bank_card_success);*/
 					
 					refreshUrl = GlobalValue.URL_BANKCARD;
 					refreshKey = 0;
@@ -493,8 +588,7 @@ public class MineBankcardFragment extends BaseFragment{
 					//上面的refresh()操作完成后，表明已经进行了换卡的操作
 					 isChangeTheChoseCard  = true;*/
 				} else {
-					CustomToast.show(activity, R.string.tip,
-							R.string.select_bank_card_faild);
+					CustomToast.show(activity, R.string.tip,R.string.select_bank_card_faild);
 				}
 			   break;
 			}
@@ -558,7 +652,6 @@ public class MineBankcardFragment extends BaseFragment{
 				mInitType = initType;
 				mIsFromRigisterFragToMyBankcardFrag = isFromRigisterFragToMyBankcardFrag;
 				mIsFromInsertBankcardAdapterPage = isFromInsertBankcardAdapterPage;
-				*
 				*/
 				
 				//来自 home页
@@ -589,8 +682,8 @@ public class MineBankcardFragment extends BaseFragment{
 				event.setFragment(fragment);
 				EventBus.getDefault().post(event);
 			}
-
 			break;
+			
 		case R.id.ll_bank_currentCard:// 当前行用卡详情
 			BankCardDetailFragment cardDetailFragment = new BankCardDetailFragment();
 			Bundle args = new Bundle();
@@ -654,10 +747,15 @@ public class MineBankcardFragment extends BaseFragment{
 			 */
 			if(mIsFromHome){
 				/*CustomToast.show(activity, "准备跳转至首页刷新", "来自我的银行卡页面");*/
-				HomeFragment homeFragment = new HomeFragment();
+				
+				Intent intent=new Intent("com.lansun.qmyo.refreshHome");
+				getActivity().sendBroadcast(intent);
+				System.out.println("发送广播！");
+				super.back();
+				/*HomeFragment homeFragment = new HomeFragment();
 				FragmentEntity fEntity = new FragmentEntity();
 				fEntity.setFragment(homeFragment);
-				EventBus.getDefault().post(fEntity);
+				EventBus.getDefault().post(fEntity);*/
 				return;
 			}
 			
@@ -695,7 +793,8 @@ public class MineBankcardFragment extends BaseFragment{
 			//从添加搜索银行卡页回来，并且 在我的银行卡页进行了换卡的操作,即表明肯定进行了换卡的操作
 			if(mIsFromInsertBankcardAdapterPage){  
 				if(App.app.getData("isFromHome")=="true"&&App.app.getData("isFromNewPart")==""&&App.app.getData("isFromEightPart")==""){
-					HomeFragment homeFragment = new HomeFragment();
+					/*HomeFragment homeFragment = new HomeFragment();*/
+					MainFragment homeFragment = new MainFragment(0);
 					FragmentEntity fEntity = new FragmentEntity();
 					fEntity.setFragment(homeFragment);
 					EventBus.getDefault().post(fEntity);
@@ -748,9 +847,10 @@ public class MineBankcardFragment extends BaseFragment{
 
 				/*if(App.app.getData("isFromHome")=="true"&&App.app.getData("isFromNewPart")==""&&App.app.getData("isFromEightPart")==""){*/
 				if(App.app.getData("isFromHome").equals("true")&&App.app.getData("isFromNewPart").equals("")&&App.app.getData("isFromEightPart").equals("")){
-					HomeFragment homeFragment = new HomeFragment();
+					/*HomeFragment homeFragment = new HomeFragment();*/
+					MainFragment mainFragment = new MainFragment(0);
 					FragmentEntity fEntity = new FragmentEntity();
-					fEntity.setFragment(homeFragment);
+					fEntity.setFragment(mainFragment);
 					EventBus.getDefault().post(fEntity);
 					return;
 				}
@@ -788,9 +888,10 @@ public class MineBankcardFragment extends BaseFragment{
 				return;*/
 			}else {
 				if(mIsFromHome){//从登录页返回回来，回到我的银行卡页，再按返回键时，重新刷新之前的Home页内容
-					HomeFragment homeFragment = new HomeFragment();
+					/*HomeFragment homeFragment = new HomeFragment();*/
+					MainFragment mainFragment = new MainFragment(0);
 					FragmentEntity fEntity = new FragmentEntity();
-					fEntity.setFragment(homeFragment);
+					fEntity.setFragment(mainFragment);
 					EventBus.getDefault().post(fEntity);
 					return;
 				}
@@ -849,9 +950,10 @@ public class MineBankcardFragment extends BaseFragment{
 			
 			/*if(App.app.getData("isFromHome")=="true"&&App.app.getData("isFromNewPart")==""&&App.app.getData("isFromEightPart")==""){*/
 			if(App.app.getData("isFromHome").equals("true")&&App.app.getData("isFromNewPart").equals("")&&App.app.getData("isFromEightPart").equals("")){
-				HomeFragment homeFragment = new HomeFragment();
+				/*HomeFragment homeFragment = new HomeFragment();*/
+				MainFragment mainFragment = new MainFragment(0);
 				FragmentEntity fEntity = new FragmentEntity();
-				fEntity.setFragment(homeFragment);
+				fEntity.setFragment(mainFragment);
 				EventBus.getDefault().post(fEntity);
 				return;
 				

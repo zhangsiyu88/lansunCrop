@@ -194,6 +194,7 @@ public class SharedDialog implements OnClickListener {
 	private void addQZoneQQPlatform() {
 		String appId = GlobalValue.QZONE_APP_ID;
 		String appKey = GlobalValue.QZONE_APP_KEY;
+		
 		// 添加QQ支持, 并且设置QQ分享内容的target url
 		UMQQSsoHandler qqSsoHandler = new UMQQSsoHandler(activity, appId,appKey);
 		
@@ -223,13 +224,14 @@ public class SharedDialog implements OnClickListener {
 		}
 		mController.setShareMedia(weixinContent);
 		
-		
 		/**
 		 * 朋友圈分享
 		 */
 		CircleShareContent circleMedia = new CircleShareContent();
 		circleMedia.setShareContent(content);
-		circleMedia.setTitle(title);
+		
+		/*circleMedia.setTitle(title);*/ //---> 将分享内容修改至标题处
+		circleMedia.setTitle(content);
 		/*circleMedia.setTargetUrl(GlobalValue.TARGET_URL);*/
 		circleMedia.setTargetUrl(currentActivityUrl);
 		

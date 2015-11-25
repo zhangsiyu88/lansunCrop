@@ -112,6 +112,10 @@ public class FirstSecretaryFragment extends BaseFragment {
 		super.onPause();
 	}
 
+	/**
+	 * 下面的关于导航栏的四个按钮的点击，实则根本点不到
+	 * @param view
+	 */
 	private void click(View view) {
 		EventBus bus = EventBus.getDefault();
 		FragmentEntity entity = new FragmentEntity();
@@ -130,8 +134,7 @@ public class FirstSecretaryFragment extends BaseFragment {
 		case R.id.bottom_mine:
 			fragment = new MineFragment();
 			break;
-		
-		case R.id.btn_secretary_take_name://
+		case R.id.btn_secretary_take_name:
 			v.bottom.setVisibility(View.GONE);
 			v.tv_secretary_first_summary.setVisibility(View.GONE);
 			v.rl_secretary_first_take_name.setVisibility(View.VISIBLE);

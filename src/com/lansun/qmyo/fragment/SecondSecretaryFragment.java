@@ -56,6 +56,7 @@ import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.view.CircularImage;
 import com.lansun.qmyo.view.CustomToast;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 
 /**
@@ -179,7 +180,8 @@ public class SecondSecretaryFragment extends BaseFragment {
 					CustomToast.show(activity, R.string.tip,
 							R.string.save_secretary_success);
 					FragmentEntity event = new FragmentEntity();
-					SecretaryFragment fragment = new SecretaryFragment();
+					/*SecretaryFragment fragment = new SecretaryFragment();*/
+					MainFragment fragment = new MainFragment(1);
 					event.setFragment(fragment);
 					EventBus.getDefault().post(event);
 				}

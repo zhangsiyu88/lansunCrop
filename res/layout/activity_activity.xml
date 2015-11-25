@@ -79,7 +79,8 @@
             android:id="@+id/expandTabViewButtomLine"
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:background="@color/line_bg_expand" />
+            android:background="@color/line_bg_expand" 
+            />
     </LinearLayout>
 
     <com.lansun.qmyo.view.MyListView
@@ -92,5 +93,6 @@
         android:scrollbarFadeDuration="1000"
         android:scrollbars="vertical" 
         />
+    
 
 </LinearLayout>

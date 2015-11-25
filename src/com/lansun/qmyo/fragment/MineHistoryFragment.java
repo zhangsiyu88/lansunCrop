@@ -46,6 +46,7 @@ import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ListViewSwipeGesture;
 import com.lansun.qmyo.view.MyListView;
+import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
@@ -68,6 +69,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
@@ -95,14 +97,13 @@ import android.widget.TextView;
 	private View emptyView;
 
 	class Views {
-
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private TextView tv_mine_history_edit, tv_mine_history_activity,
 				tv_mine_history_store, tv_mine_history_v16, tv_activity_shared,
 				tv_activity_title;
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private View fl_comments_right_iv;
-
+		private RelativeLayout  rl_new_emptyview;
 	}
 
 	@Override
@@ -110,13 +111,17 @@ import android.widget.TextView;
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_mine_history, null);
-		emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_minhistory_recorder1, null);
+		
+		
+		emptyView = rootView.findViewById(R.id.rl_new_emptyview);
 		View tv_gotoHomeFrag = emptyView.findViewById(R.id.tv_gotoHomeFrag);
 		tv_gotoHomeFrag.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
-				HomeFragment fragment = new HomeFragment();
+				
+				/*HomeFragment fragment = new HomeFragment();*/
+				MainFragment fragment = new MainFragment(0);
 				FragmentEntity entity = new FragmentEntity();
 				entity.setFragment(fragment);
 				EventBus.getDefault().post(entity);
@@ -216,6 +221,9 @@ import android.widget.TextView;
 											CustomToast.show(activity, R.string.tip,R.string.delete_success);
 											activityDataList.clear();
 											storeDataList.clear();
+											/*storeAdapter.notifyDataSetChanged();
+											activityAdapter.notifyDataSetChanged();*/
+											lv_mine_history_list.setAdapter(null);
 											setTagColorAndPressed();
 											
 											
@@ -232,13 +240,10 @@ import android.widget.TextView;
 											/**最新需求: 删除后，不要跳转至上一页（我的页面），而是停留在当前页，并显示emptyView内容
 											 * back();
 											 */
-											try{
-												lv_mine_history_list.removeFooterView(emptyView);
-											}catch(Exception e){
-											}
-											lv_mine_history_list.addFooterView(emptyView);
-											PullToRefreshManager.getInstance().footerUnable();
+											lv_mine_history_list.setVisibility(View.GONE);
+											v.rl_new_emptyview.setVisibility(View.VISIBLE);
 											
+											PullToRefreshManager.getInstance().footerUnable();
 											
 										} else {
 											CustomToast.show(activity, getString(R.string.tip),
@@ -250,9 +255,7 @@ import android.widget.TextView;
 							requestParams.addHeader("Authorization", "Bearer" + App.app.getData("access_token"));
 							
 							//TODO  注意下面拼接的url中的接口域名记得替换
-							httpUtils.send(HttpMethod.DELETE, 
-									GlobalValue.URL_USER_DELETE_BROWSES,
-									requestParams,requestCallBack );
+							httpUtils.send(HttpMethod.DELETE, GlobalValue.URL_USER_DELETE_BROWSES,requestParams,requestCallBack );
 						}
 
 						@Override
@@ -288,7 +291,8 @@ import android.widget.TextView;
 						r.getContentAsString());
 				
 				if(activityList.getData()!=null){
-				
+					lv_mine_history_list.setVisibility(View.VISIBLE);
+					v.rl_new_emptyview.setVisibility(View.GONE);
 					if(isPull){
 						isPull =false;
 					}else{
@@ -307,49 +311,49 @@ import android.widget.TextView;
 							historyTime = instance.getYear() + "-"
 									+ instance.getMonth() + "-" + instance.getDay();
 						} else {
-							historyTime = getHistoryTime(System.currentTimeMillis()
-									- time);
+							historyTime = getHistoryTime(System.currentTimeMillis() - time);
 						}
 						map.put("activityId", data.getActivity().getId());
 						map.put("shopId", data.getShop().getId());
 						map.put("tv_search_activity_distance", historyTime);
-						map.put("tv_search_activity_desc", data.getActivity()
-								.getName());
-						map.put("iv_search_activity_head", data.getActivity()
-								.getPhoto());
+						map.put("tv_search_activity_desc", data.getActivity().getName());
+						map.put("iv_search_activity_head", data.getActivity().getPhoto());
 						map.put("tv_search_tag", data.getActivity().getTag());
 						map.put("icons", data.getActivity().getCategory());
 						activityDataList.add(map);
 						
 						}
 					     setTagColorAndPressed();
-					
-					
 					if (activityAdapter == null) {
 						activityAdapter = new SearchAdapter(lv_mine_history_list,
 								activityDataList, R.layout.activity_search_item);
 						lv_mine_history_list.setAdapter(activityAdapter);
+						PullToRefreshManager.getInstance().footerEnable();
 						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					} else {
 						activityAdapter.notifyDataSetChanged();
+						PullToRefreshManager.getInstance().footerEnable();
 						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					}
 			}else{
+				lv_mine_history_list.setVisibility(View.GONE);
+				v.rl_new_emptyview.setVisibility(View.VISIBLE);
+				
 				try{
-					lv_mine_history_list.removeFooterView(emptyView);
 				}catch(Exception e){
 				}
-				lv_mine_history_list.addFooterView(emptyView);
 				PullToRefreshManager.getInstance().footerUnable();
 			}
-				
 				break;
 				
 				
 			case 1:
 				storeList = Handler_Json.JsonToBean(HistoryActivity.class,
 						r.getContentAsString());
-				if(storeList!=null){
+				
+				if(storeList.getData()!=null){
+					lv_mine_history_list.setVisibility(View.VISIBLE);
+					v.rl_new_emptyview.setVisibility(View.GONE);
 					
 					if(isPull){
 						isPull =false;
@@ -359,6 +363,7 @@ import android.widget.TextView;
 				
 					for (BrowseData data : storeList.getData()) {
 						HashMap<String, String> map = new HashMap<String, String>();
+						map.put("shopId", data.getShop().getId()+"");
 						map.put("tv_store_item_name", data.getShop().getName());
 						map.put("tv_store_item_num", data.getShop().getAttention()
 								+ "");
@@ -387,17 +392,16 @@ import android.widget.TextView;
 						storeAdapter = new StoreAdapter(lv_mine_history_list,
 								storeDataList, R.layout.activity_store_item);
 						lv_mine_history_list.setAdapter(storeAdapter);
+						PullToRefreshManager.getInstance().footerEnable();
 						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					} else {
 						storeAdapter.notifyDataSetChanged();
+						PullToRefreshManager.getInstance().footerEnable();
 						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					}
 			}else{
-				try{
-					lv_mine_history_list.removeFooterView(emptyView);
-				}catch(Exception e){
-				}
-				lv_mine_history_list.addFooterView(emptyView);
+				lv_mine_history_list.setVisibility(View.GONE);//数据列表不可见
+				v.rl_new_emptyview.setVisibility(View.VISIBLE);//空提示插画可见
 				PullToRefreshManager.getInstance().footerUnable();
 			}
 				break;
@@ -502,7 +506,8 @@ import android.widget.TextView;
 					}
 					refreshUrl = activityList.getNext_page_url();
 				} else if (refreshKey == 1) {
-					if (TextUtils.isEmpty(storeList.getNext_page_url())) {
+					if (TextUtils.isEmpty(storeList.getNext_page_url())||storeList.getNext_page_url().contains("[]")
+							||storeList.getNext_page_url().contains("null")) {
 						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 						PullToRefreshManager.getInstance().footerUnable();
 						CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的门店");
@@ -560,9 +565,7 @@ import android.widget.TextView;
 		}
 		if (refreshKey == 1) {
 			fragment = new StoreDetailFragment();
-			args.putString("shopId", activityList.getData().get(arg2).getShop()
-					.getId()
-					+ "");
+			args.putString("shopId", storeDataList.get(arg2).get("shopId")+ "");
 		} /*else {
 			fragment = new PromoteDetailFragment();
 			args.putSerializable("promote", v16list.getData().get(arg2)
