@@ -42,27 +42,28 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 
 
-public class SwipeListAdapter extends BaseAdapter {
+public class SwipeListMineActivityAdapter extends BaseAdapter {
 
 	private Context mContext;
 	private LayoutInflater mInflater;
 	HashSet<Integer> mRemoved = new HashSet<Integer>();
 	HashSet<SwipeLayout> mUnClosedLayouts = new HashSet<SwipeLayout>();
 	private ArrayList<HashMap<String, Object>> mList;
-	/*private ArrayList<String> iconArray;*/
 	private int deletePosition;
 	
 	  private DisplayImageOptions options = new DisplayImageOptions.Builder()
 	    .cacheInMemory(true).cacheOnDisk(true).considerExifParams(true)
 	    .displayer(new FadeInBitmapDisplayer(300)).build();
 
-	public SwipeListAdapter(Context mContext) {
+	
+	  
+	  public SwipeListMineActivityAdapter(Context mContext) {
 		super();
 		this.mContext = mContext;
 		mInflater = LayoutInflater.from(mContext);
 	}
 
-	public SwipeListAdapter(Activity activity,
+	public SwipeListMineActivityAdapter(Activity activity,
 			ArrayList<HashMap<String, Object>> dataList) {
 		super();
 		this.mContext = activity;
@@ -85,11 +86,11 @@ public class SwipeListAdapter extends BaseAdapter {
 		return position;
 	}
 
-	public static final int[] HEAD_IDS = new int[]{
-		/*R.drawable.head_1,
-		R.drawable.head_2,
-		R.drawable.head_3*/
-	};
+//	public static final int[] HEAD_IDS = new int[]{
+//		/*R.drawable.head_1,
+//		R.drawable.head_2,
+//		R.drawable.head_3*/
+//	};
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -175,7 +176,7 @@ public class SwipeListAdapter extends BaseAdapter {
 		//滑到下一页时，便可复用iconArray
 		ArrayList<String> iconArray = (ArrayList<String>) mList.get(position).get("icons");
 		if(iconArray!= null){
-			LogUtils.toDebugLog("icon", "icon去哪儿了？     data.get(position)"+ iconArray.toString());
+			//LogUtils.toDebugLog("icon", "icon去哪儿了？     data.get(position)"+ iconArray.toString());
 		}
 
 //		探测首页的标签消失是否和这里的标签移除有关
@@ -191,7 +192,7 @@ public class SwipeListAdapter extends BaseAdapter {
 		iconArray = (ArrayList<String>) mList.get(position).get("icons");
 		if (iconArray != null) {
 			for (String icon : iconArray) {
-				LogUtils.toDebugLog("icon", "icon去哪儿了？   "+ icon);
+				//LogUtils.toDebugLog("icon", "icon去哪儿了？   "+ icon);
 
 				if ("discount".equals(icon)) {
 					mHolder.iv_search_activity_discount.setVisibility(View.VISIBLE);
@@ -274,7 +275,7 @@ public class SwipeListAdapter extends BaseAdapter {
 				
 			} else if (id == R.id.bt_delete) {
 				closeAllLayout();
-				Utils.showToast(mContext, "删除该活动");
+				//Utils.showToast(mContext, "删除该活动");
 				
 				deletePosition = p;
 				HttpUtils httpUtils = new HttpUtils();
@@ -292,7 +293,7 @@ public class SwipeListAdapter extends BaseAdapter {
 								
 								CustomToast.show(mContext, mContext.getString(R.string.tip),
 										mContext.getString(R.string.delete_success));
-								SwipeListAdapter.this.notifyDataSetChanged();
+								SwipeListMineActivityAdapter.this.notifyDataSetChanged();
 							} else {
 								CustomToast.show(mContext, mContext.getString(R.string.tip),
 										mContext.getString(R.string.delete_faild));
@@ -410,31 +411,6 @@ public class SwipeListAdapter extends BaseAdapter {
 					(TextView) view.findViewById(R.id.tv_search_tag),
 					(View) view.findViewById(R.id.line));
 			}
-		
-		
-		/*public ImageView mImage;
-		  public Button mButtonCall;
-		  public Button mButtonDel;
-		  public TextView mReminder;
-		  public TextView mName;*/
-		
-		/*private mHolderer(ImageView mImage, Button mButtonCall,
-			Button mButtonDel, TextView mReminder, TextView mName) {
-			super();
-			this.mImage = mImage;
-			this.mButtonCall = mButtonCall;
-			this.mButtonDel = mButtonDel;
-			this.mReminder = mReminder;
-			this.mName = mName;
-		}
-		public static mHolderer fromValues(View view) {
-			return new mHolderer(
-				(ImageView) view.findViewById(R.id.iv_head),
-				(Button) view.findViewById(R.id.bt_call),
-				(Button) view.findViewById(R.id.bt_delete),
-				(TextView) view.findViewById(R.id.point),
-				(TextView) view.findViewById(R.id.tv_name));
-		}*/
 	}
 	
 	public void download(ImageView view, String url) {

@@ -6,10 +6,13 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
+/*import android.view.View.OnClickListener;*/
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -20,6 +23,7 @@ import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.TelDialog;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.lansun.qmyo.R;
@@ -55,6 +59,8 @@ public class AboutFragment extends BaseFragment {
 	private void init() {
 		v.tv_about_qmyo_net
 				.setText(Html.fromHtml(getString(R.string.qmyo_net)));
+		
+		
 		v.tv_about_qmyo_wx
 			.setText(Html.fromHtml(getString(R.string.qmyo_wx)));
 		
@@ -108,6 +114,33 @@ public class AboutFragment extends BaseFragment {
 		case R.id.rl_mine_user_agreement:// TODO 用户协议
 			fragment = new UserProtocolFragment();
 			break;
+			
+		case R.id.tv_about_qmyo_net:
+			
+			  Intent intent= new Intent();        
+			  intent.setAction("android.intent.action.VIEW");    
+			  Uri content_url = Uri.parse("http://m.qmyo.com");   
+			  intent.setData(content_url);  
+			  startActivity(intent);
+			break;
+			
+		case R.id.tv_about_qmyo_wx:
+				/*Intent intentToWX= new Intent("android.intent.action.VIEW"); //声明要打开另一个VIEW.
+				String qmyoclubRL = "http://weixin.qq.com/r/f3VFXS3Es3DMrWk_9yBt"; //这是你公共帐号的二维码的实际内容
+				intentToWX.setData(Uri.parse(qmyoclubRL)); //设置要传递的内容。
+				//intentToWX.setPackage("com.tencent.mm"); //直接制定要发送到的程序的包名。也可以不制定。就会弹出程序选择器让你手动选木程序。
+				intentToWX.putExtra(Intent.EXTRA_SUBJECT,"Share"); 
+				intentToWX.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intentToWX); //当然要在Activity界面 调用了。
+*/				
+				Intent intentToWX = activity.getPackageManager().getLaunchIntentForPackage("com.tencent.mm");  
+				String qmyoclubRL = "http://weixin.qq.com/r/f3VFXS3Es3DMrWk_9yBt"; //这是你公共帐号的二维码的实际内容
+				intentToWX.setData(Uri.parse(qmyoclubRL)); //设置要传递的内容。
+				intentToWX.putExtra(Intent.EXTRA_SUBJECT,"Share"); 
+				intentToWX.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intentToWX);   
+				
+			break;
 		}
 		if (fragment != null) {
 			FragmentEntity event = new FragmentEntity();
@@ -125,5 +158,21 @@ public class AboutFragment extends BaseFragment {
 		v.tv_setting_cache_size.setText(String.format(
 				getString(R.string.cache_size), f1));
 	}
+	
+	/*Uri uri = Uri.parse(urlText.getText().toString());
 
+	Intent intent = new Intent(Intent.ACTION_VIEW,uri);
+
+	startActivity(intent);*/
+	
+/*	　原理同 分享到其他程序一样。 都要用 Intent 来传递数据到其他程序。 
+ * 
+ *    Intent i = new Intent(Intent.ACTION_VIEW); //声明要打开另一个VIEW.
+	　　String guanzhu_URL = "http://weixin.qq.com/r/o3W_sRvEMSVOhwrSnyCH"; //这是你公共帐号的二维码的实际内容。可以用扫描软件扫一下就得到了。这是我的公共帐号地址。
+	　　i.setData(Uri.parse(guanzhu_URL)); //设置要传递的内容。
+	　　i.setPackage("com.tencent.mm"); //直接制定要发送到的程序的包名。也可以不制定。就会弹出程序选择器让你手动选木程序。
+	　　i.putExtra(Intent.EXTRASUBJECT,"Share"); 
+	   i.setFlags(Intent.FLAGACTIVITYNEWTASK);
+	　　startActivity(intent); //当然要在Activity界面 调用了。
+*/
 }

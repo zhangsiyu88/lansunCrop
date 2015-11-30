@@ -37,6 +37,7 @@ import com.lansun.qmyo.fragment.ExperienceSearchFragment;
 import com.lansun.qmyo.fragment.MineFragment;
 import com.lansun.qmyo.utils.CustomDialog;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
@@ -53,7 +54,7 @@ import com.squareup.okhttp.Response;
  * 
  */
 public class AccessTokenService extends Service {
-	private int delay = 1000 * 60 * 15;
+	private int delay = 1000 * 60 * 10;
 	public static Timer timer = new Timer();
 	
 	@Override
@@ -146,7 +147,6 @@ public class AccessTokenService extends Service {
 		
 		if(r.getContentAsString().contains("false") ||r.getContentAsString().equals(false)||r.getContentAsString()=="false"){
 			Toast.makeText(App.app,"来自启动自服务的提示 ：您的临时用户身份已被清掉！请重新体验，或注册登录！", Toast.LENGTH_LONG).show();
-			
 			/**
 			 * 一旦发现临时用户的secret去访问获取token失败，那么需要立即将secret和token全部清除掉，以便于后面前去生成新的体验用户
 			 */
@@ -168,6 +168,7 @@ public class AccessTokenService extends Service {
 						r.getContentAsString());
 				App.app.setData("access_token", token.getToken());
 				//CustomToast.show(getApplicationContext(), "提示", "令牌更新成功！");
+				LogUtils.toDebugLog("accessTokenSer", "令牌更新成功！");
 				
 				InternetConfig config = new InternetConfig();
 				config.setKey(1);
@@ -180,6 +181,10 @@ public class AccessTokenService extends Service {
 			case 1:
 				//拿到access_token就可以去拿到用户信息，并且将其存在本地的静态变量GlobalValue.user中，供后面使用
 				GlobalValue.user = Handler_Json.JsonToBean(User.class,r.getContentAsString());
+				Log.i("AccessTokenService中的user返回回来的值为： ",GlobalValue.user.toString());
+				App.app.setData("user_avatar",GlobalValue.user.getAvatar());
+				App.app.setData("user_nickname",GlobalValue.user.getNickname());
+				
 				break;
 
 			}

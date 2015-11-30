@@ -17,6 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/refresh_arrow"
+            android:visibility="gone"
              />
     
     <ProgressBar
@@ -25,13 +26,13 @@
         android:layout_width="40px"
         android:layout_height="40px"
         android:indeterminateDrawable="@drawable/progressbar_color"
-        android:visibility="gone"/>
+        />
     
     <TextView 
         android:id="@+id/tv_loadingmore"
         android:layout_margin="5dp"
         style="@style/text_style_nomal_30"
-        android:text="正在加载..." 
+        android:text="加载中..." 
         android:textColor="@color/text_gray2"/>  
         
    </LinearLayout>

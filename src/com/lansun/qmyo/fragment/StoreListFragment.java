@@ -486,7 +486,11 @@ public class StoreListFragment extends BaseFragment {
 				null, refreshKey,lv_stores_content);
 	}
 
-	
+	@Override
+	public void onDestroy() {
+		PullToRefreshManager.getInstance().footerEnable();
+		super.onDestroy();
+	}
 	
 	
 }

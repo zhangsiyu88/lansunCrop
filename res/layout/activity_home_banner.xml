@@ -30,6 +30,7 @@
 	                    android:scaleType="fitXY" /> 
                 
                 <LinearLayout
+                    android:id="@+id/ll_point_sets"
                     style="@style/w_full_h_wrap"
                     android:gravity="center_horizontal"
                     android:layout_gravity="bottom"
@@ -39,17 +40,20 @@
                     <com.android.pc.ioc.image.RecyclingImageView
                         android:id="@+id/iv_homead_point"
                         style="@style/point_style"
-                        android:background="@drawable/oval_select" />
+                        android:background="@drawable/oval_select" 
+                        android:visibility="gone"/>
 
                     <com.android.pc.ioc.image.RecyclingImageView
                         android:id="@+id/iv_homead_point2"
                         style="@style/point_style"
-                        android:background="@drawable/oval_nomal" />
+                        android:background="@drawable/oval_nomal" 
+                         android:visibility="gone"/>
                     
                     <com.android.pc.ioc.image.RecyclingImageView
                         android:id="@+id/iv_homead_point3"
                         style="@style/point_style"
-                        android:background="@drawable/oval_nomal" />
+                        android:background="@drawable/oval_nomal" 
+                         android:visibility="gone"/>
                 </LinearLayout>
           </FrameLayout>
             

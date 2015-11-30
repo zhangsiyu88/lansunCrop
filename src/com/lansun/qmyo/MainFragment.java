@@ -25,7 +25,10 @@ import com.lansun.qmyo.view.MainViewPager;
 
 import android.R.integer;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -69,6 +72,8 @@ public class MainFragment extends Fragment {
 	private ArrayList<BaseFragment> fragList;
 	private TextView point;
 	private boolean  visiable;
+	private MainFragmentBroadCastReceiver broadCastReceiver;
+	private IntentFilter filter;
 	class Views {
 		@InjectBinder(method = "click", listeners = OnClick.class)
 		private RelativeLayout fl_home_top_menu, rl_top_r_top_menu, rl_bg,rl_top_bg;
@@ -95,6 +100,12 @@ public class MainFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		manager=getChildFragmentManager();
+		
+		broadCastReceiver = new MainFragmentBroadCastReceiver();
+		System.out.println("MainFragment中注册广播 ing");
+		filter = new IntentFilter();
+		filter.addAction("com.lansun.qmyo.ChangeTheLGPStatus");
+		getActivity().registerReceiver(broadCastReceiver, filter);
 	}
 	
 	@Override
@@ -107,6 +118,7 @@ public class MainFragment extends Fragment {
 		Handler_Inject.injectFragment(this, rootView);
 		initView(rootView);
 		initFrag();
+		
 		if(mPosition != Integer.MAX_VALUE){
 			//vp_mainfrag.setCurrentItem(mPosition);
 			
@@ -133,42 +145,42 @@ public class MainFragment extends Fragment {
 	 * onCreatView中调用此方法
 	 */
 	private void initView(View rootView) {
-			//1.获取消息页发来的广播，根据广播内容得知底部的小绿点是否显示
-		
-			//2.若显示需给其设置上触摸滑动监听
-	    if(true){
-	    	visiable = point.getVisibility()==0;
-	    }
-				
-		if (visiable) {
-			point.setText("");
-			point.setTag(0);
-			
-			/*
-			 * 初始化监听者，方便对圆形按钮进行GooViewListener
-			 * 之随意在这一步就进行初始化，谁拿到数据谁进行初始化任务，另外从时效原则上来说也是必须的
-			 */
-			GooViewListener mGooListener = new GooViewListener(activity, point) {
-				@Override
-				public void onDisappear(PointF mDragCenter) {
-					super.onDisappear(mDragCenter);
-					activity.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							CustomToast.show(activity, "提示", "所有消息置为已读");
-						}
-					});
-					/*Utils.showToast(mContext,"Cheers! We have get rid of it!");*/
-				}
-				@Override
-				public void onReset(boolean isOutOfRange) {
-					super.onReset(isOutOfRange);
-					/*Utils.showToast(mContext,isOutOfRange ? "Are you regret?" : "Try again!");*/
-				}
-			};
-			//为这个绿色小点设置触摸监听,为了使RedCircleButton被触摸时进行属于自己的动画表示
-			point.setOnTouchListener(mGooListener);
-		}
+//			//1.获取消息页发来的广播，根据广播内容得知底部的小绿点是否显示
+//		
+//			//2.若显示需给其设置上触摸滑动监听
+//	    if(true){
+//	    	visiable = point.getVisibility()==0;
+//	    }
+//				
+//		if (visiable) {
+//			point.setText("");
+//			point.setTag(0);
+//			
+//			/*
+//			 * 初始化监听者，方便对圆形按钮进行GooViewListener
+//			 * 之随意在这一步就进行初始化，谁拿到数据谁进行初始化任务，另外从时效原则上来说也是必须的
+//			 */
+//			GooViewListener mGooListener = new GooViewListener(activity, point) {
+//				@Override
+//				public void onDisappear(PointF mDragCenter) {
+//					super.onDisappear(mDragCenter);
+//					activity.runOnUiThread(new Runnable() {
+//						@Override
+//						public void run() {
+//							CustomToast.show(activity, "提示", "所有消息置为已读");
+//						}
+//					});
+//					/*Utils.showToast(mContext,"Cheers! We have get rid of it!");*/
+//				}
+//				@Override
+//				public void onReset(boolean isOutOfRange) {
+//					super.onReset(isOutOfRange);
+//					/*Utils.showToast(mContext,isOutOfRange ? "Are you regret?" : "Try again!");*/
+//				}
+//			};
+//			//为这个绿色小点设置触摸监听,为了使RedCircleButton被触摸时进行属于自己的动画表示
+//			point.setOnTouchListener(mGooListener);
+//		}
 		
 		
 		
@@ -426,4 +438,66 @@ public class MainFragment extends Fragment {
 		}
 		
 	}
+	
+class MainFragmentBroadCastReceiver extends BroadcastReceiver{
+
+		@Override
+		public void onReceive(Context ctx, Intent intent) {
+			if(intent.getAction().equals("com.lansun.qmyo.ChangeTheLGPStatus")){
+				
+				
+			System.out.println("首页收到更新绿色小圆点的广播了");
+			//1.获取消息页发来的广播，根据广播内容得知底部的小绿点是否显示
+				
+			//2.若显示需给其设置上触摸滑动监听
+		    if(true){
+		    	/*visiable = point.getVisibility()==0;*/
+		    	visiable = true;
+		    	point.setVisibility(View.VISIBLE);
+		    }
+					
+			if (visiable) {
+				point.setText("");
+				point.setTag(0);
+				
+				/*
+				 * 初始化监听者，方便对圆形按钮进行GooViewListener
+				 * 之随意在这一步就进行初始化，谁拿到数据谁进行初始化任务，另外从时效原则上来说也是必须的
+				 */
+				GooViewListener mGooListener = new GooViewListener(activity, point) {
+					@Override
+					public void onDisappear(PointF mDragCenter) {
+						super.onDisappear(mDragCenter);
+						activity.runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								CustomToast.show(activity, "提示", "所有消息置为已读");
+							}
+						});
+						/*Utils.showToast(mContext,"Cheers! We have get rid of it!");*/
+					}
+					@Override
+					public void onReset(boolean isOutOfRange) {
+						super.onReset(isOutOfRange);
+						/*Utils.showToast(mContext,isOutOfRange ? "Are you regret?" : "Try again!");*/
+					}
+				};
+				//为这个绿色小点设置触摸监听,为了使RedCircleButton被触摸时进行属于自己的动画表示
+				point.setOnTouchListener(mGooListener);
+			}
+				
+				
+			}else if(intent.getAction().equals("com.lansun.qmyo.DeleteTheLGPStatus")){
+				
+				point.setVisibility(View.GONE);//将底部的小绿点关掉不显示
+				
+			}
+		}
+	 }
+
+		@Override
+		public void onDestroy() {
+			getActivity().unregisterReceiver(broadCastReceiver);
+			super.onDestroy();
+		}
 }

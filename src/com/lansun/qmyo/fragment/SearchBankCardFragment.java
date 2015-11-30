@@ -18,16 +18,20 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -214,6 +218,28 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 		EventBus.getDefault().register(this);
 		et_home_search.setHint(R.string.please_enter_card);
 		onKeyShowAlways();
+		final RelativeLayout puzz_floor = v.puzz_floor;
+		et_home_search.setOnEditorActionListener(new OnEditorActionListener(){
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				if(actionId ==EditorInfo.IME_ACTION_SEARCH){
+					String search_value=et_home_search.getText().toString().trim();
+					if(search_value.equals("")){
+						Toast.makeText(activity, "请输入搜索内容", 2000).show();
+					}else{
+						et_home_search.clearFocus();
+						lv_search_bank_card.setVisibility(View.VISIBLE);//listView展示出来
+						puzz_floor.setVisibility(View.GONE);//模糊搜素的内容去除掉
+						//强制隐藏掉键盘
+						onKeyHideAlways(et_home_search);
+						search(search_value);//开始搜索
+					}
+					return true;
+				}
+				return false;
+			}
+			
+		});
 	}
 
 	private void onKeyShowAlways() {

@@ -28,6 +28,7 @@ import com.lansun.qmyo.fragment.BaseFragment;
 import com.lansun.qmyo.listener.PuzzyItemClickCallBack;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -79,11 +80,15 @@ public class PuzzyFragment extends BaseFragment implements PuzzyItemClickCallBac
 		LinearLayoutManager manager=new LinearLayoutManager(getActivity());
 		puzzy_search_list.setLayoutManager(manager);
 	}
-	public void ontextChange(String text) {
+	public void ontextChange(final String text) {
 		Log.e("token", App.app.getData("access_token"));
+		
 		OkHttp.asyncGet(GlobalValue.URL_ACTIVITY_PUZZY+"search="+text, "Authorization", "Bearer " + App.app.getData("access_token"), null, new Callback() {
 			@Override
 			public void onResponse(Response response) throws IOException {
+				
+				LogUtils.toDebugLog("搜索的地址： ",GlobalValue.URL_ACTIVITY_PUZZY+"search="+text);
+				
 				if (response.isSuccessful()) {
 					String json=response.body().string();
 					if (json.contains("{")&&json.contains("}")) {       //对服务器返回回来的json重新做了拼接，并解析操作

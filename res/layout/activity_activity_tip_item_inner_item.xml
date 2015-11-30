@@ -23,7 +23,7 @@
         android:layout_toRightOf="@id/left_point"
         android:id="@+id/tv_activity_content_mx_content"
         style="@style/text_style_nomal_28"
-        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginLeft="6dp"
         android:layout_marginRight="@dimen/l_r_35"
         android:layout_marginTop="@dimen/margin_top_15"
         android:textColor="#6F6F6F" 

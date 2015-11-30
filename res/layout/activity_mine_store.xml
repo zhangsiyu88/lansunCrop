@@ -65,7 +65,7 @@
         android:layout_height="match_parent"
         android:background="@color/app_bg">
         
-	    <com.lansun.qmyo.view.MyListView
+	    <com.lansun.qmyo.view.TestMyListView
 	        android:id="@+id/lv_mine_store"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"

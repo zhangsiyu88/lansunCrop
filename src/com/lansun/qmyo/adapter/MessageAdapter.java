@@ -33,6 +33,8 @@ public class MessageAdapter extends
 			viewHold.tv_message_item_count.setVisibility(View.GONE);
 			viewHold.tv_message_item_count.setText("");
 		}
+		
+		
 		if (position + 1 == dataList.size()) {
 			viewHold.line.setVisibility(View.GONE);
 		} else {

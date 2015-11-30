@@ -3,6 +3,7 @@ package com.lansun.qmyo.fragment;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -32,6 +33,7 @@ import com.lansun.qmyo.domain.MessageData;
 import com.lansun.qmyo.domain.MessageList;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ListViewSwipeGesture;
 import com.lansun.qmyo.view.MyListView;
@@ -61,6 +63,11 @@ public class MessageCenterFragment extends BaseFragment {
 		View rootView = inflater
 				.inflate(R.layout.activity_message_center, null);
 		Handler_Inject.injectFragment(this, rootView);
+		
+		//一旦进入进来后的，就发送广播将小绿点给取消掉
+		activity.sendBroadcast(new Intent("com.lansun.qmyo.DeleteTheLGPStatus"));
+		LogUtils.toDebugLog("infos", "消息中心一打开，广播通知小绿点消失");
+		
 		return rootView;
 	}
 

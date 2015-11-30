@@ -1,9 +1,12 @@
 package com.lansun.qmyo.fragment;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -20,12 +23,21 @@ import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
+import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
+import com.android.pc.ioc.internet.FastHttp;
+import com.android.pc.ioc.internet.ResponseEntity;
+import com.android.pc.ioc.view.PullToRefreshManager;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
+import com.android.pc.util.Handler_Json;
+import com.android.pc.util.Handler_Time;
 import com.google.gson.Gson;
 import com.lansun.qmyo.R;
+import com.lansun.qmyo.adapter.MessageAdapter;
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.domain.MessageData;
+import com.lansun.qmyo.domain.MessageList;
 import com.lansun.qmyo.domain.MySecretary;
 import com.lansun.qmyo.domain.information.InformationCount;
 import com.lansun.qmyo.event.entity.FragmentEntity;
@@ -33,9 +45,11 @@ import com.lansun.qmyo.listener.RequestCallBack;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.override.CircleImageView;
 import com.lansun.qmyo.utils.DialogUtil;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CircularImage;
+import com.lansun.qmyo.view.CustomToast;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -69,12 +83,12 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 		};
 	};
 	private InformationCount count;
+	public  ArrayList<HashMap<String,String>> dataList = new ArrayList<HashMap<String,String>>();
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		//App.app.setData("firstEnterBankcardAndAddAnotherBankcard","");
 		super.onCreate(savedInstanceState);
-		
-		
 		
 		initMySecretary();
 		initInformation();
@@ -109,12 +123,64 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 		View rootView = inflater.inflate(R.layout.activity_mine,container,false);
 		Handler_Inject.injectFragment(this, rootView);
 		v.iv_mine_icon.setPressed(true);
+		
+		/**
+		 * 保证从后台重新进入当前fragment时，头像部分可以重新加载上去
+		 */
+		if (GlobalValue.user != null) {
+			String avatar = GlobalValue.user.getAvatar();
+			if (!TextUtils.isEmpty(avatar)) {
+				//加载头像上去
+				loadPhoto(avatar, v.iv_mine_head);
+			}
+			
+			if (!TextUtils.isEmpty(GlobalValue.user.getNickname())) {
+				
+				if(GlobalValue.user.getNickname() == null||GlobalValue.user.getNickname() =="null"||GlobalValue.user.getNickname().contains("null")){
+					v.tv_mine_nickname.setText("请设置昵称");
+					Log.i("Tag：nickName","NickName应该为设置昵称");
+					
+				}else{
+					Log.i("Tag：nickName","NickName有值："+GlobalValue.user.getNickname());
+					v.tv_mine_nickname.setText(GlobalValue.user.getNickname());
+				}
+			}else{
+				v.tv_mine_nickname.setText("请注册或登陆");
+			}
+		}else{    //--- >GlobalValue.user == null
+			
+			LogUtils.toDebugLog("userinfo", "onCreatView()方法里： GlobalValue.user为空");
+			//CustomToast.show(activity, "onCreatView()方法里： GlobalValue.user为空", "同上");
+			
+			if(!TextUtils.isEmpty(App.app.getData("user_avatar"))&&!TextUtils.isEmpty(App.app.getData("user_nickname"))){
+				loadPhoto(App.app.getData("user_avatar"), v.iv_mine_head);
+				v.tv_mine_nickname.setText(App.app.getData("user_nickname"));
+			}else{
+				
+			}
+		}
+		
+		
 		//v.tv_mine_icon.setTextColor(getResources().getColor(R.color.app_green2));
 		return rootView;
 	}
 
 	@InjectInit
 	private void init() {
+		
+		//1.使用消息中心的网络接口前去访问 活动 和 迈界 消息，当返回的列表中的某一项的data.getIs_read()有值时 ，
+		//即可将通知首页小圆点的显示
+	
+		String activityMessageUrl = GlobalValue.URL_USER_MESSAGE_LIST+ GlobalValue.MESSAGE.activity;
+		String    majieMessageUrl = GlobalValue.URL_USER_MESSAGE_LIST+ GlobalValue.MESSAGE.maijie;
+		
+//		refreshCurrentList(activityMessageUrl, null, 0, null);
+//		LogUtils.toDebugLog("infos", "去拿关于活动的信息");
+//		refreshCurrentList(majieMessageUrl, null, 1, null);
+//		LogUtils.toDebugLog("infos", "去拿关于迈界的信息");
+		
+		
+		
 		v.iv_mine_icon.setPressed(true);
 		v.tv_mine_icon.setTextColor(getResources().getColor(R.color.app_green2));
 
@@ -142,15 +208,21 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 				}else{
 					v.tv_mine_nickname.setText("请注册或登陆");
 				}
-			}else{
-				/*CustomToast.show(activity, "GlobalValue.user为空", "同上");*/
+			}else{   		 //--- >GlobalValue.user == null
+				
+				LogUtils.toDebugLog("userinfo", "init()方法里： GlobalValue.user为空");
+				//CustomToast.show(activity, "init()方法里： GlobalValue.user为空", "同上");
+				
+				if(!TextUtils.isEmpty(App.app.getData("user_avatar"))&&!TextUtils.isEmpty(App.app.getData("user_nickname"))){
+					loadPhoto(App.app.getData("user_avatar"), v.iv_mine_head);
+					v.tv_mine_nickname.setText(App.app.getData("user_nickname"));
+				}else{
+					
+				}
 			}
-			
 		}
 		
-		
-
-		refreshCurrentList(GlobalValue.URL_USER_MESSAGE, null, 0, null);//去刷新消息
+		//refreshCurrentList(GlobalValue.URL_USER_MESSAGE, null, 0, null);//去刷新消息
 	}
 
 	@Override
@@ -263,7 +335,6 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 				fragment = new MineCouponsFragment();
 			break;
 		case R.id.ll_mine_message:// TODO 消息中心
-
 			if(App.app.getData("isExperience").equals("true")){
 				DialogUtil.createTipAlertDialog(getActivity(),
 						R.string.login_to_getmessage, new TipAlertDialogCallBack() {
@@ -297,6 +368,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 			break;
 		case R.id.rl_mine_shared://分享APP
 			fragment = new SharedFragment();
+			//activity.sendBroadcast(new Intent("com.lansun.qmyo.ChangeTheLGPStatus"));
 			break;
 
 		case R.id.bottom_home:
@@ -313,30 +385,84 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 		bus.post(entity);
 	}
 
-	//	@InjectHttp
-	//	private void result(ResponseEntity r) {
-	//		if (r.getStatus() == FastHttp.result_ok) {
-	//			switch (r.getKey()) {
-	//			case 0:
-	//				Message msg = Handler_Json.JsonToBean(Message.class,
-	//						r.getContentAsString());
-	//				if (Integer.parseInt(msg.getMaijie()) > 0) {
-	//					v.tv_mine_message_center.setText(msg.getMaijie());
-	//					v.tv_mine_message_center.setVisibility(View.VISIBLE);
-	//				}
-	//				if (Integer.parseInt(msg.getComment()) > 0) {
-	//					v.tv_mine_comment_message.setText(msg.getComment());
-	//					v.tv_mine_comment_message.setVisibility(View.VISIBLE);
-	//				}
-	//				if (Integer.parseInt(msg.getSecretary()) > 0) {
-	//					v.tv_mine_secretary_message.setText(msg.getSecretary());
-	//					v.tv_mine_secretary_message.setVisibility(View.VISIBLE);
-	//				}
-	//				break;
-	//			}
-	//		}
-	//
-	//	}
+	
+	@InjectHttp
+	private void result(ResponseEntity r) {
+		
+		if (r.getStatus() == FastHttp.result_ok) {
+			endProgress();
+			
+			switch (r.getKey()) {
+			case 0:
+				int is_readForActivity = Integer.MAX_VALUE;
+				MessageList activityMessList = Handler_Json.JsonToBean(MessageList.class,
+						r.getContentAsString());
+				
+				LogUtils.toDebugLog("infos", "拿到关于活动的信息");
+				LogUtils.toDebugLog("infos", "拿到关于活动的信息"+ activityMessList.toString());
+				
+				HashMap<String, String> messMap = new HashMap<String, String>();
+				if (activityMessList.getData() != null) {
+					
+					for (MessageData data : activityMessList.getData()) {
+						messMap = new HashMap<String, String>();
+						messMap.put("tv_message_item_count", data.getIs_read() + "");
+						dataList.add(messMap);
+					}
+					for(HashMap data:dataList){
+						LogUtils.toDebugLog("infos", "活动：  dataList中的每个信息的已读与未读标签为： "+data.get("tv_message_item_count")+"");
+						LogUtils.toDebugLog("infos", "活动 ：  is_readForActivity ： "+is_readForActivity);
+						if(is_readForActivity != 0){
+							//is_read为0时 ，表明其未读，小绿点可见
+							is_readForActivity= Integer.valueOf((String) data.get("tv_message_item_count"));
+							LogUtils.toDebugLog("infos", "关于活动的消息--》已读");
+						}else{
+							activity.sendBroadcast(new Intent("com.lansun.qmyo.ChangeTheLGPStatus"));
+							LogUtils.toDebugLog("infos", "活动： 发送广播");
+							break;
+						}
+					}
+				} 
+				break;
+			case 1:
+				int is_readForMaijie = Integer.MAX_VALUE;
+				MessageList maijieMessList = Handler_Json.JsonToBean(MessageList.class,
+						r.getContentAsString());
+				
+				LogUtils.toDebugLog("infos", "拿到关于迈界的信息");
+				LogUtils.toDebugLog("infos", "拿到关于迈界的信息"+ maijieMessList.toString());
+				
+				if (maijieMessList.getData() != null) {
+					
+					HashMap<String, String> maijieMap = new HashMap<String, String>();
+					
+					for (MessageData data : maijieMessList.getData()) {
+						maijieMap.put("tv_message_item_count", data.getIs_read() + "");
+						dataList.add(maijieMap);
+					}
+					for(HashMap<String, String> data:dataList){
+						LogUtils.toDebugLog("infos", "迈界 ：  dataList中的每个信息的已读与未读标签为： "+data.get("tv_message_item_count")+"");
+						LogUtils.toDebugLog("infos", "迈界 ：  is_readForMaijie ： "+is_readForMaijie);
+						
+						if(is_readForMaijie != 0){//一旦有一个消息未读，我们都需要将首页的小绿点展示出来
+							//is_read为0时 ，表明其未读，小绿点可见
+							is_readForMaijie= Integer.valueOf(data.get("tv_message_item_count"));
+							LogUtils.toDebugLog("infos", "关于迈界的消息--》已读");
+						}else{
+							activity.sendBroadcast(new Intent("com.lansun.qmyo.ChangeTheLGPStatus"));//LGP:Little Green Point
+							LogUtils.toDebugLog("infos", "迈界： 发送广播");
+							break;
+						}
+					}
+				} 
+				break;
+			}
+		}
+		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+		PullToRefreshManager.getInstance().onFooterRefreshComplete();
+	}
+
+	
 	@Override
 	public void onResponse(Response response) throws IOException {
 		if (response.isSuccessful()) {

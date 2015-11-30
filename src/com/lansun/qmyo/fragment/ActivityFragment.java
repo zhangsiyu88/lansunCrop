@@ -1107,9 +1107,6 @@ public class ActivityFragment extends BaseFragment {
 						}else{
 							activityAdapter.notifyDataSetChanged();
 						}
-						
-						
-						
 					}
 					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
@@ -1151,7 +1148,7 @@ public class ActivityFragment extends BaseFragment {
 			}//r.getKey() < 4 的if
 
 
-		} else {//如果服务器没有返回需要值回来 ---->网络未连接上外部网络//TODO
+		} else {												//如果服务器没有返回需要值回来 ---->网络未连接上外部网络//TODO
 			progress_text.setText(R.string.net_error_refresh);
 			//针对在断网后再次点击上部筛选栏的自己菜单时，做出的重复添加无效的 noNetworkView界面操作
 			try{
@@ -1159,39 +1156,42 @@ public class ActivityFragment extends BaseFragment {
 			}catch(Exception e ){
 			}
 
-			if(cPd!=null){//断网情况下，且还拥有了cPd，表明其走到了loadActivityList，表示之前成功使用过筛选栏进行列表选择过， 实际上是访问不到数据的 
-				cPd.dismiss();
-				cPd = null;
-
-
-				//setNetworkView();
-				noNetworkView = setNetworkView();
-				lv_activity_list.addFooterView(noNetworkView);
-				//此时可断开上拉的操作
-				PullToRefreshManager.getInstance().footerUnable();
-				PullToRefreshManager.getInstance().headerUnable();
-
-			}else{//注意下面的两个判断的安放顺序
-
-				if(isFromNoNetworkViewTip){//由ListView添加上的footerview画面点击产生的效果
-					//筛选栏的点击在无网的状态下，点击提示画面，进行尝试联网操作，但依旧是返回统一的检查网络的提示画面
-					/*	ImageView iv_gif_loadingprogress = (ImageView) noNetworkView.findViewById(R.id.iv_gif_loadingprogress);
-			    	((AnimationDrawable)iv_gif_loadingprogress.getDrawable()).start();*/
+			
+			CustomToast.show(activity, "", "我承认我没拿到数据！");
+			
+				if(cPd!=null){//断网情况下，且还拥有了cPd，表明其走到了loadActivityList，表示之前成功使用过筛选栏进行列表选择过， 实际上是访问不到数据的 
+					cPd.dismiss();
+					cPd = null;
+	
+	
+					//setNetworkView();
 					noNetworkView = setNetworkView();
 					lv_activity_list.addFooterView(noNetworkView);
+					//此时可断开上拉的操作
 					PullToRefreshManager.getInstance().footerUnable();
 					PullToRefreshManager.getInstance().headerUnable();
-					isFromNoNetworkViewTip = false;
-					return;
+	
+				}else{//注意下面的两个判断的安放顺序
+	
+					if(isFromNoNetworkViewTip){//由ListView添加上的footerview画面点击产生的效果
+						//筛选栏的点击在无网的状态下，点击提示画面，进行尝试联网操作，但依旧是返回统一的检查网络的提示画面
+						/*	ImageView iv_gif_loadingprogress = (ImageView) noNetworkView.findViewById(R.id.iv_gif_loadingprogress);
+				    	((AnimationDrawable)iv_gif_loadingprogress.getDrawable()).start();*/
+						noNetworkView = setNetworkView();
+						lv_activity_list.addFooterView(noNetworkView);
+						PullToRefreshManager.getInstance().footerUnable();
+						PullToRefreshManager.getInstance().headerUnable();
+						isFromNoNetworkViewTip = false;
+						return;
+					}
+	
+					if(!justFirstClick){//针对 一进来就是无网状态，此时点击container会进行initData()的操作，此时点击一次后，justFirstClick=false，但是为了来网络时点击有效，那么很明显，不可禁掉点击监听，但可以禁掉 点击响应后的操作
+						/*lv_activity_list.addFooterView(noNetworkView);
+						PullToRefreshManager.getInstance().footerUnable();*/
+						justFirstClick = true;
+	
+					}
 				}
-
-				if(!justFirstClick){//针对 一进来就是无网状态，此时点击container会进行initData()的操作，此时点击一次后，justFirstClick=false，但是为了来网络时点击有效，那么很明显，不可禁掉点击监听，但可以禁掉 点击响应后的操作
-					/*lv_activity_list.addFooterView(noNetworkView);
-					PullToRefreshManager.getInstance().footerUnable();*/
-					justFirstClick = true;
-
-				}
-			}
 		}
 		
 		if (pd!=null) {
@@ -1276,7 +1276,7 @@ public class ActivityFragment extends BaseFragment {
 					lv_activity_list.addFooterView(emptyView);
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
-					CustomToast.show(activity, "到底啦！", "小迈会加油搜集更多惊喜哦");3
+					CustomToast.show(activity, "到底啦！", "小迈会加油搜集更多惊喜哦");
 
 				} else {
 					/* 下面这一步代码应该耽误了半天时间
@@ -1395,15 +1395,19 @@ public class ActivityFragment extends BaseFragment {
 
 	@Override/*@InjectMethod(@InjectListener(ids = 2131296342, listeners = OnClick.class))*/
 	protected void back() {
-		if(mIsHasChangeTheBankcardInMineBankcardPage){
+		/**
+		 *  由于广播的使用，此处放弃掉重刷首页的操作，达到更好的用户体验
+		 *  
+		 * if(mIsHasChangeTheBankcardInMineBankcardPage){
 			
-			/*HomeFragment homeFragment = new HomeFragment();*/
+			//HomeFragment homeFragment = new HomeFragment();
 			MainFragment mainFragment = new MainFragment(0);
 			FragmentEntity fEntity = new FragmentEntity();
 			fEntity.setFragment(mainFragment);
 			EventBus.getDefault().post(fEntity);
+			
 			return;
-		}
+		}*/
 		super.back();
 	}
 

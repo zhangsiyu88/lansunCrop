@@ -16,6 +16,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -44,6 +46,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -80,6 +83,7 @@ import com.lansun.qmyo.biz.ServiceAllBiz;
 import com.lansun.qmyo.domain.ActivityList;
 import com.lansun.qmyo.domain.ActivityListData;
 import com.lansun.qmyo.domain.HomeAdPhotoData;
+import com.lansun.qmyo.domain.HomePosterList;
 import com.lansun.qmyo.domain.HomePromote;
 import com.lansun.qmyo.domain.HomePromoteData;
 import com.lansun.qmyo.domain.MySecretary;
@@ -95,6 +99,7 @@ import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExperienceDialog;
+import com.lansun.qmyo.view.LoginDialog;
 import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 import com.lansun.qmyo.view.MyListView;
 import com.squareup.okhttp.Callback;
@@ -283,6 +288,7 @@ import com.squareup.okhttp.Response;
 		filter = new IntentFilter();
 		filter.addAction("com.lansun.qmyo.refreshHome");
 		filter.addAction("com.lansun.qmyo.refreshTheIcon");
+		filter.addAction("com.lansun.qmyo.ChangeTheLGPStatus");
 		getActivity().registerReceiver(broadCastReceiver, filter);
 		
 		
@@ -343,6 +349,7 @@ import com.squareup.okhttp.Response;
 	boolean canscoll = false;
 	
 	private ArrayList<HomeAdPhotoData> homeAdPhotoList = new ArrayList<HomeAdPhotoData>();
+	
 	
 	public void setDataIntoHomeAdPhotoList(){
 		HomeAdPhotoData homeAdPhotoData1 = new HomeAdPhotoData();
@@ -422,6 +429,8 @@ import com.squareup.okhttp.Response;
 			}
 
 			head = inflater.inflate(R.layout.activity_home_banner, null);
+			pointSets = (LinearLayout) head.findViewById(R.id.ll_point_sets);
+			
 			/*尝试在head被充起来的瞬间就将其放到ListView的头上*/
 			lv_home_list.addHeaderView(head, null, true);
 
@@ -564,8 +573,14 @@ import com.squareup.okhttp.Response;
 			/**
 			 * 去获取数据内容,暂关闭依据定位地点获取数据的方法
 			 FastHttpHander.ajaxGet(GlobalValue.URL_HOME_AD + getSelectCity()[0], config, this);*/
+			
 			Log.i("TAGTAGTAGTAGTAG", "准备向服务器发起请求，等待回执");
+			
+			/**
+			 * 去拿头部的广告图片-->>
+			 */
 			FastHttpHander.ajaxGet(GlobalValue.URL_HOME_AD + 310000, config, this);//已去访问头部的数据
+			
 			Log.i("TAGTAGTAGTAGTAG", "已经向服务器发起请求，等待回执");
 			//定值去访问页面顶头上的图
 
@@ -655,73 +670,55 @@ import com.squareup.okhttp.Response;
 		}
 		
 		
-		
-		
-		
-		
-		vp_home_ad = (ViewPager) head.findViewById(R.id.vp_home_ad);
-		//1.给ViewPager设置上资源适配器
-		MyHomeAdPagerAdapter homeAdPagerAdapter = new MyHomeAdPagerAdapter(homeAdPhotoList);
-		
-		//2.给Viewpager设置上页面切换的监听器
-		OnPageChangeListener homeAdPageChangeListener = new OnPageChangeListener() {
-			@Override
-			public void onPageSelected(int position) {
-				//NTD1.改变对应的小圆点的颜色
-				changeHomeAdPointColor(position);
-		
-			}
-			@Override
-			public void onPageScrolled(int arg0, float arg1, int arg2) {
-			}
-			@Override
-			public void onPageScrollStateChanged(int arg0) {
-			}
-		};
-		
-		
-		//3.给Viewpager设置上轮播的无限循环效果
-		//4.给Viewpager设置上页面的点击效果        -->在Adapter中，对View进行设置
-		
-		vp_home_ad.setAdapter(homeAdPagerAdapter);
-		
-		
-//		vp_home_ad.setOnTouchListener(new MyOnTouchListener());
-		
-		
-		try {
-			Field mField = ViewPager.class.getDeclaredField("mScroller");
-			mField.setAccessible(true);//允许暴力反射
-			mScroller = new FixedSpeedScroller(vp_home_ad.getContext(),new AccelerateInterpolator());
-			mScroller.setmDuration(3000);
-			mField.set(vp_home_ad, mScroller);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		mScroller.setmDuration(3000);
-		vp_home_ad.setOnPageChangeListener(homeAdPageChangeListener);
-		handler.removeCallbacksAndMessages(null);
-		handler.postDelayed(new InternalTask(), 5000);
-		vp_home_ad.setCurrentItem(1000*3);
+
 
 	}
 	
 	private void changeHomeAdPointColor(int position) {
-		if (position%3 == 0) {
-			iv_homead_point.setBackgroundResource(R.drawable.oval_select);
-			iv_homead_point2.setBackgroundResource(R.drawable.oval_nomal);
-			iv_homead_point3.setBackgroundResource(R.drawable.oval_nomal);
-		}
-		if (position%3 == 1) {
-			iv_homead_point2.setBackgroundResource(R.drawable.oval_select);
-			iv_homead_point.setBackgroundResource(R.drawable.oval_nomal);
-			iv_homead_point3.setBackgroundResource(R.drawable.oval_nomal);
-		}
-		if (position%3 == 2) {
-			iv_homead_point3.setBackgroundResource(R.drawable.oval_select);
-			iv_homead_point.setBackgroundResource(R.drawable.oval_nomal);
-			iv_homead_point2.setBackgroundResource(R.drawable.oval_nomal);
-		}
+		   pointSets.removeAllViews();
+		   int selectPosition = position % homePhotoList.size();
+		   
+		    for (int i = 0; i < homePhotoList.size(); i++) {  
+		    	RecyclingImageView pointImageView = new RecyclingImageView(activity);  
+		    	LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(14,14);
+		    	layoutParams.leftMargin = 8;
+		    	pointImageView.setLayoutParams(layoutParams);  
+		    	if(i==selectPosition){
+		    		pointImageView.setBackgroundResource(R.drawable.oval_select);  
+		    	}else{
+		    		pointImageView.setBackgroundResource(R.drawable.oval_nomal);  
+		    	}
+		        pointSets .addView(pointImageView);  
+		   } 
+		
+		
+//		    if (position%3 == 0) {
+//			iv_homead_point.setBackgroundResource(R.drawable.oval_select);
+//			iv_homead_point2.setBackgroundResource(R.drawable.oval_nomal);
+//			iv_homead_point3.setBackgroundResource(R.drawable.oval_nomal);
+//		}
+//		if (position%3 == 1) {
+//			iv_homead_point2.setBackgroundResource(R.drawable.oval_select);
+//			iv_homead_point.setBackgroundResource(R.drawable.oval_nomal);
+//			iv_homead_point3.setBackgroundResource(R.drawable.oval_nomal);
+//		}
+//		if (position%3 == 2) {
+//			iv_homead_point3.setBackgroundResource(R.drawable.oval_select);
+//			iv_homead_point.setBackgroundResource(R.drawable.oval_nomal);
+//			iv_homead_point2.setBackgroundResource(R.drawable.oval_nomal);
+//		}
+//		//选中的小圆点，注意：编号从0开始，size-1结束
+//		int selectPosition = position % homePhotoList.size();
+//		
+//		for(int j= 0;j<homePhotoList.size();j++){
+//			if(j==selectPosition){
+//				//此point下的小圆点为 选中 状态  //TODO
+//			}else{
+//				//剩余的小圆点为 非选中 状态
+//			}
+//		}
+		
+		
 	}
 	
 	private void changePointColor(int position) {
@@ -775,6 +772,8 @@ import com.squareup.okhttp.Response;
 	 * 标签属性： 标示 首页刚刚从后台回来
 	 */
 	private boolean justComeBackFromHome = false;
+	private ArrayList<HashMap<String, String>> homePhotoList = new  ArrayList<HashMap<String, String>>();
+	private LinearLayout pointSets;
 
 	public int getLocation(View v) {
 		int[] loc = new int[4];
@@ -805,7 +804,6 @@ import com.squareup.okhttp.Response;
 		PullToRefreshManager.getInstance().footerEnable();
 
 		if (r.getStatus() == FastHttp.result_ok) {
-			/*endProgress();*/
 			switch (r.getKey()) {
 			case 0://拿到顶头上的图
 				try {
@@ -817,18 +815,88 @@ import com.squareup.okhttp.Response;
 					Log.i("TAGTAGTAGTAGTAG", "前去服务器已经拿回了值");
 					JSONObject obj = new JSONObject(r.getContentAsString());
 					photoUrl = obj.get("photo").toString();
-					//loadPhoto(photoUrl, iv_home_ad);
+					
+					loadPhoto(photoUrl, iv_home_ad);
+					
+						//目前返回的只是一个对象,下面是针对数组使用的
+						//ArrayList<HomeAdPhotoData> photoList = new ArrayList<HomeAdPhotoData>();
+					
+						//adapter = null;
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				
+				endProgress();
+				
+//				//拿到头部的几张图片的数据
+//				HomePosterList photoList = Handler_Json.JsonToBean(HomePosterList.class,r.getContentAsString());//TODO
+//				
+//				LogUtils.toDebugLog("photoList.toString()", "r.getContentAsString() :"+r.getContentAsString());
+//				/*Gson gson = new Gson();
+//				HomePosterList photoList = gson.fromJson(r.getContentAsString(), HomePosterList.class);*/
+//				
+//				LogUtils.toDebugLog("photoList.toString()", "photoList.toString()  :  "+photoList.toString());
+//				
+//				HashMap<String, String> hashMap = new HashMap<String,String>();
+//				   for(HomeAdPhotoData data: photoList.getData()){
+//					    hashMap = new HashMap<String,String>();
+//				    	hashMap.put("photoDataPhotoUrl",data.getPhoto()); 
+//				    	hashMap.put("photoDataTag",String.valueOf(data.getTag())); 
+//				    	hashMap.put("photoDataActivityId",data.getActivity_id()); 
+//				    	hashMap.put("photoDataShopId",data.getShop_id()); 
+//				    	LogUtils.toDebugLog("photoDataPhotoUrl", "photoDataPhotoUrl的值为: "+data.getPhoto());
+//				    	LogUtils.toDebugLog("photoDataTag", "photoDataTag的值为: "+data.getTag());
+//				    	homePhotoList.add(hashMap);
+//				    }
+//				    endProgress();
+//				    
+//				    
+//				    //拿到数据后，进行viewpager的负载问题
+//					vp_home_ad = (ViewPager) head.findViewById(R.id.vp_home_ad);
+//					//1.给ViewPager设置上资源适配器
+//			/*		MyHomeAdPagerAdapter homeAdPagerAdapter = new MyHomeAdPagerAdapter(homeAdPhotoList);*/		
+//					MyHomeAdPagerAdapter homeAdPagerAdapter = new MyHomeAdPagerAdapter(homePhotoList);
+//					//2.给Viewpager设置上页面切换的监听器
+//					OnPageChangeListener homeAdPageChangeListener = new OnPageChangeListener() {
+//						@Override
+//						public void onPageSelected(int position) {
+//							//NTD1.改变对应的小圆点的颜色
+//							changeHomeAdPointColor(position);
+//						}
+//						@Override
+//						public void onPageScrolled(int arg0, float arg1, int arg2) {
+//						}
+//						@Override
+//						public void onPageScrollStateChanged(int arg0) {
+//						}
+//					};
+//					
+//					
+//					//3.给Viewpager设置上轮播的无限循环效果
+//					//4.给Viewpager设置上页面的点击效果        -->在Adapter中，对View进行设置
+//					
+//					vp_home_ad.setAdapter(homeAdPagerAdapter);
+////					vp_home_ad.setOnTouchListener(new MyOnTouchListener());
+//					
+//					try {
+//						Field mField = ViewPager.class.getDeclaredField("mScroller");
+//						mField.setAccessible(true);//允许暴力反射
+//						mScroller = new FixedSpeedScroller(vp_home_ad.getContext(),new AccelerateInterpolator());
+//						mScroller.setmDuration(3000);
+//						mField.set(vp_home_ad, mScroller);
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+//					mScroller.setmDuration(3000);
+//					vp_home_ad.setOnPageChangeListener(homeAdPageChangeListener);
+//					handler.removeCallbacksAndMessages(null);
+//					handler.postDelayed(new InternalTask(), 5000);
+//					vp_home_ad.setCurrentItem(1000*3);
+//				    
 					
 					
-					//目前返回的只是一个对象,下面是针对数组使用的
-					//ArrayList<HomeAdPhotoData> photoList = new ArrayList<HomeAdPhotoData>();
 					
-					
-					HomeAdPhotoData singlePhotoData = Handler_Json.JsonToBean(HomeAdPhotoData.class,r.getContentAsString());
-					String singlePhotoUrl = singlePhotoData.getPhoto();
-					loadPhoto(singlePhotoUrl, iv_home_ad);  
-					
-					
+					//dataList为空
 					for(HashMap<String, Object> shopData: shopDataList){
 						System.out.println(shopData.toString());
 					}
@@ -836,12 +904,9 @@ import com.squareup.okhttp.Response;
 					lv_home_list.setAdapter(adapter);
 					endProgress();
 					PullToRefreshManager.getInstance().headerUnable();
-					//adapter = null;
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				
-				loadPhoto(photoUrl, iv_home_ad);
+					
+					
+				//loadPhoto(photoUrl, iv_home_ad);
 				break;
 			case 1:// 极文列表
 
@@ -1030,10 +1095,14 @@ import com.squareup.okhttp.Response;
 	}
    class MyHomeAdPagerAdapter extends PagerAdapter {
 		private Context context;
-		private ArrayList<HomeAdPhotoData> mList;//传递进入数据源
+		/*private ArrayList<HomeAdPhotoData> mList;//传递进入数据源*/		
+		
+		private ArrayList<HashMap<String,String>> mList;//传递进入数据源
+		private int adPhotoNum;
 
-		public MyHomeAdPagerAdapter(ArrayList<HomeAdPhotoData> homeAdPhotoList) {
-			this.mList = homeAdPhotoList;
+		public MyHomeAdPagerAdapter(ArrayList<HashMap<String,String>> homePhotoList) {//TODO
+			this.mList = homePhotoList;
+			this.adPhotoNum = homePhotoList.size();
 		}
 		@Override
 		public int getCount() {
@@ -1055,13 +1124,24 @@ import com.squareup.okhttp.Response;
 			 * loadPhoto(mList.get(position).getPhoto(), imageView);//把图片放到container中的ImageView控件上
 			 */
 			
-			if(position%3==0){
-				imageView.setBackgroundResource(R.drawable.home_ad_poster1);
-			}else if(position%3==1){
-				imageView.setBackgroundResource(R.drawable.home_ad_poster2);
-			}else if(position%3==2){
-				imageView.setBackgroundResource(R.drawable.home_ad_poster3);
-			}
+//			if(position%adPhotoNum==0){
+//				imageView.setBackgroundResource(R.drawable.home_ad_poster1);
+//				
+//				
+//			}else if(position%adPhotoNum==1){
+//				
+//				
+//				imageView.setBackgroundResource(R.drawable.home_ad_poster2);
+//			}else if(position%adPhotoNum==2){
+//				
+//				
+//				imageView.setBackgroundResource(R.drawable.home_ad_poster3);
+//			}
+			
+			loadPhoto(mList.get(position%adPhotoNum).get("photoDataPhotoUrl"), imageView);
+			
+			
+			
 			/*
 			 * 以后的服务器返回回来的数据需要拥有这张图外接的连接地址，目前暂时将其设置为点击第二张图片进入私人秘书页
 			   imageView.setOnTouchListener(new MyOnTouchListener());
@@ -1136,30 +1216,136 @@ import com.squareup.okhttp.Response;
 		@Override
 		public void onClick(View v) {
 			LogUtils.toDebugLog("点击", "点击监听中的点击事件");
-			if(mPosition%3 == 0){
-				MainFragment mineFragment = new MainFragment(1);
-				FragmentEntity fEntity = new FragmentEntity();
-				fEntity.setFragment(mineFragment);
-				EventBus.getDefault().post(fEntity);
-			}else if(mPosition%3 == 1){
-				ActivityFragment activityFragment = new ActivityFragment();
-				Bundle args = new Bundle();
-				args.putInt("type", R.string.investment);
-				activityFragment.setArguments(args);
-				FragmentEntity fEntity = new FragmentEntity();
-				fEntity.setFragment(activityFragment);
-				EventBus.getDefault().post(fEntity);
-			}else if(mPosition%3 == 2){
-				ActivityFragment activityFragment = new ActivityFragment();
-				Bundle args = new Bundle();
-				args.putInt("type", R.string.integral);
-				activityFragment.setArguments(args);
-				FragmentEntity fEntity = new FragmentEntity();
-				fEntity.setFragment(activityFragment);
-				EventBus.getDefault().post(fEntity);
+			
+//			if(mPosition%3 == 0){
+//				MainFragment mineFragment = new MainFragment(1);
+//				FragmentEntity fEntity = new FragmentEntity();
+//				fEntity.setFragment(mineFragment);
+//				EventBus.getDefault().post(fEntity);
+//			}else if(mPosition%3 == 1){
+//				ActivityFragment activityFragment = new ActivityFragment();
+//				Bundle args = new Bundle();
+//				args.putInt("type", R.string.investment);
+//				activityFragment.setArguments(args);
+//				FragmentEntity fEntity = new FragmentEntity();
+//				fEntity.setFragment(activityFragment);
+//				EventBus.getDefault().post(fEntity);
+//			}else if(mPosition%3 == 2){
+//				ActivityFragment activityFragment = new ActivityFragment();
+//				Bundle args = new Bundle();
+//				args.putInt("type", R.string.integral);
+//				activityFragment.setArguments(args);
+//				FragmentEntity fEntity = new FragmentEntity();
+//				fEntity.setFragment(activityFragment);
+//				EventBus.getDefault().post(fEntity);
+//			}
+			
+			
+		 /* hashMap.put("photoDataPhotoUrl",String.valueOf(data.getPhoto())); 
+	    	hashMap.put("photoDataTag",String.valueOf(data.getTag())); 
+	    	hashMap.put("photoDataActivityId",String.valueOf(data.getActivity_id())); 
+	    	hashMap.put("photoDataShopId",""+String.valueOf(data.getShop_id())); */
+			
+			
+			
+//			板块为必填的0-9之间的数字。0为新品曝光，1-8代表app首页下的八大模块位置，9代表具体的活动，活动id与商店id需同时有且此时板块只能为9，
+//			板块为0-8时，后面的活动id与门店id不写，10私人小秘书，11优惠券，数字之间用逗号(英文字符)隔开。例如跳转购物狂欢模块，只需填写1，
+//			跳转参某个活动的门店应写：9,1246,5786
+			
+			int tag = Integer.valueOf(homePhotoList.get(mPosition%homePhotoList.size()).get("photoDataTag"));
+			LogUtils.toDebugLog("photoDataTag", "photoDataTag的值为： "+tag);
+			LogUtils.toDebugLog("photoDataTag", "photoDataTag的值为： "+homePhotoList.get(mPosition%homePhotoList.size()).get("photoDataTag"));
+			
+			if("".equals(homePhotoList.get(mPosition%homePhotoList.size()).get("photoDataTag"))||
+					homePhotoList.get(mPosition%homePhotoList.size()).get("photoDataTag")==null){
+				//NO-OP
+			}else{
+				Fragment fragment =new Fragment();
+				Bundle bundle = new Bundle();
+				
+				switch(tag){
+				case 0://新品曝光
+					fragment = new NewBrandFragment();
+					bundle.putString("type", "new");
+					fragment.setArguments(bundle);	
+					break;
+					
+				case 1://购物狂欢
+					fragment = new ActivityFragment();
+					bundle.putInt("type", R.string.shopping_carnival);
+					fragment.setArguments(bundle);	
+					break;
+				case 2://美食餐饮
+					fragment = new ActivityFragment();
+					bundle.putInt("type", R.string.dining);
+					fragment.setArguments(bundle);	
+					break;
+				case 3://积分兑换
+					fragment = new ActivityFragment();
+					bundle.putInt("type", R.string.integral);
+					fragment.setArguments(bundle);	
+					break;
+				case 4://投资理财
+					fragment = new ActivityFragment();
+					bundle.putInt("type", R.string.investment);
+					fragment.setArguments(bundle);	
+					break;
+				case 5://生活服务
+					fragment = new ActivityFragment();
+					bundle.putInt("type", R.string.life_service);
+					fragment.setArguments(bundle);	
+					break;
+				case 6://休闲娱乐
+					fragment = new ActivityFragment();
+					bundle.putInt("type", R.string.entertainment);
+					fragment.setArguments(bundle);	
+					break;
+				case 7://旅游度假
+					fragment = new ActivityFragment();
+					bundle.putInt("type", R.string.travel_holiday);
+					fragment.setArguments(bundle);	
+					break;
+				case 8://汽车礼遇
+					fragment = new ActivityFragment();
+					bundle.putInt("type", R.string.courtesy_car);
+					fragment.setArguments(bundle);	
+					break;
+					
+				case 9://具体活动页面
+					String activity_id = homePhotoList.get(mPosition % homePhotoList.size()).get("photoDataActivityId");
+					String shop_id = homePhotoList.get(mPosition % homePhotoList.size()).get("photoDataShopId");
+					fragment = new ActivityDetailFragment();
+					bundle.putString("activityId", activity_id); 
+					bundle.putString("shopId", shop_id);
+					/*bundle.putString("activityId", 6643+""); 
+					bundle.putString("shopId", 27246+"");*/
+					fragment.setArguments(bundle);
+					break;
+				case 10://私人秘书页
+					fragment = new MainFragment(1);
+					break;
+					
+				case 11://优惠券页
+					break;
+					
+					
+				case 12:
+					break;
+					//NO-OP
+				case 13:
+					//NO-OP
+					break;
+				case 14:
+					//NO-OP
+					break;
+				default:
+					break;
+				}
+				FragmentEntity fragmentEntity = new FragmentEntity();
+				fragmentEntity.setFragment(fragment);
+				EventBus.getDefault().post(fragmentEntity);
 			}
 		}
-		
 	}
 	
 	
@@ -1176,7 +1362,7 @@ import com.squareup.okhttp.Response;
 		@Override
 		public void onReceive(Context ctx, Intent intent) {
 			if(intent.getAction().equals("com.lansun.qmyo.refreshHome")){
-				System.out.println("收到广播了");
+				System.out.println("首页收到局部刷新的广播了");
 				
 				refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_home_list);
 				v.iv_card.setVisibility(View.VISIBLE);//原本右边银行卡可见

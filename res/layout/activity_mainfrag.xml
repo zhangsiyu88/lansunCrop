@@ -140,6 +140,7 @@
 				            android:layout_width="10dp"
 				            android:layout_height="10dp"
 				            android:background="@drawable/circle_shape"
+				            android:visibility="gone"
 				            /> <!-- android:text=""   android:textColor="@android:color/white"  android:textSize="10sp"  -->
 		           </RelativeLayout>
 		           

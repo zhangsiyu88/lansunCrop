@@ -121,7 +121,7 @@ import com.lansun.qmyo.view.CustomToast;
 	        Log.d("更新的坐标","更新的坐标:"+aMapLocation.getLongitude()+","+aMapLocation.getLatitude());
 	        
 	        
-	        //CustomToast.show(getApplicationContext(), "更新坐标位置", "已更新");
+	       // CustomToast.show(getApplicationContext(), "更新坐标位置", "已更新");
 	        //CustomToast.show(getApplicationContext(), "纬度：", ""+aMapLocation.getLatitude());
 	        //CustomToast.show(getApplicationContext(), "经度：", ""+aMapLocation.getLongitude());
 	        

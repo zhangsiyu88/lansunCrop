@@ -32,6 +32,7 @@ import com.lansun.qmyo.fragment.HomeFragment;
 import com.lansun.qmyo.fragment.HomeFragmentOld;
 import com.lansun.qmyo.fragment.IntroductionPageFragment;
 import com.lansun.qmyo.fragment.MineFragment;
+import com.lansun.qmyo.fragment.PersonCenterFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.fragment.SearchBankCardFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
@@ -42,6 +43,7 @@ import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.ExampleUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 @InjectLayer(R.layout.activity_main)
 public class MainActivity extends FragmentActivity {
@@ -49,6 +51,8 @@ public class MainActivity extends FragmentActivity {
 	public static boolean isForeground = false;
 	@Override
 	protected void onCreate(@Nullable Bundle arg0) {
+		
+		//注册一个广播接收者
 		registerMessageReceiver();
 		
 		
@@ -108,8 +112,8 @@ public class MainActivity extends FragmentActivity {
 		} else {
 			/*startFragmentAdd(new HomeFragment());    */                 //--------------------->by Yeun 11.16//TODO
 			/*startFragmentAdd(new HomeFragmentOld());*/					//--------------------->by Yeun 11.13//TODO
-			/*startFragmentAdd(new MainFragment());*/
-			startFragmentAdd(new TestMineActivityFragment());
+			startFragmentAdd(new MainFragment());
+			/*startFragmentAdd(new TestMineActivityFragment());*/
 			
 			getTokenService();
 		}
@@ -142,6 +146,7 @@ public class MainActivity extends FragmentActivity {
 	protected void onResume() {
 		JPushInterface.onResume(this);
 		isForeground = false;
+		//getTokenService();
 		super.onResume();
 	}
 
@@ -151,7 +156,10 @@ public class MainActivity extends FragmentActivity {
 	private void getTokenService() {
 		Intent service = new Intent(this, AccessTokenService.class);
 		startService(service);
-		Intent locationService = new Intent(this, LocationService.class);
+		
+
+		LogUtils.toDebugLog("location", "locationService正常启动");
+		locationService = new Intent(this, LocationService.class);
 		startService(locationService);
 	}
 	
@@ -224,6 +232,13 @@ public class MainActivity extends FragmentActivity {
 				CustomToast.show(this, "抱歉,请选择银行卡", "请至少选择一张银行卡作为通行证");
 				return;
 			}
+		}else if(fragment.getClass().getName().equals(PersonCenterFragment.class.getName())){
+			FragmentEntity entity=new FragmentEntity();
+			MainFragment mainFragment=new MainFragment(3);
+			entity.setFragment(mainFragment);
+			EventBus.getDefault().post(entity);
+			LogUtils.toDebugLog("个人信息页的返回按钮和物理返回键的点击事件", "跳转至我的页面");
+			return;
 		}
 		super.onBackPressed();
 		/*else if(fragment.getClass().getName().equals(getSupportFragmentManager().findFragmentByTag("experience"))){
@@ -321,6 +336,12 @@ public class MainActivity extends FragmentActivity {
 		EventBus eventBus = EventBus.getDefault();
 		eventBus.unregister(this);
 		
+		/**
+		 * 离开程序时，将定位服务给禁掉
+		 */
+		stopService(locationService);
+		LogUtils.toDebugLog("locatio", "locationService被停止掉");
+		
 		if(App.app.getData("isExperience")=="true"){
 			System.out.println("走到了onDestory!");
 			App.app.setData("access_token", "");
@@ -343,6 +364,7 @@ public class MainActivity extends FragmentActivity {
 		public static final String KEY_MESSAGE = "message";
 		public static final String KEY_EXTRAS = "extras";
 		private Intent intent;
+		private Intent locationService;
 		
 		public void registerMessageReceiver() {
 			mMessageReceiver = new MessageReceiver();
@@ -367,11 +389,15 @@ public class MainActivity extends FragmentActivity {
 	            	  showMsg.append(KEY_EXTRAS + " : " + extras + "\n");
 	              }
 	              Log.i("由极光前来推送接收到的消息为： ", showMsg.toString());
+	              
+	              sendBroadcast(new Intent("com.lansun.qmyo.ChangeTheLGPStatus"));//LGP:Little Green Point
+			      LogUtils.toDebugLog("infos", "接收到推送消息后，发送广播");
+	              
+	              
 	              //setCostomMsg(showMsg.toString());
 				}
 			}
 		}
-		
 		/*private void setCostomMsg(String msg){
 			 if (null != msgText) {
 				 msgText.setText(msg);
@@ -403,4 +429,6 @@ public class MainActivity extends FragmentActivity {
 			   Application.getInstance().setClassInfos((List<classinfo>)savedInstanceState.getSerializable(classinfos));
 			  }
 			 }*/
+		
+		
 }

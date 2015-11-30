@@ -38,7 +38,8 @@ import com.lansun.qmyo.domain.ActivityListData;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
-import com.lansun.qmyo.utils.swipe.SwipeListAdapter;
+import com.lansun.qmyo.utils.swipe.SwipeListMineActivityAdapter;
+import com.lansun.qmyo.view.CustomDialogProgress;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ListViewSwipeGesture;
 import com.lansun.qmyo.view.MyListView;
@@ -63,6 +64,9 @@ public class TestMineActivityFragment extends BaseFragment {
 	private String underway = "1";
 	public boolean isPullChanged = false;
 	private int deletePosition;
+	private int times = 0;
+	private boolean isShowDialog = false;
+	private CustomDialogProgress cPd = null;
 
 	@InjectAll
 	Views v;
@@ -103,8 +107,8 @@ public class TestMineActivityFragment extends BaseFragment {
 		refreshParams = new LinkedHashMap<String, String>();
 		v.fl_comments_right_iv.setVisibility(View.GONE);
 		initTitle(v.tv_activity_title, R.string.activity_collection, null, 0);
-		PullToRefreshManager.getInstance().footerUnable();
-		PullToRefreshManager.getInstance().headerUnable();
+//		PullToRefreshManager.getInstance().footerUnable();
+//		PullToRefreshManager.getInstance().headerUnable();
 		
 		refreshParams.put("underway", underway);
 		refreshUrl = GlobalValue.URL_USER_ACTIVITY + "?";
@@ -120,25 +124,23 @@ public class TestMineActivityFragment extends BaseFragment {
 					isPullChanged = false;
 					//再次刷新
 					refreshCurrentList(refreshUrl, refreshParams, 0,lv_mine_activity);
+					times = 0;
 				}
 			}
 
+			
 			@Override
 			public void onLoadingMore() {
-				//lv_mine_activity.onLoadMoreFished();
-			}
-			
-/*			@Override
-			public void onLoadingMore() {
 				if (list != null) {
-					
-					 * 从代码习惯上来说，服务器返回的是"null"字符串，我认为是不应该的，空的话就应该是空串 ("")
+					/* 从代码习惯上来说，服务器返回的是"null"字符串，我认为是不应该的，空的话就应该是空串 ("") */
 					 
 					if (list.getNext_page_url()=="null"){
-						CustomToast.show(activity, "到底啦！", "您只收藏了以上活动哦");
-//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
-//						PullToRefreshManager.getInstance().footerUnable();
-						lv_mine_activity.onLoadMoreFished();
+						while(times<1){
+							CustomToast.show(activity, "到底啦！", "您只收藏了以上活动哦");
+							times++;
+						}
+						//lv_mine_activity.onLoadMoreFished();
+						lv_mine_activity.onLoadMoreOverFished();
 						
 					} else {
 						refreshParams.put("underway", underway);
@@ -146,111 +148,12 @@ public class TestMineActivityFragment extends BaseFragment {
 						isPullChanged = true;
 					}
 				}
-			}*/
+			}
+
 		});
-		
-			
-			
-		
-		
-//		listView设置上touchListener，将ListView的控件对象和监听的回调函数关联起来
-//		ListViewSwipeGesture touchListener = new ListViewSwipeGesture(lv_mine_activity, swipeListener, getActivity());
-//		touchListener.SwipeType = ListViewSwipeGesture.Dismiss;
-//		lv_mine_activity.setOnTouchListener(touchListener);//依旧还是得将生成的触摸监听器和listView控件挂上钩
-		
-		/*SwipeListAdapter swipeListAdapter = new SwipeListAdapter(activity,dataList);
-		lv_mine_activity.setAdapter(swipeListAdapter);*/
-		
 	}
 	
-	//-----------------------------------以下代码  为原始的手势监听的代码-----------------------------------------------------------	
-//	//触摸的回调函数
-//	ListViewSwipeGesture.TouchCallbacks swipeListener = new ListViewSwipeGesture.TouchCallbacks() {
-//
-//		@Override
-//		public void FullSwipeListView(int position) {
-//		}
-//
-//		@Override
-//		public void HalfSwipeListView(final int position) {
-//			deletePosition = position;
-//			InternetConfig config = new InternetConfig();
-//			config.setKey(1);
-//			HashMap<String, Object> head = new HashMap<>();
-//			
-//			head.put("Authorization","Bearer " + App.app.getData("access_token"));
-//			
-//			config.setHead(head);
-//			config.setRequest_type(InternetConfig.request_delete);
-//			config.setMethod("DELETE");
-//			
-//			/*FastHttpHander.ajax(String.format(
-//					GlobalValue.URL_USER_ACTIVITY_DELETE, dataList
-//							.get(position).get("activityId").toString(),
-//					dataList.get(position).get("shopId").toString()), config,
-//					MineActivityFragment.this);*/
-//			
-//			
-//			//TODO  注意下面拼接的url中的接口域名记得替换
-//		/*	FastHttpHander.ajax("http://appapi.qmyo.org/activity/"+dataList
-//					.get(position).get("activityId").toString()+"?shop_id="+dataList.get(position).get("shopId").toString(),
-//			config, this);*/
-//			
-//			HttpUtils httpUtils = new HttpUtils();
-//			RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
-//
-//				@Override
-//				public void onFailure(HttpException arg0, String arg1) {
-//				}
-//
-//				@Override
-//				public void onSuccess(ResponseInfo<String> arg0) {
-//					if ("true".equals(arg0.result.toString())) {
-//							dataList.remove(deletePosition);
-//							adapter.notifyDataSetChanged();
-//							CustomToast.show(activity, getString(R.string.tip),
-//									getString(R.string.delete_success));
-//						} else {
-//							CustomToast.show(activity, getString(R.string.tip),
-//									getString(R.string.delete_faild));
-//						}
-//				}
-//
-//				
-//			};
-//			RequestParams requestParams = new RequestParams();
-//			requestParams.addHeader("Authorization", "Bearer" + App.app.getData("access_token"));
-//			
-//			//TODO  注意下面拼接的url中的接口域名记得替换
-//			httpUtils.send(HttpMethod.DELETE, 
-//					"http://appapi.qmyo.com/activity/"+dataList
-//					.get(position).get("activityId").toString()+"?shop_id="+dataList.get(position).get("shopId").toString(),
-//					requestParams,requestCallBack );
-//		}
-//		@Override
-//		public void OnClickListView(int position) {
-//			ActivityDetailFragment fragment = new ActivityDetailFragment();
-//			Bundle args = new Bundle();
-//			args.putString("activityId",
-//					dataList.get(position).get("activityId").toString());
-//			args.putString("shopId", dataList.get(position).get("shopId")
-//					.toString());
-//			fragment.setArguments(args);
-//			FragmentEntity event = new FragmentEntity();
-//			event.setFragment(fragment);
-//			EventBus.getDefault().post(event);
-//		}
-//
-//		@Override
-//		public void LoadDataForScroll(int count) {
-//		}
-//		@Override
-//		public void onDismiss(ListView listView, int[] reverseSortedPositions) {
-//		}
-//
-//	};
-//-----------------------------------以上代码   为原始的手势监听的代码-----------------------------------------------------------
-	
+
 	
 	
 	
@@ -261,28 +164,49 @@ public class TestMineActivityFragment extends BaseFragment {
 	private SearchAdapter adapter;
 
 	private ActivityList list;
-	private SwipeListAdapter swipeListAdapter;
+	private SwipeListMineActivityAdapter swipeListAdapter;
 
 	private void click(View view) {
 		dataList.clear();
 		swipeListAdapter = null;
 		//adapter = null;
 		v.rl_no_postdelay_activity.setVisibility(View.GONE);
+		lv_mine_activity.setVisibility(View.GONE);
+		
 		
 		switch (view.getId()) {
 		case R.id.tv_activity_doing:
+			
 			underway = "1";
 			changeTextColor(v.tv_activity_doing);
 			refreshParams.put("underway", underway);
 			refreshCurrentList(refreshUrl, refreshParams, 0, lv_mine_activity);
+			times = 0;
+			isShowDialog = true;
 			break;
 		case R.id.tv_activity_expired:
 			underway = "0";
 			changeTextColor(v.tv_activity_expired);
 			refreshParams.put("underway", underway);
 			refreshCurrentList(refreshUrl, refreshParams, 0, lv_mine_activity);
+			times = 0;
+			isShowDialog = true;
 			break;
 		}
+		
+		if (isShowDialog){
+			if(cPd == null ){
+				Log.d("dialog","生成新的dialog！");
+				cPd = CustomDialogProgress.createDialog(activity);
+				cPd.setCanceledOnTouchOutside(false);
+				cPd.show();
+			}else{
+				cPd.show();
+			}
+		}
+		
+		//lv_mine_activity.setVisibility(View.INVISIBLE);
+		
 	}
 
 	
@@ -304,8 +228,14 @@ public class TestMineActivityFragment extends BaseFragment {
 	@InjectHttp
 	private void result(ResponseEntity r) {
 		if (r.getStatus() == FastHttp.result_ok) {
-			endProgress();
+			if(cPd!=null){
+				cPd.dismiss();
+				cPd = null;
+			}
 			
+			lv_mine_activity.setVisibility(View.INVISIBLE);
+			
+			endProgress();
 			switch (r.getKey()) {
 			case 0:
 				lv_mine_activity.onLoadMoreFished();
@@ -368,10 +298,19 @@ public class TestMineActivityFragment extends BaseFragment {
 //						adapter.notifyDataSetChanged();
 //					}
 					if (swipeListAdapter == null) {
-						swipeListAdapter = new SwipeListAdapter(activity,dataList);
+						swipeListAdapter = new SwipeListMineActivityAdapter(activity,dataList);
 						lv_mine_activity.setAdapter(swipeListAdapter);
 					} else {
 						swipeListAdapter.notifyDataSetChanged();
+					}
+					
+					/*
+					 * 当刷新到最后一页，且此页数据少于10条时，需要弹出吐司表示到底，并且将尾布局去除
+					 */
+					if(list.getData().size()<10){
+						//TODO
+						//CustomToast.show(activity, "到底啦!", "您添加的银行卡目前只有这么多");
+						lv_mine_activity.onLoadMoreOverFished();
 					}
 					PullToRefreshManager.getInstance().footerUnable();
 					PullToRefreshManager.getInstance().headerUnable();

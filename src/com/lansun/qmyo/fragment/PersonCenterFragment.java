@@ -166,6 +166,14 @@ public class PersonCenterFragment extends BaseFragment{
 			GlobalValue.user = null;
 			GlobalValue.isFirst = true;//即为三无状态，那么就需要成为是第一次进入的用户状态，也就会是需要自己加卡那个页面
 			clearTokenAndSercet();
+			
+			/*由于初始化时，主界面同时加载了4个界面，由服务Service去拿的GlobalValue.user信息是二次网络访问，
+			      导致MineFragment已经加载完成，而头像和昵称来不及从GlobalValue.user中拿到值（只针对之前是登录状态的情况）,
+			      此时需要将之前的头像avatar和昵称nickname写在本地持久化，尽在后面退出登录时，清掉此内容
+			*/
+				App.app.setData("user_avatar", "");
+				App.app.setData("user_nickname", "");
+			
 			/**
 			 * 2015-10-24修改退出时清除信息
 			 */

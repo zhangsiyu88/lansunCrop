@@ -99,7 +99,7 @@
             android:layout_marginTop="@dimen/margin_top_35"
             android:text="@string/otherCard" />
 
-        <com.lansun.qmyo.view.MyListView
+        <com.lansun.qmyo.view.TestMyListView
             android:id="@+id/lv_ban_card_other"
             style="@style/w_h_full"
             android:layout_marginLeft="@dimen/l_r_35"

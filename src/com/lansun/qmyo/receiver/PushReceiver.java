@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import com.lansun.qmyo.MainActivity;
 import com.lansun.qmyo.SplashActivity;
 import com.lansun.qmyo.utils.ExampleUtil;
+import com.lansun.qmyo.utils.LogUtils;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -41,8 +42,12 @@ public class PushReceiver extends BroadcastReceiver {
         	processCustomMessage(context, bundle);
         
         } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())) {
-            Log.d(TAG, "[MyReceiver] 接收到推送下来的通知");
-            int notifactionId = bundle.getInt(JPushInterface.EXTRA_NOTIFICATION_ID);
+            
+        	context.sendBroadcast(new Intent("com.lansun.qmyo.ChangeTheLGPStatus"));//LGP:Little Green Point
+			LogUtils.toDebugLog("infos", "迈界： 发送广播");
+			
+			Log.d(TAG, "[MyReceiver] 接收到推送下来的通知");
+			int notifactionId = bundle.getInt(JPushInterface.EXTRA_NOTIFICATION_ID);
             Log.d(TAG, "[MyReceiver] 接收到推送下来的通知的ID: " + notifactionId);
         	
         } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {

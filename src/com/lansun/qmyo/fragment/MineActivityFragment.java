@@ -92,7 +92,6 @@ public class MineActivityFragment extends BaseFragment {
 	 * 
 	 * @param type
 	 */
-
 	@InjectInit
 	private void init() {
 		refreshParams = new LinkedHashMap<String, String>();

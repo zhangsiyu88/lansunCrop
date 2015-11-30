@@ -78,6 +78,7 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 	View.OnTouchListener mGestureListener;
 	private boolean downRefresh;
 	private boolean upLoading;
+	private boolean mNoHeader = false;
 
 	public TestMyListView(Context context) {
 		super(context);
@@ -85,6 +86,15 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 		setFadingEdgeLength(0);
 		initHeader();
 		initFooter();
+	}
+	
+	public TestMyListView(Context context,boolean isNoHaeader) {
+		super(context);
+//		mGestureDetector = new GestureDetector(new YScrollDetector());
+		setFadingEdgeLength(0);
+		initHeader();
+		initFooter();
+		this.mNoHeader = isNoHaeader;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -142,39 +152,29 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 		return super.onTouchEvent(ev);
 	}*/
 	
-	
-
-
-
-	/*public RefreshListView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		initHeader();
-		initFooter();
-	}
-
-	public RefreshListView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		initHeader();
-		initFooter();
-	}
-
-	public RefreshListView(Context context) {
-		super(context);
-		initHeader();
-		initFooter();
-	}*/
 
 	public void addSecondHeader(View view) {
 		this.addHeaderView(view);
 		this.secondHeader = view;
 	}
 
+	public void setNoHeader(boolean isNoHeader){
+		if(isNoHeader){
+			mNoHeader = true;
+		}else{
+			mNoHeader = false;
+		}
+	}
 	private void initFooter() {
 		footer = View.inflate(getContext(), R.layout.refresh_test_footer, null);
 		ViewUtils.inject(this, footer);
+		
 		footer.measure(0, 0);
 		footerHeight = footer.getMeasuredHeight();
-		footer.setPadding(0, -footerHeight, 0, 0);
+		/*footer.setPadding(0, -footerHeight, 0, 0);*/
+		
+		footer.setPadding(0, 0, 0, 0);
+		
 		this.addFooterView(footer);
 		this.setOnScrollListener(new MyOnScrollListener());
 	}
@@ -182,6 +182,7 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 	private void initHeader() {
 		header = View.inflate(getContext(), R.layout.refresh_test_header, null);
 		ViewUtils.inject(this, header);
+		
 		// 测量头布局
 		header.measure(0, 0);
 		// 获取头布局的高度
@@ -203,60 +204,6 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 //		test();
 	}
 
-	/**
-	 * 测试函数：目前已被隐掉
-	 */
-	private void test() {
-		this.setOnRefreshListener(new OnRefreshListener() {
-
-			@Override
-			public void onRefreshing() {
-				new Thread() {
-					public void run() {
-						try {
-							System.out.println("开始访问网络请求数据");
-							Thread.sleep(3000);
-							System.out.println("访问网络数据成功");
-							handler.post(new Runnable() {
-
-								@Override
-								public void run() {
-									onRefreshFinshed(false);
-								}
-							});
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					};
-				}.start();
-			}
-
-			@Override
-			public void onLoadingMore() {
-
-				new Thread() {
-					public void run() {
-						try {
-							System.out.println("开始加载更多数据");
-							Thread.sleep(3000);
-							System.out.println("加载更多数据成功");
-							handler.post(new Runnable() {
-
-								@Override
-								public void run() {
-									onLoadMoreFished();
-								}
-							});
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					};
-				}.start();
-			
-			}
-		});
-	}
-
 	
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
@@ -272,18 +219,28 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 				break;
 			}*/
 			
-			if(!isFirstItemDisplay()){
-				downRefresh = false;
-			}else{
-				downRefresh = true;
-				//upLoading = false;
+			if(mNoHeader){
+				break;
 			}
 			
-			if(!isLastItemDisplay){               //最后一个条目未显示时，取消所有的滑动响应        //TODO
-				upLoading = false;
-			}else{								  //最后一个条目显示，开始响应手指上滑的操作
-				upLoading = true;
+			if(!isFirstItemDisplay()){
+				break;
 			}
+			
+			
+			
+//			if(!isFirstItemDisplay()){
+//				downRefresh = false;
+//			}else{
+//				downRefresh = true;
+//				//upLoading = false;
+//			}
+//			
+//			if(!isLastItemDisplay){               //最后一个条目未显示时，取消所有的滑动响应        //TODO
+//				upLoading = false;
+//			}else{								  //最后一个条目显示，开始响应手指上滑的操作
+//				upLoading = true;
+//			}
 			
 			if (CURRENT_STATE == REFRESHING) {
 				// 正在刷新时，不能再处理刷新动作
@@ -299,9 +256,9 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 			
 			LogUtils.toDebugLog("touchDistance", "滑动距离为："+diffY);
 			
-			if (diffY > 0&&downRefresh ) {
+			if (diffY > 0 ) {//&&downRefresh
 				upLoading = false;
-				int topPadding = diffY - headerHeight;
+				int topPadding = diffY/3 - headerHeight;
 				if (topPadding >= 0 && CURRENT_STATE != RELEASE_REFRESH) {
 					
 					System.out.println("进入松开刷新状态");
@@ -318,25 +275,27 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 				header.setPadding(0, topPadding, 0, 0);
 				return true;
 				// 消费事件
-			}else if(diffY < 0&& upLoading){													//注意：此处是手指上滑引发的触摸事件
-				downRefresh = false;
-				LogUtils.toDebugLog("touchDistance", "走到上滑事件中来");
-				int bottomPadding = diffY + footerHeight;
-				if(bottomPadding > 0 && CURRENT_STATE != PULLUP_REFRESH){  //底部还没有展示出来，仍在上拉加载的提示效果中
-					System.out.println("提示仍是上拉加载更多的过程");
-					
-					CURRENT_STATE = PULLUP_REFRESH;
-					updateRefreshState(CURRENT_STATE);
-					
-				}else if(bottomPadding<0 && CURRENT_STATE != RELEASE_LOADING){//将整个底部已经展示出来
-					System.out.println("提示为松开加载更多的过程");
-					
-					CURRENT_STATE = RELEASE_LOADING;
-					updateRefreshState(CURRENT_STATE);
-				}
-				footer.setPadding(0,0,0, bottomPadding);
-				return true;
 			}
+			
+//			else if(diffY < 0&& upLoading){													//注意：此处是手指上滑引发的触摸事件
+//				downRefresh = false;
+//				LogUtils.toDebugLog("touchDistance", "走到上滑事件中来");
+//				int bottomPadding = diffY + footerHeight;
+//				if(bottomPadding > 0 && CURRENT_STATE != PULLUP_REFRESH){  //底部还没有展示出来，仍在上拉加载的提示效果中
+//					System.out.println("提示仍是上拉加载更多的过程");
+//					
+//					CURRENT_STATE = PULLUP_REFRESH;
+//					updateRefreshState(CURRENT_STATE);
+//					
+//				}else if(bottomPadding<0 && CURRENT_STATE != RELEASE_LOADING){//将整个底部已经展示出来
+//					System.out.println("提示为松开加载更多的过程");
+//					
+//					CURRENT_STATE = RELEASE_LOADING;
+//					updateRefreshState(CURRENT_STATE);
+//				}
+//				footer.setPadding(0,0,0, bottomPadding);
+//				return true;
+//			}
 			break;
 		case MotionEvent.ACTION_UP:
 			downY = -1;
@@ -354,30 +313,27 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 			} else if (CURRENT_STATE == PULLDOWN_REFRESH) {
 				header.setPadding(0, -headerHeight, 0, 0);// 隐藏头布局
 				
-			}else if (CURRENT_STATE == RELEASE_LOADING) {
-				CURRENT_STATE = LOADING;
-				System.out.println("进入正在加载状态");
-				
-				footer.setPadding(0, 0, 0, 0);// 正在加载状态
-				updateRefreshState(CURRENT_STATE);
-				 if (mListener != null) {
-						mListener.onLoadingMore();//出现加载更多后，立即将其缩回
-						CURRENT_STATE = PULLUP_REFRESH;
-					}
-				
-			}else if(CURRENT_STATE == PULLUP_REFRESH){
-				footer.setPadding(0, -footerHeight, 0, 0);//隐藏尾
 			}
+//			else if (CURRENT_STATE == RELEASE_LOADING) {
+//				CURRENT_STATE = LOADING;
+//				System.out.println("进入正在加载状态");
+//				
+//				footer.setPadding(0, 0, 0, 0);// 正在加载状态
+//				updateRefreshState(CURRENT_STATE);
+//				 if (mListener != null) {
+//						mListener.onLoadingMore();//出现加载更多后，立即将其缩回
+//						CURRENT_STATE = PULLUP_REFRESH;
+//					}
+//				
+//			}else if(CURRENT_STATE == PULLUP_REFRESH){
+//				footer.setPadding(0, -footerHeight, 0, 0);//隐藏尾
+//			}
 			break;
 		default:
 			break;
 		}
 		return super.onTouchEvent(ev);
 	}
-
-	
-
-
 
 
 
@@ -476,13 +432,18 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 	private View lastItem;
 	public void onLoadMoreFished(){
 		isLoadMore = false;
-		footer.setPadding(0, -footerHeight, 0, 0);// 隐藏加载更多布局
+		//footer.setPadding(0, -footerHeight, 0, 0);// 隐藏加载更多布局
+		footer.setPadding(0, 0, 0, 0);//结束后仍然为零
+		
 	}
 	
+	public void onLoadMoreOverFished(){
+		isLoadMore = false;
+		footer.setPadding(0, -footerHeight, 0, 0);// 隐藏加载更多布局
+		
+	}
 	
 	class MyOnScrollListener implements OnScrollListener {
-
-		
 
 		@Override
 		public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -490,27 +451,26 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 					OnScrollListener.SCROLL_STATE_FLING == scrollState) {
 				// 判断当前Listview最下面一条是不是最后一条数据
 				if(getLastVisiblePosition()==getCount()-1&&!isLoadMore){
-//					System.out.println("加载更多");
-//					isLoadMore = true;
-//					
-//					footer.setPadding(0, -footerHeight/2, 0, 0);// 显示加载更多布局
-//					footer.setPadding(0, -footerHeight/4, 0, 0);
-//					footer.setPadding(0, -footerHeight/6, 0, 0);
-//					footer.setPadding(0, -footerHeight/8, 0, 0);
-//					footer.setPadding(0, -footerHeight/10, 0, 0);
-//					footer.setPadding(0, 0, 0, 0);
-//					
-//					setSelection(getCount());
-//					if(mListener!=null){
-//						mListener.onLoadingMore();
-//					}
+					System.out.println("加载更多");
+					isLoadMore = true;
 					
-					isLastItemDisplay = true;
+					//footer.setPadding(0, 0, 0, 0);
+					
+					
+//					setSelection(getCount());
+					//强行将其只显示在footerView上面的一个Item上，即是数据列表的最后一个Item
+					setSelection(getCount());
+					
+					if(mListener!=null){
+						mListener.onLoadingMore();
+					}
+					
+//					isLastItemDisplay = true;
 				}
 				
-				if(getLastVisiblePosition()!=getCount()-1&&!isLoadMore){
-					isLastItemDisplay = false;
-				}
+//				if(getLastVisiblePosition()!=getCount()-1&&!isLoadMore){
+//					isLastItemDisplay = false;
+//				}
 			}
 		}
 
@@ -521,12 +481,15 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 		}
 	}
 
+	/**
+	 * 检测ListView的第一个条目是否显示出来
+	 * @return
+	 */
 	private boolean isFirstItemDisplay() {
-		
 		int[] location = new int[2];// 用来存储X轴和Y轴
 		this.getLocationOnScreen(location);
 		int listViewLocY = location[1];// 获取listView的Y轴
-		LogUtils.toDebugLog("location", "listViewLocY:"+location[1]);
+		//LogUtils.toDebugLog("location", "listViewLocY:"+location[1]);
 		
 		/*View itemAtPosition = (View) getItemAtPosition(0);
 		itemAtPosition.getLocationOnScreen(location);*/
@@ -536,15 +499,13 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 		
 		// 获取secondHeader的Y轴
 		int firstItemLocY = location[1];
-		LogUtils.toDebugLog("location","firstItemLocY:"+ location[1]);
-		
+		//LogUtils.toDebugLog("location","firstItemLocY:"+ location[1]);
 		return firstItemLocY >= listViewLocY;
 	}
 	
 	
 	
 	private boolean isLastItemDisplay() {   //TODO
-		
 		int[] location = new int[2];// 用来存储X轴和Y轴
 		int lastItemLocY ;
 		//1.定位最后一个Item在屏幕中的位置
@@ -557,13 +518,13 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 		}else{
 			lastItemLocY = 1280;
 		}
-		LogUtils.toDebugLog("location","lastItemLocY:"+ lastItemLocY);
+		//LogUtils.toDebugLog("location","lastItemLocY:"+ lastItemLocY);
 		
 		//2.定位ListView最底部在屏幕的位置
 		this.getLocationOnScreen(location);
 		int listViewLocY = location[1];// 获取listView的Y轴
-		LogUtils.toDebugLog("location", "listViewLocY:"+location[1]);
 		
+		//LogUtils.toDebugLog("location", "listViewLocY:"+location[1]);
 		
 		//3.比较两者的位置差，当最后一个显示的时候，需要将
 		

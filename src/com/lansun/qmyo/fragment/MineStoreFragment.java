@@ -42,9 +42,13 @@ import com.lansun.qmyo.domain.Shop;
 import com.lansun.qmyo.domain.StoreList;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.swipe.SwipeListMineStoreAdapter;
+import com.lansun.qmyo.view.CustomDialogProgress;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ListViewSwipeGesture;
 import com.lansun.qmyo.view.MyListView;
+import com.lansun.qmyo.view.TestMyListView;
+import com.lansun.qmyo.view.TestMyListView.OnRefreshListener;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
@@ -64,6 +68,9 @@ public class MineStoreFragment extends BaseFragment {
 	Views v;
 
 	private String currentType = "1";
+	private boolean isShowDialog = false;
+	private CustomDialogProgress cPd = null;
+	private int times = 0;
 
 	class Views {
 		private View fl_comments_right_iv, tv_activity_shared;
@@ -76,8 +83,14 @@ public class MineStoreFragment extends BaseFragment {
 
 	/*@InjectView(binders = { @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick") }, down = true, pull = true)
 	private MyListView lv_mine_store;*/
-	@InjectView(binders = { @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick") }, pull = true)
-	private MyListView lv_mine_store;
+	
+	
+	
+	/*@InjectView(binders = { @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick") }, pull = true)
+	private MyListView lv_mine_store;*/
+	
+	@InjectView
+	private TestMyListView lv_mine_store;
 	
 
 	@Override
@@ -93,11 +106,58 @@ public class MineStoreFragment extends BaseFragment {
 	private void init() {
 		v.fl_comments_right_iv.setVisibility(View.GONE);
 		initTitle(v.tv_activity_title, R.string.gz_store, null, 0);
-		ListViewSwipeGesture touchListener = new ListViewSwipeGesture(lv_mine_store, swipeListener, getActivity());
 		
+		/*ListViewSwipeGesture touchListener = new ListViewSwipeGesture(lv_mine_store, swipeListener, getActivity());
 		touchListener.SwipeType = ListViewSwipeGesture.Dismiss;
+		lv_mine_store.setOnTouchListener(touchListener);*/
 		
-		lv_mine_store.setOnTouchListener(touchListener);//恕不知，这个listView居然获得了一个超级强大的 滑动监听器！！
+		lv_mine_store.setOnRefreshListener(new OnRefreshListener() {
+			
+
+			@Override
+			public void onRefreshing() {
+				if (list != null) {
+				LinkedHashMap<String, String> refreshParams = new LinkedHashMap<String, String>();
+				refreshParams.put("underway", currentType);
+				refreshCurrentList(refreshUrl, refreshParams, refreshKey, lv_mine_store);
+				times = 0;
+				lv_mine_store.onLoadMoreFished();
+//				PullToRefreshManager.getInstance().footerEnable();
+				
+				}
+			}
+
+			
+			@Override
+			public void onLoadingMore() {
+				if (list != null) {
+					//其实这才是判断的真实依据，由于账号异常所以会将判断标准一直
+					if (list.getNext_page_url()== "null"||TextUtils.isEmpty(list.getNext_page_url())) {
+						
+						Log.i("第三次刷新","第二次拿到的list中的next_page_url的值为null");
+						
+						while(times <1){
+							CustomToast.show(activity, "到底啦！", "您只关注了以上的门店哦");
+							times++;
+						}
+						lv_mine_store.onLoadMoreOverFished();
+						
+//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//						PullToRefreshManager.getInstance().footerUnable();
+//						PullToRefreshManager.getInstance().headerUnable();
+					} else {
+						refreshParams = new LinkedHashMap<String, String>();
+						refreshParams.put("underway", currentType);
+						refreshCurrentList(list.getNext_page_url(), refreshParams, refreshKey, lv_mine_store);
+						isPull  = true;
+						/*adapter = null;*/
+					}
+				}else{
+					lv_mine_store.onLoadMoreOverFished();
+				}
+			}
+
+		});
 		
 		refreshParams = new LinkedHashMap<String, String>();
 		refreshUrl = GlobalValue.URL_USER_GZ_SHOP + "?";
@@ -111,95 +171,95 @@ public class MineStoreFragment extends BaseFragment {
 	/**
 	 * 最强大的ListView滑动监听者
 	 */
-	ListViewSwipeGesture.TouchCallbacks swipeListener = new ListViewSwipeGesture.TouchCallbacks() {
-
-		@Override
-		public void FullSwipeListView(int position) {
-		}
-
-		@Override
-		public void HalfSwipeListView(final int position) {
-			deletePosition = position;
-			InternetConfig config = new InternetConfig();
-			config.setKey(3);
-			HashMap<String, Object> head = new HashMap<>();
-			head.put("Authorization","Bearer " + App.app.getData("access_token"));
-			config.setHead(head);
-			config.setMethod("DELETE");
-			
-			/* DELETE请求无响应
-			 * FastHttpHander.ajax(GlobalValue.URL_QX_GZ_SHOP+ dataList.get(position).get("shop_id"), null,
-					config, MineStoreFragment.this);*/
-			
-			//活动删除代码：
-			HttpUtils httpUtils = new HttpUtils();
-			RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
-
-				@Override
-				public void onFailure(HttpException arg0, String arg1) {
-					
-				}
-
-				@Override
-				public void onSuccess(ResponseInfo<String> arg0) {
-					if ("true".equals(arg0.result.toString())) {
-							dataList.remove(deletePosition);
-							adapter.notifyDataSetChanged();
-							if(dataList.size()==0){//删除后数据列表为零
-								  v.rl_no_postdelay_store.setVisibility(View.VISIBLE);
-							}
-							CustomToast.show(activity, getString(R.string.tip),
-									getString(R.string.delete_success));
-						} else {
-							CustomToast.show(activity, getString(R.string.tip),
-									getString(R.string.delete_faild));
-						}
-				}
-
-				
-			};
-			RequestParams requestParams = new RequestParams();
-			requestParams.addHeader("Authorization", "Bearer" + App.app.getData("access_token"));
-			
-			//TODO  注意下面拼接的url中的接口域名记得替换
-			httpUtils.send(HttpMethod.DELETE, 
-					GlobalValue.URL_QX_GZ_SHOP+ dataList.get(position).get("shop_id"),
-					requestParams,requestCallBack );
-			
-			
-		}
-
-		@Override
-		public void OnClickListView(int position) {
-			StoreDetailFragment fragment = new StoreDetailFragment();
-			Bundle args = new Bundle();
-			
-			/* 居然连类型都得分开识别，这里的shopId是int类型
-			 * args.putInt("shopId",Integer.parseInt(dataList.get(position).get("shop_id")));*/
-			
-			args.putString("shopId",dataList.get(position).get("shop_id"));
-			
-			fragment.setArguments(args);
-			FragmentEntity event = new FragmentEntity();
-			event.setFragment(fragment);
-			EventBus.getDefault().post(event);
-		}
-
-		@Override
-		public void LoadDataForScroll(int count) {
-
-		}
-
-		@Override
-		public void onDismiss(ListView listView, int[] reverseSortedPositions) {
-
-		}
-	};
+//	ListViewSwipeGesture.TouchCallbacks swipeListener = new ListViewSwipeGesture.TouchCallbacks() {
+//
+//		@Override
+//		public void FullSwipeListView(int position) {
+//		}
+//
+//		@Override
+//		public void HalfSwipeListView(final int position) {
+//			deletePosition = position;
+//			InternetConfig config = new InternetConfig();
+//			config.setKey(3);
+//			HashMap<String, Object> head = new HashMap<>();
+//			head.put("Authorization","Bearer " + App.app.getData("access_token"));
+//			config.setHead(head);
+//			config.setMethod("DELETE");
+//			
+//			/* DELETE请求无响应
+//			 * FastHttpHander.ajax(GlobalValue.URL_QX_GZ_SHOP+ dataList.get(position).get("shop_id"), null,
+//					config, MineStoreFragment.this);*/
+//			
+//			//活动删除代码：
+//			HttpUtils httpUtils = new HttpUtils();
+//			RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
+//
+//				@Override
+//				public void onFailure(HttpException arg0, String arg1) {
+//					
+//				}
+//
+//				@Override
+//				public void onSuccess(ResponseInfo<String> arg0) {
+//					if ("true".equals(arg0.result.toString())) {
+//							dataList.remove(deletePosition);
+//							adapter.notifyDataSetChanged();
+//							if(dataList.size()==0){//删除后数据列表为零
+//								  v.rl_no_postdelay_store.setVisibility(View.VISIBLE);
+//							}
+//							CustomToast.show(activity, getString(R.string.tip),
+//									getString(R.string.delete_success));
+//						} else {
+//							CustomToast.show(activity, getString(R.string.tip),
+//									getString(R.string.delete_faild));
+//						}
+//				}
+//
+//				
+//			};
+//			RequestParams requestParams = new RequestParams();
+//			requestParams.addHeader("Authorization", "Bearer" + App.app.getData("access_token"));
+//			
+//			//TODO  注意下面拼接的url中的接口域名记得替换
+//			httpUtils.send(HttpMethod.DELETE, 
+//					GlobalValue.URL_QX_GZ_SHOP+ dataList.get(position).get("shop_id"),
+//					requestParams,requestCallBack );
+//			
+//			
+//		}
+//
+//		@Override
+//		public void OnClickListView(int position) {
+//			StoreDetailFragment fragment = new StoreDetailFragment();
+//			Bundle args = new Bundle();
+//			
+//			/* 居然连类型都得分开识别，这里的shopId是int类型
+//			 * args.putInt("shopId",Integer.parseInt(dataList.get(position).get("shop_id")));*/
+//			
+//			args.putString("shopId",dataList.get(position).get("shop_id"));
+//			
+//			fragment.setArguments(args);
+//			FragmentEntity event = new FragmentEntity();
+//			event.setFragment(fragment);
+//			EventBus.getDefault().post(event);
+//		}
+//
+//		@Override
+//		public void LoadDataForScroll(int count) {
+//
+//		}
+//
+//		@Override
+//		public void onDismiss(ListView listView, int[] reverseSortedPositions) {
+//
+//		}
+//	};
 
 	private ArrayList<HashMap<String, String>> dataList = new ArrayList<HashMap<String, String>>();;
 
-	private StoreAdapter adapter;
-
+	/*private StoreAdapter adapter;*/
+	private SwipeListMineStoreAdapter adapter;
 	private StoreList list;
 
 	private boolean isPull = false;;
@@ -208,8 +268,18 @@ public class MineStoreFragment extends BaseFragment {
 	private void result(ResponseEntity r) {
 		if (r.getStatus() == FastHttp.result_ok) {
 			endProgress();
+			if(cPd!=null){
+				cPd.dismiss();
+				cPd = null;
+			}
+			
+			lv_mine_store.setVisibility(View.VISIBLE);
+			
 			switch (r.getKey()) {
 			case 0:
+				//lv_mine_store.onLoadMoreFished();
+				lv_mine_store.onRefreshFinshed(true);
+				
 				if(isPull){//是上拉操作，便不对数据源 list对象进行操作
 					isPull = false;
 				}else{// 若不是上拉操作，但却访问服务器进来，很明显需要将这个list清掉，用来放入获取得到的StoreList的值
@@ -250,25 +320,39 @@ public class MineStoreFragment extends BaseFragment {
 						dataList.add(map);
 				     } 
 					 if (adapter == null) {
-							adapter = new StoreAdapter(lv_mine_store, dataList,R.layout.activity_store_item);
+							/*adapter = new StoreAdapter(lv_mine_store, dataList,R.layout.activity_store_item);*/
+						 adapter = new SwipeListMineStoreAdapter(activity,dataList);
+							
 							lv_mine_store.setAdapter(adapter);
 							
 					 } else {
 						    adapter.notifyDataSetChanged();
 						}
-					 
-					 
+					/*
+					 * 当刷新到最后一页，且此页数据少于10条时，需要弹出吐司表示到底，并且将尾布局去除
+					 */
+					if(list.getData().size()<10){
+						//TODO
+						//CustomToast.show(activity, "到底啦！", "您只关注了以上的门店哦");
+						lv_mine_store.onLoadMoreOverFished();
+					}
 					if(dataList.size()==0){//删除后数据列表为零
 						  v.rl_no_postdelay_store.setVisibility(View.VISIBLE);
 					}
 					 
-					PullToRefreshManager.getInstance().footerEnable();
+//					PullToRefreshManager.getInstance().footerEnable();
 					/*PullToRefreshManager.getInstance().headerEnable();
 					PullToRefreshManager.getInstance().onHeaderRefreshComplete();*/
-					PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					
 			   }else{//未拿到数据，即表明数据返回为空，那么可以在这个地方添加上 背景图片
 				   Log.i("从服务器未拿到数据！","list.getData() 很可能等于 null");
+				   
+				   while(times <1){
+					   CustomToast.show(activity, "到底啦！", "您只关注了以上的门店哦");
+					   lv_mine_store.onLoadMoreOverFished();
+					   times=Integer.MAX_VALUE;
+					}
 				   
 				   if(dataList.size()>0){
 					   //DoNothing
@@ -307,8 +391,8 @@ public class MineStoreFragment extends BaseFragment {
 					v.vp_baner.setLayoutParams(params);*/
 					
 				   //刷到
-					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-					PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				}
 				break;
 				
@@ -328,12 +412,17 @@ public class MineStoreFragment extends BaseFragment {
 			progress_text.setText(R.string.net_error_refresh);
 		}
 		
-		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-		PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//		PullToRefreshManager.getInstance().onFooterRefreshComplete();
 	}
 
 	
 	private void click(View view) {
+		
+		times = 0;
+		v.rl_no_postdelay_store.setVisibility(View.GONE);
+		lv_mine_store.setVisibility(View.GONE);
+		
 		switch (view.getId()) {
 		case R.id.tv_store_has:
 			v.rl_no_postdelay_store.setVisibility(View.GONE);
@@ -343,6 +432,7 @@ public class MineStoreFragment extends BaseFragment {
 			refreshUrl = GlobalValue.URL_USER_GZ_SHOP + "?";
 			refreshKey = 0;
 			refreshCurrentList(refreshUrl, refreshParams, refreshKey, lv_mine_store);
+			isShowDialog = true;
 			break;
 		case R.id.tv_store_no:
 			v.rl_no_postdelay_store.setVisibility(View.GONE);
@@ -352,8 +442,21 @@ public class MineStoreFragment extends BaseFragment {
 			refreshKey = 0;
 			refreshParams.put("underway", currentType);
 			refreshCurrentList(refreshUrl, refreshParams, refreshKey, lv_mine_store);
+			isShowDialog = true;
 			break;
 		}
+		
+		if (isShowDialog){
+			if(cPd == null ){
+				Log.d("dialog","生成新的dialog！");
+				cPd = CustomDialogProgress.createDialog(activity);
+				cPd.setCanceledOnTouchOutside(false);
+				cPd.show();
+			}else{
+				cPd.show();
+			}
+		}
+		
 		/*Log.i("接下来我们进行刷新操作","点击TextView的按钮进行刷新操作！");
 		refreshParams.put("underway", currentType);
 		refreshCurrentList(refreshUrl, refreshParams, refreshKey, lv_mine_store);*/
@@ -381,10 +484,10 @@ public class MineStoreFragment extends BaseFragment {
 				/*if (TextUtils.isEmpty(list.getNext_page_url())) {*/
 				if (list.getNext_page_url()== "null"||TextUtils.isEmpty(list.getNext_page_url())) {
 					Log.i("第三次刷新","第二次拿到的list中的next_page_url的值为null");
-					PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					CustomToast.show(activity, "到底啦！", "您只关注了以上的门店哦");
-					PullToRefreshManager.getInstance().footerUnable();
-					PullToRefreshManager.getInstance().headerUnable();
+//					PullToRefreshManager.getInstance().footerUnable();
+//					PullToRefreshManager.getInstance().headerUnable();
 				} else {
 					refreshParams = new LinkedHashMap<String, String>();
 					refreshParams.put("underway", currentType);

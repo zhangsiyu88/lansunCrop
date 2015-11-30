@@ -13,6 +13,43 @@ public class MessageList {
 	private String prev_page_url;
 	private int from;
 	private int to;
+	
+	
+	//---------------------------------------------------根据需求重新添上去的-----------------------------------------
+//	private int id;
+//	private int type;
+//	private boolean has_content;
+//	
+//	public int getId() {
+//		return id;
+//	}
+//
+//	public void setId(int id) {
+//		this.id = id;
+//	}
+//
+//	public int getType() {
+//		return type;
+//	}
+//
+//	public void setType(int type) {
+//		this.type = type;
+//	}
+//
+//	public boolean isHas_content() {
+//		return has_content;
+//	}
+//
+//	public void setHas_content(boolean has_content) {
+//		this.has_content = has_content;
+//	}
+
+	//----------------------------------------------------------------------------------------------------------------------
+	
+	
+	
+	
+	
 
 	public ArrayList<MessageData> getData() {
 		return data;

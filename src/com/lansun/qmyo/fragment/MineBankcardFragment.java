@@ -58,9 +58,14 @@ import com.lansun.qmyo.fragment.newbrand.NewBrandFragment;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
+import com.lansun.qmyo.utils.swipe.SwipeListMineBankcardAdapter;
+import com.lansun.qmyo.utils.swipe.SwipeListMineBankcardAdapter.FromNetCallBack;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ListViewSwipeGesture;
 import com.lansun.qmyo.view.MyListView;
+import com.lansun.qmyo.view.TestMyListView;
+import com.lansun.qmyo.view.TestMyListView.OnRefreshListener;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
@@ -72,7 +77,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
-public class MineBankcardFragment extends BaseFragment{
+public class MineBankcardFragment extends BaseFragment implements FromNetCallBack{
 
 	
 	private boolean mIsFromHome = false;
@@ -83,6 +88,7 @@ public class MineBankcardFragment extends BaseFragment{
 	private int type;
 	private int mInitType;
 	private String bankCardId;
+	private int times = 0;
 	private Handler handler=new Handler(){
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
@@ -123,7 +129,7 @@ public class MineBankcardFragment extends BaseFragment{
 					App.app.setData((App.TAGS[i]),"");
 				}
 				App.app.setData("in_this_fragment_time","");
-				
+				refresh();
 				MineBankcardFragment.this.back();
 				break;
 			}
@@ -152,8 +158,11 @@ public class MineBankcardFragment extends BaseFragment{
 		private TextView tv_activity_shared;
 	}
 
-	@InjectView(pull = true)
-	private MyListView lv_ban_card_other;
+	/*@InjectView(pull = true)
+	private MyListView lv_ban_card_other;*/
+	
+	@InjectView
+	private TestMyListView lv_ban_card_other;
 	
 
 	@Override
@@ -161,7 +170,9 @@ public class MineBankcardFragment extends BaseFragment{
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_bank_card, null);
+		
 		Handler_Inject.injectFragment(this, rootView);
+		
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 				|WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 		return rootView;
@@ -169,17 +180,44 @@ public class MineBankcardFragment extends BaseFragment{
 
 	@InjectInit
 	private void init() {
-		ListViewSwipeGesture touchListener = new ListViewSwipeGesture(
+		/*ListViewSwipeGesture touchListener = new ListViewSwipeGesture(
 				lv_ban_card_other, swipeListener, getActivity());
 		
 		touchListener.SwipeType = ListViewSwipeGesture.Dismiss;
-
-		lv_ban_card_other.setOnTouchListener(touchListener);
+		lv_ban_card_other.setOnTouchListener(touchListener);*/
+		
+		lv_ban_card_other.setNoHeader(true);
+		/**
+		 * 初始化上拉刷新和下拉加载的监听
+		 */
+		lv_ban_card_other.setOnRefreshListener(new OnRefreshListener() {
+			
+			
+			@Override
+			public void onRefreshing() {//屏蔽刷新的操作，手直面下滑时，并不显示头布局
+				//DoNothing!
+			}
+			@Override
+			public void onLoadingMore() {//目前只有上拉加载有效
+					if (list != null) {
+					if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url()=="null"||list.getNext_page_url().equals("")) {
+						while(times <1){
+							CustomToast.show(activity, "到底啦!", "您添加的银行卡目前只有这么多");
+							times++;
+						}
+						lv_ban_card_other.onLoadMoreOverFished();
+					} else {
+						refreshCurrentList(list.getNext_page_url(), null, 0,lv_ban_card_other);
+						isPull = true;
+					}
+				}
+			}
+		});
+		
 		v.fl_comments_right_iv.setVisibility(View.GONE);
 		v.tv_activity_shared.setTextColor(getResources().getColor(R.color.app_green2));
 
 		initTitle(v.tv_activity_title, R.string.xy_card, v.tv_activity_shared,R.string.add);
-		
 		Log.i("","getArguments() 的值为：  "+ getArguments());
 		
 		//TODO
@@ -298,114 +336,118 @@ public class MineBankcardFragment extends BaseFragment{
 	private void refresh() {
 		//下行代码中的refreshKey为 0
 		refreshCurrentList(refreshUrl, null, refreshKey, lv_ban_card_other);//其他银行卡的页面展示
+		LogUtils.toDebugLog("refreshKey", "refreshKey值为： "+refreshKey);
 		showChosenBankcard();
 	}
 	
 	
-
-	ListViewSwipeGesture.TouchCallbacks swipeListener = new ListViewSwipeGesture.TouchCallbacks() {
-		@Override
-		public void FullSwipeListView(int position) {
-		}
-
-		@Override
-		public void HalfSwipeListView(final int position) {// 删除操作
-			HashMap<String, String> map = dataList.get(position);
-			String id = map.get("id");
-
-			dataList.remove(position);//这就是为什么你在点删除后,可以看到立马删除的效果体现出来,
-			//但实际未删除服务器上的数据
-
-			InternetConfig config = new InternetConfig();
-			config.setKey(1);
-			HashMap<String, Object> head = new HashMap<>();
-			head.put("Authorization",
-					"Bearer " + App.app.getData("access_token"));
-			config.setHead(head);
-			config.setRequest_type(InternetConfig.request_delete);
-			config.setMethod("DELETE");
-
-			/*FastHttpHander.ajaxGet(GlobalValue.URL_BANKCARD_DELETE + id, config,
-					MineBankcardFragment.this);*/
-
-			HttpUtils httpUtils = new HttpUtils();
-			RequestParams requestParams = new RequestParams();
-			requestParams.addHeader("Authorization","Bearer " + App.app.getData("access_token"));
-			httpUtils.send(HttpMethod.DELETE, GlobalValue.URL_BANKCARD_DELETE + id, requestParams,new RequestCallBack<String>(){
-				@Override
-				public void onFailure(HttpException arg0, String arg1) {
-					
-				}
-
-				@Override
-				public void onSuccess(ResponseInfo arg0) {
-					if ("true".equals(arg0.result)) {
-						//很明显,前面的删除银行卡操作是没有起到作用的,若有作用至少是会有toast提醒
-						CustomToast.show(activity, getString(R.string.tip),
-								getString(R.string.delete_success));
-					} else {
-						System.out.println("获取到返回值,但显示是删除失败!");
-						CustomToast.show(activity, getString(R.string.tip),
-								getString(R.string.delete_faild));
-					}
-				}
-			});
-			adapter.notifyDataSetChanged();
-		}
-
-		/*
-		 * 打开银行卡列表中的每一个内容
-		 * @see com.qmyo.view.ListViewSwipeGesture.TouchCallbacks#OnClickListView(int)
-		 */
-		@Override
-		public void OnClickListView(int position) {//---------------------------------------------->listView 的点击事件
-			final HashMap<String, String> map = dataList.get(position);
-
-			DialogUtil.createTipAlertDialog(activity, R.string.is_switch_card,
-					new TipAlertDialogCallBack() {
-
-
-				@Override
-				public void onPositiveButtonClick(
-						DialogInterface dialog, int which) {
-					dialog.dismiss();
-					bankCardId = map.get("id");
-					InternetConfig config = new InternetConfig();
-					config.setKey(2);
-					HashMap<String, Object> head = new HashMap<>();
-					head.put("Authorization",
-							"Bearer " + App.app.getData("access_token"));
-					config.setHead(head);
-					LinkedHashMap<String, String> params = new LinkedHashMap<>();
-					params.put("bankcard_id", bankCardId);
-
-
-					//使用post方式去提交，是选中其中的卡作为选中卡 
-					FastHttpHander.ajax(GlobalValue.URL_SELECT_BANKCARD, params,
-							config, MineBankcardFragment.this);
-
-					dataList.clear();
-					adapter = null;
-				}
-
-				@Override
-				public void onNegativeButtonClick(
-						DialogInterface dialog, int which) {
-					dialog.dismiss();
-				}
-			});
-		}
-
-		@Override
-		public void LoadDataForScroll(int count) {
-
-		}
-		@Override
-		public void onDismiss(ListView listView, int[] reverseSortedPositions) {
-		}
-
-	};
-	private BankCardAdapter adapter;
+//
+//	ListViewSwipeGesture.TouchCallbacks swipeListener = new ListViewSwipeGesture.TouchCallbacks() {
+//		@Override
+//		public void FullSwipeListView(int position) {
+//		}
+//
+//		@Override
+//		public void HalfSwipeListView(final int position) {// 删除操作
+//			HashMap<String, String> map = dataList.get(position);
+//			String id = map.get("id");
+//
+//			dataList.remove(position);//这就是为什么你在点删除后,可以看到立马删除的效果体现出来,
+//			//但实际未删除服务器上的数据
+//
+//			InternetConfig config = new InternetConfig();
+//			config.setKey(1);
+//			HashMap<String, Object> head = new HashMap<>();
+//			head.put("Authorization",
+//					"Bearer " + App.app.getData("access_token"));
+//			config.setHead(head);
+//			config.setRequest_type(InternetConfig.request_delete);
+//			config.setMethod("DELETE");
+//
+//			/*FastHttpHander.ajaxGet(GlobalValue.URL_BANKCARD_DELETE + id, config,
+//					MineBankcardFragment.this);*/
+//
+//			HttpUtils httpUtils = new HttpUtils();
+//			RequestParams requestParams = new RequestParams();
+//			requestParams.addHeader("Authorization","Bearer " + App.app.getData("access_token"));
+//			httpUtils.send(HttpMethod.DELETE, GlobalValue.URL_BANKCARD_DELETE + id, requestParams,new RequestCallBack<String>(){
+//				@Override
+//				public void onFailure(HttpException arg0, String arg1) {
+//					
+//				}
+//
+//				@Override
+//				public void onSuccess(ResponseInfo arg0) {
+//					if ("true".equals(arg0.result)) {
+//						//很明显,前面的删除银行卡操作是没有起到作用的,若有作用至少是会有toast提醒
+//						CustomToast.show(activity, getString(R.string.tip),
+//								getString(R.string.delete_success));
+//					} else {
+//						System.out.println("获取到返回值,但显示是删除失败!");
+//						CustomToast.show(activity, getString(R.string.tip),
+//								getString(R.string.delete_faild));
+//					}
+//				}
+//			});
+//			adapter.notifyDataSetChanged();
+//		}
+//
+//		/*
+//		 * 打开银行卡列表中的每一个内容
+//		 * @see com.qmyo.view.ListViewSwipeGesture.TouchCallbacks#OnClickListView(int)
+//		 */
+//		@Override
+//		public void OnClickListView(int position) {//---------------------------------------------->listView 的点击事件
+//			final HashMap<String, String> map = dataList.get(position);
+//
+//			DialogUtil.createTipAlertDialog(activity, R.string.is_switch_card,
+//					new TipAlertDialogCallBack() {
+//
+//
+//				@Override
+//				public void onPositiveButtonClick(
+//						DialogInterface dialog, int which) {
+//					dialog.dismiss();
+//					bankCardId = map.get("id");
+//					InternetConfig config = new InternetConfig();
+//					config.setKey(2);
+//					HashMap<String, Object> head = new HashMap<>();
+//					head.put("Authorization",
+//							"Bearer " + App.app.getData("access_token"));
+//					config.setHead(head);
+//					LinkedHashMap<String, String> params = new LinkedHashMap<>();
+//					params.put("bankcard_id", bankCardId);
+//
+//
+//					//使用post方式去提交，是选中其中的卡作为选中卡 
+//					FastHttpHander.ajax(GlobalValue.URL_SELECT_BANKCARD, params,
+//							config, MineBankcardFragment.this);
+//
+//					dataList.clear();
+//					adapter = null;
+//				}
+//
+//				@Override
+//				public void onNegativeButtonClick(
+//						DialogInterface dialog, int which) {
+//					dialog.dismiss();
+//				}
+//			});
+//		}
+//
+//		@Override
+//		public void LoadDataForScroll(int count) {
+//
+//		}
+//		@Override
+//		public void onDismiss(ListView listView, int[] reverseSortedPositions) {
+//		}
+//
+//	};
+	
+	
+	
+	private SwipeListMineBankcardAdapter adapter;
 	private ArrayList<HashMap<String, String>> dataList;
 	private int currentCardId;
 	private BankCardList list;
@@ -441,14 +483,29 @@ public class MineBankcardFragment extends BaseFragment{
 						dataList.add(map);
 					}
 					if (adapter == null) {
-						adapter = new BankCardAdapter(lv_ban_card_other,
-								dataList, R.layout.activity_bank_card_item);//主要的都在BankCardAdapter中
-
-						adapter.setActivity(this);
-						adapter.setHasAdd(false);
+//						adapter = new BankCardAdapter(lv_ban_card_other,
+//								dataList, R.layout.activity_bank_card_item);//主要的都在BankCardAdapter中
+//						adapter.setActivity(this);
+//						adapter.setHasAdd(false);
+						
+						//替换掉适配器的内容
+						/*adapter = new SwipeListMineBankcardAdapter(activity,lv_ban_card_other,dataList,R.layout.activity_bank_card_item_swipe);*/
+						 adapter = new SwipeListMineBankcardAdapter(activity, dataList);
+						 adapter.setFromNetCallBack(this);
 						lv_ban_card_other.setAdapter(adapter);
+						adapter.setFragment(this);
+						adapter.setHasAdd(false);
+						
 					} else {
 						adapter.notifyDataSetChanged();
+					}
+					/*
+					 * 当刷新到最后一页，且此页数据少于10条时，需要弹出吐司表示到底，并且将尾布局去除
+					 */
+					if(list.getData().size()<10){
+						//TODO
+						//CustomToast.show(activity, "到底啦!", "您添加的银行卡目前只有这么多");
+						lv_ban_card_other.onLoadMoreOverFished();
 					}
 					
 					if(App.app.getData("firstEnterBankcardAndAddAnotherBankcard").isEmpty()){//证明是第一次
@@ -458,8 +515,8 @@ public class MineBankcardFragment extends BaseFragment{
 						    handler.sendEmptyMessage(0);//TODO
 				    	}
 					}
-					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-					PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				} else {
 					lv_ban_card_other.setAdapter(null);
 				}
@@ -482,8 +539,6 @@ public class MineBankcardFragment extends BaseFragment{
 							R.string.select_bank_card_success);
 					
 					App.app.setData("MainBankcard", bankCardId);
-					
-					
 					
 					if(mIsFromInsertBankcardAdapterPage){//从换卡页回来，并且进行了换卡操作
 						//刷下页面
@@ -591,13 +646,61 @@ public class MineBankcardFragment extends BaseFragment{
 					CustomToast.show(activity, R.string.tip,R.string.select_bank_card_faild);
 				}
 			   break;
+			   
+			case 6:// 选中银行卡 //实则拷贝的是case 2 的处理操作
+				if ("true".equals(r.getContentAsString())) {
+					CustomToast.show(activity, R.string.tip,
+							R.string.select_bank_card_success);
+					
+					App.app.setData("MainBankcard", bankCardId);
+					
+					if(mIsFromInsertBankcardAdapterPage){//从换卡页回来，并且进行了换卡操作
+						//刷下页面
+						refreshUrl = GlobalValue.URL_BANKCARD;
+						refreshKey = 0;
+						refresh();
+						decideHowToShow();
+						showChosenBankcard();
+						isChangeTheChoseCardUnderSearchBankcardPage = true;
+						
+						//从选卡页回来，且更换当前主卡后自动回跳至首页
+						Timer timer = new Timer();
+						 timerTask = new TimerTask() {
+								@Override
+								public void run() {
+									handler.sendEmptyMessage(2);
+								}
+							 };
+						 timer.schedule(timerTask, 1200);
+						return;
+					}
+					
+					
+					adapter = null; //保证了其他卡页的列表刷新效果
+					refresh();
+					//上面的refresh()操作完成后，表明已经进行了换卡的操作
+					 isChangeTheChoseCard  = true;
+					 
+					 Timer timer = new Timer();
+					 timerTask = new TimerTask() {
+							@Override
+							public void run() {
+								handler.sendEmptyMessage(2);
+							}
+						 };
+					 timer.schedule(timerTask, 1200);
+				} else {
+					CustomToast.show(activity, R.string.tip,R.string.select_bank_card_faild);
+				}
+				break;
+			
 			}
 		} else {
 			progress_text.setText(R.string.net_error_refresh);
 		}
 
-		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-		PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//		PullToRefreshManager.getInstance().onFooterRefreshComplete();
 	}
 
 	private void click(View view) {
@@ -750,7 +853,7 @@ public class MineBankcardFragment extends BaseFragment{
 				
 				Intent intent=new Intent("com.lansun.qmyo.refreshHome");
 				getActivity().sendBroadcast(intent);
-				System.out.println("发送广播！");
+				System.out.println("从首页直接进到我的银行卡页，发送广播！");
 				super.back();
 				/*HomeFragment homeFragment = new HomeFragment();
 				FragmentEntity fEntity = new FragmentEntity();
@@ -770,6 +873,10 @@ public class MineBankcardFragment extends BaseFragment{
 				FragmentEntity fEntity = new FragmentEntity();
 				fEntity.setFragment(activityFragment);
 				EventBus.getDefault().post(fEntity);
+				
+				Intent intent=new Intent("com.lansun.qmyo.refreshHome");
+				getActivity().sendBroadcast(intent);
+				System.out.println("从八大板块页跳往我的银行卡页，且换卡后，需发送广播！");
 				return;
 			}
 			/**
@@ -787,6 +894,10 @@ public class MineBankcardFragment extends BaseFragment{
 				FragmentEntity fEntity = new FragmentEntity();
 				fEntity.setFragment(activityFragment);
 				EventBus.getDefault().post(fEntity);
+				
+				Intent intent=new Intent("com.lansun.qmyo.refreshHome");
+				getActivity().sendBroadcast(intent);
+				System.out.println("从新品曝光页跳往我的银行卡页，且换卡后，需发送广播！");
 				return;
 			}
 			
@@ -1002,13 +1113,20 @@ public class MineBankcardFragment extends BaseFragment{
 			return;
 			
 			
-			
-			
-			
-			
 		}
 		
 		super.back();
 		
+	}
+
+	
+	
+	@Override
+	public void fromNetCallBck() {
+		
+	}
+	@Override
+	public void fromNetCallBck(ResponseEntity r) {
+		this.result(r);
 	}
 }

@@ -71,7 +71,7 @@ public class BankCardAdapter extends
 	}
 
 	public BankCardAdapter(ListView listView,
-			ArrayList<HashMap<String, String>> dataList, int layout_id) {
+				ArrayList<HashMap<String, String>> dataList, int layout_id) {
 		super(listView, dataList, layout_id);
 		/*options = new DisplayImageOptions.Builder().cacheInMemory(true)
 				.cacheOnDisk(true).considerExifParams(true)
@@ -120,6 +120,7 @@ public class BankCardAdapter extends
 	@Override
 	public void deal(HashMap<String, String> data, ViewHolder viewHold,
 			int position) {
+		
 		final String head = data.get("iv_bank_card_head");
 		final String name = data.get("tv_bank_card_name");
 		final String desc = data.get("tv_bank_card_desc");
@@ -335,7 +336,7 @@ public class BankCardAdapter extends
 
 						@Override
 						public void onNegativeButtonClick(DialogInterface dialog, int which) {
-								dialog.dismiss();
+							dialog.dismiss();
 						}
 					});
 					
