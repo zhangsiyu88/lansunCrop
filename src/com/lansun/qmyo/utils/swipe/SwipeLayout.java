@@ -1,6 +1,8 @@
 package com.lansun.qmyo.utils.swipe;
 
 
+import com.lansun.qmyo.utils.LogUtils;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.support.v4.view.GestureDetectorCompat;
@@ -31,6 +33,7 @@ public class SwipeLayout extends FrameLayout implements SwipeLayoutInterface{
 	private ViewDragHelper mDragHelper;
 	private SwipeListener mSwipeListener;
 	private GestureDetectorCompat mGestureDetector;
+	private boolean isGestureValid = false;
 	
 	public static enum Status{
 		Close, Swiping, Open
@@ -56,23 +59,31 @@ public class SwipeLayout extends FrameLayout implements SwipeLayoutInterface{
 
 	public SwipeLayout(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		
-		mDragHelper = ViewDragHelper.create(this, mCallback);
-		//初始化手势识别器
-		mGestureDetector = new GestureDetectorCompat(context, mOnGestureListener);
-		
-	
+			mDragHelper = ViewDragHelper.create(this, mCallback);
+			//初始化手势识别器
+			mGestureDetector = new GestureDetectorCompat(context, mOnGestureListener);
 		
 	}
+	
+	
 	private SimpleOnGestureListener mOnGestureListener = new GestureDetector.SimpleOnGestureListener(){
 		
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2,
 				float distanceX, float distanceY) {
-			// 当横向移动距离大于等于纵向时，返回true
-			return Math.abs(distanceX) >= Math.abs(distanceY);
+			if(isGestureValid){
+				//DO-OP
+				return false;
+			}else{
+				// 当横向移动距离大于等于纵向时，返回true
+				return Math.abs(distanceX) >= Math.abs(distanceY);
+				
+			}
 		}
 	};
+	
+	
+	
 	
 	ViewDragHelper.Callback mCallback = new ViewDragHelper.Callback() {
 
@@ -130,37 +141,57 @@ public class SwipeLayout extends FrameLayout implements SwipeLayoutInterface{
 		
 		@Override
 		public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
-			// 当view的位置改变时，在这里处理位置改变后要做的事情。
-			if(changedView == mFrontView){
-				// 如果用户用手指滑动的是前景View，那么也要将横向变化量dx交给背景View
-				getBackView().offsetLeftAndRight(dx);
-			}else if(changedView == mBackView){
-				// 如果用户用手指滑动的是背景View，那么也要将横向变化量dx交给前景View
-				getFrontView().offsetLeftAndRight(dx);
-			}
 			
-			// 实时更新当前的状态
-			updateStatus();
-			// 重绘界面
-			invalidate();
+			
+			
+//			if(isGestureValid1){
+//				
+//				//DO-OP
+//				LogUtils.toDebugLog("isGestureValid1", "onViewPositionChanged()中 ：do-op");
+//				
+//			}else{
+				// 当view的位置改变时，在这里处理位置改变后要做的事情。
+				if(changedView == mFrontView){
+					// 如果用户用手指滑动的是前景View，那么也要将横向变化量dx交给背景View
+					getBackView().offsetLeftAndRight(dx);
+				}else if(changedView == mBackView){
+					// 如果用户用手指滑动的是背景View，那么也要将横向变化量dx交给前景View
+					getFrontView().offsetLeftAndRight(dx);
+				}
+				// 实时更新当前的状态
+				updateStatus();
+				// 重绘界面
+				invalidate();
+//			}
+			
+			
+			
 		};
 
 		@Override
 		public void onViewReleased(View releasedChild, float xvel, float yvel) {
-			// 当释放滑动的view时，处理最后的事情。（执行开启或关闭的动画）
-			Log.d(TAG, "xvel: " + xvel + " mShowEdge: " + mShowEdge);
-			if(releasedChild == getFrontView()){
-				processFrontViewRelease(xvel ,yvel);
-			}else if (releasedChild == getBackView()) {
-				processBackViewRelease(xvel,yvel);
-			}
-			invalidate();
+//			if(isGestureValid1){
+//				
+//				//DO-OP
+//				LogUtils.toDebugLog("isGestureValid1", "onViewReleased()中 ：do-op");
+//			}else{
+				// 当释放滑动的view时，处理最后的事情。（执行开启或关闭的动画）
+				Log.d(TAG, "xvel: " + xvel + " mShowEdge: " + mShowEdge);
+				if(releasedChild == getFrontView()){
+					processFrontViewRelease(xvel ,yvel);
+				}else if (releasedChild == getBackView()) {
+					processBackViewRelease(xvel,yvel);
+				}
+				invalidate();
+//			}
+			
 		};
 		
 		
 		
 	};
 	private float mDownX;
+	
 	
 	protected void processBackViewRelease(float xvel, float yvel) {
 		switch (mShowEdge) {
@@ -431,7 +462,9 @@ public class SwipeLayout extends FrameLayout implements SwipeLayoutInterface{
 			
 			@Override
 			public boolean onLongClick(View v) {
-				open(true,false);
+				
+				/*open(true,false);*/      // --------->强行将 表层的View 里的 长按展开  删除层  的功能暂时去除掉  by Yeun 12.02
+				
 				//layoutContent(true);
 				return true;
 			}
@@ -458,4 +491,17 @@ public class SwipeLayout extends FrameLayout implements SwipeLayoutInterface{
 	}
 	
 	
+	/**
+	 * 修改后，将无法识别手势的操作
+	 */
+	/* 静态方法和静态的类会导致 系统会复用整个存储在内存中的类，导致全局的Swipelayout在一次 阻塞侧滑后，后面全部使用会出问题
+	 * 
+	 * public static void setGestureValid(boolean isGestureValid){
+		SwipeLayout.isGestureValid1 = isGestureValid;
+		LogUtils.toDebugLog("isGestureValid1", "setGestureValid");
+	}*/
+	
+	public  void setGestureValid(boolean isGestureValid){
+		this.isGestureValid = isGestureValid;
+	}
 }

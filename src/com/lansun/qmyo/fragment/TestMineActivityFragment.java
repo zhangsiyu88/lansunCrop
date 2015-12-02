@@ -309,7 +309,7 @@ public class TestMineActivityFragment extends BaseFragment {
 					 */
 					if(list.getData().size()<10){
 						//TODO
-						//CustomToast.show(activity, "到底啦!", "您添加的银行卡目前只有这么多");
+						CustomToast.show(activity, "到底啦!", "您添加的银行卡目前只有这么多");
 						lv_mine_activity.onLoadMoreOverFished();
 					}
 					PullToRefreshManager.getInstance().footerUnable();

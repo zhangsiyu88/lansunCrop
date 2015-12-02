@@ -54,6 +54,7 @@ public class SwipeListMineActivityAdapter extends BaseAdapter {
 	  private DisplayImageOptions options = new DisplayImageOptions.Builder()
 	    .cacheInMemory(true).cacheOnDisk(true).considerExifParams(true)
 	    .displayer(new FadeInBitmapDisplayer(300)).build();
+	private boolean isSlide = true;
 
 	
 	  
@@ -69,6 +70,15 @@ public class SwipeListMineActivityAdapter extends BaseAdapter {
 		this.mContext = activity;
 		this.mList = dataList;
 		mInflater = LayoutInflater.from(activity);
+	}
+
+	public SwipeListMineActivityAdapter(Activity activity,
+			ArrayList<HashMap<String, Object>> dataList, boolean b) {
+		super();
+		this.mContext = activity;
+		this.mList = dataList;
+		mInflater = LayoutInflater.from(activity);
+		this.isSlide  = b;
 	}
 
 	@Override
@@ -125,8 +135,13 @@ public class SwipeListMineActivityAdapter extends BaseAdapter {
 			}
 		});
 
-		
-		view.setSwipeListener(mSwipeListener);
+		if(isSlide){
+			view.setSwipeListener(mSwipeListener);
+		}else{
+			/*view.setSwipeListener(null);*/
+			/*view.close();*/
+			view.setGestureValid(true);
+		}
 		
 		
 		//Adapter模式就是在适配器一段拿到了数据源，规则：谁有数据谁进行对应的数据初始化展示操作
@@ -263,8 +278,6 @@ public class SwipeListMineActivityAdapter extends BaseAdapter {
 
 	OnClickListener onActionClick = new OnClickListener() {
 
-		
-
 		@Override
 		public void onClick(View v) {
 			Integer p = (Integer) v.getTag();//这个View对应的tag是绑定的position的值
@@ -320,6 +333,7 @@ public class SwipeListMineActivityAdapter extends BaseAdapter {
 		public void onOpen(SwipeLayout swipeLayout) {
 //			Utils.showToast(mContext, "onOpen");
 			mUnClosedLayouts.add(swipeLayout);
+			swipeLayout.close();
 		}
 
 		@Override
@@ -331,6 +345,7 @@ public class SwipeListMineActivityAdapter extends BaseAdapter {
 		@Override
 		public void onStartClose(SwipeLayout swipeLayout) {
 //			Utils.showToast(mContext, "onStartClose");
+			
 		}
 
 		@Override
@@ -338,6 +353,7 @@ public class SwipeListMineActivityAdapter extends BaseAdapter {
 //			Utils.showToast(mContext, "onStartOpen");
 			closeAllLayout();
 			mUnClosedLayouts.add(swipeLayout);
+			swipeLayout.close();
 		}
 
 	};

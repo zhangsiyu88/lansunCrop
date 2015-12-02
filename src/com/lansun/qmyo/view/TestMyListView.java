@@ -68,6 +68,12 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 	@ViewInject(R.id.pb_loading)
 	private ProgressBar pb_loading;// 下拉刷新进度条
 	
+	
+	@ViewInject(R.id.iv_open_eyes)
+	private ImageView iv_open_eyes;
+	@ViewInject(R.id.iv_close_eyes)
+	private ImageView iv_close_eyes;
+	
 
 	private Handler handler = new Handler();
 	private RotateAnimation up;
@@ -371,8 +377,10 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 			iv_refresh_state.setText("下拉刷新");
 			iv_refresh_arrow.setVisibility(View.VISIBLE);
 			pb_refresh_progress.setVisibility(View.INVISIBLE);
+			setEyesClose();
 			break;
 		case RELEASE_REFRESH:
+			setEyesOpen();
 			iv_refresh_arrow.startAnimation(up);
 			iv_refresh_state.setText("松开刷新");
 			break;
@@ -410,6 +418,8 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 		}
 	}
 
+	
+
 	/**
 	 * 适用于带轮播图的ListView对象
 	 * @return
@@ -438,7 +448,8 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 	}
 	
 	public void onLoadMoreOverFished(){
-		isLoadMore = false;
+		/*isLoadMore = false;*/
+		isLoadMore = true;
 		footer.setPadding(0, -footerHeight, 0, 0);// 隐藏加载更多布局
 		
 	}
@@ -538,4 +549,16 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 		firstItem.getLocationOnScreen(location);
 		LogUtils.toDebugLog("location", location[1]+"  传入进来的location");
 	}*/
+	
+	/**
+	 * 刷新头左部图片
+	 */
+	public void  setEyesOpen(){//睁眼可见
+		iv_close_eyes.setVisibility(View.GONE);
+		iv_open_eyes.setVisibility(View.VISIBLE);
+	}
+	private void setEyesClose(){
+		iv_close_eyes.setVisibility(View.VISIBLE);
+		iv_open_eyes.setVisibility(View.GONE);
+	}
 }

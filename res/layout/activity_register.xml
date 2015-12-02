@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:scrollbars="none"
+       android:background="@color/app_white" >
+
+<FrameLayout 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/app_white"
@@ -11,193 +18,202 @@
         android:id="@+id/iv_register_bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent" /> -->
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/leaves" >
-
-        <RelativeLayout
-            android:id="@+id/rl_register_dialog"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/tv_register_reg_login"
-                style="@style/text_style_nomal_20"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="@dimen/l_r_35"
-                android:layout_marginTop="@dimen/margin_top_12"
-                android:background="@drawable/circle_background_green"
-                android:gravity="center"
-                android:text="@string/register"
-                android:textColor="@color/app_white" />
-
-            <FrameLayout
-                android:id="@+id/iv_register_login"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/register_icon_t" >
-
-                <com.android.pc.ioc.image.RecyclingImageView
-                    android:id="@+id/register_bg"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/log_in" /><!-- 趴在窗口上的小猫头鹰 -->
-
-			  	<!-- 输入手机号  -->
-                <FrameLayout
-                    android:id="@+id/fl_register_name"
-                    android:layout_width="@dimen/register_edit_w"
-                    android:layout_height="@dimen/register_edit_h"
-                    android:layout_marginTop="@dimen/register_phone_t"
-                    android:background="@drawable/input" >
-
-                    <RelativeLayout style="@style/w_wrap_h_wrap" >
-
-                        <com.android.pc.ioc.image.RecyclingImageView
-                            android:id="@+id/phone_icon"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/l_r_35"
-                            android:layout_marginTop="@dimen/t_10"
-                            android:src="@drawable/phone" />
-
-                        <EditText
-                            android:id="@+id/et_register_phone"
-                            style="@style/text_style_small_24"
-                            android:layout_width="@dimen/register_edit_w"
-                            android:layout_height="@dimen/register_edit_h"
-                            android:layout_marginLeft="@dimen/l_r_20"
-                            android:layout_toRightOf="@id/phone_icon"
-                            android:background="@null"
-                            android:ems="10"
-                            android:hint="@string/enter_phone"
-                            android:textColor="@color/text_nomal"
-                            android:textColorHint="@color/line_bg"
-                            android:inputType="number"
-                            android:singleLine="true"
-                            />
-                    </RelativeLayout>
-                </FrameLayout>
-            </FrameLayout>
-
-            <!-- 输入验证码  暂时被隐藏，等待注册时展现出来-->
-            <FrameLayout
-                android:id="@+id/fl_register_recode"
-                android:layout_width="@dimen/register_edit_w"
-                android:layout_height="@dimen/register_edit_h"
-                android:layout_below="@id/iv_register_login"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/margin_top_25"
-                android:background="@drawable/input"
-                android:visibility="gone" >
-
-                <RelativeLayout style="@style/w_wrap_h_wrap" >
-
-                    <EditText
-                        android:id="@+id/et_register_recode"
-                        style="@style/text_style_small_24"
-                        android:layout_width="@dimen/register_edit_w"
-                        android:layout_height="@dimen/register_edit_h"
-                        android:layout_marginLeft="@dimen/l_r_35"
-                        android:background="@null"
-                        android:ems="10"
-                        android:hint="@string/enter_re_code"
-                        android:singleLine="true"
-                        android:textColor="@color/text_nomal"
-                        android:textColorHint="@color/line_bg"/>
-
-                    <com.android.pc.ioc.view.TimeButton
-                        android:id="@+id/tv_register_send_code"
-                        style="@style/text_style_small_24"
-                        android:layout_width="@dimen/register_recode_w"
-                        android:layout_height="@dimen/register_edit_h"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignRight="@+id/et_register_recode"
-                        android:background="@drawable/button"
-                        android:clickable="true"
-                        android:gravity="center"
-                        android:text="@string/send_recode"
-                        android:textColor="@color/app_white" />
-                </RelativeLayout>
-            </FrameLayout>
-
-            <!-- 输入密码 -->
-            <FrameLayout
-                android:id="@+id/fl_register_pwd"
-                style="@style/w_wrap_h_wrap"
-                android:layout_alignLeft="@id/iv_register_login"
-                android:layout_alignRight="@id/iv_register_login"
-                android:layout_below="@id/fl_register_recode"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/margin_top_25"
-                android:background="@drawable/input" >
-
-                <RelativeLayout style="@style/w_wrap_h_wrap" >
-
-                    <com.android.pc.ioc.image.RecyclingImageView
-                        android:id="@+id/phone_icon1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/l_r_35"
-                        android:layout_marginTop="@dimen/t_10"
-                        android:src="@drawable/password" />
-
-                    <EditText
-                        android:id="@+id/et_register_pwd"
-                        style="@style/text_style_small_24"
-                        android:layout_width="@dimen/register_edit_w"
-                        android:layout_height="@dimen/register_edit_h"
-                        android:layout_marginLeft="@dimen/l_r_20"
-                        android:layout_toRightOf="@id/phone_icon1"
-                        android:background="@null"
-                        android:ems="10"
-                        android:hint="@string/enter_pwd"
-                        android:password="true"
-                        android:singleLine="true"
-                        android:textColor="@color/text_nomal"
-                        android:textColorHint="@color/line_bg"/>
-                    
-                </RelativeLayout>
-            </FrameLayout>
-
-            <!-- 登录或者注册复用钮 -->
-            <TextView
-                android:id="@+id/btn_register_reg_login"
-                style="@style/text_style_small_24"
-                android:layout_width="@dimen/register_item_w"
-                android:layout_height="@dimen/register_item_h"
-                android:layout_below="@id/fl_register_pwd"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/margin_top_50"
-                android:background="@drawable/button"
-                android:gravity="center"
-                android:text="@string/login"
-                android:textColor="@color/app_white" />
-
-            <!-- 返回上一层按钮 -->
-            <com.android.pc.ioc.image.RecyclingImageView
-                android:id="@+id/iv_activity_back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:src="@drawable/back" />
-
-            <!-- 忘记密码的按钮 -->
-            <TextView
-                android:id="@+id/tv_register_forget_password"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="@dimen/bottom_menu_h"
-                android:text="@string/forget_password"
-                android:textColor="#6F6F6F" />
-        </RelativeLayout>
-    </RelativeLayout>
-
-</FrameLayout>
+        
+  
+	    <RelativeLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:background="@drawable/leaves" >
+	
+	        <RelativeLayout
+	            android:id="@+id/rl_register_dialog"
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent"
+	            android:background="@drawable/leaves">
+	
+	            <TextView
+	                android:id="@+id/tv_register_reg_login"
+	                style="@style/text_style_nomal_20"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_alignParentRight="true"
+	                android:layout_marginRight="@dimen/l_r_35"
+	                android:layout_marginTop="@dimen/margin_top_12"
+	                android:background="@drawable/circle_background_green"
+	                android:gravity="center"
+	                android:text="@string/register"
+	                android:textColor="@color/app_white" />
+	
+	            <FrameLayout
+	                android:id="@+id/iv_register_login"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_centerHorizontal="true"
+	                android:layout_marginTop="@dimen/register_icon_t" >
+	
+	                <com.android.pc.ioc.image.RecyclingImageView
+	                    android:id="@+id/register_bg"
+	                    android:layout_width="match_parent"
+	                    android:layout_height="wrap_content"
+	                    android:src="@drawable/log_in" /><!-- 趴在窗口上的小猫头鹰 -->
+	
+				  	<!-- 输入手机号  -->
+	                <FrameLayout
+	                    android:id="@+id/fl_register_name"
+	                    android:layout_width="@dimen/register_edit_w"
+	                    android:layout_height="@dimen/register_edit_h"
+	                    android:layout_marginTop="@dimen/register_phone_t"
+	                    android:background="@drawable/input" >
+	
+	                    <RelativeLayout style="@style/w_wrap_h_wrap" >
+	
+	                        <com.android.pc.ioc.image.RecyclingImageView
+	                            android:id="@+id/phone_icon"
+	                            android:layout_width="wrap_content"
+	                            android:layout_height="wrap_content"
+	                            android:layout_marginLeft="@dimen/l_r_35"
+	                            android:layout_marginTop="@dimen/t_10"
+	                            android:src="@drawable/phone" />
+	
+	                        <EditText
+	                            android:id="@+id/et_register_phone"
+	                            style="@style/text_style_small_24"
+	                            android:layout_width="@dimen/register_edit_w"
+	                            android:layout_height="@dimen/register_edit_h"
+	                            android:layout_marginLeft="@dimen/l_r_20"
+	                            android:layout_toRightOf="@id/phone_icon"
+	                            android:background="@null"
+	                            android:ems="10"
+	                            android:hint="@string/enter_phone"
+	                            android:textColor="@color/text_nomal"
+	                            android:textColorHint="@color/line_bg"
+	                            android:inputType="number"
+	                            android:singleLine="true"
+	                            />
+	                    </RelativeLayout>
+	                </FrameLayout>
+	            </FrameLayout>
+	
+	            <!-- 输入验证码  暂时被隐藏，等待注册时展现出来-->
+	            <FrameLayout
+	                android:id="@+id/fl_register_recode"
+	                android:layout_width="@dimen/register_edit_w"
+	                android:layout_height="@dimen/register_edit_h"
+	                android:layout_below="@id/iv_register_login"
+	                android:layout_centerHorizontal="true"
+	                android:layout_marginTop="@dimen/margin_top_25"
+	                android:background="@drawable/input"
+	                android:visibility="gone" >
+	
+	                <RelativeLayout style="@style/w_wrap_h_wrap" >
+	
+	                    <EditText
+	                        android:id="@+id/et_register_recode"
+	                        style="@style/text_style_small_24"
+	                        android:layout_width="@dimen/register_edit_w"
+	                        android:layout_height="@dimen/register_edit_h"
+	                        android:layout_marginLeft="@dimen/l_r_35"
+	                        android:background="@null"
+	                        android:ems="10"
+	                        android:hint="@string/enter_re_code"
+	                        android:singleLine="true"
+	                        android:textColor="@color/text_nomal"
+	                        android:textColorHint="@color/line_bg"/>
+	
+	                    <com.android.pc.ioc.view.TimeButton
+	                        android:id="@+id/tv_register_send_code"
+	                        style="@style/text_style_small_24"
+	                        android:layout_width="@dimen/register_recode_w"
+	                        android:layout_height="@dimen/register_edit_h"
+	                        android:layout_alignParentTop="true"
+	                        android:layout_alignRight="@+id/et_register_recode"
+	                        android:background="@drawable/button"
+	                        android:clickable="true"
+	                        android:gravity="center"
+	                        android:text="@string/send_recode"
+	                        android:textColor="@color/app_white" />
+	                </RelativeLayout>
+	            </FrameLayout>
+	
+	            <!-- 输入密码 -->
+	            <FrameLayout
+	                android:id="@+id/fl_register_pwd"
+	                style="@style/w_wrap_h_wrap"
+	                android:layout_alignLeft="@id/iv_register_login"
+	                android:layout_alignRight="@id/iv_register_login"
+	                android:layout_below="@id/fl_register_recode"
+	                android:layout_centerHorizontal="true"
+	                android:layout_marginTop="@dimen/margin_top_25"
+	                android:background="@drawable/input" >
+	
+	                <RelativeLayout style="@style/w_wrap_h_wrap" >
+	
+	                    <com.android.pc.ioc.image.RecyclingImageView
+	                        android:id="@+id/phone_icon1"
+	                        android:layout_width="wrap_content"
+	                        android:layout_height="wrap_content"
+	                        android:layout_marginLeft="@dimen/l_r_35"
+	                        android:layout_marginTop="@dimen/t_10"
+	                        android:src="@drawable/password" />
+	
+	                    <EditText
+	                        android:id="@+id/et_register_pwd"
+	                        style="@style/text_style_small_24"
+	                        android:layout_width="@dimen/register_edit_w"
+	                        android:layout_height="@dimen/register_edit_h"
+	                        android:layout_marginLeft="@dimen/l_r_20"
+	                        android:layout_toRightOf="@id/phone_icon1"
+	                        android:background="@null"
+	                        android:ems="10"
+	                        android:hint="@string/enter_pwd"
+	                        android:password="true"
+	                        android:singleLine="true"
+	                        android:textColor="@color/text_nomal"
+	                        android:textColorHint="@color/line_bg"/>
+	                    
+	                </RelativeLayout>
+	            </FrameLayout>
+	
+	            <!-- 登录或者注册复用钮 -->
+	            <TextView
+	                android:id="@+id/btn_register_reg_login"
+	                style="@style/text_style_small_24"
+	                android:layout_width="@dimen/register_item_w"
+	                android:layout_height="@dimen/register_item_h"
+	                android:layout_below="@id/fl_register_pwd"
+	                android:layout_centerHorizontal="true"
+	                android:layout_marginTop="@dimen/margin_top_50"
+	                android:background="@drawable/button"
+	                android:gravity="center"
+	                android:text="@string/login"
+	                android:textColor="@color/app_white" 
+	                android:focusable="true"/><!-- 让其获取焦点 -->
+	             
+	                
+	                
+	
+	            <!-- 返回上一层按钮 -->
+	            <com.android.pc.ioc.image.RecyclingImageView
+	                android:id="@+id/iv_activity_back"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_alignParentLeft="true"
+	                android:src="@drawable/back" />
+	
+	            <!-- 忘记密码的按钮 -->
+	            <TextView
+	                android:id="@+id/tv_register_forget_password"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_alignParentBottom="true"
+	                android:layout_centerHorizontal="true"
+	                android:layout_marginBottom="@dimen/bottom_menu_h"
+	                android:text="@string/forget_password"
+	                android:textColor="#6F6F6F" />
+	        </RelativeLayout>
+	        
+	    </RelativeLayout>
+    
+ 
+   </FrameLayout> 
+</ScrollView>

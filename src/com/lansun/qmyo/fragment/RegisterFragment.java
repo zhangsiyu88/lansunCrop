@@ -121,18 +121,22 @@ public class RegisterFragment extends BaseFragment{
 		View rootView = inflater.inflate(R.layout.activity_register, null);
 		Handler_Inject.injectFragment(this, rootView);
 
-		/*activity.getWindow().setSoftInputMode(
-				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
-						| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);*/
-
 		activity.getWindow().setSoftInputMode(
-				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
+						| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
+//		activity.getWindow().setSoftInputMode(
+//				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+		
+//		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | 
+//				WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+		
+		
 		/*SpannableString ss = new SpannableString("输入密码");
 		AbsoluteSizeSpan ass = new AbsoluteSizeSpan(7,true);
 		ss.setSpan(ass, 0, ss.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 		v.et_register_pwd.setHint(new SpannedString(ss));*/
-
 		/*iv_activity_back = (RecyclingImageView) rootView.findViewById(R.id.iv_activity_back);*/
 		
 		return rootView;
@@ -364,7 +368,7 @@ public class RegisterFragment extends BaseFragment{
 							CustomToast.show(activity, "登录失败", "服务器睡着了...");
 						}
 					} 
-				}, 5000);
+				}, 8000);
 
 
 				params.put("mobile", phone);

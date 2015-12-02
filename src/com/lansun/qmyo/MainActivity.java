@@ -26,6 +26,7 @@ import com.android.pc.ioc.view.PullToRefreshManager;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.biz.ServiceAllBiz;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.fragment.ActivityDetailFragment;
 import com.lansun.qmyo.fragment.ExperienceSearchFragment;
 import com.lansun.qmyo.fragment.FoundFragment;
 import com.lansun.qmyo.fragment.HomeFragment;
@@ -36,6 +37,7 @@ import com.lansun.qmyo.fragment.PersonCenterFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.fragment.SearchBankCardFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
+import com.lansun.qmyo.fragment.StoreDetailFragment;
 import com.lansun.qmyo.fragment.TestMineActivityFragment;
 import com.lansun.qmyo.service.AccessTokenService;
 import com.lansun.qmyo.service.LocationService;
@@ -171,20 +173,31 @@ public class MainActivity extends FragmentActivity {
 				.beginTransaction();
 		Fragment to_fragment = fragmentManager.findFragmentByTag(fragment
 				.getClass().getName());
-		//
-		// fragmentTransaction.setCustomAnimations(R.anim.left_in,
-		// R.anim.left_out, R.anim.right_in, R.anim.right_out);
+		
+		
+		
+	 fragmentTransaction.setCustomAnimations(R.anim.left_in,R.anim.left_out, R.anim.right_in, R.anim.right_out);
 
 		/*将这里的动画效果取消掉，即隐去淡入淡出的效果
-		 * fragmentTransaction.setCustomAnimations(R.anim.fade_in,
-					R.anim.fade_out, R.anim.fade_in, R.anim.fade_out);*/
+		 * */
+	 //fragmentTransaction.setCustomAnimations(R.anim.fade_in,R.anim.fade_out, R.anim.fade_in, R.anim.fade_out);
 		
 		if (to_fragment != null) {
 			for (int i = 0; i < fragmentManager.getBackStackEntryCount(); i++) {
 				BackStackEntry entry = fragmentManager.getBackStackEntryAt(i);
-				if (fragment.getClass().getName().equals(entry.getName())) {
-					fragmentManager.popBackStack(entry.getName(), 1);
+				/**
+				 * 针对活动详情页面和门店详情页面的跳转逻辑，实行类Activity中的standard的启动机制,
+				 * 其余页面实行正常的逻辑，找到一样类型的类将其弹出，新生成的对象入栈
+				 */
+				if(fragment.getClass().getName().equals(ActivityDetailFragment.class.getName())||
+						fragment.getClass().getName().equals(StoreDetailFragment.class.getName())){
+					//NO_OP
+				}else{
+					if (fragment.getClass().getName().equals(entry.getName())) {
+						fragmentManager.popBackStack(entry.getName(), 1);
+					}
 				}
+				
 			}
 		}
 		fragmentTransaction.addToBackStack(fragment.getClass().getName());

@@ -28,6 +28,7 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
@@ -36,6 +37,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -51,6 +53,7 @@ import com.lansun.qmyo.domain.MySecretary;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CircularImage;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.MainFragment;
@@ -125,6 +128,11 @@ public class SecretarySettingFragment extends BaseFragment implements OnClickLis
 		View rootView = inflater.inflate(R.layout.fragment_secretary_edit,
 				container,false);
 		Handler_Inject.injectFragment(this, rootView);
+		
+		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | 
+				WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+		
+		
 		initView(rootView);
 		return rootView;
 	}
@@ -134,6 +142,7 @@ public class SecretarySettingFragment extends BaseFragment implements OnClickLis
 		v.iv_secretary_head.setOnClickListener(this);
 		iv_activity_del=(RecyclingImageView)rootView.findViewById(R.id.iv_activity_del);
 		iv_activity_del_hope=(RecyclingImageView)rootView.findViewById(R.id.iv_activity_del_hope);
+		
 		v.et_secretary_name.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -520,6 +529,14 @@ public class SecretarySettingFragment extends BaseFragment implements OnClickLis
 					handlerOkHandler.sendEmptyMessage(2);
 				}
 			});
+			
+			//点击保存后，让键盘隐藏下去
+			InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+			
+//			activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
+//					WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+			LogUtils.toDebugLog("softInput", "键盘降下");
 			break;
 		}
 	}

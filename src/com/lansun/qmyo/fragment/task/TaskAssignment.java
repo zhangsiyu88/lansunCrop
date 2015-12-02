@@ -15,15 +15,19 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.TextView.OnEditorActionListener;
 
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
@@ -152,6 +156,24 @@ public class TaskAssignment extends BaseFragment implements TextWatcher{
 		et_secretary_form_content.setHighlightColor(Color.parseColor("#AFAFAF"));
 		btn_secretary_commit_form=(TextView)view.findViewById(R.id.btn_secretary_commit_form);
 		et_secretary_form_content.addTextChangedListener(this);
+		
+		/**
+		 * 此方法设置无效，对于多行的Edittext右下角为换行键
+		 */
+		et_secretary_form_content.setOnEditorActionListener(new OnEditorActionListener(){
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				if(actionId ==EditorInfo.IME_ACTION_GO){
+					//et_secretary_form_content.setImeActionLabel("提交", actionId);
+					return true;
+				}
+				return false;
+			}
+			
+		});
+		
+		
+		
 	}
 	@Override
 	public void afterTextChanged(Editable s) {
@@ -170,6 +192,8 @@ public class TaskAssignment extends BaseFragment implements TextWatcher{
 		}else {
 			btn_secretary_commit_form.setClickable(false);
 			btn_secretary_commit_form.setTextColor(Color.parseColor("#AFAFAF"));
+			
+			//et_secretary_form_content.setImeOptions(EditorInfo.IME_ACTION_GO);
 		}
 	}
 }	

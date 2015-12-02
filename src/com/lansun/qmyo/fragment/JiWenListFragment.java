@@ -150,6 +150,8 @@ public class JiWenListFragment extends BaseFragment {
 			v.ll_jiwen_search.setVisibility(View.VISIBLE);
 			v.tv_jiwen_search.setVisibility(View.VISIBLE);
 			break;*/
+	
+		
 		}
 	}
 

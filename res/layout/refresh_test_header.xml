@@ -13,20 +13,19 @@
 	        android:layout_height="wrap_content" 
 	        android:id="@+id/fr_close_open_eyes"
 	        >
-	
-	        <ImageView
-	            android:id="@+id/iv_close_eyes"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:layout_gravity="center"
-	            android:background="@drawable/close_eyes" />
 	        
-	       <ImageView
+			<ImageView
 	            android:id="@+id/iv_open_eyes"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
+	            android:layout_width="210px"
+	            android:layout_height="140px"
 	            android:layout_gravity="center"
 	            android:background="@drawable/open_eyes" />
+	        <ImageView
+	            android:id="@+id/iv_close_eyes"
+	            android:layout_width="210px"
+	            android:layout_height="140px"
+	            android:layout_gravity="center"
+	            android:background="@drawable/close_eyes" />
 	    </FrameLayout>
         
         
@@ -68,8 +67,8 @@
 	
 	        <ImageView
 	            android:id="@+id/iv_refresh_arrow"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
+	            android:layout_width="40px"
+	            android:layout_height="40px"
 	            android:layout_gravity="center"
 	            android:background="@drawable/refresh_arrow" />
 	

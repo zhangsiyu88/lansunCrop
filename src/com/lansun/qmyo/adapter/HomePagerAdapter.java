@@ -9,6 +9,7 @@ import com.android.pc.ioc.event.EventBus;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.ActivityFragment;
 import com.lansun.qmyo.fragment.ActivityFragment1;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.R;
 
 import android.R.raw;
@@ -103,6 +104,9 @@ public class HomePagerAdapter extends CommonPagerAdapter implements
 
 	@Override
 	public void onClick(View v) {
+		
+		
+		
 		int type = 0;
 		switch (v.getId()) {
 		case R.id.ll_shopping_carnival:
@@ -133,7 +137,7 @@ public class HomePagerAdapter extends CommonPagerAdapter implements
 		EventBus bus = EventBus.getDefault();
 		FragmentEntity entity = new FragmentEntity();
 		
-		//NB的ActivityFragment带上需要的类型参数，去生成自己的造型去了
+		//ActivityFragment带上需要的类型参数，去生成自己的造型去了
 		
 		ActivityFragment fragment = new ActivityFragment();//TODO
 		/*ActivityFragment1 fragment = new ActivityFragment1();*/
@@ -143,6 +147,8 @@ public class HomePagerAdapter extends CommonPagerAdapter implements
 		fragment.setArguments(args);
 		entity.setFragment(fragment);
 		bus.post(entity);
+		
+		LogUtils.toDebugLog("click", "click的位置上的在R文件中的id值为 ： "+type);
 	}
 
 	boolean isChina = true;

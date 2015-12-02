@@ -504,7 +504,7 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 					 */
 					if(list.getData().size()<10){
 						//TODO
-						//CustomToast.show(activity, "到底啦!", "您添加的银行卡目前只有这么多");
+						CustomToast.show(activity, "到底啦!", "您添加的银行卡目前只有这么多");
 						lv_ban_card_other.onLoadMoreOverFished();
 					}
 					

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -58,6 +59,7 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
 	HashSet<Integer> mRemoved = new HashSet<Integer>();
 	HashSet<SwipeLayout> mUnClosedLayouts = new HashSet<SwipeLayout>();
+	private boolean isSlide = true;
 	
 
 	public SwipeListMineStoreAdapter(Context ctx , ArrayList<HashMap<String, String>> dataList){
@@ -68,6 +70,14 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 		
 	}
 	
+	public SwipeListMineStoreAdapter(Context ctx,
+			ArrayList<HashMap<String, String>> dataList, boolean b) {
+		this.isSlide = b;
+		this.mContext = ctx;
+		this.mDataList = dataList;
+		this.mInflater = LayoutInflater.from(mContext);
+	}
+
 	@Override
 	public int getCount() {
 		return mDataList.size();
@@ -117,8 +127,14 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 			}
 		});
 
-		
-		view.setSwipeListener(mSwipeListener);
+		if(isSlide){
+			view.setSwipeListener(mSwipeListener);
+		}else{
+			/*view.setSwipeListener(null);*/
+			/*view.setSwipeListener(mSwipeListener);*/
+			view.setGestureValid(true);
+			//view.setSwipeListener(mSwipeListener);
+		}
 		
 		
 		if (position + 1 == mDataList.size()) {
@@ -218,6 +234,7 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 		public void onOpen(SwipeLayout swipeLayout) {
 //			Utils.showToast(mContext, "onOpen");
 			mUnClosedLayouts.add(swipeLayout);
+			swipeLayout.close();
 		}
 
 		@Override
@@ -236,6 +253,7 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 //			Utils.showToast(mContext, "onStartOpen");
 			closeAllLayout();
 			mUnClosedLayouts.add(swipeLayout);
+			swipeLayout.close();
 		}
 
 	};

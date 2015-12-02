@@ -113,7 +113,7 @@
 		        />
 	   </RelativeLayout>
 	   
-    <com.lansun.qmyo.view.MyListView
+    <com.lansun.qmyo.view.TestMyListView
         android:id="@+id/lv_mine_history_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

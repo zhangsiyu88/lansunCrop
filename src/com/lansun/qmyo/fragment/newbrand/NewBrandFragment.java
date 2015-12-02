@@ -350,6 +350,8 @@ public class NewBrandFragment extends BaseFragment{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		LogUtils.toDebugLog("token", "NewBrand中的token： "+App.app.getData("access_token"));
+		
 		
 		broadCastReceiver = new NewBrandRefreshBroadCastReceiver();
 		System.out.println("注册广播 ing");

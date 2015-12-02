@@ -5,7 +5,9 @@
     android:orientation="vertical" 
     android:background="@color/app_bg">
 
-    <RelativeLayout
+
+    
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
@@ -15,17 +17,24 @@
             android:layout_height="match_parent"
             android:background="@color/app_bg"
            
-            android:orientation="vertical" > <!-- android:layout_marginBottom="@dimen/bottom_menu_h" -->
+            > <!-- android:layout_marginBottom="@dimen/bottom_menu_h" -->
 
+		 <LinearLayout 
+			    android:layout_width="match_parent"
+                android:layout_height="match_parent"
+			    > 
             <com.lansun.qmyo.view.MyListView
                 android:id="@+id/lv_home_list"
-                style="@style/w_h_full"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:background="#EBEBEB"
                 android:cacheColorHint="#00000000"
                 android:divider="@null"
                 android:listSelector="@android:color/transparent"
                 android:scrollbars="none"
-                />
+                /><!-- style="@style/w_h_full"  -->
+               </LinearLayout> 
+                
             <!-- 这个暂时被gone掉的横条就是  将来动画要让其展现的横条 -->
             <include
                 layout="@layout/activity_home_top_menu"
@@ -91,6 +100,7 @@
          <include
             layout="@layout/bottom_menu" 
             android:visibility="gone"/>
-    </RelativeLayout>
+    </LinearLayout>
 
+  
 </LinearLayout>

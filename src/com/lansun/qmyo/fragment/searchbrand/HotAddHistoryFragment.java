@@ -111,10 +111,10 @@ public class HotAddHistoryFragment extends BaseFragment implements HotItemClickC
 		tv_search_clear_all.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//				App.search_list_history.clear();
-				//				searchHistoryAdapter.notifyDataSetChanged();
-				//				MyGridLayoutManager myGridLayoutManager=new MyGridLayoutManager(getActivity(), 1);
-				//				lv_search_history.setLayoutManager(myGridLayoutManager);
+//				App.search_list_history.clear();
+//				searchHistoryAdapter.notifyDataSetChanged();
+//				MyGridLayoutManager myGridLayoutManager=new MyGridLayoutManager(getActivity(), 1);
+//				lv_search_history.setLayoutManager(myGridLayoutManager);
 				App.search_list_history.clear();
 				searchHistoryAdapter.notifyDataSetChanged();
 				App.app.setData("first_history", "");

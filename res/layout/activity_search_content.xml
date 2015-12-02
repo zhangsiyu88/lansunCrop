@@ -5,44 +5,51 @@
     android:background="@color/app_bg"
     android:orientation="vertical" >
 
-    <LinearLayout
-        android:id="@+id/ll_search_top_menu"
-        style="@style/w_full_h_wrap" >
-
-        <include layout="@layout/activity_search_top_menu" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_search_holder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/line_bg_expand"
-        android:orientation="vertical"
-        android:visibility="visible" >
-
-        <View style="@style/line_style_1" />
-        <!-- 子菜单选项 -->
-
-        <com.lansun.qmyo.view.ExpandTabView
-            android:id="@+id/expandtab_view"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/expandtab_view_h" />
-        <View style="@style/line_style_1" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/app_bg"
-        android:orientation="vertical" >
-
-        <com.lansun.qmyo.view.MyListView
-            android:id="@+id/lv_search_content"
-            style="@style/w_match_h_match"
-            android:background="@color/app_bg"
-            android:cacheColorHint="#00000000"
-            android:divider="@null"
-            android:listSelector="@android:color/transparent"
-            android:scrollbars="vertical" />
+    <LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:background="@color/app_bg"
+	    android:orientation="vertical" 
+        >
+		    <LinearLayout
+		        android:id="@+id/ll_search_top_menu"
+		        style="@style/w_full_h_wrap" >
+		
+		        <include layout="@layout/activity_search_top_menu" />
+		    </LinearLayout>
+		
+		    <LinearLayout
+		        android:id="@+id/ll_search_holder"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:background="@color/line_bg_expand"
+		        android:orientation="vertical"
+		        android:visibility="visible" >
+		
+		        <View style="@style/line_style_1" />
+		        <!-- 子菜单选项 -->
+		
+		        <com.lansun.qmyo.view.ExpandTabView
+		            android:id="@+id/expandtab_view"
+		            android:layout_width="match_parent"
+		            android:layout_height="@dimen/expandtab_view_h" />
+		        <View style="@style/line_style_1" />
+		    </LinearLayout>
+		
+		    <LinearLayout
+		        android:layout_width="match_parent"
+		        android:layout_height="match_parent"
+		        android:background="@color/app_bg"
+		        android:orientation="vertical" >
+		
+		        <com.lansun.qmyo.view.MyListView
+		            android:id="@+id/lv_search_content"
+		            style="@style/w_match_h_match"
+		            android:background="@color/app_bg"
+		            android:cacheColorHint="#00000000"
+		            android:divider="@null"
+		            android:listSelector="@android:color/transparent"
+		            android:scrollbars="vertical" />
+		    </LinearLayout>
     </LinearLayout>
 </LinearLayout>

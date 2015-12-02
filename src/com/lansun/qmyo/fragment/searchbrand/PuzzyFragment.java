@@ -47,6 +47,7 @@ public class PuzzyFragment extends BaseFragment implements PuzzyItemClickCallBac
 		};
 	};
 	private OnPuzzyClickCallBack callBack;
+	private MyBroadCastReceiver broadCastReceiver;
 	public PuzzyFragment(OnPuzzyClickCallBack callBack) {
 		this.callBack=callBack;
 	}
@@ -58,8 +59,7 @@ public class PuzzyFragment extends BaseFragment implements PuzzyItemClickCallBac
 			searchName=getArguments().getString("searchName");
 			ontextChange(searchName);
 		}
-		//注册广播
-		MyBroadCastReceiver broadCastReceiver=new MyBroadCastReceiver();
+		broadCastReceiver = new MyBroadCastReceiver();
 		IntentFilter filter=new IntentFilter();
 		filter.addAction("com.qmyo.puzzysearch");
 		getActivity().registerReceiver(broadCastReceiver, filter);
@@ -136,5 +136,11 @@ public class PuzzyFragment extends BaseFragment implements PuzzyItemClickCallBac
 	}
 	public interface OnPuzzyClickCallBack{
 		void onPuzzCallBack(String sel_name);
+	}
+	
+	@Override
+	public void onDestroy() {
+		getActivity().unregisterReceiver(broadCastReceiver);
+		super.onDestroy();
 	}
 }

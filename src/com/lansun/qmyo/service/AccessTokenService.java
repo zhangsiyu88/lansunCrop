@@ -54,7 +54,7 @@ import com.squareup.okhttp.Response;
  * 
  */
 public class AccessTokenService extends Service {
-	private int delay = 1000 * 60 * 10;
+	private int delay = 1000 * 60 * 15;//间隔15分钟进行一次token重新获取
 	public static Timer timer = new Timer();
 	
 	@Override
@@ -160,6 +160,7 @@ public class AccessTokenService extends Service {
 			EventBus.getDefault().post(entity);
 			BaseFragment.clearTempTokenAndSercet();
 		}
+		
 		if (r.getStatus() == FastHttp.result_ok) {
 
 			switch (r.getKey()) {

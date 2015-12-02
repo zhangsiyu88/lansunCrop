@@ -132,7 +132,8 @@ public class MineStoreFragment extends BaseFragment {
 			public void onLoadingMore() {
 				if (list != null) {
 					//其实这才是判断的真实依据，由于账号异常所以会将判断标准一直
-					if (list.getNext_page_url()== "null"||TextUtils.isEmpty(list.getNext_page_url())) {
+					if (list.getNext_page_url()== "null"||
+							TextUtils.isEmpty(list.getNext_page_url())) {
 						
 						Log.i("第三次刷新","第二次拿到的list中的next_page_url的值为null");
 						
@@ -333,7 +334,7 @@ public class MineStoreFragment extends BaseFragment {
 					 */
 					if(list.getData().size()<10){
 						//TODO
-						//CustomToast.show(activity, "到底啦！", "您只关注了以上的门店哦");
+						CustomToast.show(activity, "到底啦！", "您只关注了以上的门店哦");
 						lv_mine_store.onLoadMoreOverFished();
 					}
 					if(dataList.size()==0){//删除后数据列表为零

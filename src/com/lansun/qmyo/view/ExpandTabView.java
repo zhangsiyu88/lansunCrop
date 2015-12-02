@@ -98,7 +98,9 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 			RelativeLayout.LayoutParams rl = new RelativeLayout.LayoutParams(
 					RelativeLayout.LayoutParams.FILL_PARENT, maxHeight);
 			
-			r.addView(viewArray.get(i), rl);//r 布局添加入viewArray中的第i个View，并且是rl的布局设置
+			if(viewArray.get(i)!=null){
+				r.addView(viewArray.get(i), rl);//r 布局添加入viewArray中的第i个View，并且是rl的布局设置
+			}
 			
 			mViewArray.add(r);//相对布局控件的列表，布局的源，供后面的
 			r.setTag(SMALL);

@@ -293,8 +293,10 @@ import com.squareup.okhttp.Response;
 		
 		
 		intent = new Intent("com.lansun.qmyo.fragment.newbrand");
+		
 		Log.e("token",App.app.getData("access_token"));
-		Log.e("token",""+GlobalValue.gps.getWgLat()+GlobalValue.gps.getWgLon());
+		Log.e("gps",""+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
+		
 		LayoutInflater inflater  = LayoutInflater.from(activity);
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -806,93 +808,98 @@ import com.squareup.okhttp.Response;
 		if (r.getStatus() == FastHttp.result_ok) {
 			switch (r.getKey()) {
 			case 0://拿到顶头上的图
-				try {
-					//if(isFirstRequest){//当我们在init()中是第一次去访问的时候,我们就先将获取到的数据(其实压根没数据)展示出来,把图放上去
-					//在init中发送了个请求,先将listView的头部加载出来显示,实际上这里的shopDataList中是空数据
-					//防止fragment回来时被发现shopDataList中还有值,那么会先出现刚刚回来展示的数据居然还多于后面刷新后的数据列表
-					//shopDataList.clear();
-
-					Log.i("TAGTAGTAGTAGTAG", "前去服务器已经拿回了值");
-					JSONObject obj = new JSONObject(r.getContentAsString());
-					photoUrl = obj.get("photo").toString();
-					
-					loadPhoto(photoUrl, iv_home_ad);
-					
-						//目前返回的只是一个对象,下面是针对数组使用的
-						//ArrayList<HomeAdPhotoData> photoList = new ArrayList<HomeAdPhotoData>();
-					
-						//adapter = null;
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				
-				endProgress();
-				
-//				//拿到头部的几张图片的数据
-//				HomePosterList photoList = Handler_Json.JsonToBean(HomePosterList.class,r.getContentAsString());//TODO
-//				
-//				LogUtils.toDebugLog("photoList.toString()", "r.getContentAsString() :"+r.getContentAsString());
-//				/*Gson gson = new Gson();
-//				HomePosterList photoList = gson.fromJson(r.getContentAsString(), HomePosterList.class);*/
-//				
-//				LogUtils.toDebugLog("photoList.toString()", "photoList.toString()  :  "+photoList.toString());
-//				
-//				HashMap<String, String> hashMap = new HashMap<String,String>();
-//				   for(HomeAdPhotoData data: photoList.getData()){
-//					    hashMap = new HashMap<String,String>();
-//				    	hashMap.put("photoDataPhotoUrl",data.getPhoto()); 
-//				    	hashMap.put("photoDataTag",String.valueOf(data.getTag())); 
-//				    	hashMap.put("photoDataActivityId",data.getActivity_id()); 
-//				    	hashMap.put("photoDataShopId",data.getShop_id()); 
-//				    	LogUtils.toDebugLog("photoDataPhotoUrl", "photoDataPhotoUrl的值为: "+data.getPhoto());
-//				    	LogUtils.toDebugLog("photoDataTag", "photoDataTag的值为: "+data.getTag());
-//				    	homePhotoList.add(hashMap);
-//				    }
-//				    endProgress();
-//				    
-//				    
-//				    //拿到数据后，进行viewpager的负载问题
+//				try {
+//					//if(isFirstRequest){//当我们在init()中是第一次去访问的时候,我们就先将获取到的数据(其实压根没数据)展示出来,把图放上去
+//					//在init中发送了个请求,先将listView的头部加载出来显示,实际上这里的shopDataList中是空数据
+//					//防止fragment回来时被发现shopDataList中还有值,那么会先出现刚刚回来展示的数据居然还多于后面刷新后的数据列表
+//					//shopDataList.clear();
+//
+//					Log.i("TAGTAGTAGTAGTAG", "前去服务器已经拿回了值");
+//					JSONObject obj = new JSONObject(r.getContentAsString());
+//					photoUrl = obj.get("photo").toString();
+//					
+//					iv_home_ad.setVisibility(View.VISIBLE);
 //					vp_home_ad = (ViewPager) head.findViewById(R.id.vp_home_ad);
-//					//1.给ViewPager设置上资源适配器
-//			/*		MyHomeAdPagerAdapter homeAdPagerAdapter = new MyHomeAdPagerAdapter(homeAdPhotoList);*/		
-//					MyHomeAdPagerAdapter homeAdPagerAdapter = new MyHomeAdPagerAdapter(homePhotoList);
-//					//2.给Viewpager设置上页面切换的监听器
-//					OnPageChangeListener homeAdPageChangeListener = new OnPageChangeListener() {
-//						@Override
-//						public void onPageSelected(int position) {
-//							//NTD1.改变对应的小圆点的颜色
-//							changeHomeAdPointColor(position);
-//						}
-//						@Override
-//						public void onPageScrolled(int arg0, float arg1, int arg2) {
-//						}
-//						@Override
-//						public void onPageScrollStateChanged(int arg0) {
-//						}
-//					};
+//					vp_home_ad.setVisibility(View.GONE);
+//					loadPhoto(photoUrl, iv_home_ad);
 //					
+//						//目前返回的只是一个对象,下面是针对数组使用的
+//						//ArrayList<HomeAdPhotoData> photoList = new ArrayList<HomeAdPhotoData>();
 //					
-//					//3.给Viewpager设置上轮播的无限循环效果
-//					//4.给Viewpager设置上页面的点击效果        -->在Adapter中，对View进行设置
-//					
-//					vp_home_ad.setAdapter(homeAdPagerAdapter);
-////					vp_home_ad.setOnTouchListener(new MyOnTouchListener());
-//					
-//					try {
-//						Field mField = ViewPager.class.getDeclaredField("mScroller");
-//						mField.setAccessible(true);//允许暴力反射
-//						mScroller = new FixedSpeedScroller(vp_home_ad.getContext(),new AccelerateInterpolator());
-//						mScroller.setmDuration(3000);
-//						mField.set(vp_home_ad, mScroller);
-//					} catch (Exception e) {
-//						e.printStackTrace();
-//					}
-//					mScroller.setmDuration(3000);
-//					vp_home_ad.setOnPageChangeListener(homeAdPageChangeListener);
-//					handler.removeCallbacksAndMessages(null);
-//					handler.postDelayed(new InternalTask(), 5000);
-//					vp_home_ad.setCurrentItem(1000*3);
-//				    
+//						//adapter = null;
+//				} catch (JSONException e) {
+//					e.printStackTrace();
+//				}
+//				
+//				endProgress();
+				
+				
+				
+				//拿到头部的几张图片的数据
+				HomePosterList photoList = Handler_Json.JsonToBean(HomePosterList.class,r.getContentAsString());//TODO
+				
+				LogUtils.toDebugLog("photoList.toString()", "r.getContentAsString() :"+r.getContentAsString());
+				/*Gson gson = new Gson();
+				HomePosterList photoList = gson.fromJson(r.getContentAsString(), HomePosterList.class);*/
+				
+				LogUtils.toDebugLog("photoList.toString()", "photoList.toString()  :  "+photoList.toString());
+				
+				HashMap<String, String> hashMap = new HashMap<String,String>();
+				   for(HomeAdPhotoData data: photoList.getData()){
+					    hashMap = new HashMap<String,String>();
+				    	hashMap.put("photoDataPhotoUrl",data.getPhoto()); 
+				    	hashMap.put("photoDataTag",String.valueOf(data.getTag())); 
+				    	hashMap.put("photoDataActivityId",data.getActivity_id()); 
+				    	hashMap.put("photoDataShopId",data.getShop_id()); 
+				    	LogUtils.toDebugLog("photoDataPhotoUrl", "photoDataPhotoUrl的值为: "+data.getPhoto());
+				    	LogUtils.toDebugLog("photoDataTag", "photoDataTag的值为: "+data.getTag());
+				    	homePhotoList.add(hashMap);
+				    }
+				    endProgress();
+				    
+				    
+				    //拿到数据后，进行viewpager的负载问题
+					vp_home_ad = (ViewPager) head.findViewById(R.id.vp_home_ad);
+					//1.给ViewPager设置上资源适配器
+			/*		MyHomeAdPagerAdapter homeAdPagerAdapter = new MyHomeAdPagerAdapter(homeAdPhotoList);*/		
+					MyHomeAdPagerAdapter homeAdPagerAdapter = new MyHomeAdPagerAdapter(homePhotoList);
+					//2.给Viewpager设置上页面切换的监听器
+					OnPageChangeListener homeAdPageChangeListener = new OnPageChangeListener() {
+						@Override
+						public void onPageSelected(int position) {
+							//NTD1.改变对应的小圆点的颜色
+							changeHomeAdPointColor(position);
+						}
+						@Override
+						public void onPageScrolled(int arg0, float arg1, int arg2) {
+						}
+						@Override
+						public void onPageScrollStateChanged(int arg0) {
+						}
+					};
+					
+					
+					//3.给Viewpager设置上轮播的无限循环效果
+					//4.给Viewpager设置上页面的点击效果        -->在Adapter中，对View进行设置
+					
+					vp_home_ad.setAdapter(homeAdPagerAdapter);
+//					vp_home_ad.setOnTouchListener(new MyOnTouchListener());
+					
+					try {
+						Field mField = ViewPager.class.getDeclaredField("mScroller");
+						mField.setAccessible(true);//允许暴力反射
+						mScroller = new FixedSpeedScroller(vp_home_ad.getContext(),new AccelerateInterpolator());
+						mScroller.setmDuration(3000);
+						mField.set(vp_home_ad, mScroller);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					mScroller.setmDuration(3000);
+					vp_home_ad.setOnPageChangeListener(homeAdPageChangeListener);
+					handler.removeCallbacksAndMessages(null);
+					handler.postDelayed(new InternalTask(), 5000);
+					vp_home_ad.setCurrentItem(1000*3);
+				    
 					
 					
 					
@@ -1203,7 +1210,7 @@ import com.squareup.okhttp.Response;
 			mScroller.setmDuration(3000);
 			vp_home_ad.setCurrentItem(nextIndex);
 			//vp_home_ad.setFadingEdgeLength(100);
-			handler.postDelayed(new InternalTask(), 5000);//自己给自己发信息，哈哈
+			handler.postDelayed(new InternalTask(), 5000);//自己给自己发信息
 		}
 	}
 	

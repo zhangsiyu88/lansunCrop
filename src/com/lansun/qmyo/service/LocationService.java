@@ -29,8 +29,8 @@ import com.lansun.qmyo.view.CustomToast;
 	 */
 	public class LocationService extends Service implements AMapLocationListener {
 	    
-		public static final long LOCATION_UPDATE_MIN_TIME = 30 * 1000;
-	    public static final float LOCATION_UPDATE_MIN_DISTANCE = 5;
+		public static final long LOCATION_UPDATE_MIN_TIME = 2 * 60 * 1000;
+	    public static final float LOCATION_UPDATE_MIN_DISTANCE = 1;
 
 	    //private FixedLengthList<AMapLocation> locationList = FixedLengthList.newInstance();
 	    

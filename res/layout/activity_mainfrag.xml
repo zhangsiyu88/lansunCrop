@@ -3,13 +3,17 @@
     style="@style/w_match_h_match"
     android:orientation="vertical" 
     android:background="@color/app_bg">
+    
+<!--     <LinearLayout 
+        style="@style/w_match_h_match"
+        android:orientation="vertical" 
+        android:background="@color/app_bg"> -->
 	   
     <com.lansun.qmyo.view.MainViewPager
                 android:id="@+id/vp_mainfrag"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                /> 
+                android:layout_weight="1"/> 
 	 
 	 <LinearLayout 
 	    android:layout_weight="0"
@@ -147,4 +151,6 @@
 		        </LinearLayout>
 		    </LinearLayout>
 		</LinearLayout>
+		
+	 <!-- </LinearLayout> -->
 </LinearLayout>

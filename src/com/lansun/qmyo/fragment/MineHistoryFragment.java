@@ -43,9 +43,15 @@ import com.lansun.qmyo.fragment.MessageCenterFragment.Views;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
+import com.lansun.qmyo.utils.swipe.SwipeListMineActivityAdapter;
+import com.lansun.qmyo.utils.swipe.SwipeListMineHistoryActivityAdapter;
+import com.lansun.qmyo.utils.swipe.SwipeListMineHistoryStoreAdapter;
+import com.lansun.qmyo.utils.swipe.SwipeListMineStoreAdapter;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ListViewSwipeGesture;
 import com.lansun.qmyo.view.MyListView;
+import com.lansun.qmyo.view.TestMyListView;
+import com.lansun.qmyo.view.TestMyListView.OnRefreshListener;
 import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 import com.lidroid.xutils.HttpUtils;
@@ -82,19 +88,31 @@ import android.widget.TextView;
 
 	@InjectAll
 	Views v;
-	@InjectView(binders = { @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick") }, pull = true)
-	private MyListView lv_mine_history_list;
+//	@InjectView(binders = { @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick") }, pull = true)
+//	private MyListView lv_mine_history_list;
+	
+	
 	private HistoryActivity activityList;
 	private HistoryActivity storeList;
 	private ArrayList<HashMap<String, String>> storeDataList = new ArrayList<HashMap<String, String>>();
 	private ArrayList<HashMap<String, Object>> activityDataList = new ArrayList<>();
 	private ArrayList<HashMap<String, String>> v16DataList = new ArrayList<>();
-	private StoreAdapter storeAdapter;
-	private SearchAdapter activityAdapter;
+	
+	@InjectView
+	private TestMyListView lv_mine_history_list;
+	
+	/*private StoreAdapter storeAdapter;
+	private SearchAdapter activityAdapter;*/
+	
+	private SwipeListMineStoreAdapter storeAdapter;
+	private SwipeListMineActivityAdapter activityAdapter;
+	
+	
 	private HistoryActivity v16list;
 	private MineV16Adapter v16adapter;
 	private boolean isPull = false;
 	private View emptyView;
+	private int times = 0;
 
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
@@ -111,6 +129,51 @@ import android.widget.TextView;
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_mine_history, null);
+		Handler_Inject.injectFragment(this, rootView);
+		
+		lv_mine_history_list.setNoHeader(true);
+		lv_mine_history_list.setOnRefreshListener(new OnRefreshListener(){
+			
+			@Override
+			public void onRefreshing() {
+				//NO-OP
+			}
+			
+			@Override
+			public void onLoadingMore() {//在list.size()小于10时 ，就已经不会再走下面的方法操作了
+				if (activityList != null || storeDataList != null) {
+					if (refreshKey == 0) {
+						if (TextUtils.isEmpty(activityList.getNext_page_url())||activityList.getNext_page_url().contains("[]")
+								||activityList.getNext_page_url().contains("null")) {
+//							PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//							PullToRefreshManager.getInstance().footerUnable();
+							CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的活动");
+							return;
+						}
+						refreshUrl = activityList.getNext_page_url();
+					} else if (refreshKey == 1) {
+						if (TextUtils.isEmpty(storeList.getNext_page_url())||storeList.getNext_page_url().contains("[]")
+								||storeList.getNext_page_url().contains("null")) {
+//							PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//							PullToRefreshManager.getInstance().footerUnable();
+							CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的门店");
+							return;
+						}
+						refreshUrl = storeList.getNext_page_url();
+					} else {
+						if (TextUtils.isEmpty(v16list.getNext_page_url())) {
+//							PullToRefreshManager.getInstance().onFooterRefreshComplete();
+							CustomToast.show(activity, "加载进度", "目前所有内容都已经加载完成");
+							return;
+						}
+						refreshUrl = v16list.getNext_page_url();
+					}
+					refreshCurrentList(refreshUrl, null, refreshKey,lv_mine_history_list);
+					lv_mine_history_list.onLoadMoreFished();
+					isPull  = true;
+				} 
+			}
+		});
 		
 		
 		emptyView = rootView.findViewById(R.id.rl_new_emptyview);
@@ -128,7 +191,6 @@ import android.widget.TextView;
 			}
 		});
 		
-		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
 
@@ -145,7 +207,7 @@ import android.widget.TextView;
 		refreshCurrentList(refreshUrl, null, refreshKey, lv_mine_history_list);
 	}
 
-	private void click(View view) {
+	private void click(View view){
 		/**
 		 * 点击前将所有数据清除掉
 		 */
@@ -155,6 +217,9 @@ import android.widget.TextView;
 		activityDataList.clear();
 		storeDataList.clear();
 		v16DataList.clear();
+		times  = 0;
+		lv_mine_history_list.onLoadMoreFished();//需将OnLoadingMore的参数值重新置为 false,供后面的测试使用
+		lv_mine_history_list.setVisibility(View.INVISIBLE);//防止脚步局在切换时显示出来
 
 		switch (view.getId()) {
 		case R.id.tv_mine_history_activity:// 活动
@@ -169,7 +234,6 @@ import android.widget.TextView;
 		case R.id.tv_mine_history_store:// 门店
 
 			refreshKey = 1;
-
 			storeAdapter = null;
 			lv_mine_history_list.setAdapter(null);
 			refreshUrl = GlobalValue.URL_USER_SHOPBROWSES;
@@ -243,7 +307,7 @@ import android.widget.TextView;
 											lv_mine_history_list.setVisibility(View.GONE);
 											v.rl_new_emptyview.setVisibility(View.VISIBLE);
 											
-											PullToRefreshManager.getInstance().footerUnable();
+//											PullToRefreshManager.getInstance().footerUnable();
 											
 										} else {
 											CustomToast.show(activity, getString(R.string.tip),
@@ -282,14 +346,13 @@ import android.widget.TextView;
 	private void result(ResponseEntity r) {
 		if (r.getStatus() == FastHttp.result_ok) {
 			endProgress();
+			//lv_mine_history_list.setVisibility(View.VISIBLE);
 			
 			v16DataList.clear();
 			switch (r.getKey()) {
 			case 0:
-				
 				activityList = Handler_Json.JsonToBean(HistoryActivity.class,
 						r.getContentAsString());
-				
 				if(activityList.getData()!=null){
 					lv_mine_history_list.setVisibility(View.VISIBLE);
 					v.rl_new_emptyview.setVisibility(View.GONE);
@@ -321,31 +384,35 @@ import android.widget.TextView;
 						map.put("tv_search_tag", data.getActivity().getTag());
 						map.put("icons", data.getActivity().getCategory());
 						activityDataList.add(map);
-						
 						}
+					
 					     setTagColorAndPressed();
 					if (activityAdapter == null) {
-						activityAdapter = new SearchAdapter(lv_mine_history_list,
-								activityDataList, R.layout.activity_search_item);
+//						activityAdapter = new SearchAdapter(lv_mine_history_list,
+//								activityDataList, R.layout.activity_search_item);
+						
+						activityAdapter = new SwipeListMineActivityAdapter(activity, activityDataList ,false);
+						
 						lv_mine_history_list.setAdapter(activityAdapter);
-						PullToRefreshManager.getInstance().footerEnable();
-						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//						PullToRefreshManager.getInstance().footerEnable();
+//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					} else {
 						activityAdapter.notifyDataSetChanged();
-						PullToRefreshManager.getInstance().footerEnable();
-						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//						PullToRefreshManager.getInstance().footerEnable();
+//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+					}
+					if(activityList.getData().size()<10){
+						times++;
+						lv_mine_history_list.onLoadMoreOverFished();//此时根本不会进行onLoadingMore的操作了，所以onLoadingMore的操作是无效的
+						CustomToast.show(activity, "到底啦!", "您最近仅浏览了这么多的活动");
 					}
 			}else{
 				lv_mine_history_list.setVisibility(View.GONE);
 				v.rl_new_emptyview.setVisibility(View.VISIBLE);
 				
-				try{
-				}catch(Exception e){
-				}
-				PullToRefreshManager.getInstance().footerUnable();
+//				PullToRefreshManager.getInstance().footerUnable();
 			}
 				break;
-				
 				
 			case 1:
 				storeList = Handler_Json.JsonToBean(HistoryActivity.class,
@@ -363,7 +430,7 @@ import android.widget.TextView;
 				
 					for (BrowseData data : storeList.getData()) {
 						HashMap<String, String> map = new HashMap<String, String>();
-						map.put("shopId", data.getShop().getId()+"");
+						map.put("shop_id", data.getShop().getId()+"");
 						map.put("tv_store_item_name", data.getShop().getName());
 						map.put("tv_store_item_num", data.getShop().getAttention()
 								+ "");
@@ -389,20 +456,28 @@ import android.widget.TextView;
 					setTagColorAndPressed();
 					
 					if (storeAdapter == null) {
-						storeAdapter = new StoreAdapter(lv_mine_history_list,
-								storeDataList, R.layout.activity_store_item);
+						/*storeAdapter = new StoreAdapter(lv_mine_history_list,
+								storeDataList, R.layout.activity_store_item);*/
+						storeAdapter = new SwipeListMineStoreAdapter(activity, storeDataList,false);
 						lv_mine_history_list.setAdapter(storeAdapter);
-						PullToRefreshManager.getInstance().footerEnable();
-						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+						
+						
+//						PullToRefreshManager.getInstance().footerEnable();
+//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					} else {
 						storeAdapter.notifyDataSetChanged();
-						PullToRefreshManager.getInstance().footerEnable();
-						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//						PullToRefreshManager.getInstance().footerEnable();
+//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+					}
+					if(storeList.getData().size()<10){
+						times++;
+						lv_mine_history_list.onLoadMoreOverFished();//此时根本不会进行onLoadingMore的操作了，所以onLoadingMore的操作是无效的
+						CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的门店");
 					}
 			}else{
 				lv_mine_history_list.setVisibility(View.GONE);//数据列表不可见
 				v.rl_new_emptyview.setVisibility(View.VISIBLE);//空提示插画可见
-				PullToRefreshManager.getInstance().footerUnable();
+//				PullToRefreshManager.getInstance().footerUnable();
 			}
 				break;
 		   /*case 2:
@@ -499,8 +574,8 @@ import android.widget.TextView;
 				if (refreshKey == 0) {
 					if (TextUtils.isEmpty(activityList.getNext_page_url())||activityList.getNext_page_url().contains("[]")
 							||activityList.getNext_page_url().contains("null")) {
-						PullToRefreshManager.getInstance().onFooterRefreshComplete();
-						PullToRefreshManager.getInstance().footerUnable();
+//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//						PullToRefreshManager.getInstance().footerUnable();
 						CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的活动");
 						return;
 					}
@@ -508,15 +583,15 @@ import android.widget.TextView;
 				} else if (refreshKey == 1) {
 					if (TextUtils.isEmpty(storeList.getNext_page_url())||storeList.getNext_page_url().contains("[]")
 							||storeList.getNext_page_url().contains("null")) {
-						PullToRefreshManager.getInstance().onFooterRefreshComplete();
-						PullToRefreshManager.getInstance().footerUnable();
+//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//						PullToRefreshManager.getInstance().footerUnable();
 						CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的门店");
 						return;
 					}
 					refreshUrl = storeList.getNext_page_url();
 				} else {
 					if (TextUtils.isEmpty(v16list.getNext_page_url())) {
-						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 						CustomToast.show(activity, "加载进度", "目前所有内容都已经加载完成");
 						return;
 					}

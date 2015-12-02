@@ -39,11 +39,10 @@
             android:value="7b6ab7010e05188877fb2c29dff0240c" /> -->
        
        
-       
         <!--  包名为com.lansun.qmyo 本人(Yeun's LansunCorp  PC上)申请开发模式下的高德地图的key -->
-      <!--   <meta-data
+        <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="e5b6027255bb77d1aa285e5cec53c134" />   -->
+            android:value="e5b6027255bb77d1aa285e5cec53c134" />  
        
          <!--  包名为com.lansun.qmyo 本人(Yeun's  PC上)申请开发模式下的高德地图的key -->
       <!--  <meta-data
@@ -52,16 +51,15 @@
         
         
         <!--  包名为com.lansun.qmyo     申请    发布版本模式下的高德地图的key -->
-	     <meta-data
+	     <!-- <meta-data
 	            android:name="com.amap.api.v2.apikey"
-	            android:value="a81d22502d5958d33c95c7e32f97c656" />   
+	            android:value="a81d22502d5958d33c95c7e32f97c656" />  --> 
 	           
 	           
 	    <!-- Guzman key -->
 	    <!--  <meta-data
 	            android:name="com.amap.api.v2.apikey"
 	            android:value="6f42a67f536e232ba8ba4bf7744ee749" />  -->
-	        
 	   
 	   
 	   
@@ -101,8 +99,8 @@
             android:hardwareAccelerated="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" ><!-- android:launchMode="singleTask" -->
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
+             ><!-- android:launchMode="singleTask" android:windowSoftInputMode="adjustResize|stateAlwaysHidden"-->
         </activity>
         <activity
             android:name="com.lansun.qmyo.SplashActivity"

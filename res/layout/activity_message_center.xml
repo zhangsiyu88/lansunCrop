@@ -96,7 +96,7 @@
 	<FrameLayout 
 	    style="@style/w_match_h_match"
 	    >
-	    <com.lansun.qmyo.view.MyListView
+	    <com.lansun.qmyo.view.TestMyListView
         android:id="@+id/lv_message_list"
         style="@style/w_h_full"
         android:cacheColorHint="#00000000"

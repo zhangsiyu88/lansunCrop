@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -42,12 +43,16 @@ import android.widget.TextView;
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectBinder;
+import com.android.pc.ioc.inject.InjectListener;
+import com.android.pc.ioc.inject.InjectMethod;
 import com.android.pc.ioc.inject.InjectPullRefresh;
 import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.view.GifMovieView;
 import com.android.pc.ioc.view.PullToRefreshManager;
+import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.ioc.view.listener.OnItemClick;
 import com.android.pc.util.Handler_Inject;
+import com.android.pc.util.Handler_Json;
 import com.google.gson.Gson;
 import com.lansun.qmyo.MainActivity;
 import com.lansun.qmyo.MainFragment;
@@ -89,7 +94,7 @@ import com.squareup.okhttp.Response;
 	private String HODLER_TYPE = "000000";
 	private boolean isPull = false;
 	private boolean first;
-	private ActivityList list;
+	private ActivityList list = new ActivityList();
 	public static String defaultVisitUrl = GlobalValue.URL_ALL_ACTIVITY;
 	private SearchAdapter searchBankcardAdapter;
 
@@ -331,6 +336,7 @@ import com.squareup.okhttp.Response;
 	private boolean isDownRefresh;
 	private String encodeQuery;
 	private RelativeLayout noNetworkView;
+	private InputMethodManager imm;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		isShowFromInitData = true;
@@ -499,11 +505,12 @@ import com.squareup.okhttp.Response;
 		EventBus.getDefault().post(event);
 	}
 
-	private void initView( View view) {
+	private void initView( View view){
 		initData();
 		iv_activity_back=(RecyclingImageView)view.findViewById(R.id.iv_activity_back);
 		del_search_content=(ImageView)view.findViewById(R.id.del_search_content);
 		et_home_search=(EditText)view.findViewById(R.id.et_home_search);
+		
 		et_home_search.setOnFocusChangeListener(new OnFocusChangeListener() {
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
@@ -511,11 +518,13 @@ import com.squareup.okhttp.Response;
 					if (TextUtils.isEmpty(et_home_search.getText().toString())) {
 						startSearch("");
 					}
+					//不要被方法名误导，此方法只是进行了页面的跳转，实则此页面内部并无 右上角 的 搜索 操作
 					startSearch(et_home_search.getText().toString().trim());
 				}
 			}
 		});
 		del_search_content.setOnClickListener(this);
+		
 		if (query!=null) {
 			et_home_search.setText(query);
 			del_search_content.setVisibility(View.VISIBLE);
@@ -548,7 +557,15 @@ import com.squareup.okhttp.Response;
 		rootView.setBackgroundColor(Color.argb(255, 235, 235, 235));
 		initView(rootView);
 
-		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+		//当前页面根据键盘的问题自动判断是否将布局进行重新编排 ，以保证键盘不会将界面盖住
+		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
+				WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+		
+		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN); 
+		
+//		imm = (InputMethodManager) getActivity()
+//				.getSystemService(Context.INPUT_METHOD_SERVICE);
+//		imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
 
 		Handler_Inject.injectFragment(this, rootView);//Handler_Inject就会去调用invoke，invoke中会调用Inject_View,而Inject_View中又会调用applyTo()
 
@@ -586,7 +603,6 @@ import com.squareup.okhttp.Response;
 		});
 	}
 	
-	
 	private RelativeLayout setNetworkView() {
 		LogUtils.toDebugLog("设置NoNetView", "设置NoNetView");
 		
@@ -620,9 +636,6 @@ import com.squareup.okhttp.Response;
 	
 	
 	
-	
-	
-	
 	/**
 	 * 搜索内容监听
 	 * 
@@ -638,8 +651,7 @@ import com.squareup.okhttp.Response;
 			et_home_search.setHint(R.string.please_enter_search_brand);
 		} else {
 			search_tv_cancle.setText(R.string.search);
-			search_tv_cancle.setTextColor(getResources().getColor(
-					R.color.app_green1));
+			search_tv_cancle.setTextColor(getResources().getColor(R.color.app_green1));
 		}
 	}
 	/**
@@ -659,34 +671,41 @@ import com.squareup.okhttp.Response;
 	}
 	@Override
 	public void onClick(View v) {
+		
 		switch (v.getId()) {
 		case R.id.search_tv_cancle:
 			if (!first) {
 				first=true;
 			}
 			if (getString(R.string.cancle).equals(search_tv_cancle.getText())) {
-				InputMethodManager imm = (InputMethodManager) getActivity()
-						.getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(v.getWindowToken(), 0); // 强制隐藏键盘
-				back();
+//				InputMethodManager imm = (InputMethodManager) getActivity()
+//						.getSystemService(Context.INPUT_METHOD_SERVICE);
+//				imm.hideSoftInputFromWindow(v.getWindowToken(), 0); // 强制隐藏键盘
+				
+				back();//执行的是当前的back方法，即重写的方法，这才是关键代码！
+				
+				
 			} else {
 				query = et_home_search.getText().toString().trim();
 
 				InputMethodManager imm = (InputMethodManager) activity
 						.getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-				//				startSearch();
+//				startSearch();
 				setEmptityView(first, 0);
 			}
 			break;
 			// 大× 删除编辑框内容
 		case R.id.del_search_content:
+			activity.sendBroadcast(new Intent("com.lansun.qmyo.toggleSoftKeyboard"));
+			LogUtils.toDebugLog("broadcast", "SearchBrandListOkHttpFragment  发送弹起键盘的广播");
 			et_home_search.setText("");
 			getFragmentManager().popBackStack();//纳入最大的宿主activity的fragments集合的框架中
 			break;
-		case R.id.iv_activity_back:
+			
+		/*case R.id.iv_activity_back:
 			getFragmentManager().popBackStack();
-			break;
+			break;*/
 		}
 	}
 	/**
@@ -733,50 +752,61 @@ import com.squareup.okhttp.Response;
 		Log.d("utf-8", query);*/
 		
 		OkHttp.asyncGet(visitUrl+"site="+site+"&service="+service+"&position="+positon+"&intelligent="+intelligent+"&type="
-				+type+"&location="+location+"&query="+encodeQuery, "Authorization", "Bearer "+App.app.getData("access_token"), "SearchBrandListOkHttpFragment", new Callback() {
+				+type+"&location="+location+"&query="+query, "Authorization", "Bearer "+App.app.getData("access_token"), "SearchBrandListOkHttpFragment", new Callback() {
 			@Override
 			public void onResponse(Response response) throws IOException {
+				
 				Gson gson=new Gson();
 				list = gson.fromJson(response.body().string(), ActivityList.class);
+				
+				/*list = Handler_Json.JsonToBean(ActivityList.class, response.body().string());*/
 				if(isPull){
 					isPull = false;
 				}else{
 					datas.clear();//重新new出来一个新的list
 				}
 
-				if (list.getData() != null && !list.getData().toString().equals("[]") ){
-					for (ActivityListData data : list.getData()) {
-						HashMap<String, Object> map = new HashMap<String, Object>();
-						map.put("tv_search_activity_name", data.getShop()
-								.getName());
-						map.put("tv_search_activity_distance", data.getShop()
-								.getDistance());
-						map.put("tv_search_activity_desc", data.getActivity()
-								.getName());
-						map.put("iv_search_activity_head", data.getActivity()
-								.getPhoto());
-						map.put("activityId", data.getActivity().getId());
-						map.put("shopId", data.getShop().getId());
-						map.put("tv_search_tag", data.getActivity().getTag());
-						map.put("icons", data.getActivity().getCategory());
-						datas.add(map);
-					}
-
-					/* 下面这一步，试图在setAdapter之前将emptyView塞入到ListView控件上，但此处报错
-					 * if(list.getData().size()<10){
+				if(list!=null){//list只有Gson解析成功后，才可以完成
+					if (list.getData() != null && !list.getData().toString().equals("[]") ){
+						for (ActivityListData data : list.getData()) {
+							HashMap<String, Object> map = new HashMap<String, Object>();
+							map.put("tv_search_activity_name", data.getShop()
+									.getName());
+							map.put("tv_search_activity_distance", data.getShop()
+									.getDistance());
+							map.put("tv_search_activity_desc", data.getActivity()
+									.getName());
+							map.put("iv_search_activity_head", data.getActivity()
+									.getPhoto());
+							map.put("activityId", data.getActivity().getId());
+							map.put("shopId", data.getShop().getId());
+							map.put("tv_search_tag", data.getActivity().getTag());
+							map.put("icons", data.getActivity().getCategory());
+							datas.add(map);
+						}
+						
+						/* 下面这一步，试图在setAdapter之前将emptyView塞入到ListView控件上，但此处报错
+						 * if(list.getData().size()<10){
 						lv_search_content.addFooterView(emptyView);
 						Log.i("","在此处添加上了尾部EmptyView");
 					}*/
-
-					handleOkhttp.sendEmptyMessage(1);//TODO    返回的list不为空的时候，发送1号消息
-					return;
-				}
-
-				LogUtils.toDebugLog("Search", "底部将出现小猫头鹰");
-				if(list.getData().toString().equals("[]")||(list.getData().toString().contains("[")&&list.getData().toString().contains("]"))){
-					LogUtils.toDebugLog("Search", "handleOkhttp.sendEmptyMessage(2);");
-					handleOkhttp.sendEmptyMessage(2);//返回的数据解析后为空时    
-					return;
+						
+						handleOkhttp.sendEmptyMessage(1);//TODO    返回的list不为空的时候，发送1号消息
+						return;
+					}
+					
+					
+					if(list.getData()!= null){//list虽不为空，但是list.getData可能为空
+						LogUtils.toDebugLog("Search", "底部将出现小猫头鹰");
+						if(list.getData().toString().equals("[]")||(list.getData().toString().contains("[")&&list.getData().toString().contains("]"))){
+							LogUtils.toDebugLog("Search", "handleOkhttp.sendEmptyMessage(2);");
+							handleOkhttp.sendEmptyMessage(2);//返回的数据解析后为空时    
+							return;
+						}
+					}else{//针对“泊车优惠”的这种情况，list不为空，但list.getData()却是为null值，这么做是为了避免list。getData()出现空指针异常，导致程序奔溃的补救措施
+						LogUtils.toDebugLog("Search", "底部将出现小猫头鹰");
+						handleOkhttp.sendEmptyMessage(2);
+					}
 				}
 			}
 			@Override
@@ -1023,6 +1053,8 @@ import com.squareup.okhttp.Response;
 	public void onDestroy() {
 		expandtab_view.onPressBack();
 		PullToRefreshManager.getInstance().headerUnable();
+		
+		
 		super.onDestroy();
 	}
 	@Override
@@ -1320,6 +1352,14 @@ import com.squareup.okhttp.Response;
 		}
 		group.invalidate();
 	}
-	
+    
+    
+	@Override//	@InjectMethod(@InjectListener(ids = 2131296340, listeners = OnClick.class))
+	protected void back() {
+		activity.sendBroadcast(new Intent("com.lansun.qmyo.toggleSoftKeyboard"));
+		LogUtils.toDebugLog("broadcast", "SearchBrandListOkHttpFragment  发送弹起键盘的广播");
+		super.back();
+	}
+    
 	
 }

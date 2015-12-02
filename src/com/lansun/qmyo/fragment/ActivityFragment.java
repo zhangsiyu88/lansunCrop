@@ -73,6 +73,7 @@ import com.lansun.qmyo.event.entity.FragmentEntity;
 
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomDialogProgress;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExpandTabView;
@@ -220,6 +221,9 @@ public class ActivityFragment extends BaseFragment {
 		//		secretaryTitle = getResources().getStringArray(R.array.secretary_title);
 		//		secretaryhint = getResources().getStringArray(R.array.secretary_hint);
 		int type = getArguments().getInt("type");
+		
+		LogUtils.toDebugLog("type", "从首页传过来的type的值为： "+type );
+		
 		initType = type;
 		mIsHasChangeTheBankcardInMineBankcardPage = getArguments().getBoolean("isHasChangeTheBankcardInMineBankcardPage");
 		if (type != 0) {
@@ -269,7 +273,7 @@ public class ActivityFragment extends BaseFragment {
 			/*spyJustFirstClick = true;*/
 			justFirstClick = false;
 
-			v.tv_activity_title.setText(type);
+			v.tv_activity_title.setText(type);//此setText的方法是 int resid 
 		} else {
 			v.tv_activity_title.setText("未知");
 		}
@@ -279,7 +283,6 @@ public class ActivityFragment extends BaseFragment {
 			v.iv_card.setVisibility(View.GONE);
 			v.tv_home_experience.setVisibility(View.VISIBLE);
 		} else {
-			
 			v.iv_card.setVisibility(View.VISIBLE);
 			v.tv_home_experience.setVisibility(View.GONE);
 		}
@@ -395,7 +398,9 @@ public class ActivityFragment extends BaseFragment {
 		viewLeft2 = new ViewLeft(activity);
 		viewMiddle = new ViewMiddle(activity);
 		viewRight = new ViewRight(activity);
-		//		Log.e("HODLER_TYPE", HODLER_TYPE);
+		
+		Log.e("HODLER_TYPE", HODLER_TYPE);
+		
 		switch (HODLER_TYPE) {
 		case "100000":
 			type_index=0;
@@ -469,7 +474,13 @@ public class ActivityFragment extends BaseFragment {
 				setFirstValue(investment);
 			}
 			break;
+		default:
+			LogUtils.toDebugLog("HODLER_TYPE", "HODLER_TYPE=="+HODLER_TYPE);//供测试使用
+			break;
 		}
+			if(HODLER_TYPE==null){
+				LogUtils.toDebugLog("HODLER_TYPE", "HODLER_TYPE==null");//供测试使用
+			}
 
 
 		//判断Activity的类型是不是新品的内容，新内容时只展示三个模块，若为其他的八个板块时，那么需要的是展示四个TextView
@@ -1155,9 +1166,7 @@ public class ActivityFragment extends BaseFragment {
 				lv_activity_list.removeFooterView(noNetworkView);
 			}catch(Exception e ){
 			}
-
-			
-			CustomToast.show(activity, "", "我承认我没拿到数据！");
+			CustomToast.show(activity, "网络异常", "服务器睡着了！");
 			
 				if(cPd!=null){//断网情况下，且还拥有了cPd，表明其走到了loadActivityList，表示之前成功使用过筛选栏进行列表选择过， 实际上是访问不到数据的 
 					cPd.dismiss();
@@ -1207,7 +1216,7 @@ public class ActivityFragment extends BaseFragment {
 		String name;
 		AllService = Handler_Json.JsonToBean(Service.class,json);
 		name = AllService.getName();
-		Log.e("name===", name);
+		//Log.e("name===", name);
 		if (name == null) {
 			name = AllService.getData().get(0).getName();
 		}
@@ -1299,6 +1308,9 @@ public class ActivityFragment extends BaseFragment {
 						e.printStackTrace();
 					}
 					refreshParams.put("service", HODLER_TYPE);
+					
+					//缺少一个智能筛选的参数
+					refreshParams.put("intelligent", intelligentStr);
 
 					//更新当前页面的下一个页面时,前面的数据不应该被取消掉,应该拼接在后面
 					refreshCurrentList(activityList.getNext_page_url(),refreshParams, 4, lv_activity_list);

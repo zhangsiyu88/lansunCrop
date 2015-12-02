@@ -3,8 +3,8 @@
     style="@style/w_h_full"
     android:background="#EBEBEB"
     android:orientation="vertical" >
-
-   <!--  <RelativeLayout
+<!-- 
+     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_menu_h"
         android:background="@color/app_white" >
@@ -57,26 +57,24 @@
 
             <include layout="@layout/search_menu" />
         </LinearLayout>
-    </RelativeLayout> -->
+    </RelativeLayout> 
 
     
-   <!--  <View
+    <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/line_bg" /> -->
+        android:background="@color/line_bg" />  -->
 
      <com.lansun.qmyo.view.MyListView
-        
         android:visibility="gone"
-        
         android:id="@+id/lv_jiwen_list"
         style="@style/w_h_full"
         android:cacheColorHint="#00000000"
         android:divider="@android:color/transparent"
         android:listSelector="@android:color/transparent"
-        android:scrollbars="none" /> 
+        android:scrollbars="none" /> <!--  -->
     
-    <FrameLayout 
+     <FrameLayout 
        	 android:layout_width="match_parent"
          android:layout_height="match_parent">
       
@@ -94,7 +92,7 @@
             android:layout_marginTop="260dp"
            android:layout_marginLeft="40dp"
            android:src="@anim/jiwen_boom" />
-        <!--  android:layout_marginTop="@dimen/margin_top_680"  -->
+         android:layout_marginTop="@dimen/margin_top_680" 
         
         
          <com.android.pc.ioc.image.RecyclingImageView
@@ -103,7 +101,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/back" />
         
-    </FrameLayout>
+    </FrameLayout> 
      
     
     <View
