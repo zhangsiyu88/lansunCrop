@@ -43,6 +43,7 @@ import com.lansun.qmyo.domain.StoreList;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.swipe.SwipeListMineStoreAdapter;
+import com.lansun.qmyo.utils.swipe.Utils;
 import com.lansun.qmyo.view.CustomDialogProgress;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ListViewSwipeGesture;
@@ -401,8 +402,10 @@ public class MineStoreFragment extends BaseFragment {
 				if ("true".equals(r.getContentAsString())) {
 					dataList.remove(deletePosition);
 					adapter.notifyDataSetChanged();
-					CustomToast.show(activity, getString(R.string.tip),
-							getString(R.string.delete_success));
+					/*CustomToast.show(activity, getString(R.string.tip),
+							getString(R.string.delete_success));*/
+					Utils.showToast(activity, "删除成功");
+					
 				} else {
 					CustomToast.show(activity, getString(R.string.tip),
 							getString(R.string.delete_faild));

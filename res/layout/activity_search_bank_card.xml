@@ -61,10 +61,11 @@
 
     <View style="@style/line_style_2" />
 
-    <FrameLayout style="@style/w_match_h_match" >
+    <FrameLayout style="@style/w_match_h_match" 
+        >
 
         <!-- listView 银行卡的展示 -->
-        <com.lansun.qmyo.view.MyListView
+        <com.lansun.qmyo.view.BankcardListView
             android:id="@+id/lv_search_bank_card"
             style="@style/w_h_full"
             android:layout_marginLeft="@dimen/l_r_35"
@@ -72,11 +73,13 @@
             android:layout_marginTop="@dimen/margin_top_35"
             android:background="#EBEBEB"
             android:divider="@android:color/transparent"
+            android:paddingBottom="@dimen/margin_top_35"  
             android:dividerHeight="@dimen/margin_top_35"
             android:listSelector="@android:color/transparent"
-            android:paddingBottom="@dimen/margin_top_35"
             android:scrollbars="none"
             android:visibility="gone" />
+        
+        
         <!-- 搜索栏内容为空的时候的布局展示 -->
         <LinearLayout
             android:id="@+id/ll_bank_card_tip"
@@ -105,7 +108,7 @@
             <View
                 style="@style/line_style_2"
                 android:layout_marginTop="@dimen/margin_top_22"
-                android:background="@color/line_bg" />
+                android:background="@color/line_bg2" />
         </LinearLayout>
     </FrameLayout>
 </LinearLayout>

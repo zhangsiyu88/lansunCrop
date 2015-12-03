@@ -75,6 +75,9 @@ import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
+import com.lansun.qmyo.utils.swipe.EightPartActivityAdapter;
+import com.lansun.qmyo.view.ActivityMyListView;
+import com.lansun.qmyo.view.ActivityMyListView.OnRefreshListener;
 import com.lansun.qmyo.view.CustomDialogProgress;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExpandTabView;
@@ -84,8 +87,10 @@ import com.lansun.qmyo.view.ViewMiddle;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 /**
- * time 2015-11-5
- * @author Guzman.Geng
+ * time 2015-12-03
+ * 
+ * @author Yeun
+ * 
  * 此版块为新品曝光栏目
  */
 public class NewBrandFragment extends BaseFragment{
@@ -125,10 +130,16 @@ public class NewBrandFragment extends BaseFragment{
 
 	private ArrayList<HashMap<String, Object>> shopDataList = new ArrayList<HashMap<String, Object>>();
 	private ActivityList activityList;
-	private SearchAdapter activityAdapter;
+	
+	/*private SearchAdapter activityAdapter;*/
+	private EightPartActivityAdapter activityAdapter;
 
-	@InjectView(binders = @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick"), down = true, pull = true)
-	private MyListView lv_activity_list;
+	@InjectView
+	private ActivityMyListView lv_activity_list;
+	
+/*	@InjectView(binders = @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick"), down = true, pull = true)
+	private MyListView lv_activity_list;*/	
+	
 	//添加一个搜索为空的view层
 	private View emptyView;
 	protected String name;
@@ -150,8 +161,12 @@ public class NewBrandFragment extends BaseFragment{
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
 			case 1:
-				PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-				PullToRefreshManager.getInstance().onFooterRefreshComplete();
+				lv_activity_list.onLoadMoreFished();
+				lv_activity_list.onRefreshFinshed(true);
+				lv_activity_list.setNoHeader(false);
+				
+//				PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//				PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				endProgress();
 				lv_activity_list.setVisibility(View.VISIBLE);
 				
@@ -168,7 +183,10 @@ public class NewBrandFragment extends BaseFragment{
 				}catch(Exception e ){
 				}
 				
-				if (activityList.getData() != null) {//服务器返回回来的数据中的Data不为null
+				/**
+				 * 注意下面添加的判断条件，activityList.getData().toString()居然是个“[]”
+				 */
+				if (activityList.getData() != null && activityList.getData().toString()!= "[]") {//服务器返回回来的数据中的Data不为null
 					if (!isRemove) {
 						try{
 							lv_activity_list.removeFooterView(emptyView);
@@ -193,13 +211,17 @@ public class NewBrandFragment extends BaseFragment{
 						shopDataList.add(map);
 					}
 					if (activityAdapter == null) {
-						activityAdapter = new SearchAdapter(lv_activity_list,
-								shopDataList, R.layout.activity_search_item);
+						/*activityAdapter = new SearchAdapter(lv_activity_list,
+								shopDataList, R.layout.activity_search_item);*/
+						
+						activityAdapter = new EightPartActivityAdapter(activity,shopDataList);
 
 						lv_activity_list.setAdapter(activityAdapter);
 						if(activityList.getData().size()<10){
 							if (isRemove) {
 								lv_activity_list.addFooterView(emptyView);
+								CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
+								lv_activity_list.onLoadMoreOverFished();
 								LayoutParams params=new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 								params.weight=1;
 								lv_activity_list.setLayoutParams(params);
@@ -221,6 +243,8 @@ public class NewBrandFragment extends BaseFragment{
 						if(activityList.getData().size()<10){
 							if (isRemove) {
 								lv_activity_list.addFooterView(emptyView);
+								CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
+								lv_activity_list.onLoadMoreOverFished();
 								isRemove=false;
 							}
 						}else {
@@ -234,10 +258,10 @@ public class NewBrandFragment extends BaseFragment{
 						}
 						/*activityAdapter.notifyDataSetChanged();*/
 					}
-					PullToRefreshManager.getInstance().headerEnable();
-					PullToRefreshManager.getInstance().footerEnable();
-					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-					PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//					PullToRefreshManager.getInstance().headerEnable();
+//					PullToRefreshManager.getInstance().footerEnable();
+//					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 
 				} else {//因为上拉前去获取到的数据为null，此时需要将之前的值保留住并展示
 					lv_activity_list.setAdapter(null);
@@ -246,8 +270,9 @@ public class NewBrandFragment extends BaseFragment{
 						lv_activity_list.addFooterView(emptyView);
 						isRemove=false;
 					}
-					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-					PullToRefreshManager.getInstance().onFooterRefreshComplete();
+					lv_activity_list.onLoadMoreOverFished();
+//					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				}
 				break;
 			case 2:
@@ -277,6 +302,8 @@ public class NewBrandFragment extends BaseFragment{
 			case 10:  //无网络的时候进行的操作//TODO
 				//CustomToast.show(activity, "提示", "断网 ");
 				progress_text.setText(R.string.net_error_refresh);
+				lv_activity_list.onLoadMoreOverFished();
+				lv_activity_list.setNoHeader(true);
 				
 				lv_activity_list.setVisibility(View.VISIBLE);
 				
@@ -301,8 +328,8 @@ public class NewBrandFragment extends BaseFragment{
 					activityAdapter.notifyDataSetChanged();
 					
 					//此时可断开上拉的操作
-					PullToRefreshManager.getInstance().footerUnable();
-					PullToRefreshManager.getInstance().headerUnable();
+//					PullToRefreshManager.getInstance().footerUnable();
+//					PullToRefreshManager.getInstance().headerUnable();
 
 				}else{//注意下面的两个判断的安放顺序//TODO
 					
@@ -313,8 +340,9 @@ public class NewBrandFragment extends BaseFragment{
 				    	((AnimationDrawable)iv_gif_loadingprogress.getDrawable()).start();*/
 						noNetworkView = setNetworkView();
 						lv_activity_list.addFooterView(noNetworkView);
-						PullToRefreshManager.getInstance().footerUnable();
-						PullToRefreshManager.getInstance().headerUnable();
+						lv_activity_list.onLoadMoreOverFished();
+//						PullToRefreshManager.getInstance().footerUnable();
+//						PullToRefreshManager.getInstance().headerUnable();
 						isFromNoNetworkViewTip = false;
 						return;
 					}
@@ -482,6 +510,46 @@ public class NewBrandFragment extends BaseFragment{
 		initView(view);
 		initListener();
 		
+		lv_activity_list.setOnRefreshListener(new OnRefreshListener() {
+			
+			@Override
+			public void onRefreshing() {
+				isShowDialog=false;
+				if (activityList != null) {
+					isDownChange = true;//下拉更新的标志
+					startSearchData(GlobalValue.URL_ALL_ACTIVITY,App.app.getData("select_cityCode"),HODLER_TYPE,position_bussness,intelligentStr,GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
+					lv_activity_list.removeFooterView(emptyView);//不能忘了去除底部的emptyView
+				}else{
+					CustomToast.show(activity, "提示", "activityList == null");
+				}
+			}
+			
+			@Override
+			public void onLoadingMore() {
+				isShowDialog=false;
+				if (activityList != null) {
+					/*if (TextUtils.isEmpty(activityList.getNext_page_url())) {//下一页为空的时候，加上footerview*/
+					if (activityList.getNext_page_url()== "null"||TextUtils.isEmpty(activityList.getNext_page_url())) {
+						try{
+							lv_activity_list.removeFooterView(emptyView);
+						}catch(Exception e ){
+
+						}
+						lv_activity_list.addFooterView(emptyView);
+						lv_activity_list.onLoadMoreOverFished();
+						
+//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//						PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
+						CustomToast.show(activity, "到底啦！", "小迈会加油搜集更多惊喜哦");
+					} else {
+						startSearchData(activityList.getNext_page_url());
+						lv_activity_list.setNoHeader(true);
+					}
+				}
+			}
+		});
+		
+		
 		if(App.app.getData("gpsIsNotAccurate").equals("true")){
 			
 			DialogUtil.createTipAlertDialog(activity,
@@ -610,8 +678,8 @@ public class NewBrandFragment extends BaseFragment{
 	
 	private void initView(View view) {
 	    //一进入界面时，就进行上拉和下拉刷新头的准备工作
-		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-		PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//		PullToRefreshManager.getInstance().onFooterRefreshComplete();
 		
 		
 		//去获取列表
@@ -730,7 +798,6 @@ public class NewBrandFragment extends BaseFragment{
 				if(!justFirstClick){//未拿到数据的时候，要让点击操作有响应，故在此 开放标志信号justFirstClick
 					justFirstClick = !justFirstClick;
 				}
-				
 			}
 		});
 	}
@@ -766,8 +833,8 @@ public class NewBrandFragment extends BaseFragment{
 		/*shopDataList.clear();
 		activityAdapter = null;*/
 		
-		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-		PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//		PullToRefreshManager.getInstance().onFooterRefreshComplete();
 		
 	}
 	/**
@@ -790,8 +857,8 @@ public class NewBrandFragment extends BaseFragment{
 					}
 					lv_activity_list.addFooterView(emptyView);
 
-					PullToRefreshManager.getInstance().onFooterRefreshComplete();
-					PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
+//					PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//					PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
 					CustomToast.show(activity, "到底啦！", "小迈会加油搜集更多惊喜哦");
 				} else {
 					startSearchData(activityList.getNext_page_url());
@@ -997,12 +1064,12 @@ public class NewBrandFragment extends BaseFragment{
 	
 	@Override
 	public void onStop() {
-		PullToRefreshManager.getInstance().headerUnable();
+//		PullToRefreshManager.getInstance().headerUnable();
 		super.onStop();
 	}
 	@Override
 	public void onDestroy() {
-		PullToRefreshManager.getInstance().headerUnable();
+//		PullToRefreshManager.getInstance().headerUnable();
 	    getActivity().unregisterReceiver(broadCastReceiver);
 		super.onDestroy();
 	}

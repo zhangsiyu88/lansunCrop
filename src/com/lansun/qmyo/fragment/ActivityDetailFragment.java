@@ -137,6 +137,12 @@ public class ActivityDetailFragment extends BaseFragment {
 		
 		return rootView;
 	}
+	
+	@Override
+	public void onDestroy() {
+		activity.unregisterReceiver(broadCastReceiver);
+		super.onDestroy();
+	}
 
 	@InjectInit
 	private void init() {
@@ -812,6 +818,8 @@ public class ActivityDetailFragment extends BaseFragment {
 		}
 	}
 	
+	
+	
 	 class ActivityDetailsRefreshBroadCastReceiver extends BroadcastReceiver{
 			@Override
 			public void onReceive(Context ctx, Intent intent) {
@@ -824,6 +832,7 @@ public class ActivityDetailFragment extends BaseFragment {
 			}
 		 }
 
+	 
 		
 		
 }

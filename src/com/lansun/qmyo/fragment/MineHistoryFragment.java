@@ -47,6 +47,7 @@ import com.lansun.qmyo.utils.swipe.SwipeListMineActivityAdapter;
 import com.lansun.qmyo.utils.swipe.SwipeListMineHistoryActivityAdapter;
 import com.lansun.qmyo.utils.swipe.SwipeListMineHistoryStoreAdapter;
 import com.lansun.qmyo.utils.swipe.SwipeListMineStoreAdapter;
+import com.lansun.qmyo.utils.swipe.Utils;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ListViewSwipeGesture;
 import com.lansun.qmyo.view.MyListView;
@@ -134,6 +135,8 @@ import android.widget.TextView;
 		lv_mine_history_list.setNoHeader(true);
 		lv_mine_history_list.setOnRefreshListener(new OnRefreshListener(){
 			
+			private String currentRequestUrl;
+
 			@Override
 			public void onRefreshing() {
 				//NO-OP
@@ -168,7 +171,14 @@ import android.widget.TextView;
 						}
 						refreshUrl = v16list.getNext_page_url();
 					}
-					refreshCurrentList(refreshUrl, null, refreshKey,lv_mine_history_list);
+					if(currentRequestUrl == refreshUrl){
+						//DO-OP
+						//CustomToast.show(activity, "提示", "准备重复加载");
+					}else{
+						refreshCurrentList(refreshUrl, null, refreshKey,lv_mine_history_list);
+						currentRequestUrl = refreshUrl;
+					}
+					
 					lv_mine_history_list.onLoadMoreFished();
 					isPull  = true;
 				} 
@@ -211,20 +221,23 @@ import android.widget.TextView;
 		/**
 		 * 点击前将所有数据清除掉
 		 */
-		activityAdapter = null;
+		/*activityAdapter = null;
 		storeAdapter = null;
 		v16adapter = null;
 		activityDataList.clear();
 		storeDataList.clear();
-		v16DataList.clear();
+		v16DataList.clear();*/
 		times  = 0;
 		lv_mine_history_list.onLoadMoreFished();//需将OnLoadingMore的参数值重新置为 false,供后面的测试使用
-		lv_mine_history_list.setVisibility(View.INVISIBLE);//防止脚步局在切换时显示出来
 
 		switch (view.getId()) {
 		case R.id.tv_mine_history_activity:// 活动
+			lv_mine_history_list.setVisibility(View.INVISIBLE);//防止脚步局在切换时显示出来
 			refreshKey = 0;
+			
 			activityAdapter = null;
+			activityDataList.clear();
+			
 			lv_mine_history_list.setAdapter(null);
 			changeTextColor(v.tv_mine_history_activity);
 			refreshUrl = GlobalValue.URL_USER_ACTIVITYBROWSES;
@@ -232,9 +245,12 @@ import android.widget.TextView;
 					lv_mine_history_list);
 			break;
 		case R.id.tv_mine_history_store:// 门店
-
+			lv_mine_history_list.setVisibility(View.INVISIBLE);//防止脚步局在切换时显示出来
 			refreshKey = 1;
+			
 			storeAdapter = null;
+			storeDataList.clear();
+			
 			lv_mine_history_list.setAdapter(null);
 			refreshUrl = GlobalValue.URL_USER_SHOPBROWSES;
 			changeTextColor(v.tv_mine_history_store);
@@ -282,12 +298,17 @@ import android.widget.TextView;
 								public void onSuccess(ResponseInfo<String> arg0) {
 									if ("true".equals(arg0.result.toString())) {
 										
-											CustomToast.show(activity, R.string.tip,R.string.delete_success);
+										
+										/*	CustomToast.show(activity, R.string.tip,R.string.delete_success);*/
+										Utils.showToast(activity, "删除成功");
+										
 											activityDataList.clear();
 											storeDataList.clear();
 											/*storeAdapter.notifyDataSetChanged();
 											activityAdapter.notifyDataSetChanged();*/
+											
 											lv_mine_history_list.setAdapter(null);
+											
 											setTagColorAndPressed();
 											
 											

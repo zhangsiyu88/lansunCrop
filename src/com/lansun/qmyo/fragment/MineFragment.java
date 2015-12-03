@@ -365,6 +365,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 			break;
 		case R.id.rl_mine_about:
 			fragment = new AboutFragment();
+			/*fragment = new PromoteDetailFragment();*/
 			break;
 		case R.id.rl_mine_shared://分享APP
 			fragment = new SharedFragment();

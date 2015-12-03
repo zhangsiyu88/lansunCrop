@@ -288,7 +288,7 @@ public class SwipeListMineActivityAdapter extends BaseAdapter {
 				
 			} else if (id == R.id.bt_delete) {
 				closeAllLayout();
-				//Utils.showToast(mContext, "删除该活动");
+				
 				
 				deletePosition = p;
 				HttpUtils httpUtils = new HttpUtils();
@@ -304,8 +304,10 @@ public class SwipeListMineActivityAdapter extends BaseAdapter {
 							
 								mList.remove(deletePosition);
 								
-								CustomToast.show(mContext, mContext.getString(R.string.tip),
-										mContext.getString(R.string.delete_success));
+								/*CustomToast.show(mContext, mContext.getString(R.string.tip),
+										mContext.getString(R.string.delete_success));*/
+								Utils.showToast(mContext, "删除成功");
+
 								SwipeListMineActivityAdapter.this.notifyDataSetChanged();
 							} else {
 								CustomToast.show(mContext, mContext.getString(R.string.tip),

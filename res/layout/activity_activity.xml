@@ -83,7 +83,7 @@
             />
     </LinearLayout>
 
-    <com.lansun.qmyo.view.MyListView
+    <com.lansun.qmyo.view.ActivityMyListView
         android:id="@+id/lv_activity_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

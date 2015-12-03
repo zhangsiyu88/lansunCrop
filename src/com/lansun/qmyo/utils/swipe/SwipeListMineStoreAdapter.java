@@ -183,7 +183,7 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 				
 			} else if (id == R.id.bt_delete) {
 				closeAllLayout();
-				//Utils.showToast(mContext, "删除该活动");
+				
 				deletePosition = p;
 				//活动删除代码：
 				HttpUtils httpUtils = new HttpUtils();
@@ -201,14 +201,12 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 								notifyDataSetChanged();
 								if(mDataList.size()==0){//删除后数据列表为零
 									
-									
 //									  v.rl_no_postdelay_store.setVisibility(View.VISIBLE);
 									
-									
-									
 								}
-								CustomToast.show(mContext, mContext.getString(R.string.tip),
-										mContext.getString(R.string.delete_success));
+								/*CustomToast.show(mContext, mContext.getString(R.string.tip),
+										mContext.getString(R.string.delete_success));*/
+								Utils.showToast(mContext, "删除成功");
 							} else {
 								CustomToast.show(mContext, mContext.getString(R.string.tip),
 										mContext.getString(R.string.delete_faild));

@@ -42,7 +42,7 @@
 		        android:background="@color/app_bg"
 		        android:orientation="vertical" >
 		
-		        <com.lansun.qmyo.view.MyListView
+		        <com.lansun.qmyo.view.ActivityMyListView
 		            android:id="@+id/lv_search_content"
 		            style="@style/w_match_h_match"
 		            android:background="@color/app_bg"

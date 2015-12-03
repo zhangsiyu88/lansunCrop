@@ -97,11 +97,14 @@ import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.FixedSpeedScroller;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
+import com.lansun.qmyo.utils.swipe.EightPartActivityAdapter;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExperienceDialog;
 import com.lansun.qmyo.view.LoginDialog;
 import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
 import com.lansun.qmyo.view.MyListView;
+import com.lansun.qmyo.view.TestMyListView;
+import com.lansun.qmyo.view.TestMyListView.OnRefreshListener;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -117,7 +120,8 @@ import com.squareup.okhttp.Response;
 	@InjectAll
 	Views v;
 	private View head;
-	private SearchAdapter adapter;
+	/*private SearchAdapter adapter;*/
+	private EightPartActivityAdapter adapter;
 	private InternalHandler handler = new InternalHandler();
 	private ImageView iv_point2;
 	private ImageView iv_point, iv_home_ad;
@@ -135,9 +139,11 @@ import com.squareup.okhttp.Response;
 	/**
 	 * LoonAndroid框架规定，上拉和下拉刷新只能针对ListView进行设置，其他的View类型不可识别
 	 */
-	@InjectView(binders = { @InjectBinder(listeners ={ OnItemClick.class }, method = "itemClick")}, pull = true) 
-	private  MyListView lv_home_list;
+	/*@InjectView(binders = { @InjectBinder(listeners ={ OnItemClick.class }, method = "itemClick")}, pull = true) 
+	private  MyListView lv_home_list;*/
 
+	@InjectView
+	private  TestMyListView lv_home_list;
 
 	class Views {
 		@InjectBinder(method = "click", listeners = OnClick.class)
@@ -208,8 +214,8 @@ import com.squareup.okhttp.Response;
 		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(lv_home_list.getWindowToken(), 0); 
 		
-		PullToRefreshManager.getInstance().headerUnable();
-		PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//		PullToRefreshManager.getInstance().headerUnable();
+//		PullToRefreshManager.getInstance().onFooterRefreshComplete();
 		/*PullToRefreshManager.getInstance().footerUnable(); */ //底部刷新不可用
 		
 		/*v.rl_bg.setPressed(true);
@@ -220,7 +226,8 @@ import com.squareup.okhttp.Response;
 	@Override
 	public void onPause() {
 		
-		PullToRefreshManager.getInstance().headerUnable();
+//		PullToRefreshManager.getInstance().headerUnable();
+		
 		//v.fl_home_top_menu.setVisibility(View.GONE);
 		LogUtils.toDebugLog("回到后台测试", "离开首页界面");
 		/*if (adapter != null) {                  //adapter若置为空，在退出后台时，再进去页面进行刷新，会导致刷新后至顶部 
@@ -306,6 +313,59 @@ import com.squareup.okhttp.Response;
 		/*head =  rootView.findViewById(R.id.head_banner);*/
 		Handler_Inject.injectFragment(this, rootView);//当前的fragment里面使用 自动去注入组件
 
+		lv_home_list.setNoHeader(true);
+		lv_home_list.onLoadMoreOverFished();
+		lv_home_list.setOnRefreshListener(new OnRefreshListener() {
+			
+			@Override
+			public void onRefreshing() {
+				
+			}
+			
+			@Override
+			public void onLoadingMore() {
+				if (list != null) {
+					if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url()=="null") {
+//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//						PullToRefreshManager.getInstance().footerUnable();
+						CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
+						lv_home_list.onLoadMoreOverFished();
+
+					} else {
+						refreshParams = new LinkedHashMap<>();
+						if (isChina) {//如果是国内活动，需要进行刷新操作
+							refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
+							refreshParams.put("site", getSelectCity()[0]);
+							refreshParams.put("intelligent", "home");
+						} else {
+							refreshParams = null;
+							refreshUrl = String.format(GlobalValue.URL_ARTICLE_PROMOTE,getSelectCity()[0]);
+						}
+						refreshCurrentList(list.getNext_page_url(), refreshParams,1, lv_home_list);
+					}
+				}else{//针对第一次进来用户急于去刷新操作，但此时的list对象是为空的
+					CustomToast.show(activity, "让网速飞一会儿，biu~biu~", "总裁大大，请给我一首歌的时间");
+					/*refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
+					refreshParams.put("site", getSelectCity()[0]);
+					refreshParams.put("intelligent", "home");
+					refreshCurrentList(refreshUrl, refreshParams,1, lv_home_list);
+					PullToRefreshManager.getInstance().onFooterRefreshComplete();*/
+
+				}
+			}
+		});
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		refresh_footer = inflater.inflate(R.layout.refresh_footer, null);
 
 		if (TextUtils.isEmpty(App.app.getData("exp_secret"))
@@ -801,9 +861,9 @@ import com.squareup.okhttp.Response;
 	@InjectHttp
 	private void result(ResponseEntity r) {
 		
-		PullToRefreshManager.getInstance().headerUnable();
-		PullToRefreshManager.getInstance().onFooterRefreshComplete();
-		PullToRefreshManager.getInstance().footerEnable();
+//		PullToRefreshManager.getInstance().headerUnable();
+//		PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//		PullToRefreshManager.getInstance().footerEnable();
 
 		if (r.getStatus() == FastHttp.result_ok) {
 			switch (r.getKey()) {
@@ -907,10 +967,11 @@ import com.squareup.okhttp.Response;
 					for(HashMap<String, Object> shopData: shopDataList){
 						System.out.println(shopData.toString());
 					}
-					adapter = new SearchAdapter(lv_home_list, shopDataList, R.layout.activity_search_item);
+					/*adapter = new SearchAdapter(lv_home_list, shopDataList, R.layout.activity_search_item);*/
+					adapter = new EightPartActivityAdapter(activity, shopDataList);
 					lv_home_list.setAdapter(adapter);
 					endProgress();
-					PullToRefreshManager.getInstance().headerUnable();
+//					PullToRefreshManager.getInstance().headerUnable();
 					
 					
 				//loadPhoto(photoUrl, iv_home_ad);
@@ -937,8 +998,8 @@ import com.squareup.okhttp.Response;
 									dataList, R.layout.home_item);
 							lv_home_list.setAdapter(promoteAdapter);
 						} else {
-							//PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-							PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//							PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//							PullToRefreshManager.getInstance().onFooterRefreshComplete();
 							promoteAdapter.notifyDataSetChanged();
 						}
 					} else {//promoteList.getData() == null 若没有获取到值，可将其当前的listview连接的适配器设置为空
@@ -946,6 +1007,10 @@ import com.squareup.okhttp.Response;
 					}
 
 				} else {//如果选择的城市是China的城市,换句话说,常规进来的界面是走下面的代码的
+					lv_home_list.onLoadMoreFished();
+					lv_home_list.onRefreshFinshed(true);
+					
+					
 					list = Handler_Json.JsonToBean(ActivityList.class,r.getContentAsString());
 					
 					if(isDeleteShopData){
@@ -967,7 +1032,8 @@ import com.squareup.okhttp.Response;
 							shopDataList.add(map);//店铺的数据源List
 						}
 						if (adapter == null) {
-							adapter = new SearchAdapter(lv_home_list,shopDataList, R.layout.activity_search_item);
+							/*adapter = new SearchAdapter(lv_home_list,shopDataList, R.layout.activity_search_item);*/
+							adapter = new EightPartActivityAdapter(activity, shopDataList);
 							lv_home_list.setAdapter(adapter);
 
 						} else {
@@ -978,16 +1044,16 @@ import com.squareup.okhttp.Response;
 							}
 							//TODO
 							adapter.notifyDataSetChanged();
-							PullToRefreshManager.getInstance().headerUnable();
+//							PullToRefreshManager.getInstance().headerUnable();
 							
 							/*adapter.notifyAll();*/
 							//lv_home_list.setAdapter(adapter); //当ScrollView包裹ListView时，少了这段代码，仅仅只有新刷出来的数据是拥有标签的
 						}
 						//上面的图还是要加载上去的
 						//loadPhoto(photoUrl, iv_home_ad);
-						PullToRefreshManager.getInstance().headerUnable();
-						PullToRefreshManager.getInstance().footerEnable();
-						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//						PullToRefreshManager.getInstance().headerUnable();
+//						PullToRefreshManager.getInstance().footerEnable();
+//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 						isFirstRequest = false;
 					}
 				}
@@ -1065,41 +1131,41 @@ import com.squareup.okhttp.Response;
 	 * 
 	 * @param type
 	 */
-   @InjectPullRefresh
-	public void call(int type) {
-		// 首页是没有下拉加载的
-		switch (type) {
-		case InjectView.PULL:
-			if (list != null) {
-				if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url()=="null") {
-					PullToRefreshManager.getInstance().onFooterRefreshComplete();
-					PullToRefreshManager.getInstance().footerUnable();
-					CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
-
-				} else {
-					refreshParams = new LinkedHashMap<>();
-					if (isChina) {//如果是国内活动，需要进行刷新操作
-						refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
-						refreshParams.put("site", getSelectCity()[0]);
-						refreshParams.put("intelligent", "home");
-					} else {
-						refreshParams = null;
-						refreshUrl = String.format(GlobalValue.URL_ARTICLE_PROMOTE,getSelectCity()[0]);
-					}
-					refreshCurrentList(list.getNext_page_url(), refreshParams,1, lv_home_list);
-				}
-			}else{//针对第一次进来用户急于去刷新操作，但此时的list对象是为空的
-				CustomToast.show(activity, "让网速飞一会儿，biu~biu~", "总裁大大，请给我一首歌的时间");
-				/*refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
-				refreshParams.put("site", getSelectCity()[0]);
-				refreshParams.put("intelligent", "home");
-				refreshCurrentList(refreshUrl, refreshParams,1, lv_home_list);
-				PullToRefreshManager.getInstance().onFooterRefreshComplete();*/
-
-			}
-			break;
-		}
-	}
+//   @InjectPullRefresh
+//	public void call(int type) {
+//		// 首页是没有下拉加载的
+//		switch (type) {
+//		case InjectView.PULL:
+//			if (list != null) {
+//				if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url()=="null") {
+////					PullToRefreshManager.getInstance().onFooterRefreshComplete();
+////					PullToRefreshManager.getInstance().footerUnable();
+//					CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
+//
+//				} else {
+//					refreshParams = new LinkedHashMap<>();
+//					if (isChina) {//如果是国内活动，需要进行刷新操作
+//						refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
+//						refreshParams.put("site", getSelectCity()[0]);
+//						refreshParams.put("intelligent", "home");
+//					} else {
+//						refreshParams = null;
+//						refreshUrl = String.format(GlobalValue.URL_ARTICLE_PROMOTE,getSelectCity()[0]);
+//					}
+//					refreshCurrentList(list.getNext_page_url(), refreshParams,1, lv_home_list);
+//				}
+//			}else{//针对第一次进来用户急于去刷新操作，但此时的list对象是为空的
+//				CustomToast.show(activity, "让网速飞一会儿，biu~biu~", "总裁大大，请给我一首歌的时间");
+//				/*refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
+//				refreshParams.put("site", getSelectCity()[0]);
+//				refreshParams.put("intelligent", "home");
+//				refreshCurrentList(refreshUrl, refreshParams,1, lv_home_list);
+//				PullToRefreshManager.getInstance().onFooterRefreshComplete();*/
+//
+//			}
+//			break;
+//		}
+//	}
    class MyHomeAdPagerAdapter extends PagerAdapter {
 		private Context context;
 		/*private ArrayList<HomeAdPhotoData> mList;//传递进入数据源*/		

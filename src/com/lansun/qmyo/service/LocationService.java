@@ -18,6 +18,7 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.location.LocationManagerProxy;
 import com.amap.api.location.LocationProviderProxy;
+import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CustomToast;
 
@@ -116,9 +117,15 @@ import com.lansun.qmyo.view.CustomToast;
 	        // 也就是需要处理这些数据的组件。
 	        
 	        //将新请求下来的坐标写入到本地的Gps中
-	        GlobalValue.gps.setWgLat(aMapLocation.getLatitude());
-	        GlobalValue.gps.setWgLon(aMapLocation.getLongitude());
-	        Log.d("更新的坐标","更新的坐标:"+aMapLocation.getLongitude()+","+aMapLocation.getLatitude());
+//	        GlobalValue.gps.setWgLat(aMapLocation.getLatitude());
+//	        GlobalValue.gps.setWgLon(aMapLocation.getLongitude());
+//	        
+
+	        correctGpsCoordinateAndSetData(aMapLocation.getLatitude(),aMapLocation.getLongitude());
+	        Log.d("更新的坐标","高德更新的坐标:"+aMapLocation.getLatitude()+","+aMapLocation.getLongitude());
+	        Log.d("更新的坐标","修整为固定小数点后六位的坐标:"+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
+	        
+	        
 	        
 	        
 	       // CustomToast.show(getApplicationContext(), "更新坐标位置", "已更新");
@@ -136,5 +143,32 @@ import com.lansun.qmyo.view.CustomToast;
 		@Override
 		public IBinder onBind(Intent arg0) {
 			return null;
+		}
+		
+		/**
+		 * 返回修整过的坐标
+		 * @param wgLat
+		 * @param wgLon
+		 * @return
+		 */
+		public void correctGpsCoordinateAndSetData(double wgLat,double wgLon){
+			
+			double newWgLat = interceptDoubleNum(wgLat);
+			double newWgLon = interceptDoubleNum(wgLon);
+			GlobalValue.gps.setWgLat(newWgLat);
+		    GlobalValue.gps.setWgLon(newWgLon);
+		    
+		    App.app.setData("gps.Wglat", String.valueOf(newWgLat));
+		    App.app.setData("gps.Wglon", String.valueOf(newWgLon));
+		}
+		/**
+		 * 截取到输入数字的后六位
+		 */
+		private double interceptDoubleNum(double baseNumber) {
+			String newNumber = String.valueOf(baseNumber);
+			int littlePoint = newNumber.indexOf(".");
+			newNumber = newNumber.substring(0, littlePoint+7);
+			double resultDoubleNum = Double.valueOf(newNumber);
+			return resultDoubleNum;
 		}
  }

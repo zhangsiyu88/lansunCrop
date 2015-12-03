@@ -110,9 +110,9 @@ public class PromoteDetailFragment extends BaseFragment {
 					e.printStackTrace();
 				}
 				endProgress();
-				refreshCurrentList(
-						GlobalValue.URL_USER_ARTICLE_INFO + promote.getId(),
-						null, 1, null);
+//				refreshCurrentList(
+//						GlobalValue.URL_USER_ARTICLE_INFO + promote.getId(),
+//						null, 1, null);
 				super.onPageFinished(view, url);
 			}
 
@@ -124,11 +124,17 @@ public class PromoteDetailFragment extends BaseFragment {
 			}
 
 		});
+		
+		
 		v.webView.setOnScrollChangedCallback(onScrollChangedCallback);
-
-		if (!TextUtils.isEmpty(promote.getUrl())) {
+		v.webView.loadUrl("http://act.qmyo.com/poster/1");
+		
+		/**
+		 * 在webView上展示出网址的内容
+		 */
+		/*if (!TextUtils.isEmpty(promote.getUrl())) {
 			v.webView.loadUrl(promote.getUrl());
-		}
+		}*/
 	}
 
 	OnScrollChangedCallback onScrollChangedCallback = new OnScrollChangedCallback() {

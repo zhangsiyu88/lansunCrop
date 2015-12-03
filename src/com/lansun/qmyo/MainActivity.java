@@ -176,7 +176,7 @@ public class MainActivity extends FragmentActivity {
 		
 		
 		
-	 fragmentTransaction.setCustomAnimations(R.anim.left_in,R.anim.left_out, R.anim.right_in, R.anim.right_out);
+	// fragmentTransaction.setCustomAnimations(R.anim.left_in,R.anim.left_out, R.anim.right_in, R.anim.right_out);
 
 		/*将这里的动画效果取消掉，即隐去淡入淡出的效果
 		 * */

@@ -129,7 +129,9 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 					App.app.setData((App.TAGS[i]),"");
 				}
 				App.app.setData("in_this_fragment_time","");
+				
 				refresh();
+				
 				MineBankcardFragment.this.back();
 				break;
 			}
@@ -282,7 +284,7 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 		}
 	}
 
-	public void decideHowToShow() {
+	public void decideHowToShow(){
 		if (isExperience()) {//体验用户就只有一张卡并且显示是体验状态,那么下面的显示是那只猫头鹰
 			v.ll_bank_card_other.setVisibility(View.GONE);
 
@@ -448,7 +450,7 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 	
 	
 	private SwipeListMineBankcardAdapter adapter;
-	private ArrayList<HashMap<String, String>> dataList;
+	private ArrayList<HashMap<String, String>> dataList = new ArrayList<HashMap<String, String>>() ;
 	private int currentCardId;
 	private BankCardList list;
 
@@ -464,10 +466,13 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 			endProgress();
 			switch (r.getKey()) {
 			case 0:
+				
+				lv_ban_card_other.onLoadMoreFished();
+				
 				if(isPull){
 					isPull = false;
 				}else{
-					dataList = new ArrayList<>();
+					dataList.clear();
 				}
 				
 				list = Handler_Json.JsonToBean(BankCardList.class,r.getContentAsString());
@@ -504,7 +509,7 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 					 */
 					if(list.getData().size()<10){
 						//TODO
-						CustomToast.show(activity, "到底啦!", "您添加的银行卡目前只有这么多");
+						//CustomToast.show(activity, "到底啦!", "您添加的银行卡目前只有这么多");
 						lv_ban_card_other.onLoadMoreOverFished();
 					}
 					
@@ -519,14 +524,15 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 //					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				} else {
 					lv_ban_card_other.setAdapter(null);
+					lv_ban_card_other.onLoadMoreOverFished();//当无数据时，需将尾布局删除掉
 				}
 				break;
 
 			case 1:
 				if ("true".equals(r.getContentAsString())) {
 					//很明显,前面的删除银行卡操作是没有起到作用的,若有作用至少是会有toast提醒
-					CustomToast.show(activity, getString(R.string.tip),
-							getString(R.string.delete_success));
+//					CustomToast.show(activity, getString(R.string.tip),
+//							getString(R.string.delete_success));
 				} else {
 					System.out.println("获取到返回值,但显示是删除失败!");
 					CustomToast.show(activity, getString(R.string.tip),
@@ -535,8 +541,10 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 				break;
 			case 2:// 选中银行卡
 				if ("true".equals(r.getContentAsString())) {
-					CustomToast.show(activity, R.string.tip,
-							R.string.select_bank_card_success);
+					/*CustomToast.show(activity, R.string.tip,
+							R.string.select_bank_card_success);*/
+					CustomToast.show(activity, R.string.select_bank_card_success,
+							R.string.search_bankcard_act);
 					
 					App.app.setData("MainBankcard", bankCardId);
 					
@@ -649,8 +657,10 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 			   
 			case 6:// 选中银行卡 //实则拷贝的是case 2 的处理操作
 				if ("true".equals(r.getContentAsString())) {
-					CustomToast.show(activity, R.string.tip,
-							R.string.select_bank_card_success);
+					/*CustomToast.show(activity, R.string.tip,
+							R.string.select_bank_card_success);*/
+					CustomToast.show(activity, R.string.select_bank_card_success,
+							R.string.search_bankcard_act);
 					
 					App.app.setData("MainBankcard", bankCardId);
 					
@@ -797,25 +807,25 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 		}
 	}
 
-	@InjectPullRefresh
-	private void call(int type) {
-		// 这里的type来判断是否是下拉还是上拉
-		switch (type) {
-			case InjectView.PULL:
-				if (list != null) {
-					
-					if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url()=="null") {
-						PullToRefreshManager.getInstance().onFooterRefreshComplete();
-						PullToRefreshManager.getInstance().footerUnable();
-						CustomToast.show(activity, "到底啦!", "您添加的银行卡目前只有这么多");
-					} else {
-						refreshCurrentList(list.getNext_page_url(), null, 0,lv_ban_card_other);
-						isPull = true;
-					}
-				}
-				break;
-		}
-	}
+//	@InjectPullRefresh
+//	private void call(int type) {
+//		// 这里的type来判断是否是下拉还是上拉
+//		switch (type) {
+//			case InjectView.PULL:
+//				if (list != null) {
+//					
+//					if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url()=="null") {
+//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//						PullToRefreshManager.getInstance().footerUnable();
+//						CustomToast.show(activity, "到底啦!", "您添加的银行卡目前只有这么多");
+//					} else {
+//						refreshCurrentList(list.getNext_page_url(), null, 0,lv_ban_card_other);
+//						isPull = true;
+//					}
+//				}
+//				break;
+//		}
+//	}
 
 	@Override
 	public void onPause() {

@@ -74,6 +74,9 @@ import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
+import com.lansun.qmyo.utils.swipe.EightPartActivityAdapter;
+import com.lansun.qmyo.view.ActivityMyListView;
+import com.lansun.qmyo.view.ActivityMyListView.OnRefreshListener;
 import com.lansun.qmyo.view.CustomDialogProgress;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExpandTabView;
@@ -106,14 +109,19 @@ public class ActivityFragment extends BaseFragment {
 
 	int index = 0;
 	private ActivityList activityList;
-	private SearchAdapter activityAdapter;
+//	private SearchAdapter activityAdapter;
+	private EightPartActivityAdapter activityAdapter;
 	private ArrayList<HashMap<String, Object>> shopDataList = new ArrayList<HashMap<String, Object>>();
 
 	private HashMap<Integer, View> mViewArray = new HashMap<Integer, View>();
 	private HashMap<Integer, String> holder_button = new HashMap<Integer, String>();
 
-	@InjectView(binders = @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick"), down = true, pull = true)
-	private MyListView lv_activity_list;
+/*	@InjectView(binders = @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick"), down = true, pull = true)
+	private MyListView lv_activity_list;*/
+	
+	@InjectView
+	private ActivityMyListView lv_activity_list;
+	
 
 	/**
 	 * 是否为新品曝光
@@ -165,8 +173,8 @@ public class ActivityFragment extends BaseFragment {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_activity, null);
 		
-		PullToRefreshManager.getInstance().headerEnable();
-		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//		PullToRefreshManager.getInstance().headerEnable();
+//		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 		
 		Handler_Inject.injectFragment(this, rootView);//Handler_Inject就会去调用invoke，invoke中会调用Inject_View,而Inject_View中又会调用applyTo()
 
@@ -176,6 +184,118 @@ public class ActivityFragment extends BaseFragment {
 		filter.addAction("com.lansun.qmyo.refreshTheIcon");
 		getActivity().registerReceiver(broadCastReceiver, filter);
 		
+		lv_activity_list.setOnRefreshListener(new OnRefreshListener() {
+			
+			@Override
+			public void onRefreshing() {
+				if (activityList != null) {
+						refreshParams = new LinkedHashMap<>();
+
+						if (isPosition) {
+							refreshParams.put("location", GlobalValue.gps.toString());
+						}
+						if (IsNew) {
+							refreshParams.put("type", "new");
+						}else{
+							refreshParams.put("type", type);
+						}
+						//refreshParams.put("distance", distance);
+						refreshParams.put("site", getSelectCity()[0]);
+						/*refreshParams.put("site", "310000");//默认先只跑上海市版本*/	
+						try {
+							refreshParams.put("position", URLEncoder.encode(
+									position_bussness, "utf-8"));
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						}
+						refreshParams.put("service", HODLER_TYPE);
+						refreshParams.put("intelligent", intelligentStr);
+						refreshParams.put("query", "");
+						isDownChange = true;//下拉更新的标志
+						
+						//此时的下拉应该是在上一次的距离上进行的刷新操作
+						refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_activity_list);
+						
+						lv_activity_list.removeFooterView(emptyView);//不能忘了去除底部的emptyView
+						
+						/*lv_activity_list.invalidate();*/
+				}else{
+					CustomToast.show(activity, "ti", "activityList == null");
+				}
+			}
+			
+			@Override
+			public void onLoadingMore() {
+				if (activityList != null) {
+					/*if (TextUtils.isEmpty(activityList.getNext_page_url())) {//下一页为空的时候，加上footerview*/
+					if (activityList.getNext_page_url()== "null"||TextUtils.isEmpty(activityList.getNext_page_url())) {
+						//当获取到的活动列表的数目少于10条时，顺带给listView 底部加上一个emptyView
+						try{
+							lv_activity_list.removeFooterView(emptyView);
+						}catch(Exception e ){
+						}
+						//当我是在无网络环境的状态下，并且已经展示出网络获取失败的界面效果下，此时在进行
+						//...在添加上无望的操作时，我们可以将其上拉的操作禁止掉
+						lv_activity_list.addFooterView(emptyView);
+						lv_activity_list.onLoadMoreOverFished();
+//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//						PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
+						CustomToast.show(activity, "到底啦！", "小迈会加油搜集更多惊喜哦");
+
+					} else {
+						/* 下面这一步代码应该耽误了半天时间
+						 * PullToRefreshManager.getInstance().onFooterRefreshComplete();
+						 */
+						refreshParams = new LinkedHashMap<>();
+						refreshParams.put("location",GlobalValue.gps.toString());
+						//定位成功后,则将location拼接到refreshParams中,但目前暂时将其关闭,对外不打开
+						if (isPosition = true) {
+							refreshParams.put("location",GlobalValue.gps.toString());
+						}
+						// params.put("distance", distance);
+						refreshParams.put("site", getSelectCity()[0]);
+						/*refreshParams.put("site", "310000");//默认只有上海城市*/	
+
+						try {
+							refreshParams.put("position", URLEncoder.encode(position_bussness, "utf-8"));
+							
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						}
+						
+						/*try {
+							position_bussnessAfterEncode = URLEncoder.encode(position_bussness, "utf-8");
+							
+						} catch (UnsupportedEncodingException e) {
+						}
+						refreshParams.put("position",position_bussnessAfterEncode);*/
+						
+						refreshParams.put("service", HODLER_TYPE);
+						
+						//缺少一个智能筛选的参数
+						refreshParams.put("intelligent", intelligentStr);
+
+						/**
+						 * 处理一下nextPageUrl 的参数
+						 */
+						String next_page_url = activityList.getNext_page_url();
+						int lastIndexOfEqualCode = next_page_url.lastIndexOf("=");
+						String page = next_page_url.substring(lastIndexOfEqualCode+1, next_page_url.length());
+						LogUtils.toDebugLog("page", "page的页数为：  "+ page);
+						refreshParams.put("page", page);
+						
+						//更新当前页面的下一个页面时,前面的数据不应该被取消掉,应该拼接在后面
+						/**
+						 * 刷新下一个页面，需要将nextPageUrl中的内容进行截取出来
+						 */
+						/*refreshCurrentList(activityList.getNext_page_url(),null, 4, lv_activity_list);*/
+						refreshCurrentList(GlobalValue.URL_ALL_ACTIVITY ,refreshParams, 4, lv_activity_list);
+						
+						lv_activity_list.setNoHeader(true);
+					}
+				}
+			}
+		});
 		
 		
 		return rootView;
@@ -211,9 +331,7 @@ public class ActivityFragment extends BaseFragment {
 	private int type_index;
 
 	private IntentFilter filter;
-
 	private ActivityRefreshBroadCastReceiver broadCastReceiver;
-
 	private String position_bussnessAfterEncode;
 
 	@InjectInit
@@ -360,7 +478,7 @@ public class ActivityFragment extends BaseFragment {
 	private void itemClick(AdapterView<?> arg0, View arg1, int position,
 			long arg3) {
 		if (shopDataList.size() > 0) {
-			HashMap<String, Object> item = shopDataList.get(position);
+			HashMap<String, Object> item = shopDataList.get(position-1);
 			String activityId = item.get("activityId").toString();
 			String shopId = item.get("shopId").toString();
 			EventBus bus = EventBus.getDefault();
@@ -700,7 +818,7 @@ public class ActivityFragment extends BaseFragment {
 					activityAdapter.notifyDataSetChanged();
 					activityAdapter=null;
 				}
-				PullToRefreshManager.getInstance().footerEnable();
+//				PullToRefreshManager.getInstance().footerEnable();
 				loadActivityList();
 				onRefresh(viewMiddle, showText);
 			}
@@ -736,7 +854,7 @@ public class ActivityFragment extends BaseFragment {
 					activityAdapter.notifyDataSetChanged();
 					activityAdapter=null;
 				}
-				PullToRefreshManager.getInstance().footerEnable();
+//				PullToRefreshManager.getInstance().footerEnable();
 				loadActivityList();
 				onRefresh(viewLeft, showText);
 			}
@@ -778,7 +896,7 @@ public class ActivityFragment extends BaseFragment {
 					activityAdapter.notifyDataSetChanged();
 					activityAdapter=null;
 				}
-				PullToRefreshManager.getInstance().footerEnable();
+//				PullToRefreshManager.getInstance().footerEnable();
 				loadActivityList();
 				onRefresh(viewLeft2, showText);
 			}
@@ -805,7 +923,7 @@ public class ActivityFragment extends BaseFragment {
 					activityAdapter=null;
 				}
 				
-				PullToRefreshManager.getInstance().footerEnable();
+//				PullToRefreshManager.getInstance().footerEnable();
 				loadActivityList();
 				onRefresh(viewRight, showText);
 			}
@@ -830,7 +948,7 @@ public class ActivityFragment extends BaseFragment {
 				cPd.show();
 			}
 		}
-
+		lv_activity_list.setVisibility(View.INVISIBLE);
 		// 活动列表
 		refreshParams = new LinkedHashMap<>();
 		if (getCurrentCity()[0].equals(getSelectCity()[0])) {
@@ -879,10 +997,10 @@ public class ActivityFragment extends BaseFragment {
 	 */
 	@InjectHttp
 	private void result(ResponseEntity r) {
-		PullToRefreshManager.getInstance().footerEnable();
-		PullToRefreshManager.getInstance().headerEnable();
-		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-		PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//		PullToRefreshManager.getInstance().footerEnable();
+//		PullToRefreshManager.getInstance().headerEnable();
+//		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//		PullToRefreshManager.getInstance().onFooterRefreshComplete();
 
 
 		if (r.getStatus() == FastHttp.result_ok) {
@@ -1029,6 +1147,10 @@ public class ActivityFragment extends BaseFragment {
 			case 4:// 活动列表
 				//TODO
 				
+				lv_activity_list.onRefreshFinshed(true);
+				lv_activity_list.onLoadMoreFished();
+				lv_activity_list.setNoHeader(false);
+				
 				eightPartToResponseCurrentTimeMillis = System.currentTimeMillis();
 				Log.d("八大板块测试", "八大板块页面去访问数据现已拿到数据内容的时间：  "+ eightPartToResponseCurrentTimeMillis);
 
@@ -1039,7 +1161,10 @@ public class ActivityFragment extends BaseFragment {
 					cPd.dismiss();
 					cPd = null;
 				}
-
+				
+				lv_activity_list.setVisibility(View.VISIBLE);
+				
+				
 				try{
 					lv_activity_list.removeFooterView(emptyView);
 				}catch(Exception e ){
@@ -1082,8 +1207,10 @@ public class ActivityFragment extends BaseFragment {
 					}
 
 					if (activityAdapter == null) {
-						activityAdapter = new SearchAdapter(lv_activity_list,
-								shopDataList, R.layout.activity_search_item);
+						/*activityAdapter = new SearchAdapter(lv_activity_list,
+								shopDataList, R.layout.activity_search_item);*/
+						
+						activityAdapter = new EightPartActivityAdapter(activity,shopDataList);
 						
 						//expandTabViewButtomLine.setVisibility(View.VISIBLE);//当拿到数据加载到ListView上后，再将下面的Line线条展示出来
 						
@@ -1098,6 +1225,8 @@ public class ActivityFragment extends BaseFragment {
 								
 							}finally{
 								lv_activity_list.addFooterView(emptyView);
+								CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
+								lv_activity_list.onLoadMoreOverFished();
 							}
 						}
 						lv_activity_list.setAdapter(activityAdapter);
@@ -1112,15 +1241,20 @@ public class ActivityFragment extends BaseFragment {
 								//CustomToast.show(activity, "提示", "emptyView移除失败哦");
 							}finally{
 								lv_activity_list.addFooterView(emptyView);
+								CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
+								lv_activity_list.onLoadMoreOverFished();
 								activityAdapter.notifyDataSetChanged();
+								/*activityAdapter.notifyDataSetInvalidated();*/
 								//lv_activity_list.setAdapter(activityAdapter);
 							}
 						}else{
-							activityAdapter.notifyDataSetChanged();
+							/*activityAdapter.notifyDataSetChanged();*/
+							activityAdapter.notifyDataSetInvalidated();
+							
 						}
 					}
-					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-					PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 
 				} else {//因为上拉前去获取到的数据为null，此时需要将之前的值保留住并展示
 					//lv_activity_list.setAdapter(null);
@@ -1135,10 +1269,11 @@ public class ActivityFragment extends BaseFragment {
 					}catch(Exception e ){
 					}
 					lv_activity_list.addFooterView(emptyView);
+					lv_activity_list.onLoadMoreOverFished();
 					lv_activity_list.setAdapter(activityAdapter);
 					
-					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-					PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 
 				}
 				//endProgress();
@@ -1159,7 +1294,10 @@ public class ActivityFragment extends BaseFragment {
 			}//r.getKey() < 4 的if
 
 
-		} else {												//如果服务器没有返回需要值回来 ---->网络未连接上外部网络//TODO
+		} else {	//如果服务器没有返回需要值回来 ---->网络未连接上外部网络//TODO
+			
+			LogUtils.toDebugLog("debug", r.toString());
+			
 			progress_text.setText(R.string.net_error_refresh);
 			//针对在断网后再次点击上部筛选栏的自己菜单时，做出的重复添加无效的 noNetworkView界面操作
 			try{
@@ -1175,10 +1313,13 @@ public class ActivityFragment extends BaseFragment {
 	
 					//setNetworkView();
 					noNetworkView = setNetworkView();
+					lv_activity_list.setVisibility(View.VISIBLE);
+					lv_activity_list.onLoadMoreOverFished();
 					lv_activity_list.addFooterView(noNetworkView);
+					
 					//此时可断开上拉的操作
-					PullToRefreshManager.getInstance().footerUnable();
-					PullToRefreshManager.getInstance().headerUnable();
+//					PullToRefreshManager.getInstance().footerUnable();
+//					PullToRefreshManager.getInstance().headerUnable();
 	
 				}else{//注意下面的两个判断的安放顺序
 	
@@ -1188,8 +1329,8 @@ public class ActivityFragment extends BaseFragment {
 				    	((AnimationDrawable)iv_gif_loadingprogress.getDrawable()).start();*/
 						noNetworkView = setNetworkView();
 						lv_activity_list.addFooterView(noNetworkView);
-						PullToRefreshManager.getInstance().footerUnable();
-						PullToRefreshManager.getInstance().headerUnable();
+//						PullToRefreshManager.getInstance().footerUnable();
+//						PullToRefreshManager.getInstance().headerUnable();
 						isFromNoNetworkViewTip = false;
 						return;
 					}
@@ -1198,7 +1339,6 @@ public class ActivityFragment extends BaseFragment {
 						/*lv_activity_list.addFooterView(noNetworkView);
 						PullToRefreshManager.getInstance().footerUnable();*/
 						justFirstClick = true;
-	
 					}
 				}
 		}
@@ -1206,9 +1346,8 @@ public class ActivityFragment extends BaseFragment {
 		if (pd!=null) {
 			pd.dismiss();
 		}
-		
-		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-		PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//		PullToRefreshManager.getInstance().onFooterRefreshComplete();
 	}
 
 	private void setFirstValue(String json) {
@@ -1283,8 +1422,8 @@ public class ActivityFragment extends BaseFragment {
 					//当我是在无网络环境的状态下，并且已经展示出网络获取失败的界面效果下，此时在进行
 					//...在添加上无望的操作时，我们可以将其上拉的操作禁止掉
 					lv_activity_list.addFooterView(emptyView);
-					PullToRefreshManager.getInstance().onFooterRefreshComplete();
-					PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
+//					PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//					PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
 					CustomToast.show(activity, "到底啦！", "小迈会加油搜集更多惊喜哦");
 
 				} else {
@@ -1363,8 +1502,8 @@ public class ActivityFragment extends BaseFragment {
 			shopDataList.clear();
 		}*/
 		
-		PullToRefreshManager.getInstance().headerEnable();
-		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//		PullToRefreshManager.getInstance().headerEnable();
+//		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 		super.onResume();
 
 	}
@@ -1376,8 +1515,8 @@ public class ActivityFragment extends BaseFragment {
 		v.expandtab_view.onPressBack();
 		/*shopDataList.clear();
 		activityAdapter = null;*/
-		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-		PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//		PullToRefreshManager.getInstance().onFooterRefreshComplete();
 		super.onPause();
 	}
 
@@ -1425,12 +1564,12 @@ public class ActivityFragment extends BaseFragment {
 
 	@Override
 	public void onStop() {
-		PullToRefreshManager.getInstance().headerUnable();
+//		PullToRefreshManager.getInstance().headerUnable();
 		super.onStop();
 	}
 	@Override
 	public void onDestroy() {
-		PullToRefreshManager.getInstance().headerUnable();
+//		PullToRefreshManager.getInstance().headerUnable();
 	    getActivity().unregisterReceiver(broadCastReceiver);
 		super.onDestroy();
 	}

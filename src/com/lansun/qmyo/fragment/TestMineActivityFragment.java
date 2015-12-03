@@ -39,6 +39,7 @@ import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.swipe.SwipeListMineActivityAdapter;
+import com.lansun.qmyo.utils.swipe.Utils;
 import com.lansun.qmyo.view.CustomDialogProgress;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ListViewSwipeGesture;
@@ -309,7 +310,7 @@ public class TestMineActivityFragment extends BaseFragment {
 					 */
 					if(list.getData().size()<10){
 						//TODO
-						CustomToast.show(activity, "到底啦!", "您添加的银行卡目前只有这么多");
+						CustomToast.show(activity, "到底啦！", "您只收藏了以上活动哦");
 						lv_mine_activity.onLoadMoreOverFished();
 					}
 					PullToRefreshManager.getInstance().footerUnable();
@@ -329,8 +330,9 @@ public class TestMineActivityFragment extends BaseFragment {
 				if ("true".equals(r.getContentAsString())) {
 					dataList.remove(deletePosition);
 					adapter.notifyDataSetChanged();
-					CustomToast.show(activity, getString(R.string.tip),
-							getString(R.string.delete_success));
+					/*CustomToast.show(activity, getString(R.string.tip),
+							getString(R.string.delete_success));*/
+					Utils.showToast(activity, "删除成功");
 				} else {
 					CustomToast.show(activity, getString(R.string.tip),
 							getString(R.string.delete_faild));

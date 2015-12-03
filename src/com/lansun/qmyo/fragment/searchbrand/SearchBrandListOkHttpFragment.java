@@ -4,15 +4,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.DialogInterface.OnCancelListener;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
@@ -24,10 +22,10 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewParent;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -36,23 +34,18 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
-import com.android.pc.ioc.inject.InjectBinder;
-import com.android.pc.ioc.inject.InjectListener;
-import com.android.pc.ioc.inject.InjectMethod;
 import com.android.pc.ioc.inject.InjectPullRefresh;
 import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.view.GifMovieView;
 import com.android.pc.ioc.view.PullToRefreshManager;
-import com.android.pc.ioc.view.listener.OnClick;
-import com.android.pc.ioc.view.listener.OnItemClick;
 import com.android.pc.util.Handler_Inject;
-import com.android.pc.util.Handler_Json;
 import com.google.gson.Gson;
 import com.lansun.qmyo.MainActivity;
 import com.lansun.qmyo.MainFragment;
@@ -73,15 +66,16 @@ import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.ActivityDetailFragment;
 import com.lansun.qmyo.fragment.BaseFragment;
 import com.lansun.qmyo.fragment.SearchFragment;
-import com.lansun.qmyo.fragment.SecretaryFragment;
 import com.lansun.qmyo.listener.RequestCallBack;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
+import com.lansun.qmyo.utils.swipe.EightPartActivityAdapter;
+import com.lansun.qmyo.view.ActivityMyListView;
+import com.lansun.qmyo.view.ActivityMyListView.OnRefreshListener;
 import com.lansun.qmyo.view.CustomDialogProgress;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExpandTabView;
-import com.lansun.qmyo.view.MyListView;
 import com.lansun.qmyo.view.ViewLeft;
 import com.lansun.qmyo.view.ViewMiddle;
 import com.lansun.qmyo.view.ViewRight;
@@ -96,7 +90,8 @@ import com.squareup.okhttp.Response;
 	private boolean first;
 	private ActivityList list = new ActivityList();
 	public static String defaultVisitUrl = GlobalValue.URL_ALL_ACTIVITY;
-	private SearchAdapter searchBankcardAdapter;
+	/*private SearchAdapter searchBankcardAdapter;*/
+	private EightPartActivityAdapter searchBankcardAdapter;
 
 	/**
 	 * 全部服务信息
@@ -137,8 +132,11 @@ import com.squareup.okhttp.Response;
 	private boolean isExpandTag;
 	private ArrayList<HashMap<String, Object>> datas = new ArrayList<HashMap<String, Object>>();
 
-	@InjectView(binders = @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick"), down = true, pull = true)
-	private MyListView lv_search_content;
+	/*@InjectView(binders = @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick"), down = true, pull = true)
+	private MyListView lv_search_content;*/
+	
+	@InjectView
+	private ActivityMyListView lv_search_content;
 	protected boolean allready;
 	private boolean justFirstClick = true;
 	private boolean isFromNoNetworkViewTip = false;
@@ -159,20 +157,29 @@ import com.squareup.okhttp.Response;
 			case 1:
 				endProgress();
 				lv_search_content.setVisibility(View.VISIBLE);
+				lv_search_content.onLoadMoreFished();
+				lv_search_content.onRefreshFinshed(true);
+				lv_search_content.setNoHeader(false);
 				
 				if(cPd!=null){
 					cPd.dismiss();
 					cPd = null;
 				}
 				if(searchBankcardAdapter == null){
-					searchBankcardAdapter = new SearchAdapter(lv_search_content,datas, R.layout.activity_search_item);
-					/*try{
-						lv_search_content.removeFooterView(emptyView);
-					}catch(Exception e ){
-					}*/
+					/*searchBankcardAdapter = new SearchAdapter(lv_search_content,datas, R.layout.activity_search_item);*/
+					searchBankcardAdapter = new EightPartActivityAdapter(activity,datas);
+					
 					if(list.getData().size()<10){
+						try{
+							lv_search_content.removeFooterView(emptyView);
+							lv_search_content.removeFooterView(noNetworkView);
+						}catch(Exception e ){
+							
+						}
 						lv_search_content.addFooterView(emptyView);
 						lv_search_content.setAdapter(searchBankcardAdapter);
+						CustomToast.show(activity, "到底啦！", "该关键词下暂时只有这么多内容");
+						lv_search_content.onLoadMoreOverFished();
 					}else{													//不等于list的Data数组的值大于等于10时，正常刷新
 						try{
 							lv_search_content.removeFooterView(emptyView);
@@ -186,8 +193,16 @@ import com.squareup.okhttp.Response;
 
 				}else{//searchBankcardAdapter已经存在
 					if(list.getData().size()<10){
+						try{
+							lv_search_content.removeFooterView(emptyView);
+							lv_search_content.removeFooterView(noNetworkView);
+						}catch(Exception e ){
+							
+						}
 						lv_search_content.addFooterView(emptyView);
 						searchBankcardAdapter.notifyDataSetChanged();
+						CustomToast.show(activity, "到底啦！", "该关键词下暂时只有这么多内容");
+						lv_search_content.onLoadMoreOverFished();
 					}else{
 						try{
 							lv_search_content.removeFooterView(emptyView);
@@ -198,15 +213,17 @@ import com.squareup.okhttp.Response;
 						}
 					}
 				}
-				PullToRefreshManager.getInstance().footerEnable();
-				PullToRefreshManager.getInstance().headerEnable();
-				PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-				PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//				PullToRefreshManager.getInstance().footerEnable();
+//				PullToRefreshManager.getInstance().headerEnable();
+//				PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//				PullToRefreshManager.getInstance().onFooterRefreshComplete();
 
 				break;
 			case 2:
 				
 				LogUtils.toDebugLog("Search", "搜索为空 ，底部应该出现小猫头鹰");
+				
+				lv_search_content.setNoHeader(true);
 				
 				endProgress();
 				if(cPd!=null){
@@ -218,7 +235,8 @@ import com.squareup.okhttp.Response;
 				lv_search_content.setVisibility(View.VISIBLE);
 				//进来第一次搜索即为 空
 				if(searchBankcardAdapter==null){
-					searchBankcardAdapter = new SearchAdapter(lv_search_content,datas, R.layout.activity_search_item);
+					/*searchBankcardAdapter = new SearchAdapter(lv_search_content,datas, R.layout.activity_search_item);*/
+					searchBankcardAdapter = new EightPartActivityAdapter(activity,datas);
 					//1.
 					//lv_search_content.setAdapter(searchBankcardAdapter);
 					try{
@@ -227,6 +245,8 @@ import com.squareup.okhttp.Response;
 						//lv_search_content.addFooterView(emptyView);
 					}
 					lv_search_content.addFooterView(emptyView);
+					lv_search_content.onLoadMoreOverFished();
+					
 					//2.
 					lv_search_content.setAdapter(searchBankcardAdapter);
 				}else{//之前的搜索是有值的，只不过接下来的搜索报空了而已
@@ -237,12 +257,13 @@ import com.squareup.okhttp.Response;
 						//lv_search_content.addFooterView(emptyView);
 					}
 					lv_search_content.addFooterView(emptyView);
+					lv_search_content.onLoadMoreOverFished();
 					lv_search_content.setAdapter(searchBankcardAdapter);
 					//searchBankcardAdapter.notifyDataSetChanged();
 				}
 				
-				PullToRefreshManager.getInstance().footerUnable();//拒绝此时的上拉和下拉操作
-				PullToRefreshManager.getInstance().headerUnable();
+//				PullToRefreshManager.getInstance().footerUnable();//拒绝此时的上拉和下拉操作
+//				PullToRefreshManager.getInstance().headerUnable();
 				break;
 			case 3:
 				setFirstValue();
@@ -295,8 +316,8 @@ import com.squareup.okhttp.Response;
 					//searchBankcardAdapter.notifyDataSetChanged(); //需删除此代码
 					
 					//此时可断开上拉的操作
-					PullToRefreshManager.getInstance().footerUnable();
-					PullToRefreshManager.getInstance().headerUnable();
+//					PullToRefreshManager.getInstance().footerUnable();
+//					PullToRefreshManager.getInstance().headerUnable();
 
 				}else{//注意下面的两个判断的安放顺序//TODO
 					if(isFromNoNetworkViewTip){//由ListView添加上的footerview画面点击产生的效果
@@ -305,8 +326,8 @@ import com.squareup.okhttp.Response;
 				    	((AnimationDrawable)iv_gif_loadingprogress.getDrawable()).start();*/
 						noNetworkView = setNetworkView();
 						lv_search_content.addFooterView(noNetworkView);
-						PullToRefreshManager.getInstance().footerUnable();
-						PullToRefreshManager.getInstance().headerUnable();
+//						PullToRefreshManager.getInstance().footerUnable();
+//						PullToRefreshManager.getInstance().headerUnable();
 						isFromNoNetworkViewTip = false;
 						return;
 					}
@@ -347,11 +368,20 @@ import com.squareup.okhttp.Response;
 		tv_found_secretary.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
-				/*SecretaryFragment homeFragment = new SecretaryFragment();*/
-				MainFragment fragment=new MainFragment(1);
-				FragmentEntity fEntity = new FragmentEntity();
-				fEntity.setFragment(fragment);
-				EventBus.getDefault().post(fEntity);
+				try{
+					/*SecretaryFragment homeFragment = new SecretaryFragment();*/
+					MainFragment fragment=new MainFragment(1);
+					FragmentEntity fEntity = new FragmentEntity();
+					fEntity.setFragment(fragment);
+					EventBus.getDefault().post(fEntity);
+				}catch(Exception e){
+					Toast.makeText(activity, "小迈出了个小差", Toast.LENGTH_SHORT).show();
+					
+					MainFragment fragment=new MainFragment(1);
+					FragmentEntity fEntity = new FragmentEntity();
+					fEntity.setFragment(fragment);
+					EventBus.getDefault().post(fEntity);
+				}
 			}
 		});
 		super.onCreate(savedInstanceState);
@@ -537,7 +567,7 @@ import com.squareup.okhttp.Response;
 		expandtab_view.removeAllViews();//ExpandTab终于上场了！
 
 
-		lv_search_content=(MyListView)view.findViewById(R.id.lv_search_content); 
+		lv_search_content=(ActivityMyListView)view.findViewById(R.id.lv_search_content); 
 
 		//初始化完成之后去请求网络获取所有数据
 		if(isShowFromInitData){//设计isShowFromInitData标签的原因是： 只有第一次进来时，才会有container的监听，在container没有消失的前提下，都只会走initData()方法间接地操作loadActivityList()
@@ -568,9 +598,59 @@ import com.squareup.okhttp.Response;
 //		imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
 
 		Handler_Inject.injectFragment(this, rootView);//Handler_Inject就会去调用invoke，invoke中会调用Inject_View,而Inject_View中又会调用applyTo()
-
 		//这里面就寻找并定位到ListView对象，并且涉及到搜索startSearch(),其中startSearch()中就需要将listView和progress挂上钩，言即需要将ListView找到并和progress挂上钩
 		//init();
+		
+		
+		lv_search_content.onLoadMoreOverFished();
+		lv_search_content.setOnRefreshListener(new OnRefreshListener() {
+			
+			@Override
+			public void onRefreshing() {
+				isShowDialog=false;
+				
+				startSearch(defaultVisitUrl,getSelectCity()[0], 
+						HODLER_TYPE, position_bussness, intelligentStr, type,
+						GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(), query);
+				searchBankcardAdapter = null;
+//				PullToRefreshManager.getInstance().footerEnable();
+				lv_search_content.removeFooterView(emptyView);
+			}
+			
+			@Override
+			public void onLoadingMore() {
+				isShowDialog=false;
+				if (list != null) {
+					if ("null".equals(String.valueOf(list.getNext_page_url()))||TextUtils.isEmpty(String.valueOf(list.getNext_page_url()))) {
+						try{
+							//若之前的隶属于View对象是有emptyView对象的，先将其移除掉
+							lv_search_content.removeFooterView(emptyView);
+						}catch(Exception e ){
+							
+						}finally{
+						}
+						lv_search_content.addFooterView(emptyView);
+						lv_search_content.onLoadMoreOverFished();
+						
+
+//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//						PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
+						CustomToast.show(activity, "到底啦！", "该关键词下暂时只有这么多内容");
+					} else {
+						String nextPageUrl = list.getNext_page_url();
+						lv_search_content.setNoHeader(true);
+						startSearchNext(nextPageUrl);
+						isPull = true;
+					}
+				}
+			}
+				
+		});
+		
+		
+		
+		
+		
 		getTitleBanner();
 		setListener();
 		return rootView;
@@ -1052,7 +1132,7 @@ import com.squareup.okhttp.Response;
 	@Override
 	public void onDestroy() {
 		expandtab_view.onPressBack();
-		PullToRefreshManager.getInstance().headerUnable();
+//		PullToRefreshManager.getInstance().headerUnable();
 		
 		
 		super.onDestroy();
@@ -1098,8 +1178,8 @@ import com.squareup.okhttp.Response;
 					}
 					lv_search_content.addFooterView(emptyView);
 
-					PullToRefreshManager.getInstance().onFooterRefreshComplete();
-					PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
+//					PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//					PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
 					CustomToast.show(activity, "到底啦！", "该关键词下暂时只有这么多内容");
 				} else {
 					String nextPageUrl = list.getNext_page_url();
@@ -1117,7 +1197,7 @@ import com.squareup.okhttp.Response;
 			searchBankcardAdapter = null;
 			//暂时为空
 			/*CustomToast.show(activity, "下拉操作", "现在进行下拉操作！");*/
-			PullToRefreshManager.getInstance().footerEnable();
+//			PullToRefreshManager.getInstance().footerEnable();
 			lv_search_content.removeFooterView(emptyView);
 			break;
 		}
@@ -1289,7 +1369,7 @@ import com.squareup.okhttp.Response;
 	
 	@Override
 	public void onStop() {
-		PullToRefreshManager.getInstance().headerUnable();
+//		PullToRefreshManager.getInstance().headerUnable();
 		super.onStop();
 	}
 	

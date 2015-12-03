@@ -136,7 +136,7 @@
     <string name="exit_login">退出登录</string>
     <string name="replay">回复</string>
     <string name="store">门店</string>
-    <string name="qmyo_version">迈界 V1.2.3</string>
+    <string name="qmyo_version">迈界 V1.2.6</string>
     <string name="qmyo_desc">收集世界各地惊喜\n伴随迈友走遍世界</string>
     <string name="qmyo_wx">迈界微信公众号：<Data><![CDATA[<font color="#9DC14F">qmyoclub</font>]]></Data></string>
     <string name="qmyo_net">迈界官网：<Data><![CDATA[<font color="#9DC14F">www.qmyo.com</font>]]></Data></string>
@@ -209,7 +209,7 @@
     <string name="loading_city">正在定位当前城市...</string>
     <string name="select_city">选择城市</string>
     <string name="maijie_tip">迈界小贴士</string>
-    <string name="search_card_tip">在您的银行卡正面左上角印有所持卡的全称，\n \t\t 也可以输入相关银行卡名称搜索筛选</string>
+    <string name="search_card_tip">在您的银行卡正面左上角印有所持卡的全称\n \t\t也可以输入相关银行名称进行搜索</string>
     <string name="search">搜索</string>
     <string name="add_bankCard">您是否要添加该银行卡？</string>
     <string name="delete_success">删除成功</string>
@@ -256,7 +256,12 @@
     <string name="handlecard">办卡推荐</string>
     <string name="switch_city">您上次城市与此次城市不同是否切换为当前城市？</string>
     <string name="select_bank_card_faild">选取银行卡失败，请重新尝试</string>
-    <string name="select_bank_card_success">选取银行卡成功</string>
+    
+    <string name="select_bank_card_success">换卡成功哦</string>
+    <string name="search_bankcard_act">开始查询您的银行卡活动吧</string>
+    
+    
+    
     <string name="click_me_change_head">点我替换头像</string>
     <string name="secretary_summary">Hello，亲爱的迈友您好\n 我就是您的私人秘书</string>
     <string name="take_secretary_name">先给我取个好玩的名字吧</string>

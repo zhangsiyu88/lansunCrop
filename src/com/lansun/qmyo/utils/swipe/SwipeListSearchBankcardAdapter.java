@@ -65,7 +65,7 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 
 
-public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<HashMap<String, String>, ViewHolder>
+public class SwipeListSearchBankcardAdapter extends  BaseAdapter{//LazyAdapter<HashMap<String, String>, ViewHolder>
 
 /*	public SwipeListMineBankcardAdapter(Activity activity,ListView listView,
 			ArrayList<HashMap<String, String>> dataList, int layout_id) {
@@ -73,8 +73,6 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 		mList = dataList;
 		mContext = listView.getContext();
 	}*/
-
-
 
 	private Context mContext;
 	private LayoutInflater mInflater ;
@@ -100,6 +98,7 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 			.displayer(new FadeInBitmapDisplayer(300))
 			.displayer(new RoundedBitmapDisplayer(10)).build();
 	private Fragment mFragment;
+	private boolean isSlide = true;
 	
 
 	public void setHasAdd(boolean b) {
@@ -112,37 +111,36 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 	}
 	
 
-	public SwipeListMineBankcardAdapter(Context mContext) {
+	public SwipeListSearchBankcardAdapter(Context mContext) {
 		super();
 		this.mContext = mContext;
 		mInflater = LayoutInflater.from(mContext);
 	}
 
-	public SwipeListMineBankcardAdapter(Activity activity,
+	public SwipeListSearchBankcardAdapter(Activity activity,
 			ArrayList<HashMap<String, String>> dataList) {//调用的是 此构造方法
 		super();
 		this.mContext = activity;
 		this.mList = dataList;
 		mInflater = LayoutInflater.from(activity);
-		Handler_Inject.injectFragment(SwipeListMineBankcardAdapter.this, null);
+		Handler_Inject.injectFragment(SwipeListSearchBankcardAdapter.this, null);
 	}
 	
 	
-	public SwipeListMineBankcardAdapter(ListView listView,
+	public SwipeListSearchBankcardAdapter(ListView listView,
 			ArrayList<HashMap<String, String>> dataList, int layout_id) {
 		
 		
 	}
-	public SwipeListMineBankcardAdapter(ListView listView,
+	public SwipeListSearchBankcardAdapter(ListView listView,
 			ArrayList<HashMap<String, String>> dataList, int layout_id, boolean isNotNeedChange) {
 	
-		
 		mIsNotChanged = isNotNeedChange;
 		Log.d("mIsNotChanged", mIsNotChanged+"");
 		
 	}
 	
-	public SwipeListMineBankcardAdapter(Activity activity,
+	public SwipeListSearchBankcardAdapter(Activity activity,
 			ArrayList<HashMap<String, String>> dataList, int layout_id, boolean isNotNeedChange) {
 		
 		mIsNotChanged = isNotNeedChange;
@@ -150,12 +148,12 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 		this.mContext = activity;
 		this.mList = dataList;
 		mInflater = LayoutInflater.from(activity);
-		Handler_Inject.injectFragment(SwipeListMineBankcardAdapter.this, null);
+		Handler_Inject.injectFragment(SwipeListSearchBankcardAdapter.this, null);
 		Log.d("mIsNotChanged", mIsNotChanged+"");
 		
 	}
 
-	public SwipeListMineBankcardAdapter(ListView listView,ArrayList<HashMap<String, String>> dataList,
+	public SwipeListSearchBankcardAdapter(ListView listView,ArrayList<HashMap<String, String>> dataList,
 			int layout_id,  boolean isNotNeedChange,boolean isFromRegisterAndHaveNoBankcard) {
 		
 		mIsNotChanged = isNotNeedChange;
@@ -164,6 +162,54 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 
 	
 	
+	public SwipeListSearchBankcardAdapter(Activity activity,
+			ArrayList<HashMap<String, String>> dataList,
+			int activityBankCardItemSwipe, boolean isNotNeedChange,
+			boolean isFromRegisterAndHaveNoBankcard) {
+		
+		this.mContext = activity;
+		this.mList = dataList;
+		mInflater = LayoutInflater.from(activity);
+		Handler_Inject.injectFragment(SwipeListSearchBankcardAdapter.this, null);
+		mIsNotChanged = isNotNeedChange;
+		mIsFromRegisterAndHaveNoBankcard = isFromRegisterAndHaveNoBankcard;
+		
+	}
+
+
+	public SwipeListSearchBankcardAdapter(boolean b, Activity activity,
+			ArrayList<HashMap<String, String>> dataList,
+			int activityBankCardItemSwipe, boolean isNotNeedChange) {
+		
+		mIsNotChanged = isNotNeedChange;
+		this.mContext = activity;
+		this.mList = dataList;
+		mInflater = LayoutInflater.from(activity);
+		this.isSlide = b;
+		Handler_Inject.injectFragment(SwipeListSearchBankcardAdapter.this, null);
+	}
+	
+	
+	
+
+
+	public SwipeListSearchBankcardAdapter(boolean b, Activity activity,
+			ArrayList<HashMap<String, String>> dataList,
+			int activityBankCardItemSwipe, boolean isNotNeedChange,
+			boolean isFromRegisterAndHaveNoBankcard) {
+		
+		this.isSlide = b;
+		this.mContext = activity;
+		this.mList = dataList;
+		mInflater = LayoutInflater.from(activity);
+		mIsNotChanged = isNotNeedChange;
+		mIsFromRegisterAndHaveNoBankcard = isFromRegisterAndHaveNoBankcard;
+		Handler_Inject.injectFragment(SwipeListSearchBankcardAdapter.this, null);
+		
+		
+	}
+
+
 	@Override
 	public int getCount() {
 		return mList.size();
@@ -194,60 +240,63 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 		if (convertView != null) {
 			viewHold = (ViewHolder) convertView.getTag();
 		}else {
-			convertView = (SwipeLayout)mInflater.inflate(R.layout.activity_bank_card_item_swipe, null);
+			convertView = (SwipeLayout)mInflater.inflate(R.layout.activity_bank_card_item_swipe_search, null);
 			
 			//Handler_Inject.injectFragment(this, convertView);
 			viewHold = ViewHolder.fromValues(convertView);
 			convertView.setTag(viewHold);
 		}
+		
 		final SwipeLayout view = (SwipeLayout) convertView;
-		Handler_Inject.injectFragment(this, convertView);
+		Handler_Inject.injectFragment(SwipeListSearchBankcardAdapter.this, convertView);
 		
 		view.close(false, false);
 		
-		view.getFrontView().setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				
-				final HashMap<String, String> map = mList.get(position);
-				DialogUtil.createTipAlertDialog(mContext, R.string.is_switch_card,
-						new TipAlertDialogCallBack() {
-					
-					private String bankCardId;
-	 
-					@Override
-					public void onPositiveButtonClick(
-							DialogInterface dialog, int which) {
-						
-						bankCardId = map.get("id");
-						InternetConfig config = new InternetConfig();
-						config.setKey(6);
-						HashMap<String, Object> head = new HashMap<>();
-						head.put("Authorization","Bearer " + App.app.getData("access_token"));
-						config.setHead(head);
-						LinkedHashMap<String, String> params = new LinkedHashMap<>();
-						params.put("bankcard_id", bankCardId);
-						
-						
-						//使用post方式去提交，是选中其中的卡作为选中卡 
-					    FastHttpHander.ajax(GlobalValue.URL_SELECT_BANKCARD, params,config, SwipeListMineBankcardAdapter.this);
-						
-						//mList.clear();
-						//this = null;
-						
-						Handler_Inject.injectFragment(SwipeListMineBankcardAdapter.this, view);
-						
-						dialog.dismiss();
-					}
-					@Override
-					public void onNegativeButtonClick(
-							DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
-					
-				}
-		});
+//		view.getFrontView().setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				
+//				final HashMap<String, String> map = mList.get(position);
+//				DialogUtil.createTipAlertDialog(mContext, R.string.is_switch_card,
+//						new TipAlertDialogCallBack() {
+//					
+//					private String bankCardId;
+//	 
+//					@Override
+//					public void onPositiveButtonClick(
+//							DialogInterface dialog, int which) {
+//						
+//						bankCardId = map.get("id");
+//						InternetConfig config = new InternetConfig();
+//						config.setKey(6);
+//						HashMap<String, Object> head = new HashMap<>();
+//						head.put("Authorization","Bearer " + App.app.getData("access_token"));
+//						config.setHead(head);
+//						LinkedHashMap<String, String> params = new LinkedHashMap<>();
+//						params.put("bankcard_id", bankCardId);
+//						
+//						
+//						//使用post方式去提交，是选中其中的卡作为选中卡 
+//					    FastHttpHander.ajax(GlobalValue.URL_SELECT_BANKCARD, params,config, SwipeListSearchBankcardAdapter.this);
+//						
+//						//mList.clear();
+//						//this = null;
+//						
+//						Handler_Inject.injectFragment(SwipeListSearchBankcardAdapter.this, view);
+//						
+//						dialog.dismiss();
+//					}
+//					@Override
+//					public void onNegativeButtonClick(
+//							DialogInterface dialog, int which) {
+//						dialog.dismiss();
+//					}
+//				});
+//					
+//				}
+//		});
+		
+		
 		if (!TextUtils.isEmpty(head)) {
 			download(viewHold.iv_bank_card_head, head);
 		}
@@ -260,7 +309,19 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 		if (!hasAdd) {
 			viewHold.iv_bank_card_add.setVisibility(View.GONE);
 		}
-		view.setSwipeListener(mSwipeListener);
+		
+		
+		if(isSlide ){
+			view.setSwipeListener(mSwipeListener);
+		}else{
+			/*view.setSwipeListener(null);*/
+			/*view.close();*/
+			view.setGestureValid(true);
+		}
+//		view.setSwipeListener(mSwipeListener);
+		
+		
+		
 		
 		// 弹出详情框
 		viewHold.iv_bank_card_head.setOnClickListener(new OnClickListener() {
@@ -317,11 +378,11 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 									}
 									
 									
-									FastHttpHander.ajax(GlobalValue.URL_BANKCARD_ADD,params, config,this);
+									FastHttpHander.ajax(GlobalValue.URL_BANKCARD_ADD,params, config,SwipeListSearchBankcardAdapter.this);
 									/*FastHttpHander.ajaxForm(GlobalValue.URL_BANKCARD_ADD,params, null, config,BankCardAdapter.this);*/
 									Log.i("警报警报！！","添加进来的卡的id为： "+ cardId);
 									
-									Handler_Inject.injectFragment(this, null);
+									Handler_Inject.injectFragment(SwipeListSearchBankcardAdapter.this, null);
 									dialog.dismiss();
 								}
 
@@ -451,7 +512,7 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 								FastHttpHander.ajax(GlobalValue.URL_BANKCARD_ADD,  params, config, this);
 								Log.i("警报警报！！","添加进来的卡的id为： "+ cardId);
 								
-								Handler_Inject.injectFragment(SwipeListMineBankcardAdapter.this, null);
+								Handler_Inject.injectFragment(SwipeListSearchBankcardAdapter.this, null);
 								 
 								isEmbarrassingStatue = true;
 								dialog.dismiss();
@@ -603,7 +664,6 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 	
 	}
 	
-	
 
 	OnClickListener onActionClick = new OnClickListener() {
 
@@ -617,16 +677,15 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 				
 			} else if (id == R.id.bt_delete) {
 				closeAllLayout();
-				
+				Utils.showToast(mContext, "删除此卡！");
 				
 				deletePosition = p;
 				
-				
 				HashMap<String, String> map = mList.get(deletePosition);
 				String deleteId = map.get("id");
+
 				mList.remove(deletePosition);//这就是为什么你在点删除后,可以看到立马删除的效果体现出来,
 				//但实际未删除服务器上的数据
-				
 
 				HttpUtils httpUtils = new HttpUtils();
 				RequestParams requestParams = new RequestParams();
@@ -639,10 +698,8 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 					public void onSuccess(ResponseInfo arg0) {
 						if ("true".equals(arg0.result)) {
 							//很明显,前面的删除银行卡操作是没有起到作用的,若有作用至少是会有toast提醒
-							/*CustomToast.show(mContext, mContext.getString(R.string.tip),
-									mContext.getString(R.string.delete_success));*/
-							Utils.showToast(mContext, "删除成功");
-							
+							CustomToast.show(mContext, mContext.getString(R.string.tip),
+									mContext.getString(R.string.delete_success));
 						} else {
 							System.out.println("获取到返回值,但显示是删除失败!");
 							CustomToast.show(mContext, mContext.getString(R.string.tip),
