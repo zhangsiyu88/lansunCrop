@@ -353,7 +353,7 @@ public class MainActivity extends FragmentActivity {
 		 * 离开程序时，将定位服务给禁掉
 		 */
 		stopService(locationService);
-		LogUtils.toDebugLog("locatio", "locationService被停止掉");
+		LogUtils.toDebugLog("location", "locationService被停止掉");
 		
 		if(App.app.getData("isExperience")=="true"){
 			System.out.println("走到了onDestory!");

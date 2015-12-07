@@ -3,7 +3,11 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -18,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import cn.jpush.android.util.ac;
 
 import com.android.pc.ioc.a.demo.MainActivity;
 import com.android.pc.ioc.event.EventBus;
@@ -41,6 +47,7 @@ import com.lansun.qmyo.domain.Token;
 import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.domain.information.InformationCount;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.fragment.HomeFragment.HomeRefreshBroadCastReceiver;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryCardShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryInvestmentShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryLifeShowFragment;
@@ -52,6 +59,7 @@ import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.override.CircleImageView;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.view.CustomToast;
 import com.squareup.okhttp.Callback;
@@ -62,6 +70,12 @@ public class SecretaryFragment extends BaseFragment {
 	private String secretary_size;
 	private CircleImageView iv_secretary_head;
 	private LinearLayout ll_secretary_setting;
+	private boolean justOneTimes = true;
+	
+	/*
+	 * 区别 由点击底部按钮进入当前页面和自动生成
+	 */
+	private boolean clickOpen = false;
 	@InjectAll
 	Views v;
 	class Views {
@@ -94,30 +108,48 @@ public class SecretaryFragment extends BaseFragment {
 									{ R.drawable.details_card01, R.drawable.details_cannot } };
 	private Fragment fragment;
 	private Handler handleOk=new Handler(){
+		
+
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
 			case 0:
 				if (isExperience()) {
 					setSecretaryInformation();
 				}else {
-					if ("false".equals(GlobalValue.mySecretary.getHas())) {
-						final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
-						dialog.show();
-						dialog.setContentView(R.layout.dialog_setting_secretary);
-						Window window = dialog.getWindow();
-						window.findViewById(R.id.setting_now).setOnClickListener(new OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								dialog.dismiss();
-								FragmentEntity entity=new FragmentEntity();
-								Fragment fragment=new SecretarySettingFragment();
-								entity.setFragment(fragment);
-								EventBus.getDefault().post(entity);
-							}
-						});
-					}else {
-						setSecretaryInformation();
+					//只有因为点击私人秘书的页面，才可以弹出提示窗口
+					if(clickOpen){
+						
+						//并无设置秘书信息时，需要将  立即登录设置私人秘书的提示界面弹出
+						if ("false".equals(GlobalValue.mySecretary.getHas())) {
+							final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
+							dialog.show();
+							
+							/**
+							 * 提示去设置私人秘书
+							 */
+							dialog.setContentView(R.layout.dialog_setting_secretary);
+							
+							Window window = dialog.getWindow();
+							window.findViewById(R.id.setting_now).setOnClickListener(new OnClickListener() {
+								@Override
+								public void onClick(View v) {
+									dialog.dismiss();
+									FragmentEntity entity=new FragmentEntity();
+									Fragment fragment=new SecretarySettingFragment();
+									entity.setFragment(fragment);
+									EventBus.getDefault().post(entity);
+								}
+							});
+						}else {
+							setSecretaryInformation();
+						}
+						
 					}
+					
+					
+					
+					
+					
 				}
 				break;
 			case 1:
@@ -139,25 +171,32 @@ public class SecretaryFragment extends BaseFragment {
 
 		
 	};
-	private void setSecretaryInformation() {
+	private SecretaryFragmentBroadCastReceiver broadCastReceiver;
+	private IntentFilter filter;
+	private View rootView;
+	private void setSecretaryInformation(){
 		v.tv_secretary_name.setText(GlobalValue.mySecretary.getName());
-		loadPhoto(GlobalValue.mySecretary.getAvatar(),
-				iv_secretary_head);
+		loadPhoto(GlobalValue.mySecretary.getAvatar(),iv_secretary_head);
 	};
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
-		View rootView = inflater.inflate(R.layout.activity_secretary, container,false);
+		rootView = inflater.inflate(R.layout.activity_secretary, container,false);
 		Handler_Inject.injectFragment(this, rootView);
+		
+		
+		
 		v.iv_secretary_icon.setPressed(true);
-		initView(rootView);
-		setListener();
+	    initView(rootView);
+		/*setListener();*/
 		return rootView;
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
+		
 	}
 	private void setListener() {
 		iv_secretary_head.setOnClickListener(new OnClickListener() {
@@ -258,15 +297,9 @@ public class SecretaryFragment extends BaseFragment {
 	private void initView(View view) {
 		iv_secretary_head=(CircleImageView)view.findViewById(R.id.iv_secretary_head);
 		ll_secretary_setting=(LinearLayout)view.findViewById(R.id.ll_secretary_setting);
+		
 		if (!isExperience()) {
 			OkHttp.asyncGet(GlobalValue.URL_SECRETARY_SAVE, "Authorization","Bearer "+App.app.getData("access_token"), null, new Callback() {
-			
-			/* 下面这一串仅供测试使用
-			 * OkHttp.asyncGet(GlobalValue.URL_SECRETARY_SAVE, "Authorization","Bearer "+"eyJ0eXAiOiJKV1" +
-					"QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxNDU4IiwiaXNzIjoiaHR0cDpcL1wvYXBwYXBpLnFteW8uY29tXC" +
-					"90b2tlblwvMXlsdXdkam9kdiIsImlhdCI6IjE0NDY2MjQ3MDYiLCJleHAiOiIxNDQ2NjI4MzA2IiwibmJmIjoiMT" +
-					"Q0NjYyNDcwNiIsImp0aSI6Ijc3ZWZhNjYwN2EwMWNiYjE2NThhYmM4NzM1YjgwMTI5In0.jJJfDUGde12iPkDW-GMS" +
-					"l9eTqc2gp7meSS6z0DwTv0Y", null, new Callback() {*/
 				@Override
 				public void onResponse(Response response) throws IOException {
 					if (response.isSuccessful()) {
@@ -276,7 +309,6 @@ public class SecretaryFragment extends BaseFragment {
 						handleOk.sendEmptyMessage(0);
 					}else {
 						handleOk.sendEmptyMessage(1);
-						
 					}
 				}
 				@Override
@@ -310,6 +342,13 @@ public class SecretaryFragment extends BaseFragment {
 		v.iv_secretary_icon.setPressed(true);
 		v.tv_secretary_icon.setTextColor(getResources().getColor(
 				R.color.app_green2));
+		
+		broadCastReceiver = new SecretaryFragmentBroadCastReceiver();
+		System.out.println("私人秘书 页面 注册广播 ing");
+		filter = new IntentFilter();
+		filter.addAction("com.lansun.qmyo.checkMySecretary");
+		filter.addAction("com.lansun.qmyo.refreshMySecretary");
+		getActivity().registerReceiver(broadCastReceiver, filter);
 
 	}
 
@@ -323,6 +362,7 @@ public class SecretaryFragment extends BaseFragment {
 		/*	v.iv_secretary_icon.setPressed(false);
 		v.tv_secretary_icon.setTextColor(getResources().getColor(
 				R.color.text_nomal));*/
+		justOneTimes = true;
 		super.onPause();
 	}
 
@@ -384,8 +424,48 @@ public class SecretaryFragment extends BaseFragment {
 				Token token = Handler_Json.JsonToBean(Token.class,r.getContentAsString());
 				CustomToast.show(activity, "权限更新成功", "已获取最新令牌");
 				App.app.setData("access_token", token.getToken());
+				
+				/*
+				 出现场景： 原本存在本地的token过期，当app启动时开启服务，去拿token，但此时由于与服务器访问的交互信息的过程较漫长，
+				导致出现了拿着原本存在本地的token前去访问，此时页面正在或已经生成完毕，即使更新了本地的token后，由于仍未刷新首页的数据，
+				故而首页出现刷不出数据的问题
+				解决方案：  再次通知首页重新获取数据，局部刷新界面
+				*/
+				getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshHome"));
+				LogUtils.toDebugLog("令牌更新后", "发送广播给首页刷新的推荐列表内容");
 				break;
 			}
 		}
+	}
+	
+	
+	 class SecretaryFragmentBroadCastReceiver extends BroadcastReceiver{
+
+		@Override
+		public void onReceive(Context ctx, Intent intent) {
+			
+//			if(justOneTimes){
+				if(intent.getAction().equals("com.lansun.qmyo.checkMySecretary")){
+					System.out.println("秘书页收到来自MainFragment的提示检测私人秘书信息的广播了");
+					
+					clickOpen = true;//由点击   进入此页面的  标签
+					initView(rootView);
+					setListener();
+					justOneTimes = false;
+				}
+//			}
+			if(intent.getAction().equals("com.lansun.qmyo.refreshMySecretary")){
+				
+				setSecretaryInformation();
+
+
+			}
+		}
+	 }
+	 
+	 @Override
+	public void onDestroy() {
+		 activity.unregisterReceiver(broadCastReceiver);
+		super.onDestroy();
 	}
 }

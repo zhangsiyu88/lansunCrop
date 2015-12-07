@@ -33,6 +33,7 @@ import com.lansun.qmyo.fragment.secretary_detail.SecretaryShoppingShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryStudentShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryTravelShowFragment;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CloudView;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.MainFragment;
@@ -706,31 +707,64 @@ public class RegisterFragment extends BaseFragment{
 							fragment.setArguments(bundle);
 						}else if("ActivityDetailFragment".equals(fragment_name)){
 							if(isTheSameCardAsUsual){
-								fragment=new ActivityDetailFragment();
-								Bundle bundle=new Bundle();
-								bundle.putString("shopId", App.app.getData("shopId"));
-								bundle.putString("activityId", App.app.getData("activityId"));
-								bundle.putString("refreshTip", "true");
-								fragment.setArguments(bundle);
+//								fragment=new ActivityDetailFragment();
+//								Bundle bundle=new Bundle();
+//								bundle.putString("shopId", App.app.getData("shopId"));
+//								bundle.putString("activityId", App.app.getData("activityId"));
+//								if(App.app.getData("isReportInActivityDetailPage").equals("true")){
+//									App.app.setData("isReportInActivityDetailPage","");
+//								}else{
+//									bundle.putString("refreshTip", "true");
+//								}
+//								fragment.setArguments(bundle);
 								
+								if(App.app.getData("isReportInActivityDetailPage").equals("true")){
+									App.app.setData("isReportInActivityDetailPage","");
+									//仅重新获取数据内容，不做模拟点击操作
+									getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshActivityDetailPage"));
+								}else{
+									//不仅重新获取数据内容，且做模拟点击操作
+									getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshActivityDetailPageAndClick"));
+								}
 								Intent intent=new Intent("com.lansun.qmyo.refreshTheIcon");
 								getActivity().sendBroadcast(intent);
 								System.out.println("从活动详情页过来，发送广播！");
+								
+								back();
+								return;
+								
 							}else{
 								fragment = new MainFragment(0);
 								/*fragment=new HomeFragment();*/
 							}
 						}else if("StoreDetailFragment".equals(fragment_name)){
 							if(isTheSameCardAsUsual){
-								fragment=new StoreDetailFragment();
-								Bundle bundle=new Bundle();
-								bundle.putString("shopId", App.app.getData("shopId"));
-								bundle.putString("refreshTip", "true");
-								fragment.setArguments(bundle);
+//								fragment=new StoreDetailFragment();
+//								Bundle bundle=new Bundle();
+//								bundle.putString("shopId", App.app.getData("shopId"));
+//								if(App.app.getData("isReportInStoreDetailPage").equals("true")){
+//									App.app.setData("isReportInStoreDetailPage","");
+//								}else{
+//									bundle.putString("refreshTip", "true");
+//								}
+//								fragment.setArguments(bundle);
+								
+								if(App.app.getData("isReportInStoreDetailPage").equals("true")){
+									App.app.setData("isReportInStoreDetailPage","");
+									//仅重新获取数据内容，不做模拟点击操作
+									getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshStoreDetailPage"));
+									
+								}else{
+									//不仅重新获取数据内容，且做模拟点击操作
+									getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshStoreDetailPageAndClick"));
+								}
+								
 								
 								Intent intent=new Intent("com.lansun.qmyo.refreshTheIcon");
 								getActivity().sendBroadcast(intent);
 								System.out.println("从门店详情页过来，发送广播！");
+								back();
+								return;
 								
 							}else{
 								/*fragment=new HomeFragment();*/
@@ -742,18 +776,38 @@ public class RegisterFragment extends BaseFragment{
 							fragment=new MainFragment(1);
 						}else if("SecretaryTravelShowFragment".equals(fragment_name)){
 							fragment=new SecretaryTravelShowFragment();
+							getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshTheIcon"));
+							LogUtils.toDebugLog("RegisterFragment", "SecretaryTravelShowFragment 发送刷新广播");
+							
 						}else if("SecretaryShoppingShowFragment".equals(fragment_name)){
 							fragment=new SecretaryShoppingShowFragment();
+							getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshTheIcon"));
+							LogUtils.toDebugLog("RegisterFragment", "SecretaryShoppingShowFragment 发送刷新广播");
+							
 						}else if("SecretaryPartyShowFragment".equals(fragment_name)){
 							fragment=new SecretaryPartyShowFragment();
+							getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshTheIcon"));
+							LogUtils.toDebugLog("RegisterFragment", "SecretaryPartyShowFragment 发送刷新广播");
+							
 						}else if("SecretaryLifeShowFragment".equals(fragment_name)){
 							fragment=new SecretaryLifeShowFragment();
+							getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshTheIcon"));
+							LogUtils.toDebugLog("RegisterFragment", "SecretaryLifeShowFragment 发送刷新广播");
+							
 						}else if("SecretaryStudentShowFragment".equals(fragment_name)){
 							fragment=new SecretaryStudentShowFragment();
+							getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshTheIcon"));
+							LogUtils.toDebugLog("RegisterFragment", "SecretaryStudentShowFragment 发送刷新广播");
+							
 						}else if("SecretaryInvestmentShowFragment".equals(fragment_name)){
 							fragment=new SecretaryInvestmentShowFragment();
+							getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshTheIcon"));
+							LogUtils.toDebugLog("RegisterFragment", "SecretaryInvestmentShowFragment 发送刷新广播");
+							
 						}else if("SecretaryCardShowFragment".equals(fragment_name)){
 							fragment=new SecretaryCardShowFragment();
+							getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshTheIcon"));
+							LogUtils.toDebugLog("RegisterFragment", "SecretaryCardShowFragment 发送刷新广播");
 						}else if("FoundFragment".equals(fragment_name)){
 							/*fragment=new FoundFragment();*/
 							fragment=new MainFragment(2);
@@ -826,5 +880,9 @@ public class RegisterFragment extends BaseFragment{
 		/*v.iv_register_bg.threadFlag = false;
 		v.iv_register_bg.setBackgroundResource(R.drawable.cloud_1);*/
 		super.onPause();
+	}
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
 	}
 }

@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -19,6 +20,7 @@ import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
@@ -30,9 +32,13 @@ import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
+import com.google.gson.Gson;
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.domain.ClickGoUrl;
 import com.lansun.qmyo.domain.HomePromoteData;
+import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ObservableWebView;
 import com.lansun.qmyo.view.SharedDialog;
@@ -40,9 +46,9 @@ import com.lansun.qmyo.view.ObservableWebView.OnScrollChangedCallback;
 import com.lansun.qmyo.R;
 
 /**
- * 主界面
+ *
  * 
- * @author 李东
+ * @author Yeun
  * 
  */
 public class PromoteDetailFragment extends BaseFragment {
@@ -72,10 +78,14 @@ public class PromoteDetailFragment extends BaseFragment {
 
 	@InjectInit
 	private void init() {
+		
 		Bundle arguments = getArguments();
 		if (arguments != null) {
 			promote = (HomePromoteData) arguments.getSerializable("promote");
+			loadUrl = (String) arguments.get("loadUrl");
 		}
+		
+		
 		WebSettings settings = v.webView.getSettings();
 		settings.setJavaScriptEnabled(true);
 		v.webView.getSettings().setRenderPriority(RenderPriority.HIGH);
@@ -83,6 +93,7 @@ public class PromoteDetailFragment extends BaseFragment {
 
 		v.webView.getSettings().setCacheMode(
 				WebSettings.LOAD_CACHE_ELSE_NETWORK);
+		
 		v.webView.setOnKeyListener(new OnKeyListener() {
 
 			@Override
@@ -122,13 +133,26 @@ public class PromoteDetailFragment extends BaseFragment {
 				startProgress();
 				super.onPageStarted(view, url, favicon);
 			}
+			
+			@Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				
+				if(url.contains("lansunqmyo://maijieclient/?")){
+					
+					setNewFrag(url);
+					
+					//getUrlTailDict(url);
+					return true;
+				}else{
+					return super.shouldOverrideUrlLoading(view, url);
+				}
+			}
 
 		});
 		
-		
 		v.webView.setOnScrollChangedCallback(onScrollChangedCallback);
+		//v.webView.loadUrl(loadUrl);
 		v.webView.loadUrl("http://act.qmyo.com/poster/1");
-		
 		/**
 		 * 在webView上展示出网址的内容
 		 */
@@ -150,6 +174,7 @@ public class PromoteDetailFragment extends BaseFragment {
 		}
 	};
 	private boolean my_attention;
+	private String loadUrl;
 
 	private void click(View view) {
 		switch (view.getId()) {
@@ -241,5 +266,46 @@ public class PromoteDetailFragment extends BaseFragment {
 				break;
 			}
 		}
+	}
+	
+	
+	public void setNewFrag(String url) {
+		
+		LogUtils.toDebugLog("webview", url);
+		LogUtils.toDebugLog("webview", "走到判断里来了");
+		ActivityDetailFragment activtiFragment = new ActivityDetailFragment();
+		Bundle args = new Bundle();
+		args.putString("activityId","8147");
+		args.putString("shopId", "116629");
+		activtiFragment.setArguments(args);
+		FragmentEntity fEntity = new FragmentEntity();
+		fEntity.setFragment(activtiFragment);
+		EventBus.getDefault().post(fEntity);
+	}
+	
+	private void getUrlTailDict(String url) {
+		int headIndex = url.indexOf("{");
+		//int tailIndex = url.indexOf("}");
+		String urlTailStr = url.substring(headIndex, url.length());
+		LogUtils.toDebugLog("webviewUrl", urlTailStr);
+		Gson gson = new Gson();
+		ClickGoUrl goUrlData = gson.fromJson(urlTailStr, ClickGoUrl.class);
+		String activity_id = String.valueOf(goUrlData.getActivity_id());
+		String shop_id = String.valueOf(goUrlData.getShop_id());
+		int tag = goUrlData.getTag();
+		
+		if(tag == 9){
+			ActivityDetailFragment activtiFragment = new ActivityDetailFragment();
+			Bundle args = new Bundle();
+			/*args.putString("activityId",activity_id);
+			args.putString("shopId", shop_id);*/
+			args.putString("activityId","8147");
+			args.putString("shopId", "116629");
+			activtiFragment.setArguments(args);
+			FragmentEntity fEntity = new FragmentEntity();
+			fEntity.setFragment(activtiFragment);
+			EventBus.getDefault().post(fEntity);
+		}
+		
 	}
 }

@@ -465,7 +465,7 @@ public class SwipeListSearchBankcardAdapter extends  BaseAdapter{//LazyAdapter<H
 									InternetConfig config = new InternetConfig();
 									config.setKey(2);
 									/*FastHttpHander.ajaxForm(GlobalValue.URL_AUTH_TEMPORARY, config,this);*/
-									FastHttpHander.ajax(GlobalValue.URL_AUTH_TEMPORARY, config, this);
+									FastHttpHander.ajax(GlobalValue.URL_AUTH_TEMPORARY, config, SwipeListSearchBankcardAdapter.this);
 									Handler_Inject.injectFragment(this, null);
 									dialog.dismiss();
 								}
@@ -480,7 +480,6 @@ public class SwipeListSearchBankcardAdapter extends  BaseAdapter{//LazyAdapter<H
 					
 				}else if(TextUtils.isEmpty(App.app.getData("exp_secret"))
 						&& !TextUtils.isEmpty(App.app.getData("secret"))
-						&& !TextUtils.isEmpty(App.app.getData("access_token"))
 						&& !TextUtils.isEmpty(App.app.getData("access_token"))
 						&& GlobalValue.isFirst
 						&& GlobalValue.user != null){               
@@ -593,6 +592,24 @@ public class SwipeListSearchBankcardAdapter extends  BaseAdapter{//LazyAdapter<H
 					
 				} else {
 					CustomToast.show(mContext, mContext.getString(R.string.tip),"卡种已重复");
+					
+					//同时需要补救措施！
+					InternetConfig config = new InternetConfig();
+					config.setKey(7);
+					HashMap<String, Object> head = new HashMap<>();
+					head.put("Authorization", "Bearer "+ App.app.getData("access_token"));
+					config.setHead(head);
+					LinkedHashMap<String, String> params = new LinkedHashMap<>();
+					
+					Log.i("MainBankCard的值", "MainBankCard的值：" +App.app.getData("MainBankcard"));
+					params.put("bankcard_id", App.app.getData("MainBankcard"));
+					Log.d("原始主卡的id为:  ", "原始主卡的id为:  "+App.app.getData("MainBankcard"));
+					
+					//在这里从搜索银行卡页回来，自己跑过去请求了一下，进行了选卡操作！！！
+					FastHttpHander.ajax(GlobalValue.URL_SELECT_BANKCARD,  params, config,this);
+					Handler_Inject.injectFragment(SwipeListSearchBankcardAdapter.this, null);
+					
+					
 				}
 				break;
 				
@@ -656,7 +673,13 @@ public class SwipeListSearchBankcardAdapter extends  BaseAdapter{//LazyAdapter<H
 				mFromNetCallback.fromNetCallBck(r);
 				LogUtils.toDebugLog("OK", "说明可以拿到网络访问的回复");
 				break;
-				
+			case 7 :
+				if ("true".equals(r.getContentAsString())) {
+					/*CustomToast.show(mContext, R.string.tip,"主卡已恢复！");*/
+				} else {
+					/*CustomToast.show(mContext, "网络异常","主卡恢复失败，请再次尝试");*/
+				}
+			   break;
 			}
 		} else {
 			 	CustomToast.show(mContext, "网络故障", "网络错误");

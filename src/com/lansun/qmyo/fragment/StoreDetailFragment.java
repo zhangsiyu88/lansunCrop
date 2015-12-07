@@ -94,6 +94,7 @@ public class StoreDetailFragment extends BaseFragment {
 	private String mRefreshTip = "";
 	private boolean isRefreshTheActivityDetailsFrag = false;
 	private IntentFilter filter;
+	private StoreDetailsFragRefreshBroadCastReceiver broadCastReceiver;
 
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
@@ -123,10 +124,12 @@ public class StoreDetailFragment extends BaseFragment {
 		Handler_Inject.injectFragment(this, rootView);
 		
 		
-		ActivityDetailsFragRefreshBroadCastReceiver broadCastReceiver = new ActivityDetailsFragRefreshBroadCastReceiver();
-		System.out.println("注册广播 ing");
+		broadCastReceiver = new StoreDetailsFragRefreshBroadCastReceiver();
+		System.out.println("StoreDetailFragment 注册广播 ing");
 		filter = new IntentFilter();
 		filter.addAction("com.lansun.qmyo.refreshTheIcon");
+		filter.addAction("com.lansun.qmyo.refreshStoreDetailPageAndClick");
+		filter.addAction("com.lansun.qmyo.refreshStoreDetailPage");
 		getActivity().registerReceiver(broadCastReceiver, filter);
 		return rootView;
 	}
@@ -169,6 +172,7 @@ public class StoreDetailFragment extends BaseFragment {
 						RegisterFragment fragment = new RegisterFragment();
 						FragmentEntity event = new FragmentEntity();
 						App.app.setData("shopId", shopId);
+						App.app.setData("isReportInStoreDetailPage","true");
 						Bundle bundle = new Bundle();
 						bundle.putString("fragment_name", StoreDetailFragment.class.getSimpleName());
 						fragment.setArguments(bundle);
@@ -403,8 +407,7 @@ public class StoreDetailFragment extends BaseFragment {
 					v.iv_store_detail_gz_store.setPressed(true);
 					v.iv_store_detail_gz_store.setBackgroundResource(R.drawable.gz_store_press1);
 				} else {
-					CustomToast.show(activity,
-							activity.getString(R.string.tip),
+					CustomToast.show(activity,activity.getString(R.string.tip),
 							activity.getString(R.string.gz_faild_content));
 				}
 				break;
@@ -472,7 +475,11 @@ public class StoreDetailFragment extends BaseFragment {
 				headPagerAdapter, position);
 		dialog.show(getFragmentManager(), "gallery");
 	}
-
+	@Override
+	public void onDestroy() {
+		activity.unregisterReceiver(broadCastReceiver);
+		super.onDestroy();
+	}
 	
 	/**
 	 * 门店活动的ListView的点击事件
@@ -618,7 +625,10 @@ public class StoreDetailFragment extends BaseFragment {
 		}
 	  }
 	}
-	 class ActivityDetailsFragRefreshBroadCastReceiver extends BroadcastReceiver{
+	
+	
+	
+	 class StoreDetailsFragRefreshBroadCastReceiver extends BroadcastReceiver{
 
 			@Override
 			public void onReceive(Context ctx, Intent intent) {
@@ -626,14 +636,31 @@ public class StoreDetailFragment extends BaseFragment {
 					System.out.println("门店详情页面  收到刷新Icon的广播了");
 					isRefreshTheActivityDetailsFrag = true;
 					
+					//这是在检测当前门店下的前一页中的活动是否为我曾收藏，若是收藏则需要将前一页的活动收藏按钮的置为绿色
 					String shopId = App.app.getData("shop_id");
 					String activityId = App.app.getData("activity_id");
 					
 					refreshUrl = String.format(GlobalValue.URL_ACTIVITY_SHOP, activityId+ "", shopId + "");
 					refreshCurrentList(refreshUrl, null, 5, null);//获取活动详情
+					
 				
+				}
+				if(intent.getAction().equals("com.lansun.qmyo.refreshStoreDetailPageAndClick")){
+					
+					//一进来后我们就去访问并去刷新数据
+					mRefreshTip = "true";
+					refreshCurrentList(refreshUrl, null, 0, v.sc_store_detail);
+					
+					//需要模拟点击关注的操作
+					//clickToCollectStore();
+				}
+				
+				if(intent.getAction().equals("com.lansun.qmyo.refreshStoreDetailPage")){
+					
+					refreshCurrentList(refreshUrl, null, 0, v.sc_store_detail);
 				}
 			}
 		 }
+	
 	
 }

@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -41,6 +43,7 @@ import com.lansun.qmyo.domain.MessageList;
 import com.lansun.qmyo.domain.MySecretary;
 import com.lansun.qmyo.domain.information.InformationCount;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.fragment.secretary_detail.SecretaryDetailsBaseFragment.SecretaryDetailsFragmentBroadCastReceiver;
 import com.lansun.qmyo.listener.RequestCallBack;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.override.CircleImageView;
@@ -66,6 +69,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 		rl_mine_about, rl_mine_shared, sc_mine;
 		private RecyclingImageView iv_mine_icon;
 		private CircleImageView iv_mine_head;
+		
 	}
 	private Handler handlerOk=new Handler(){
 		public void handleMessage(android.os.Message msg) {
@@ -84,12 +88,24 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 	};
 	private InformationCount count;
 	public  ArrayList<HashMap<String,String>> dataList = new ArrayList<HashMap<String,String>>();
+	private MineFragmentBroadCastReceiver broadCastReceiver = null;
+	private IntentFilter filter;
+	public boolean isFirstReceiveBroadcast = true; 
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		//App.app.setData("firstEnterBankcardAndAddAnotherBankcard","");
 		super.onCreate(savedInstanceState);
 		
+		if(broadCastReceiver == null){
+			broadCastReceiver = new MineFragmentBroadCastReceiver();
+			System.out.println("我的  页面在注册广播 ing");
+			filter = new IntentFilter();
+			filter.addAction("com.lansun.qmyo.refreshTheIcon");
+			getActivity().registerReceiver(broadCastReceiver, filter);
+		}else{
+			//NO-OP
+		}
 		initMySecretary();
 		initInformation();
 	}
@@ -101,6 +117,9 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 	 * 此处请求网络目的是当我进入私人秘书的时候要有个私人秘书的名字。
 	 */
 	private void initMySecretary() {
+		
+		LogUtils.toDebugLog("initMySecretary", "initMySecretary()");
+		
 		if (!isExperience()) {
 			OkHttp.asyncGet(GlobalValue.URL_SECRETARY_SAVE, "Authorization","Bearer "+App.app.getData("access_token"), null, new Callback() {
 				@Override
@@ -109,6 +128,11 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 						Gson gson=new Gson();
 						String json=response.body().string();
 						GlobalValue.mySecretary=gson.fromJson(json,MySecretary.class);
+						activity.sendBroadcast(new Intent("com.lansun.qmyo.refreshMySecretary"));
+						/*if(first_enter == 0){
+							activity.sendBroadcast(new Intent("com.lansun.qmyo.refreshMySecretary"));
+							first_enter = Integer.MAX_VALUE;
+						}*/
 					}
 				}
 				@Override
@@ -159,8 +183,6 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 				
 			}
 		}
-		
-		
 		//v.tv_mine_icon.setTextColor(getResources().getColor(R.color.app_green2));
 		return rootView;
 	}
@@ -179,8 +201,6 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 //		refreshCurrentList(majieMessageUrl, null, 1, null);
 //		LogUtils.toDebugLog("infos", "去拿关于迈界的信息");
 		
-		
-		
 		v.iv_mine_icon.setPressed(true);
 		v.tv_mine_icon.setTextColor(getResources().getColor(R.color.app_green2));
 
@@ -194,9 +214,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 					//加载头像上去
 					loadPhoto(avatar, v.iv_mine_head);
 				}
-				
 				if (!TextUtils.isEmpty(GlobalValue.user.getNickname())) {
-					
 					if(GlobalValue.user.getNickname() == null||GlobalValue.user.getNickname() =="null"||GlobalValue.user.getNickname().contains("null")){
 						v.tv_mine_nickname.setText("请设置昵称");
 						Log.i("Tag：nickName","NickName应该为设置昵称");
@@ -221,7 +239,6 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 				}
 			}
 		}
-		
 		//refreshCurrentList(GlobalValue.URL_USER_MESSAGE, null, 0, null);//去刷新消息
 	}
 
@@ -297,7 +314,8 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 					}
 				});
 			}else
-				fragment = new MineSecretaryFragment();
+				/*fragment = new MineSecretaryFragment();*/
+				fragment = new MineSecretaryListFragment();
 			break;
 		case R.id.rl_mine_comments:// 我的评论
 			if (GlobalValue.user == null || isExperience()) {
@@ -358,14 +376,12 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 			}else{
 				fragment = new MessageCenterFragment();
 			}
-
-
 			/*fragment = new MessageCenterFragment();*/
 
 			break;
 		case R.id.rl_mine_about:
-			fragment = new AboutFragment();
-			/*fragment = new PromoteDetailFragment();*/
+//			fragment = new AboutFragment();
+			fragment = new PromoteDetailFragment();
 			break;
 		case R.id.rl_mine_shared://分享APP
 			fragment = new SharedFragment();
@@ -476,5 +492,97 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 	@Override
 	public void onFailure(Request request, IOException exception) {
 
+	}
+	
+	public  class MineFragmentBroadCastReceiver extends BroadcastReceiver{
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if(isFirstReceiveBroadcast){
+				if(intent.getAction().equals("com.lansun.qmyo.refreshTheIcon")){
+//					System.out.println("我的页收到刷新 头像 和 昵称 的广播了");
+//					
+//					//重新执行以下init方法
+//					if(first_enter==0){
+//						initMySecretary();//重新去获取关于登陆后账户的 私人秘书的信息
+//						first_enter = Integer.MAX_VALUE;
+//					}else{
+//						//NO-OP
+//					}
+					
+					if (!isExperience()) {
+						OkHttp.asyncGet(GlobalValue.URL_SECRETARY_SAVE, "Authorization","Bearer "+App.app.getData("access_token"), null, new Callback() {
+							@Override
+							public void onResponse(Response response) throws IOException {
+								if (response.isSuccessful()) {
+									Gson gson=new Gson();
+									String json=response.body().string();
+									GlobalValue.mySecretary=gson.fromJson(json,MySecretary.class);
+									activity.sendBroadcast(new Intent("com.lansun.qmyo.refreshMySecretary"));
+									
+									/*if(first_enter == 0){
+										activity.sendBroadcast(new Intent("com.lansun.qmyo.refreshMySecretary"));
+										first_enter = Integer.MAX_VALUE;
+									}*/
+								}
+							}
+							@Override
+							public void onFailure(Request arg0, IOException arg1) {
+							}
+						});
+					}
+					
+					
+					
+					
+					
+					
+					
+					/*init();*/
+					/**
+					 * 保证从后台重新进入当前fragment时，头像部分可以重新加载上去
+					 */
+					if (GlobalValue.user != null) {
+						String avatar = GlobalValue.user.getAvatar();
+						if (!TextUtils.isEmpty(avatar)) {
+							//加载头像上去
+							loadPhoto(avatar, v.iv_mine_head);
+						}
+						
+						if (!TextUtils.isEmpty(GlobalValue.user.getNickname())) {
+							
+							if(GlobalValue.user.getNickname() == null||GlobalValue.user.getNickname() =="null"||GlobalValue.user.getNickname().contains("null")){
+								v.tv_mine_nickname.setText("请设置昵称");
+								Log.i("Tag：nickName","NickName应该为设置昵称");
+								
+							}else{
+								Log.i("Tag：nickName","NickName有值："+GlobalValue.user.getNickname());
+								v.tv_mine_nickname.setText(GlobalValue.user.getNickname());
+							}
+						}else{
+							v.tv_mine_nickname.setText("请注册或登陆");
+						}
+					}else{    //--- >GlobalValue.user == null
+						
+						LogUtils.toDebugLog("userinfo", "onCreatView()方法里： GlobalValue.user为空");
+						//CustomToast.show(activity, "onCreatView()方法里： GlobalValue.user为空", "同上");
+						
+						if(!TextUtils.isEmpty(App.app.getData("user_avatar"))&&!TextUtils.isEmpty(App.app.getData("user_nickname"))){
+							loadPhoto(App.app.getData("user_avatar"), v.iv_mine_head);
+							v.tv_mine_nickname.setText(App.app.getData("user_nickname"));
+						}else{
+							
+						}
+					}
+				}
+				
+				isFirstReceiveBroadcast=false;
+			}
+		}
+	}
+	@Override
+	public void onDestroy() {
+		activity.unregisterReceiver(broadCastReceiver);
+		super.onDestroy();
 	}
 }

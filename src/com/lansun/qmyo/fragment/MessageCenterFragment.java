@@ -93,11 +93,14 @@ public class MessageCenterFragment extends BaseFragment implements ItemClickCall
 					if (TextUtils.isEmpty(list.getNext_page_url())||list.getData()==null||list.getNext_page_url()=="null") {
 //						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 						
-						while(times <1){
+						if(times ==0){
 							CustomToast.show(activity, "到底啦", "您目前只有这么多消息");
+							lv_message_list.onLoadMoreOverFished();
 							times++;
+						}else{
+							lv_message_list.onLoadMoreOverFished();
+							
 						}
-						lv_message_list.onLoadMoreOverFished();
 						
 					} else {
 						refreshCurrentList(list.getNext_page_url(), null, 0, lv_message_list);
@@ -198,7 +201,9 @@ public class MessageCenterFragment extends BaseFragment implements ItemClickCall
 			switch (r.getKey()) {
 			case 0:
 				endProgress();
+				
 				lv_message_list.onLoadMoreFished();
+				
 				list = Handler_Json.JsonToBean(MessageList.class,
 						r.getContentAsString());
 				if(list!=null){
@@ -239,10 +244,17 @@ public class MessageCenterFragment extends BaseFragment implements ItemClickCall
 							adapter.notifyDataSetChanged();
 						}
 						if(list.getData().size()<10){
-							times++;
-							lv_message_list.onLoadMoreOverFished();
-							CustomToast.show(activity, "到底啦", "您目前只有这么多消息");
+							if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司
+					            lv_message_list.onLoadMoreOverFished();
+					          }else{
+					            //DO-OP
+					          }
+//							times++;
+//							lv_message_list.onLoadMoreOverFished();
+//							CustomToast.show(activity, "到底啦", "您目前只有这么多消息");
 						}
+						this.first_enter = Integer.MAX_VALUE;
+						
 					} else {
 						lv_message_list.setAdapter(null);
 						v.no_data.setVisibility(View.VISIBLE);
@@ -258,24 +270,25 @@ public class MessageCenterFragment extends BaseFragment implements ItemClickCall
 //		PullToRefreshManager.getInstance().onFooterRefreshComplete();
 	}
 
-	@InjectPullRefresh
-	private void call(int type) {
-		// 这里的type来判断是否是下拉还是上拉
-		switch (type) {
-		case InjectView.PULL:
-			if (list != null) {
-				if (TextUtils.isEmpty(list.getNext_page_url())) {
-//					PullToRefreshManager.getInstance()
-//							.onFooterRefreshComplete();
-					CustomToast.show(activity, "加载进度", "目前所有内容都已经加载完成");
-				} else {
-					refreshCurrentList(list.getNext_page_url(), null, 0,
-							lv_message_list);
-				}
-			}
-			break;
-		}
-	}
+//	@InjectPullRefresh
+//	private void call(int type) {
+//		// 这里的type来判断是否是下拉还是上拉
+//		switch (type) {
+//		case InjectView.PULL:
+//			if (list != null) {
+//				if (TextUtils.isEmpty(list.getNext_page_url())) {
+////					PullToRefreshManager.getInstance()
+////							.onFooterRefreshComplete();
+//					CustomToast.show(activity, "加载进度", "目前所有内容都已经加载完成");
+//				} else {
+//					refreshCurrentList(list.getNext_page_url(), null, 0,
+//							lv_message_list);
+//				}
+//			}
+//			break;
+//		}
+//	}
+	
 	private String getHistoryTime(long mss) {
 		long days = mss / (1000 * 60 * 60 * 24);
 		long hours = (mss % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60);

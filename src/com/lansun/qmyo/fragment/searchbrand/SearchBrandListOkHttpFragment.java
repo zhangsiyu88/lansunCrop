@@ -176,10 +176,18 @@ import com.squareup.okhttp.Response;
 						}catch(Exception e ){
 							
 						}
-						lv_search_content.addFooterView(emptyView);
+//						lv_search_content.addFooterView(emptyView);
+//						lv_search_content.setAdapter(searchBankcardAdapter);
+//						CustomToast.show(activity, "到底啦！", "该关键词下暂时只有这么多内容");
+//						lv_search_content.onLoadMoreOverFished();
+						
+						if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司,加上小秘书提示图
+				            lv_search_content.onLoadMoreOverFished();
+				            lv_search_content.addFooterView(emptyView);
+				          }else{
+				            //DO-OP
+				          }
 						lv_search_content.setAdapter(searchBankcardAdapter);
-						CustomToast.show(activity, "到底啦！", "该关键词下暂时只有这么多内容");
-						lv_search_content.onLoadMoreOverFished();
 					}else{													//不等于list的Data数组的值大于等于10时，正常刷新
 						try{
 							lv_search_content.removeFooterView(emptyView);
@@ -191,6 +199,7 @@ import com.squareup.okhttp.Response;
 						}
 					}
 
+					
 				}else{//searchBankcardAdapter已经存在
 					if(list.getData().size()<10){
 						try{
@@ -199,10 +208,17 @@ import com.squareup.okhttp.Response;
 						}catch(Exception e ){
 							
 						}
-						lv_search_content.addFooterView(emptyView);
-						searchBankcardAdapter.notifyDataSetChanged();
-						CustomToast.show(activity, "到底啦！", "该关键词下暂时只有这么多内容");
-						lv_search_content.onLoadMoreOverFished();
+//						lv_search_content.addFooterView(emptyView);
+//						CustomToast.show(activity, "到底啦！", "该关键词下暂时只有这么多内容");
+//						lv_search_content.onLoadMoreOverFished();
+						
+						if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司,加上小秘书提示图
+				            lv_search_content.onLoadMoreOverFished();
+				            lv_search_content.addFooterView(emptyView);
+				          }else{
+				            //DO-OP
+				          }
+ 					searchBankcardAdapter.notifyDataSetChanged();
 					}else{
 						try{
 							lv_search_content.removeFooterView(emptyView);
@@ -213,6 +229,10 @@ import com.squareup.okhttp.Response;
 						}
 					}
 				}
+				
+				first_enter = Integer.MAX_VALUE;
+				
+				
 //				PullToRefreshManager.getInstance().footerEnable();
 //				PullToRefreshManager.getInstance().headerEnable();
 //				PullToRefreshManager.getInstance().onHeaderRefreshComplete();
@@ -358,6 +378,7 @@ import com.squareup.okhttp.Response;
 	private String encodeQuery;
 	private RelativeLayout noNetworkView;
 	private InputMethodManager imm;
+	private int times = 0;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		isShowFromInitData = true;
@@ -621,7 +642,8 @@ import com.squareup.okhttp.Response;
 			public void onLoadingMore() {
 				isShowDialog=false;
 				if (list != null) {
-					if ("null".equals(String.valueOf(list.getNext_page_url()))||TextUtils.isEmpty(String.valueOf(list.getNext_page_url()))) {
+					if ("null".equals(String.valueOf(list.getNext_page_url()))||
+							TextUtils.isEmpty(String.valueOf(list.getNext_page_url()))) {
 						try{
 							//若之前的隶属于View对象是有emptyView对象的，先将其移除掉
 							lv_search_content.removeFooterView(emptyView);
@@ -629,13 +651,22 @@ import com.squareup.okhttp.Response;
 							
 						}finally{
 						}
+//						lv_search_content.addFooterView(emptyView);
+//						lv_search_content.onLoadMoreOverFished();
+						
+					  if(times == 0){
 						lv_search_content.addFooterView(emptyView);
-						lv_search_content.onLoadMoreOverFished();
+			              lv_search_content.onLoadMoreOverFished();
+			              CustomToast.show(activity, "到底啦！", "该关键词下暂时只有这么多内容");
+			              times++;
+			            }else{
+			              lv_search_content.onLoadMoreOverFished();
+			            }
 						
 
 //						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 //						PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
-						CustomToast.show(activity, "到底啦！", "该关键词下暂时只有这么多内容");
+//						CustomToast.show(activity, "到底啦！", "该关键词下暂时只有这么多内容");
 					} else {
 						String nextPageUrl = list.getNext_page_url();
 						lv_search_content.setNoHeader(true);
@@ -797,6 +828,10 @@ import com.squareup.okhttp.Response;
 	private void startSearch(String visitUrl, String site,String service,String positon,String intelligent,String type,String location,String query) {
 		/*PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 		PullToRefreshManager.getInstance().onFooterRefreshComplete();*/
+		
+		this.times  = 0;
+		this.first_enter = 0;
+		
 		if (isShowDialog){
 			if(cPd == null ){
 				cPd = CustomDialogProgress.createDialog(activity);

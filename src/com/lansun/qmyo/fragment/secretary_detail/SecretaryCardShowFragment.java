@@ -1,50 +1,53 @@
 package com.lansun.qmyo.fragment.secretary_detail;
-import com.android.pc.ioc.event.EventBus;
-import com.android.pc.ioc.image.RecyclingImageView;
-import com.lansun.qmyo.R;
-import com.lansun.qmyo.app.App;
-import com.lansun.qmyo.event.entity.FragmentEntity;
-import com.lansun.qmyo.fragment.BaseFragment;
-import com.lansun.qmyo.fragment.HomeFragment;
-import com.lansun.qmyo.fragment.MineBankcardFragment;
-import com.lansun.qmyo.fragment.RegisterFragment;
-import com.lansun.qmyo.fragment.SecretarySettingFragment;
-import com.lansun.qmyo.fragment.task.TaskAssignment;
-import com.lansun.qmyo.override.CircleImageView;
-import com.lansun.qmyo.utils.GlobalValue;
-
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.View.OnClickListener;
 import android.widget.TextView;
-public class SecretaryCardShowFragment extends BaseFragment{
+
+import com.android.pc.ioc.event.EventBus;
+import com.android.pc.ioc.image.RecyclingImageView;
+import com.lansun.qmyo.R;
+import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.fragment.RegisterFragment;
+import com.lansun.qmyo.fragment.SecretarySettingFragment;
+import com.lansun.qmyo.fragment.secretary_detail.SecretaryDetailsBaseFragment.ExecutInitData;
+import com.lansun.qmyo.fragment.task.TaskAssignment;
+import com.lansun.qmyo.override.CircleImageView;
+import com.lansun.qmyo.utils.GlobalValue;
+
+
+public class SecretaryCardShowFragment extends SecretaryDetailsBaseFragment implements ExecutInitData{
 	private RecyclingImageView iv_activity_back;
 	private TextView commit_tv,check_suprice,content,tv_secretary_answer;
 	private Fragment fragment;
 	private FragmentEntity event;
 	private CircleImageView iv_secretary_head;
 	private String owner_name;
+	private String tv_secretary_answer_text;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
+		
 		event = new FragmentEntity();
 	}
 	private void initData() {
+		owner_name ="";
 		if (GlobalValue.mySecretary!=null) {
 			loadPhoto(GlobalValue.mySecretary.getAvatar(), iv_secretary_head);
 			owner_name=GlobalValue.mySecretary.getOwner_name();
 		}else {
 			owner_name="总裁大人";
 		}
-		tv_secretary_answer.setText(owner_name+","+tv_secretary_answer.getText().toString());
+		tv_secretary_answer_text = tv_secretary_answer.getText().toString();
+		tv_secretary_answer.setText(owner_name+","+tv_secretary_answer_text);
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,6 +57,9 @@ public class SecretaryCardShowFragment extends BaseFragment{
 		initView(view);
 		initData();
 		setListener();
+		
+		setExecutInitData(this);//将接口对象放进去
+		
 		return view;
 	}
 	private void setListener() {
@@ -160,5 +166,17 @@ public class SecretaryCardShowFragment extends BaseFragment{
 		check_suprice=(TextView)view.findViewById(R.id.check_suprice);
 		iv_activity_back=(RecyclingImageView)view.findViewById(R.id.iv_activity_back);
 		content=(TextView)view.findViewById(R.id.content);
+	}
+	
+	@Override
+	public void exeInitHeaderAndName() {
+		if (GlobalValue.mySecretary!=null) {
+			loadPhoto(GlobalValue.mySecretary.getAvatar(), iv_secretary_head);
+			owner_name=GlobalValue.mySecretary.getOwner_name();
+		}else {
+			owner_name="总裁大人";
+		}
+		tv_secretary_answer.setText(owner_name+","+tv_secretary_answer_text);
+	
 	}
 }

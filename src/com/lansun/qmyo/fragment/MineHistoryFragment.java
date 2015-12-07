@@ -150,7 +150,14 @@ import android.widget.TextView;
 								||activityList.getNext_page_url().contains("null")) {
 //							PullToRefreshManager.getInstance().onFooterRefreshComplete();
 //							PullToRefreshManager.getInstance().footerUnable();
-							CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的活动");
+							//CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的活动");
+							 if(times == 0){
+					              lv_mine_history_list.onLoadMoreOverFished();
+					              CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的活动");
+					              times++;
+					            }else{
+					              lv_mine_history_list.onLoadMoreOverFished();
+					            }
 							return;
 						}
 						refreshUrl = activityList.getNext_page_url();
@@ -159,7 +166,14 @@ import android.widget.TextView;
 								||storeList.getNext_page_url().contains("null")) {
 //							PullToRefreshManager.getInstance().onFooterRefreshComplete();
 //							PullToRefreshManager.getInstance().footerUnable();
-							CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的门店");
+							//CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的门店");
+							 if(times == 0){
+					              lv_mine_history_list.onLoadMoreOverFished();
+					              CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的门店");
+					              times++;
+					            }else{
+					              lv_mine_history_list.onLoadMoreOverFished();
+					            }
 							return;
 						}
 						refreshUrl = storeList.getNext_page_url();
@@ -171,6 +185,8 @@ import android.widget.TextView;
 						}
 						refreshUrl = v16list.getNext_page_url();
 					}
+					
+					
 					if(currentRequestUrl == refreshUrl){
 						//DO-OP
 						//CustomToast.show(activity, "提示", "准备重复加载");
@@ -227,7 +243,10 @@ import android.widget.TextView;
 		activityDataList.clear();
 		storeDataList.clear();
 		v16DataList.clear();*/
-		times  = 0;
+		
+		this.times  = 0;
+		this.first_enter =0;
+		
 		lv_mine_history_list.onLoadMoreFished();//需将OnLoadingMore的参数值重新置为 false,供后面的测试使用
 
 		switch (view.getId()) {
@@ -372,6 +391,8 @@ import android.widget.TextView;
 			v16DataList.clear();
 			switch (r.getKey()) {
 			case 0:
+				lv_mine_history_list.onLoadMoreFished();
+				
 				activityList = Handler_Json.JsonToBean(HistoryActivity.class,
 						r.getContentAsString());
 				if(activityList.getData()!=null){
@@ -423,10 +444,17 @@ import android.widget.TextView;
 //						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					}
 					if(activityList.getData().size()<10){
-						times++;
-						lv_mine_history_list.onLoadMoreOverFished();//此时根本不会进行onLoadingMore的操作了，所以onLoadingMore的操作是无效的
-						CustomToast.show(activity, "到底啦!", "您最近仅浏览了这么多的活动");
+//						times++;
+//						lv_mine_history_list.onLoadMoreOverFished();//此时根本不会进行onLoadingMore的操作了，所以onLoadingMore的操作是无效的
+//						CustomToast.show(activity, "到底啦!", "您最近仅浏览了这么多的活动");
+						if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司
+				            lv_mine_history_list.onLoadMoreOverFished();
+				          }else{
+				            //DO-OP
+				          }
 					}
+					this.first_enter = Integer.MAX_VALUE;
+					
 			}else{
 				lv_mine_history_list.setVisibility(View.GONE);
 				v.rl_new_emptyview.setVisibility(View.VISIBLE);
@@ -436,6 +464,8 @@ import android.widget.TextView;
 				break;
 				
 			case 1:
+				lv_mine_history_list.onLoadMoreFished();
+				
 				storeList = Handler_Json.JsonToBean(HistoryActivity.class,
 						r.getContentAsString());
 				
@@ -491,10 +521,17 @@ import android.widget.TextView;
 //						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					}
 					if(storeList.getData().size()<10){
-						times++;
-						lv_mine_history_list.onLoadMoreOverFished();//此时根本不会进行onLoadingMore的操作了，所以onLoadingMore的操作是无效的
-						CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的门店");
+//						times++;
+//						lv_mine_history_list.onLoadMoreOverFished();//此时根本不会进行onLoadingMore的操作了，所以onLoadingMore的操作是无效的
+//						CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的门店");
+						
+						if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司
+				            lv_mine_history_list.onLoadMoreOverFished();
+				          }else{
+				            //DO-OP
+				          }
 					}
+					this.first_enter = Integer.MAX_VALUE;
 			}else{
 				lv_mine_history_list.setVisibility(View.GONE);//数据列表不可见
 				v.rl_new_emptyview.setVisibility(View.VISIBLE);//空提示插画可见

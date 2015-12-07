@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -133,6 +134,8 @@ public class ActivityDetailFragment extends BaseFragment {
 		System.out.println("注册广播 ing");
 		IntentFilter filter = new IntentFilter();
 		filter.addAction("com.lansun.qmyo.refreshTheActivityDetailsFrag");
+		filter.addAction("com.lansun.qmyo.refreshActivityDetailPage");
+		filter.addAction("com.lansun.qmyo.refreshActivityDetailPageAndClick");
 		getActivity().registerReceiver(broadCastReceiver, filter);
 		
 		return rootView;
@@ -183,7 +186,7 @@ public class ActivityDetailFragment extends BaseFragment {
 	private void initData() {
 		refreshUrl = String.format(GlobalValue.URL_ACTIVITY_SHOP, activityId+ "", shopId + "");
 		refreshCurrentList(refreshUrl, null, 0, v.sc_activity_detail);//获取活动详情
-		refreshCurrentList(String.format(GlobalValue.URL_ACTIVITY_COMMENTS, activityId),null, 1, null);//获取评论内容
+		//refreshCurrentList(String.format(GlobalValue.URL_ACTIVITY_COMMENTS, activityId),null, 1, null);//获取评论内容
 	}
 
 	@InjectHttp
@@ -326,6 +329,7 @@ public class ActivityDetailFragment extends BaseFragment {
 				v.vp_baner.setAdapter(pagerAdapter);
 				
 				if(mRefreshTip.equals("true")){
+					
 					//执行更新界面的操作
 					clickToCollectActivity();
 				}
@@ -408,6 +412,9 @@ public class ActivityDetailFragment extends BaseFragment {
 						LinearLayout.LayoutParams.WRAP_CONTENT);
 				params.leftMargin = 15;
 				iv.setLayoutParams(params);
+				
+				v.ll_activity_detail_points.removeAllViews();
+				
 				if ("discount".equals(icon)) {
 					iv.setBackgroundResource(R.drawable.discount);
 					v.ll_activity_detail_points.addView(iv);
@@ -547,6 +554,7 @@ public class ActivityDetailFragment extends BaseFragment {
 						FragmentEntity event = new FragmentEntity();
 						App.app.setData("shopId", shopId);
 						App.app.setData("activityId", activityId);
+						App.app.setData("isReportInActivityDetailPage","true");
 						Bundle bundle = new Bundle();
 						bundle.putString("fragment_name", ActivityDetailFragment.class.getSimpleName());
 						fragment.setArguments(bundle);
@@ -609,13 +617,21 @@ public class ActivityDetailFragment extends BaseFragment {
 				.get(0),data.getActivity().getShare_url());
 	}*/
 	
+	
 	//去除掉xxx（店名）举办xxx（活动）中的前半部分
 	private void showDialog() {
-			new SharedDialog().showPopwindow(rootView, getActivity(), data
-			.getShop().getName(), data.getShop().getName()+ " 举办  "+data.getActivity().getName(), data.getActivity().getPhotos()
-			.get(0),data.getActivity().getShare_url());
+			new SharedDialog().showPopwindow(rootView, getActivity(), 
+					data.getShop().getName(), 
+					data.getActivity().getName(),
+					data.getActivity().getPhotos().get(0),
+					data.getActivity().getShare_url());
 }
-	
+	/*
+	 * showPopwindow(View v, final Activity activity,
+	 *      String title,// 门店名称
+			String content,  //活动的名称
+			String imageUrl,  //photo的地址
+			String currentActivityUrl)  //分享的链接 */
 
 	/*
 	 * page的页面改变监听器
@@ -673,6 +689,8 @@ public class ActivityDetailFragment extends BaseFragment {
 	public void setPosition(int position) {
 		this.position = position;
 	}
+	
+
 
 	/**
 	 * 点击收藏之前看的活动
@@ -706,6 +724,7 @@ public class ActivityDetailFragment extends BaseFragment {
 		}
 		
 		if (!data.getActivity().isMy_attention()) {//如果不是我收藏过的,点击即收藏
+			Log.d("异常处的isExperience的值为： ", "不是我收藏");
 			InternetConfig config = new InternetConfig();
 			config.setKey(2);
 			HashMap<String, Object> head = new HashMap<String, Object>();
@@ -724,6 +743,7 @@ public class ActivityDetailFragment extends BaseFragment {
 					config, this);
 			
 		} else {
+			Log.d("异常处的isExperience的值为： ", "是我收藏的");
 			InternetConfig config = new InternetConfig();
 			config.setKey(3);
 			HashMap<String, Object> head = new HashMap<String, Object>();
@@ -823,12 +843,35 @@ public class ActivityDetailFragment extends BaseFragment {
 	 class ActivityDetailsRefreshBroadCastReceiver extends BroadcastReceiver{
 			@Override
 			public void onReceive(Context ctx, Intent intent) {
+				//这是来自门店详情页发送过来的 广播 内容 ，根据此广播将对应的 标签设置为 绿色背景
 				if(intent.getAction().equals("com.lansun.qmyo.refreshTheActivityDetailsFrag")){
 					System.out.println("活动详情页面   收到来自  门店详情页刷新Icon的广播了");
 					v.iv_activity_collection.setPressed(true);
 					v.ll_activity_collection.setBackgroundResource(R.drawable.circle_background_green);
-				
+					
+					//需要更新一下当前的 活动详情信息
+					refreshUrl = String.format(GlobalValue.URL_ACTIVITY_SHOP, activityId+ "", shopId + "");
+					refreshCurrentList(refreshUrl, null, 0, v.sc_activity_detail);//获取活动详情
 				}
+				if(intent.getAction().equals("com.lansun.qmyo.refreshActivityDetailPageAndClick")){
+					System.out.println("活动详情页面   收到来自  登录注册页刷新Icon的广播了");
+					
+//					//需要真实的去收藏，不仅仅是将图标改为 绿色 而已
+//					v.iv_activity_collection.setPressed(true);
+//					v.ll_activity_collection.setBackgroundResource(R.drawable.circle_background_green);
+					
+					//重新刷新一下列表的内容
+					mRefreshTip = "true";
+					refreshUrl = String.format(GlobalValue.URL_ACTIVITY_SHOP, activityId+ "", shopId + "");
+					refreshCurrentList(refreshUrl, null, 0, v.sc_activity_detail);//获取活动详情
+				}
+				
+				
+				if(intent.getAction().equals("com.lansun.qmyo.refreshActivityDetailPage")){
+					refreshUrl = String.format(GlobalValue.URL_ACTIVITY_SHOP, activityId+ "", shopId + "");
+					refreshCurrentList(refreshUrl, null, 0, v.sc_activity_detail);//获取活动详情
+				}
+
 			}
 		 }
 

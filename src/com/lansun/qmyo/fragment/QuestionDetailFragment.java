@@ -179,7 +179,8 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 			@Override
 			public void onClick(View v) {
 				FragmentEntity entity=new FragmentEntity();
-				Fragment fragment=new MineSecretaryFragment();
+				/*Fragment fragment=new MineSecretaryFragment();*/				
+				Fragment fragment=new MineSecretaryListFragment();
 				entity.setFragment(fragment);
 				EventBus.getDefault().post(entity);
 			}

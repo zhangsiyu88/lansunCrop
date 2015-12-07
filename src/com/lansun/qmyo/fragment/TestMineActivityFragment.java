@@ -136,12 +136,13 @@ public class TestMineActivityFragment extends BaseFragment {
 					/* 从代码习惯上来说，服务器返回的是"null"字符串，我认为是不应该的，空的话就应该是空串 ("") */
 					 
 					if (list.getNext_page_url()=="null"){
-						while(times<1){
+						if(times == 0){
 							CustomToast.show(activity, "到底啦！", "您只收藏了以上活动哦");
+							lv_mine_activity.onLoadMoreOverFished();
 							times++;
+						}else{
+							lv_mine_activity.onLoadMoreOverFished();
 						}
-						//lv_mine_activity.onLoadMoreFished();
-						lv_mine_activity.onLoadMoreOverFished();
 						
 					} else {
 						refreshParams.put("underway", underway);
@@ -174,6 +175,8 @@ public class TestMineActivityFragment extends BaseFragment {
 		v.rl_no_postdelay_activity.setVisibility(View.GONE);
 		lv_mine_activity.setVisibility(View.GONE);
 		
+	    this.first_enter =0;//保证了每次新的关键字搜索时都拥有 是否为第一次加载的 判断标签
+	    this.times = 0;
 		
 		switch (view.getId()) {
 		case R.id.tv_activity_doing:
@@ -309,12 +312,19 @@ public class TestMineActivityFragment extends BaseFragment {
 					 * 当刷新到最后一页，且此页数据少于10条时，需要弹出吐司表示到底，并且将尾布局去除
 					 */
 					if(list.getData().size()<10){
-						//TODO
-						CustomToast.show(activity, "到底啦！", "您只收藏了以上活动哦");
-						lv_mine_activity.onLoadMoreOverFished();
+						if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司
+				            lv_mine_activity.onLoadMoreOverFished();
+				          }else{
+				            //DO-OP
+				          }
+						//CustomToast.show(activity, "到底啦！", "您只收藏了以上活动哦");
+						//lv_mine_activity.onLoadMoreOverFished();
 					}
-					PullToRefreshManager.getInstance().footerUnable();
-					PullToRefreshManager.getInstance().headerUnable();
+					this.first_enter = Integer.MAX_VALUE;
+					
+					
+//					PullToRefreshManager.getInstance().footerUnable();
+//					PullToRefreshManager.getInstance().headerUnable();
 					
 //					PullToRefreshManager.getInstance().footerEnable();
 //					PullToRefreshManager.getInstance().onHeaderRefreshComplete();

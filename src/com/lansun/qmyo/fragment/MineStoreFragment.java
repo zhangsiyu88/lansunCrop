@@ -85,8 +85,6 @@ public class MineStoreFragment extends BaseFragment {
 	/*@InjectView(binders = { @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick") }, down = true, pull = true)
 	private MyListView lv_mine_store;*/
 	
-	
-	
 	/*@InjectView(binders = { @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick") }, pull = true)
 	private MyListView lv_mine_store;*/
 	
@@ -138,11 +136,14 @@ public class MineStoreFragment extends BaseFragment {
 						
 						Log.i("第三次刷新","第二次拿到的list中的next_page_url的值为null");
 						
-						while(times <1){
+						if(times <1){
 							CustomToast.show(activity, "到底啦！", "您只关注了以上的门店哦");
 							times++;
+							lv_mine_store.onLoadMoreOverFished();
+						}else{
+							lv_mine_store.onLoadMoreOverFished();
+							
 						}
-						lv_mine_store.onLoadMoreOverFished();
 						
 //						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 //						PullToRefreshManager.getInstance().footerUnable();
@@ -279,7 +280,7 @@ public class MineStoreFragment extends BaseFragment {
 			
 			switch (r.getKey()) {
 			case 0:
-				//lv_mine_store.onLoadMoreFished();
+				lv_mine_store.onLoadMoreFished();
 				lv_mine_store.onRefreshFinshed(true);
 				
 				if(isPull){//是上拉操作，便不对数据源 list对象进行操作
@@ -334,9 +335,13 @@ public class MineStoreFragment extends BaseFragment {
 					 * 当刷新到最后一页，且此页数据少于10条时，需要弹出吐司表示到底，并且将尾布局去除
 					 */
 					if(list.getData().size()<10){
-						//TODO
-						CustomToast.show(activity, "到底啦！", "您只关注了以上的门店哦");
-						lv_mine_store.onLoadMoreOverFished();
+						if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司
+				            lv_mine_store.onLoadMoreOverFished();
+				          }else{
+				            //DO-OP
+				          }
+//						CustomToast.show(activity, "到底啦！", "您只关注了以上的门店哦");
+//						lv_mine_store.onLoadMoreOverFished();
 					}
 					if(dataList.size()==0){//删除后数据列表为零
 						  v.rl_no_postdelay_store.setVisibility(View.VISIBLE);
@@ -346,12 +351,14 @@ public class MineStoreFragment extends BaseFragment {
 					/*PullToRefreshManager.getInstance().headerEnable();
 					PullToRefreshManager.getInstance().onHeaderRefreshComplete();*/
 //					PullToRefreshManager.getInstance().onFooterRefreshComplete();
+					this.first_enter = Integer.MAX_VALUE;
+					
 					
 			   }else{//未拿到数据，即表明数据返回为空，那么可以在这个地方添加上 背景图片
 				   Log.i("从服务器未拿到数据！","list.getData() 很可能等于 null");
 				   
 				   while(times <1){
-					   CustomToast.show(activity, "到底啦！", "您只关注了以上的门店哦");
+					   //CustomToast.show(activity, "到底啦！", "您只关注了以上的门店哦");
 					   lv_mine_store.onLoadMoreOverFished();
 					   times=Integer.MAX_VALUE;
 					}
@@ -423,7 +430,9 @@ public class MineStoreFragment extends BaseFragment {
 	
 	private void click(View view) {
 		
-		times = 0;
+		this.first_enter =0;//保证了每次新的关键字搜索时都拥有 是否为第一次加载的 判断标签
+	    this.times = 0;
+	    
 		v.rl_no_postdelay_store.setVisibility(View.GONE);
 		lv_mine_store.setVisibility(View.GONE);
 		

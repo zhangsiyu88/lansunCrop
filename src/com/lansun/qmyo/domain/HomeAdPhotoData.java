@@ -7,7 +7,14 @@ public class HomeAdPhotoData {
 	private String  activity_id;
 	private String  shop_id;
 	private int tag;
+	private String url;
 	
+	public String getUrl() {
+		return url;
+	}
+	public void setUrl(String url) {
+		this.url = url;
+	}
 	public String getActivity_id() {
 		return activity_id;
 	}

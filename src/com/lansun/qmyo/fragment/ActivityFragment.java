@@ -153,6 +153,8 @@ public class ActivityFragment extends BaseFragment {
 	private int initType;
 
 	private View tv_found_secretary;
+	
+	public int times = 0;
 
 	private boolean isPosition;
 	private boolean justFirstClick = true;
@@ -235,13 +237,23 @@ public class ActivityFragment extends BaseFragment {
 						}catch(Exception e ){
 						}
 						//当我是在无网络环境的状态下，并且已经展示出网络获取失败的界面效果下，此时在进行
-						//...在添加上无望的操作时，我们可以将其上拉的操作禁止掉
-						lv_activity_list.addFooterView(emptyView);
-						lv_activity_list.onLoadMoreOverFished();
+						//...在添加上无网的操作时，我们可以将其上拉的操作禁止掉
+//						lv_activity_list.addFooterView(emptyView);
+//						lv_activity_list.onLoadMoreOverFished();
+//						CustomToast.show(activity, "到底啦！", "小迈会加油搜集更多惊喜哦");
+						
+						if(times == 0){
+							lv_activity_list.onLoadMoreOverFished();
+							lv_activity_list.addFooterView(emptyView);
+				              CustomToast.show(activity, "到底啦！", "该关键字下的银行卡暂时只有这么多");
+				              times++;
+				            }else{
+				            	lv_activity_list.addFooterView(emptyView);
+				                lv_activity_list.onLoadMoreOverFished();
+				            }
+
 //						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 //						PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
-						CustomToast.show(activity, "到底啦！", "小迈会加油搜集更多惊喜哦");
-
 					} else {
 						/* 下面这一步代码应该耽误了半天时间
 						 * PullToRefreshManager.getInstance().onFooterRefreshComplete();
@@ -938,6 +950,9 @@ public class ActivityFragment extends BaseFragment {
 	 */
 	private void loadActivityList() {
 
+		this.first_enter =0;//保证了每次新的关键字搜索时都拥有 是否为第一次加载的 判断标签
+		this.times = 0;
+		
 		if (isShowDialog){
 			if(cPd == null ){
 				Log.d("dialog","生成新的dialog！");
@@ -1224,9 +1239,15 @@ public class ActivityFragment extends BaseFragment {
 							}catch(Exception e ){ 
 								
 							}finally{
-								lv_activity_list.addFooterView(emptyView);
-								CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
-								lv_activity_list.onLoadMoreOverFished();
+//								lv_activity_list.addFooterView(emptyView);
+//								CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
+//								lv_activity_list.onLoadMoreOverFished();
+								if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司
+									lv_activity_list.addFooterView(emptyView);
+									lv_activity_list.onLoadMoreOverFished();
+						          }else{
+						            //DO-OP
+						          }
 							}
 						}
 						lv_activity_list.setAdapter(activityAdapter);
@@ -1240,19 +1261,26 @@ public class ActivityFragment extends BaseFragment {
 							}catch(Exception e ){
 								//CustomToast.show(activity, "提示", "emptyView移除失败哦");
 							}finally{
-								lv_activity_list.addFooterView(emptyView);
-								CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
-								lv_activity_list.onLoadMoreOverFished();
+//								lv_activity_list.addFooterView(emptyView);
+//								CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
+//								lv_activity_list.onLoadMoreOverFished();
+								
+								if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司
+									lv_activity_list.addFooterView(emptyView);
+									lv_activity_list.onLoadMoreOverFished();
+						          }else{
+						            //DO-OP
+						          }
 								activityAdapter.notifyDataSetChanged();
 								/*activityAdapter.notifyDataSetInvalidated();*/
 								//lv_activity_list.setAdapter(activityAdapter);
 							}
 						}else{
-							/*activityAdapter.notifyDataSetChanged();*/
-							activityAdapter.notifyDataSetInvalidated();
-							
+							activityAdapter.notifyDataSetChanged();
 						}
 					}
+					this.first_enter = Integer.MAX_VALUE;
+					
 //					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 //					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 

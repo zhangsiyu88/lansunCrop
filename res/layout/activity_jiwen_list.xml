@@ -92,7 +92,7 @@
             android:layout_marginTop="260dp"
            android:layout_marginLeft="40dp"
            android:src="@anim/jiwen_boom" />
-         android:layout_marginTop="@dimen/margin_top_680" 
+      <!--    android:layout_marginTop="@dimen/margin_top_680"  -->
         
         
          <com.android.pc.ioc.image.RecyclingImageView

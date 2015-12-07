@@ -113,6 +113,7 @@ public class SharedDialog implements OnClickListener {
 		
 		configPlatforms();
 		
+		
 		setShareContent(title, content, imageUrl,currentActivityUrl);//分享的内容
 		
 		// 利用layoutInflater获得View
@@ -213,8 +214,8 @@ public class SharedDialog implements OnClickListener {
 		 * 微信个人分享
 		 */
 		WeiXinShareContent weixinContent = new WeiXinShareContent();
-		weixinContent.setShareContent(content);
-		weixinContent.setTitle(title);
+		weixinContent.setShareContent(title);
+		weixinContent.setTitle(content);
 		/*weixinContent.setTargetUrl(GlobalValue.TARGET_URL);*/
 		weixinContent.setTargetUrl(currentActivityUrl);
 		
@@ -224,6 +225,10 @@ public class SharedDialog implements OnClickListener {
 		}
 		mController.setShareMedia(weixinContent);
 		
+		
+		
+		
+		
 		/**
 		 * 朋友圈分享
 		 */
@@ -231,7 +236,10 @@ public class SharedDialog implements OnClickListener {
 		circleMedia.setShareContent(content);
 		
 		/*circleMedia.setTitle(title);*/ //---> 将分享内容修改至标题处
-		circleMedia.setTitle(content);
+		
+		String  circleShareContent = content+","+title;
+		circleMedia.setTitle(circleShareContent);
+		
 		/*circleMedia.setTargetUrl(GlobalValue.TARGET_URL);*/
 		circleMedia.setTargetUrl(currentActivityUrl);
 		
@@ -242,6 +250,13 @@ public class SharedDialog implements OnClickListener {
 		// circleMedia.setShareMedia(uMusic);
 		// circleMedia.setShareMedia(video);
 		mController.setShareMedia(circleMedia);
+		
+		/*
+		 * showPopwindow(View v, final Activity activity,
+		 *      String title,// 门店名称
+				String content,  //活动的名称
+				String imageUrl,  //photo的地址
+				String currentActivityUrl)  //分享的链接 */
 
 		/**
 		 * 设置QQ空间分享内容
@@ -277,7 +292,10 @@ public class SharedDialog implements OnClickListener {
 		 */
 	    TencentWbShareContent tencentWbShareContent = new TencentWbShareContent();
 	    tencentWbShareContent.setTitle(title);
-	    tencentWbShareContent.setShareContent(content+"."+currentActivityUrl);
+	    
+	    String newTencentShareContent = "#迈界惊喜好活动#我发现了一个超赞的活动,就在【"+title+"】,"+content+", 戳我戳我-->"+currentActivityUrl;
+	    tencentWbShareContent.setShareContent(newTencentShareContent);
+	    
 	    if (!TextUtils.isEmpty(imageUrl))
 	    	tencentWbShareContent.setShareImage(new UMImage(this.activity, imageUrl));
 	    tencentWbShareContent.setTargetUrl(currentActivityUrl);//腾讯微博分享的活动链接
@@ -290,8 +308,11 @@ public class SharedDialog implements OnClickListener {
 	    SinaShareContent sinaShareContent = new SinaShareContent();
 	    sinaShareContent.setTitle(title);
 	    
-	    sinaShareContent.setShareContent(content+"."+currentActivityUrl);//-->test
 	    
+	    String newSinaShareContent = "#迈界惊喜好活动#我发现了一个超赞的活动,就在【"+title+"】,"+"content"+", 戳我戳我-->"+currentActivityUrl;
+	    /*sinaShareContent.setShareContent(content+"."+currentActivityUrl);//-->test*/	
+	    sinaShareContent.setShareContent(newSinaShareContent);
+    
 	    if (!TextUtils.isEmpty(imageUrl))
 	    	sinaShareContent.setShareImage(new UMImage(this.activity, imageUrl));
 	    
@@ -300,6 +321,13 @@ public class SharedDialog implements OnClickListener {
 	    /*sinaShareContent.setAppWebSite(currentActivityUrl);*///-->test
 	    
 	    this.mController.setShareMedia(sinaShareContent);
+	    
+		/*
+		 * showPopwindow(View v, final Activity activity,
+		 *      String title,// 门店名称
+				String content,  //活动的名称
+				String imageUrl,  //photo的地址
+				String currentActivityUrl)  //分享的链接 */
 	}
 
 	@Override

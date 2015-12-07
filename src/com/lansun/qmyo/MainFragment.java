@@ -78,6 +78,7 @@ public class MainFragment extends Fragment {
 		@InjectBinder(method = "click", listeners = OnClick.class)
 		private RelativeLayout fl_home_top_menu, rl_top_r_top_menu, rl_bg,rl_top_bg;
 		
+		//执行click的操作
 		@InjectBinder(method = "click", listeners = OnClick.class)
 		private View bottom_secretary, bottom_found, bottom_mine,bottom_home;
 		private TextView tv_home_icon, tv_secretary_icon, tv_found_icon, tv_mine_icon,
@@ -119,7 +120,10 @@ public class MainFragment extends Fragment {
 		initView(rootView);
 		initFrag();
 		
-		if(mPosition != Integer.MAX_VALUE){
+		/**
+		 * 由其他页面跳转至主界面的四大页面中的指定页面时，执行下面的操作
+		 */
+		if(mPosition != Integer.MAX_VALUE){  
 			//vp_mainfrag.setCurrentItem(mPosition);
 			
 			//底部导航栏的button颜色对应变换
@@ -237,6 +241,14 @@ public class MainFragment extends Fragment {
 		case R.id.bottom_secretary:
 			//vp_mainfrag.setCurrentItem(1);
 			vp_mainfrag.setCurrentItem(1,false);
+			
+			/*
+			 * 点击私人秘书页面时，发送广播通知秘书页进行访问，判断秘书信息是否已录入
+			 */
+			activity.sendBroadcast(new Intent("com.lansun.qmyo.checkMySecretary"));
+			System.out.println("点击私人秘书按钮时，MainFragment的  发送    提示检测私人秘书信息的广播了");
+			
+			
 			//setBottomIconColor(v.iv_secretary_icon,v.iv_home_icon, v.iv_found_icon, v.iv_mine_icon);
 			setBottomTextColor(v.tv_secretary_icon,v.tv_home_icon, v.tv_found_icon, v.tv_mine_icon);
 			setBottomIconColorForced(v.iv_secretary_icon,v.iv_home_icon, v.iv_found_icon, v.iv_mine_icon,

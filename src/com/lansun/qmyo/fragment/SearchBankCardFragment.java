@@ -92,6 +92,8 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 	private BandPuzzySearchAdapter adapter;
 	private RecyclerView band_puzzy_recycle;
 	private String query_name;
+	private int times = 0;
+	
 	private static List<String> list=new ArrayList<>();
 	private Handler handlerPuzzy=new Handler(){
 		public void handleMessage(android.os.Message msg) {
@@ -122,8 +124,14 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 				}
 				
 				if(bankList.getData().size()<10){
-					lv_search_bank_card.onLoadMoreOverFished();
-					CustomToast.show(activity, "到底啦！", "该关键词下关联的 银行卡暂时只有这么多");
+					if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司
+						lv_search_bank_card.onLoadMoreOverFished();
+					}else{
+						//DO-OP
+					}
+//					lv_search_bank_card.onLoadMoreOverFished();
+//					CustomToast.show(activity, "到底啦！", "该关键词下关联的 银行卡暂时只有这么多");
+					
 				}
 				
 				break;
@@ -218,6 +226,8 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 //		lv_search_bank_card.onLoadMoreOverFished();
 		lv_search_bank_card.setOnRefreshListener(new OnRefreshListener() {
 			
+			
+
 			@Override
 			public void onRefreshing() {
 				
@@ -230,8 +240,13 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 					if (bankList.getNext_page_url()== "null"||TextUtils.isEmpty(bankList.getNext_page_url())) {
 //						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 //						PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
-						CustomToast.show(activity, "到底啦！", "该关键字下的银行卡暂时只有这么多");
-
+						if(times == 0){
+							lv_search_bank_card.onLoadMoreOverFished();
+							CustomToast.show(activity, "到底啦！", "该关键字下的银行卡暂时只有这么多");
+							times++;
+						}else{
+							lv_search_bank_card.onLoadMoreOverFished();
+						}
 					} else {
 						String next_page_url = bankList.getNext_page_url();
 						int from = next_page_url.indexOf("[");
@@ -454,6 +469,7 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 				onKeyHideAlways(view);
 				back();
 			} else {//否则,前去搜索 (后面会在当前界面上展示银行卡列表)
+				
 				et_home_search.clearFocus();
 				lv_search_bank_card.setVisibility(View.VISIBLE);//listView展示出来
 				v.puzz_floor.setVisibility(View.GONE);//模糊搜素的内容去除掉
@@ -487,6 +503,10 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 	 * @param search_Name
 	 */
 	private void search(String search_Name) {
+		
+		this.first_enter =0;//保证了每次新的关键字搜索时都拥有 是否为第一次加载的 判断标签
+		this.times = 0;
+		
 		bankcardAdapter = null;
 		//隐藏为空的时候view层
 		v.ll_bank_card_tip.setVisibility(View.GONE);
@@ -695,9 +715,16 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 							lv_search_bank_card.setVisibility(View.VISIBLE);*/
 						}
 						if(bankList.getData().size()<10){
-							lv_search_bank_card.onLoadMoreOverFished();
-							CustomToast.show(activity, "到底啦！", "该关键词下关联的 银行卡暂时只有这么多");
+//							if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司
+//								lv_search_bank_card.onLoadMoreOverFished();
+//							}else{
+//								//DO-OP
+//							}
+							
+							//lv_search_bank_card.onLoadMoreOverFished();
+							//CustomToast.show(activity, "到底啦！", "该关键词下关联的 银行卡暂时只有这么多");
 						}
+						this.first_enter = Integer.MAX_VALUE;//当case 1 确实进行了页面的加载活动，将此标签置为非0
 						
 					}else {
 						handlerPuzzy.sendEmptyMessage(3);//-->搜索无结果
@@ -706,10 +733,12 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 					handlerPuzzy.sendEmptyMessage(1);//-->adapter.notifyDataSetChanged
 				}
 //				PullToRefreshManager.getInstance().onFooterRefreshComplete();
+			
+				
 				break;
 
 			}
-		}
+		}//else{  }访问失败的处理
 	}
 	
 	@Override//@InjectMethod(@InjectListener(ids = 2131296342, listeners = OnClick.class))

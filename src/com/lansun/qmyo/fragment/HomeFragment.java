@@ -291,7 +291,7 @@ import com.squareup.okhttp.Response;
 	public void onCreate(Bundle savedInstanceState) {
 		
 		broadCastReceiver = new HomeRefreshBroadCastReceiver();
-		System.out.println("注册广播 ing");
+		System.out.println("首页 注册广播 ing");
 		filter = new IntentFilter();
 		filter.addAction("com.lansun.qmyo.refreshHome");
 		filter.addAction("com.lansun.qmyo.refreshTheIcon");
@@ -907,6 +907,7 @@ import com.squareup.okhttp.Response;
 				HashMap<String, String> hashMap = new HashMap<String,String>();
 				   for(HomeAdPhotoData data: photoList.getData()){
 					    hashMap = new HashMap<String,String>();
+					    hashMap.put("photoDataWebViewUrl", data.getUrl());
 				    	hashMap.put("photoDataPhotoUrl",data.getPhoto()); 
 				    	hashMap.put("photoDataTag",String.valueOf(data.getTag())); 
 				    	hashMap.put("photoDataActivityId",data.getActivity_id()); 
@@ -1411,6 +1412,12 @@ import com.squareup.okhttp.Response;
 				case 14:
 					//NO-OP
 					break;
+				case 21:
+					fragment = new PromoteDetailFragment();
+					bundle.putString("loadUrl", homePhotoList.get(mPosition%homePhotoList.size()).get("photoDataWebViewUrl"));
+					fragment.setArguments(bundle);	
+					break;
+					
 				default:
 					break;
 				}
@@ -1438,6 +1445,7 @@ import com.squareup.okhttp.Response;
 				System.out.println("首页收到局部刷新的广播了");
 				
 				refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_home_list);
+				
 				v.iv_card.setVisibility(View.VISIBLE);//原本右边银行卡可见
 				v.iv_top_card.setVisibility(View.VISIBLE);//滑动出现的右边银行卡可见
 				v.tv_home_experience.setVisibility(View.GONE);//原本  体验不可见

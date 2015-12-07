@@ -252,9 +252,7 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 			config.setHead(head);
 			LinkedHashMap<String, String> params = new LinkedHashMap<>();
 			Log.i("MainBankCard的值", "MainBankCard的值：" +App.app.getData("MainBankcard"));
-			
 			params.put("bankcard_id", App.app.getData("MainBankcard"));
-			
 			Log.d("原始主卡的id为:  ", "原始主卡的id为:  "+App.app.getData("MainBankcard"));
 			
 			//在这里从搜索银行卡页回来，自己跑过去请求了一下，进行了选卡操作！！！
@@ -595,6 +593,8 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 				currentCardId = data.getBankcard().getId();
 				App.app.setData("MainBankcard", currentCardId+"");//只要进入就将当前的原始主卡ID写入到本地文件中
 				Log.d("","存入到本地的MainBankcard为: "+App.app.getData("MainBankcard"));
+				
+				App.app.setData("MainBankcardForTest", currentCardId+"");
 				
 				v.ll_bank_currentCard.setVisibility(View.VISIBLE);
 				v.tv_bank_card_name.setText(data.getBank().getName());

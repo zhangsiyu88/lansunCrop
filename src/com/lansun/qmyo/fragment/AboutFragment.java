@@ -22,7 +22,9 @@ import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
+import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.TelDialog;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -52,6 +54,10 @@ public class AboutFragment extends BaseFragment {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_about, null);
 		Handler_Inject.injectOrther(this, rootView);
+		
+		LogUtils.toDebugLog("", "MainBankcard的值为：  "+ App.app.getData("MainBankcard"));
+//		CustomToast.show(activity, "MainBankcard的值为：", App.app.getData("MainBankcard"));
+		
 		return rootView;
 	}
 
@@ -160,9 +166,7 @@ public class AboutFragment extends BaseFragment {
 	}
 	
 	/*Uri uri = Uri.parse(urlText.getText().toString());
-
 	Intent intent = new Intent(Intent.ACTION_VIEW,uri);
-
 	startActivity(intent);*/
 	
 /*	　原理同 分享到其他程序一样。 都要用 Intent 来传递数据到其他程序。 

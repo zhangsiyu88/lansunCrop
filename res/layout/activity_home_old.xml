@@ -33,7 +33,7 @@
                 android:listSelector="@android:color/transparent"
                 android:scrollbars="none"
                 /><!-- style="@style/w_h_full"  -->
-               </LinearLayout> 
+         </LinearLayout> 
                 
             <!-- 这个暂时被gone掉的横条就是  将来动画要让其展现的横条 -->
             <include

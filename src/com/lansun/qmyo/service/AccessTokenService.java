@@ -2,6 +2,7 @@ package com.lansun.qmyo.service;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Handler;
@@ -26,6 +27,7 @@ import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
+import com.lansun.qmyo.R;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.biz.ServiceAllBiz;
 import com.lansun.qmyo.domain.Token;
@@ -34,6 +36,7 @@ import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.event.entity.RefreshTokenEntity;
 import com.lansun.qmyo.fragment.BaseFragment;
 import com.lansun.qmyo.fragment.ExperienceSearchFragment;
+import com.lansun.qmyo.fragment.MineBankcardFragment;
 import com.lansun.qmyo.fragment.MineFragment;
 import com.lansun.qmyo.utils.CustomDialog;
 import com.lansun.qmyo.utils.GlobalValue;
@@ -81,23 +84,78 @@ public class AccessTokenService extends Service {
 	}
 
 	private void refreshToken() {
-		InternetConfig config = new InternetConfig();
-		config.setKey(0);
-		FastHttpHander.ajaxGet(GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"),config, this);
+	
+//      //替换为： 下面的HttpUtils的操作
+//		
+//		//1.刷新token
+//		InternetConfig config = new InternetConfig();
+//		config.setKey(0);
+//		FastHttpHander.ajaxGet(GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"),config, this);
 		
-		/*HttpUtils httpUtils = new HttpUtils();
+		
+		
+//		//2. 重复绑定主卡
+//		//刷新token的同时，将主卡再一次绑定至 用的token上，供测试排查问题使用                         -->Yeun.zhang 12-04
+//		if(App.app.getData("MainBankcard")!= null &&
+//			App.app.getData("MainBankcard")!= "null"&&
+//			App.app.getData("MainBankcard")!= ""&& 
+//			!TextUtils.isEmpty(App.app.getData("MainBankcard"))){//App.app.getData("MainBankcard")不为 空
+//			
+//			InternetConfig config_addcard = new InternetConfig();
+//			config_addcard.setKey(2);
+//			HashMap<String, Object> header = new HashMap<>();
+//			header.put("Authorization", "Bearer "+ App.app.getData("access_token"));
+//			config_addcard.setHead(header);
+//			LinkedHashMap<String, String> params = new LinkedHashMap<>();
+//			Log.i("MainBankcard的值", "MainBankcard的值：" +App.app.getData("MainBankcard"));
+//			params.put("bankcard_id", App.app.getData("MainBankcard"));
+//			Log.d("原始主卡的id为:  ", "原始主卡的id为:  "+App.app.getData("MainBankcard"));
+//			FastHttpHander.ajax(GlobalValue.URL_SELECT_BANKCARD,  params, config_addcard, this);
+//			Handler_Inject.injectFragment(AccessTokenService.this, null);
+//		}
+		
+		
+		
+		HttpUtils httpUtils = new HttpUtils();
 		RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
 			@Override
 			public void onFailure(HttpException e, String result ) {
+				
+				
+				if(result.toString().contains("false") ||result.toString().equals(false)||result.toString()=="false"){
+					Toast.makeText(App.app,"来自启动自服务的提示 ：您的临时用户身份已被清掉！请重新体验，或注册登录！", Toast.LENGTH_LONG).show();
+					/**
+					 * 一旦发现临时用户的secret去访问获取token失败，那么需要立即将secret和token全部清除掉，以便于后面前去生成新的体验用户
+					 */
+					BaseFragment.clearTempTokenAndSercet();
+					BaseFragment.clearTokenAndSercet();
+					
+					
+					ExperienceSearchFragment fragment = new ExperienceSearchFragment();
+					FragmentEntity entity = new FragmentEntity();
+					entity.setFragment(fragment);
+					EventBus.getDefault().post(entity);
+					BaseFragment.clearTempTokenAndSercet();
+				}
+				
+				
 			}
 			@Override
 			public void onSuccess(ResponseInfo<String> result) {
 				Token token = Handler_Json.JsonToBean(Token.class,result.toString());
 				App.app.setData("access_token", token.getToken());
 				CustomToast.show(getApplicationContext(), "提示", "令牌更新成功！");
+				
+				//混杂着FastHttpHander的网络访问
+				InternetConfig config = new InternetConfig();
+				config.setKey(1);
+				HashMap<String, Object> head = new HashMap<String, Object>();
+				head.put("Authorization", "Bearer " + token.getToken());
+				config.setHead(head);
+				FastHttpHander.ajaxGet(GlobalValue.URL_FRESHEN_USER, config,this);
 			}
 		};
-		httpUtils.send(HttpMethod.GET, GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"), null,requestCallBack );*/
+		httpUtils.send(HttpMethod.GET, GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"), null,requestCallBack );
 	   
 	}
 
@@ -186,8 +244,37 @@ public class AccessTokenService extends Service {
 				App.app.setData("user_avatar",GlobalValue.user.getAvatar());
 				App.app.setData("user_nickname",GlobalValue.user.getNickname());
 				
+				
+				//刷新token的同时，将主卡再一次绑定至 用的token上，供测试排查问题使用                         -->Yeun.zhang 12-04
+				if(App.app.getData("MainBankcard")!= null &&
+						App.app.getData("MainBankcard")!= "null"&&
+						App.app.getData("MainBankcard")!= ""&& 
+						!TextUtils.isEmpty(App.app.getData("MainBankcard"))){//App.app.getData("MainBankcard")不为 空
+						
+						InternetConfig config_addcard = new InternetConfig();
+						config_addcard.setKey(2);
+						HashMap<String, Object> header = new HashMap<>();
+						header.put("Authorization", "Bearer "+ App.app.getData("access_token"));
+						config_addcard.setHead(header);
+						LinkedHashMap<String, String> params = new LinkedHashMap<>();
+						Log.i("MainBankcard的值", "MainBankcard的值：" +App.app.getData("MainBankcard"));
+						params.put("bankcard_id", App.app.getData("MainBankcard"));
+						Log.d("原始主卡的id为:  ", "原始主卡的id为:  "+App.app.getData("MainBankcard"));
+						FastHttpHander.ajax(GlobalValue.URL_SELECT_BANKCARD,  params, config_addcard, this);
+						Handler_Inject.injectFragment(AccessTokenService.this, null);
+					}
+				
 				break;
 
+			case 2:
+				if ("true".equals(r.getContentAsString())) {
+					//CustomToast.show(AccessTokenService.this, R.string.tip,"主卡已恢复！");
+					LogUtils.toDebugLog("accessTokenSer", "token更新后，主卡绑定 成功！");
+				} else {
+					//CustomToast.show(AccessTokenService.this, "网络异常","主卡恢复失败，请再次尝试");
+					LogUtils.toDebugLog("accessTokenSer", "token更新后，主卡绑定 失败！！");
+				}
+				break;
 			}
 		}
 	}

@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.OnScrollListener;
+//import android.support.v4.widget.SwipeRefreshLayout;
+//import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+//import android.support.v4.app.Fragment;
+//import android.support.v7.widget.RecyclerView;
+//import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,8 +24,10 @@ import com.android.pc.util.Handler_Inject;
 import com.google.gson.Gson;
 import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
-import com.lansun.qmyo.adapter.question.QuestionAdapter;
-import com.lansun.qmyo.adapter.question.QuestionAdapter.OnItemClickCallBack;
+import com.lansun.qmyo.adapter.QuestionListAdapter;
+import com.lansun.qmyo.adapter.QuestionListAdapter.OnItemClickCallBack;
+//import com.lansun.qmyo.adapter.question.QuestionAdapter;
+//import com.lansun.qmyo.adapter.question.QuestionAdapter.OnItemClickCallBack;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.QuestionDetailItem;
 import com.lansun.qmyo.domain.SecretaryQuestions;
@@ -35,23 +37,27 @@ import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExpandTabView;
+import com.lansun.qmyo.view.TestMyListView;
+import com.lansun.qmyo.view.TestMyListView.OnRefreshListener;
 import com.lansun.qmyo.view.ViewRight;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 /**
- * 
- * @author bhxx
- * 
+ * @author Yeun.zhang
  */
-public class MineSecretaryFragment extends BaseFragment implements OnItemClickCallBack,OnRefreshListener{
-	private RecyclerView question_item_recycle;
-	private QuestionAdapter question_adapter;
+public class MineSecretaryListFragment extends BaseFragment implements OnItemClickCallBack{//,OnRefreshListener
+	/*private RecyclerView question_item_recycle;
+	 private QuestionAdapter question_adapter; 不使用原先的RecycleView*/
+	
+	private TestMyListView question_item_recycle;
+	private QuestionListAdapter question_adapter;
 	private LinearLayoutManager manager;
 	private List<QuestionDetailItem> lists;
 	private SecretaryQuestions list;
-	private SwipeRefreshLayout swiperefresh;
+	private int times;
+	//private SwipeRefreshLayout swiperefresh;
 	@InjectAll
 	Views v;
 	private String[] types = new String[] { "", "travel", "shopping", "party",
@@ -71,11 +77,18 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 				break;
 			case 1:
 				break;
+			case 5:
+				question_item_recycle.onLoadMoreFished();
+				break;
+			case 6:
+				question_item_recycle.onLoadMoreOverFished();
+				break;
+				
 			case 10:
 				setEmptyView(0);
 				break;
 			}
-			swiperefresh.setRefreshing(false);
+			//swiperefresh.setRefreshing(false);
 		};
 	};
 	private LinearLayout empty_liner;
@@ -84,50 +97,85 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
-		View rootView = inflater.inflate(R.layout.activity_mine_secretary, container,false);
+		View rootView = inflater.inflate(R.layout.activity_mine_secretary_list, container,false);
 		initView(rootView);
 		Handler_Inject.injectFragment(this, rootView);
-		setListener();
-		return rootView;
-	}
-	private void setListener() {
-		question_item_recycle.setOnScrollListener(new OnScrollListener() {
+		
+		//setListener();
+		question_item_recycle.setOnRefreshListener(new OnRefreshListener() {
+			
+			
+
 			@Override
-			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-				super.onScrolled(recyclerView, dx, dy);
-				lastItem=manager.findLastVisibleItemPosition();
+			public void onRefreshing() {
+				question_item_recycle.onRefreshFinshed(true);
 			}
+			
 			@Override
-			public void onScrollStateChanged(RecyclerView recyclerView,
-					int newState) {
-				super.onScrollStateChanged(recyclerView, newState);
-				if (newState==0) {
-					if (lastItem==question_adapter.getItemCount()-1) {
-						if (lastItem<9) {
-							swiperefresh.setRefreshing(false);
-						}else {
-							swiperefresh.setRefreshing(true);
-							String refresh=String.valueOf(list.getNext_page_url());
-							
-							
-							if ("".equals(refresh)||"null".equals(refresh)) {
-								CustomToast.show(getActivity(), R.string.none_data_tip,R.string.none_data_content);
-								swiperefresh.setRefreshing(false);
-							}else {
-								startSearch(refresh+"&type="+currentType);
-								
-								LogUtils.toDebugLog("refreshUrl", refresh+"&type="+currentType);
-							}
-						}
-					}else {
-						swiperefresh.setRefreshing(false);
+			public void onLoadingMore() {
+				
+				String refresh=String.valueOf(list.getNext_page_url());
+				if ("".equals(refresh)||"null".equals(refresh)) {
+					if(times == 0){
+						CustomToast.show(getActivity(), R.string.none_data_tip,R.string.none_data_content);
+						question_item_recycle.onLoadMoreOverFished();
+						times++;
+					}else{
+						question_item_recycle.onLoadMoreOverFished();
 					}
+				}else {
+					startSearch(refresh+"&type="+currentType);
+					LogUtils.toDebugLog("refreshUrl", refresh+"&type="+currentType);
 				}
 			}
 		});
+		
+		
+		return rootView;
 	}
+	
 	/**
-	 * 娣诲姞鎴栬�呯Щ闄mptyview
+	 * RecycleView的对象暂时停用
+	 * 自定义的ListView已经完成了需要的监听
+	 */
+//	private void setListener() {
+//		question_item_recycle.setOnScrollListener(new OnScrollListener() {
+//			@Override
+//			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//				super.onScrolled(recyclerView, dx, dy);
+//				lastItem=manager.findLastVisibleItemPosition();
+//			}
+//			@Override
+//			public void onScrollStateChanged(RecyclerView recyclerView,
+//					int newState) {
+//				super.onScrollStateChanged(recyclerView, newState);
+//				if (newState==0) {
+//					if (lastItem==question_adapter.getItemCount()-1) {
+//						if (lastItem<9) {
+//							swiperefresh.setRefreshing(false);
+//						}else {
+//							swiperefresh.setRefreshing(true);
+//							String refresh=String.valueOf(list.getNext_page_url());
+//							
+//							
+//							if ("".equals(refresh)||"null".equals(refresh)) {
+//								CustomToast.show(getActivity(), R.string.none_data_tip,R.string.none_data_content);
+//								swiperefresh.setRefreshing(false);
+//							}else {
+//								startSearch(refresh+"&type="+currentType);
+//								
+//								LogUtils.toDebugLog("refreshUrl", refresh+"&type="+currentType);
+//							}
+//						}
+//					}else {
+//						swiperefresh.setRefreshing(false);
+//					}
+//				}
+//			}
+//		});
+//	}
+	/**
+	 * 设置 emptyview
 	 * @param state 0 add 1 remove
 	 */
 	private void setEmptyView(int state) {
@@ -140,13 +188,16 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 	private void initView(View rootView) {
 		empty_liner=(LinearLayout)rootView.findViewById(R.id.empty_liner);
 		lists=new ArrayList<>();
-		question_item_recycle=(RecyclerView)rootView.findViewById(R.id.lv_secretary_list);
+		/*question_item_recycle=(RecyclerView)rootView.findViewById(R.id.lv_secretary_list);
 		manager=new LinearLayoutManager(getActivity());
-		question_item_recycle.setLayoutManager(manager);
+		question_item_recycle.setLayoutManager(manager);*/
 		
-		question_adapter=new QuestionAdapter(lists,MineSecretaryFragment.this);
+		question_item_recycle=(TestMyListView)rootView.findViewById(R.id.lv_secretary_list);
 		
+		//注意下面的数据源是 lists（末尾多个s）
+		question_adapter=new QuestionListAdapter(activity,lists,MineSecretaryListFragment.this);
 		question_item_recycle.setAdapter(question_adapter);
+		
 		rootView.findViewById(R.id.look_help).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -158,8 +209,8 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 				EventBus.getDefault().post(entity);
 			}
 		});
-		swiperefresh=(SwipeRefreshLayout)rootView.findViewById(R.id.swiperefresh);
-		swiperefresh.setOnRefreshListener(this);
+//		swiperefresh=(SwipeRefreshLayout)rootView.findViewById(R.id.swiperefresh);
+//		swiperefresh.setOnRefreshListener(this);
 	}
 
 	private HashMap<Integer, String> holder_button = new HashMap<>();
@@ -196,6 +247,8 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 				}
 				currentType = types[position];
 				startSearch(refreshUrl+"type="+currentType);
+				times = 0;
+				first_enter = 0;
 				onRefresh(viewRight, showText);
 			}
 		});
@@ -214,17 +267,31 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 				@Override
 				public void onResponse(Response response) throws IOException {
 					if (response.isSuccessful()) {
+						
+						handleOK.sendEmptyMessage(5);
+						
+						
 						String json=response.body().string();
 						Gson gson=new Gson();
 						list = gson.fromJson(json, SecretaryQuestions.class);
 						if (list.getData().size()==0) {
 							handleOK.sendEmptyMessage(10);
 						}else {
+							if(list.getData().size()<10){
+								if(first_enter == 0){//首次进来，并且数据数目少于10条
+									times++;
+									handleOK.sendEmptyMessage(6);
+								}
+							}else{
+								//NO-OP
+							}
 							for (QuestionDetailItem item:list.getData()) {
 								lists.add(item);
 							}
 							handleOK.sendEmptyMessage(0);
 						}
+						first_enter = Integer.MAX_VALUE;
+
 					}
 				}
 				@Override
@@ -273,10 +340,10 @@ public class MineSecretaryFragment extends BaseFragment implements OnItemClickCa
 		event.setFragment(fragment);
 		EventBus.getDefault().post(event);
 	}
-	@Override
-	public void onRefresh() {
-		if (manager.findFirstVisibleItemPosition()==0) {
-			swiperefresh.setRefreshing(false);
-		}
-	}
+//	@Override
+//	public void onRefresh() {
+//		if (manager.findFirstVisibleItemPosition()==0) {
+//			swiperefresh.setRefreshing(false);
+//		}
+//	}
 }

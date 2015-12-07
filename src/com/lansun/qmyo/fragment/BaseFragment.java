@@ -54,6 +54,7 @@ public class BaseFragment extends Fragment implements OnTouchListener{
 	protected int refreshKey ;
 	protected LinkedHashMap<String, String> refreshParams;
 	protected TextView progress_text;
+	protected int first_enter = 0;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -324,8 +325,10 @@ public class BaseFragment extends Fragment implements OnTouchListener{
 	public void onPause() {
 		InputMethodManager imm = (InputMethodManager) getActivity()
 				.getSystemService(Context.INPUT_METHOD_SERVICE);
-		// imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+		
+		/* imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);*/
 		imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+		
 		super.onPause();
 	}
 

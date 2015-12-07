@@ -136,7 +136,7 @@
     <string name="exit_login">退出登录</string>
     <string name="replay">回复</string>
     <string name="store">门店</string>
-    <string name="qmyo_version">迈界 V1.2.6</string>
+    <string name="qmyo_version">迈界 V1.2.7</string>
     <string name="qmyo_desc">收集世界各地惊喜\n伴随迈友走遍世界</string>
     <string name="qmyo_wx">迈界微信公众号：<Data><![CDATA[<font color="#9DC14F">qmyoclub</font>]]></Data></string>
     <string name="qmyo_net">迈界官网：<Data><![CDATA[<font color="#9DC14F">www.qmyo.com</font>]]></Data></string>
@@ -334,7 +334,7 @@
     <string name="v16_bd">V16榜单</string>
     <string name="net_error_refresh">网络获取失败，点击重新获取</string>
     <string name="net_error_check_net">网络数据获取失败,请检查网络</string>
-    <string name="use_city">是否使用当前AGPS定位城市？</string>
+    <string name="use_city">是否使用您当前的定位城市？</string>
     <string name="mine_coupons">我的优惠券</string>
     <string name="up_dataing">上传数据中...</string>
     <string name="go_look">去看看吧</string>

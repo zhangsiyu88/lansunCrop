@@ -107,7 +107,9 @@ public class SharedFragment extends BaseFragment {
 		configPlatforms();
 		
 		/*setShareContent(getString(R.string.app_name),getString(R.string.shared_comtent), R.drawable.share_app);*/
-		setShareContent(getString(R.string.app_name),getString(R.string.the_new_shared_comtent), R.drawable.share_app);
+		/*setShareContent(getString(R.string.app_name),getString(R.string.the_new_shared_comtent), R.drawable.share_app);*/
+		setShareContent("推荐一个找优惠的应用","在这里可以找到世界各地最惊喜的活动，你也试试", R.drawable.app);
+		
 		
 	}
 
@@ -167,7 +169,11 @@ public class SharedFragment extends BaseFragment {
 		 */
 		CircleShareContent circleMedia = new CircleShareContent();
 		circleMedia.setShareContent(content);
-		circleMedia.setTitle(title +"-" +content);
+		
+		/*circleMedia.setTitle(title +"-" +content);*/
+		circleMedia.setTitle(content);
+		
+		
 		urlImage = new UMImage(activity, resId);
 		//weixinContent.setShareMedia(urlImage);  //写错啦！
 		// circleMedia.setShareMedia(uMusic);
