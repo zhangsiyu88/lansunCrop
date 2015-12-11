@@ -42,11 +42,14 @@ import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectPullRefresh;
 import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.internet.FastHttp;
+import com.android.pc.ioc.internet.FastHttpHander;
+import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.GifMovieView;
 import com.android.pc.ioc.view.PullToRefreshManager;
 import com.android.pc.ioc.view.listener.OnItemClick;
 import com.android.pc.util.Handler_Inject;
+import com.android.pc.util.Handler_Json;
 import com.google.gson.Gson;
 import com.lansun.qmyo.MainActivity;
 import com.lansun.qmyo.MainFragment;
@@ -61,6 +64,7 @@ import com.lansun.qmyo.domain.ActivityList;
 import com.lansun.qmyo.domain.ActivityListData;
 import com.lansun.qmyo.domain.Data;
 import com.lansun.qmyo.domain.Intelligent;
+import com.lansun.qmyo.domain.Token;
 import com.lansun.qmyo.domain.position.City;
 import com.lansun.qmyo.domain.position.Position;
 import com.lansun.qmyo.domain.service.ServiceData;
@@ -71,7 +75,9 @@ import com.lansun.qmyo.fragment.BaseFragment;
 import com.lansun.qmyo.fragment.MineBankcardFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
 import com.lansun.qmyo.listener.RequestCallBack;
+//import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lansun.qmyo.net.OkHttp;
+import com.lansun.qmyo.utils.DataUtils;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
@@ -84,6 +90,10 @@ import com.lansun.qmyo.view.ExpandTabView;
 import com.lansun.qmyo.view.MyListView;
 import com.lansun.qmyo.view.ViewLeft;
 import com.lansun.qmyo.view.ViewMiddle;
+import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.ResponseInfo;
+import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 /**
@@ -730,8 +740,52 @@ public class NewBrandFragment extends BaseFragment{
 //		PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 //		PullToRefreshManager.getInstance().onFooterRefreshComplete();
 		
-		
+		/**
+		 * 大前提： App.app.getData("LastRefreshTokenTime")不为 空
+		 */
+		if(App.app.getData("LastRefreshTokenTime")!=null&&
+				!App.app.getData("LastRefreshTokenTime").equals("")&&
+				!TextUtils.isEmpty(App.app.getData("LastRefreshTokenTime"))){
 		//去获取列表
+		long LastRefreshTokenTime = Long.valueOf(App.app.getData("LastRefreshTokenTime"));
+		LogUtils.toDebugLog("LastRefreshTokenTime", "上次最近更新token服务的时刻： "+DataUtils.dataConvert(LastRefreshTokenTime));
+		LogUtils.toDebugLog("LastRefreshTokenTime", "两次更新token的时间差"+((System.currentTimeMillis()-LastRefreshTokenTime))/1000/60);
+		
+		if((System.currentTimeMillis()-LastRefreshTokenTime)>15*60*1000){
+			//进行刷新token的操作
+			HttpUtils httpUtils = new HttpUtils();
+			com.lidroid.xutils.http.callback.RequestCallBack<String> requestCallBack = new com.lidroid.xutils.http.callback.RequestCallBack<String>() {
+				@Override
+				public void onFailure(HttpException e, String result) {
+				}
+				@Override
+				public void onSuccess(ResponseInfo<String> result) {
+					Token token = Handler_Json.JsonToBean(Token.class,result.toString());
+					App.app.setData("access_token", token.getToken());
+					App.app.setData("LastRefreshTokenTime",String.valueOf(System.currentTimeMillis()));
+					
+					LogUtils.toDebugLog("LastRefreshTokenTime", 
+							"此次最近更新token服务的时刻： "+DataUtils.dataConvert(Long.valueOf(App.app.getData("LastRefreshTokenTime"))));
+					LogUtils.toDebugLog("LastRefreshTokenTime", "在NewBrandFragment中令牌更新操作成功！");
+					
+//					InternetConfig config = new InternetConfig();
+//					config.setKey(key);
+//					HashMap<String, Object> head = new HashMap<>();
+//					head.put("Authorization", "Bearer " + App.app.getData("access_token"));
+//					
+//					config.setHead(head);
+//					FastHttpHander.ajaxGet(url, params, config, this);
+					startSearchData(GlobalValue.URL_ALL_ACTIVITY,App.app.getData("select_cityCode"),HODLER_TYPE,position_bussness,intelligentStr,GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
+//					if (view != null) {
+//						setProgress(view);
+//						startProgress();
+//					}
+					return;
+				}
+			};
+			httpUtils.send(HttpMethod.GET, GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"), null,requestCallBack );
+		}
+	}
 		startSearchData(GlobalValue.URL_ALL_ACTIVITY,App.app.getData("select_cityCode"),HODLER_TYPE,position_bussness,intelligentStr,GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
 		
 		

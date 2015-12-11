@@ -296,10 +296,11 @@ public class MineStoreFragment extends BaseFragment {
 				}
 				
 				Log.i("从服务器上获取的list",r.getContentAsString());
+				HashMap<String, String> map = new HashMap<String, String>();
 				
 				if (list.getData() != null) {//返回数据正常，则将其数据存到dataList
 					for (Shop s : list.getData()) {
-						HashMap<String, String> map = new HashMap<String, String>();
+						map = new HashMap<String, String>();
 						map.put("tv_store_item_name", s.getName());
 						map.put("shop_id", s.getId() + "");
 						map.put("tv_store_item_num", s.getAttention() + "");
@@ -325,8 +326,7 @@ public class MineStoreFragment extends BaseFragment {
 					 if (adapter == null) {
 							/*adapter = new StoreAdapter(lv_mine_store, dataList,R.layout.activity_store_item);*/
 						 adapter = new SwipeListMineStoreAdapter(activity,dataList);
-							
-							lv_mine_store.setAdapter(adapter);
+						 lv_mine_store.setAdapter(adapter);
 							
 					 } else {
 						    adapter.notifyDataSetChanged();

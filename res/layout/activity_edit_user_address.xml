@@ -74,7 +74,9 @@
             android:layout_marginLeft="@dimen/l_r_14"
             android:background="@null"
             android:hint="@string/please_enter_address"
-            android:singleLine="true" />
+            android:singleLine="true" 
+            android:textColor="@color/text_gray1"
+            android:textColorHint="@color/line_bg"/>
     </LinearLayout>
 
     <TextView

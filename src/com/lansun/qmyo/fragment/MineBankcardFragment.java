@@ -201,7 +201,7 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 			}
 			@Override
 			public void onLoadingMore() {//目前只有上拉加载有效
-					if (list != null) {
+					if (list!=null) {
 					if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url()=="null"||list.getNext_page_url().equals("")) {
 						while(times <1){
 							CustomToast.show(activity, "到底啦!", "您添加的银行卡目前只有这么多");
@@ -212,6 +212,8 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 						refreshCurrentList(list.getNext_page_url(), null, 0,lv_ban_card_other);
 						isPull = true;
 					}
+				}else{
+					lv_ban_card_other.onLoadMoreOverFished();
 				}
 			}
 		});
@@ -493,8 +495,8 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 						
 						//替换掉适配器的内容
 						/*adapter = new SwipeListMineBankcardAdapter(activity,lv_ban_card_other,dataList,R.layout.activity_bank_card_item_swipe);*/
-						 adapter = new SwipeListMineBankcardAdapter(activity, dataList);
-						 adapter.setFromNetCallBack(this);
+						adapter = new SwipeListMineBankcardAdapter(activity, dataList);
+						adapter.setFromNetCallBack(this);
 						lv_ban_card_other.setAdapter(adapter);
 						adapter.setFragment(this);
 						adapter.setHasAdd(false);
@@ -506,9 +508,11 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 					 * 当刷新到最后一页，且此页数据少于10条时，需要弹出吐司表示到底，并且将尾布局去除
 					 */
 					if(list.getData().size()<10){
+						if(first_enter==0){
+							lv_ban_card_other.onLoadMoreOverFished();
+						}
 						//TODO
 						//CustomToast.show(activity, "到底啦!", "您添加的银行卡目前只有这么多");
-						lv_ban_card_other.onLoadMoreOverFished();
 					}
 					
 					if(App.app.getData("firstEnterBankcardAndAddAnotherBankcard").isEmpty()){//证明是第一次
@@ -518,11 +522,13 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 						    handler.sendEmptyMessage(0);//TODO
 				    	}
 					}
+					this.first_enter = Integer.MAX_VALUE;
 //					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 //					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				} else {
-					lv_ban_card_other.setAdapter(null);
-					lv_ban_card_other.onLoadMoreOverFished();//当无数据时，需将尾布局删除掉
+					//lv_ban_card_other.setAdapter(null);
+					adapter.notifyDataSetChanged();
+					lv_ban_card_other.onLoadMoreOverFished();//当初次无数据时，不可将尾禁止掉，因为可能还有下一页的内容
 				}
 				break;
 

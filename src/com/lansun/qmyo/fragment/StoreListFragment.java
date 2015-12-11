@@ -48,6 +48,10 @@ import com.lansun.qmyo.domain.Shop;
 import com.lansun.qmyo.domain.StoreList;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
+import com.lansun.qmyo.utils.swipe.SwipeListMineStoreAdapter;
+import com.lansun.qmyo.view.ActivityMyListView;
+import com.lansun.qmyo.view.ActivityMyListView.OnRefreshListener;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExpandTabView;
 import com.lansun.qmyo.view.MyListView;
@@ -68,7 +72,9 @@ public class StoreListFragment extends BaseFragment {
 	private ViewRight viewRight;
 	private HashMap<Integer, View> mViewArray = new HashMap<Integer, View>();
 	private HashMap<Integer, String> holder_button = new HashMap<Integer, String>();
-	private StoreAdapter adapter;
+	
+//	private StoreAdapter adapter;
+	private SwipeListMineStoreAdapter adapter;
 
 	@InjectAll
 	Views v;
@@ -89,8 +95,12 @@ public class StoreListFragment extends BaseFragment {
 
 	/*@InjectView(binders = { @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick") }, down = true, pull = true)*/
 	
-	@InjectView(binders = { @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick") }, pull = true)
-	private MyListView lv_stores_content;
+//	@InjectView(binders = { @InjectBinder(listeners = { OnItemClick.class }, method = "itemClick") }, pull = true)
+//	private MyListView lv_stores_content;
+	
+	@InjectView
+	private ActivityMyListView lv_stores_content;
+	
 	private StoreList list;
 	private String shopId;
 	private boolean isPull = false;
@@ -98,6 +108,7 @@ public class StoreListFragment extends BaseFragment {
 	private View emptyView;
 	private TextView tv_found_secretary;
 	private RelativeLayout activity_search_empty_storelist;
+
 
 	class Views {
 		private View fl_comments_right_iv, tv_activity_shared;
@@ -112,6 +123,40 @@ public class StoreListFragment extends BaseFragment {
 		View rootView = inflater.inflate(R.layout.activity_store_list, null);
 		activity_search_empty_storelist = (RelativeLayout) rootView.findViewById(R.id.activity_search_empty_storelist);
 		Handler_Inject.injectFragment(this, rootView);
+		
+		lv_stores_content.setNoHeader(true);
+		lv_stores_content.setOnRefreshListener(new OnRefreshListener() {
+			
+			@Override
+			public void onRefreshing() {
+				//NO-OP
+			}
+			
+			@Override
+			public void onLoadingMore() {
+				if (list != null) {
+						if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url().contains("null")||list.getNext_page_url() == null) {
+						
+//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//						PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
+						
+						/*try{
+							lv_stores_content.removeFooterView(emptyView);
+						}catch(Exception e ){
+						}
+						lv_stores_content.addFooterView(emptyView);*/
+						CustomToast.show(activity, "到底啦！", "涉及此活动的门店只有这么多");
+						lv_stores_content.onLoadMoreOverFished();
+						
+					} else {
+						refreshCurrentList(list.getNext_page_url(), null,refreshKey, lv_stores_content);
+						isPull = true;
+					}
+				}else{
+					lv_stores_content.onLoadMoreOverFished();
+				}
+			}
+		});
 		return rootView;
 	}
 
@@ -232,9 +277,10 @@ public class StoreListFragment extends BaseFragment {
 	private void result(ResponseEntity r) {
 		if (r.getStatus() == FastHttp.result_ok) {
 			
+			
 			endProgress();
 			
-			PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//			PullToRefreshManager.getInstance().onFooterRefreshComplete();
 			/*dataList = new ArrayList<HashMap<String, String>>();*/
 			String name;
 			switch (r.getKey()) {
@@ -291,9 +337,17 @@ public class StoreListFragment extends BaseFragment {
 				mViewArray.put(1, viewRight);
 				break;
 
-			case 2:
+				
+			case 2://活动列表的展示
+				lv_stores_content.onLoadMoreFished();
+				
 				Log.i("r.getContentAsString()","参与此活动的门店类型"+r.getContentAsString());
 				list = Handler_Json.JsonToBean(StoreList.class,r.getContentAsString());
+				if(list==null){
+					lv_stores_content.onLoadMoreOverFished();
+				}else{
+					//LogUtils.toDebugLog("list", list.getData().toString());
+				}
 				
 				if(isPull){
 					isPull = false;
@@ -302,7 +356,7 @@ public class StoreListFragment extends BaseFragment {
 				}
 				
 				if (list.getData() != null ) {
-					for (Shop s : list.getData()) {
+					for (Shop s : list.getData()){
 						HashMap<String, String> map = new HashMap<String, String>();
 						map.put("shop_id", s.getId()+"");
 						map.put("tv_store_item_name", s.getName());
@@ -313,7 +367,7 @@ public class StoreListFragment extends BaseFragment {
 						dataList.add(map);
 					}
 					if (adapter == null) {
-						adapter = new StoreAdapter(lv_stores_content, dataList,R.layout.activity_store_item);
+						adapter = new SwipeListMineStoreAdapter(activity, dataList, false);
 						
 						try{
 							//lv_stores_content.setAdapter(adapter);//先将adapter和ListView挂上钩
@@ -331,28 +385,30 @@ public class StoreListFragment extends BaseFragment {
 						/*lv_stores_content.setAdapter(adapter);*/
 					
 					}
-					/*if(list.getData().size()<10){
-						lv_stores_content.addFooterView(emptyView);
-					}*/
-					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-					PullToRefreshManager.getInstance().onFooterRefreshComplete();
-					
+					if(list.getData().size()<10){
+						if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司
+							lv_stores_content.onLoadMoreOverFished();
+						}else{
+						}
+						//lv_stores_content.addFooterView(emptyView);
+					}
+					this.first_enter = Integer.MAX_VALUE;
+//					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				} else {//list.getData()为 空
-					
 					try{
 						lv_stores_content.removeFooterView(emptyView);
 						/*v.activity_search_empty_storelist.setVisibility(View.INVISIBLE);*/
 					}catch(Exception e ){
 					}
 					lv_stores_content.addFooterView(emptyView);
-					/*activity_search_empty_storelist.setVisibility(View.VISIBLE);*/
 					lv_stores_content.setAdapter(null);
+					lv_stores_content.onLoadMoreOverFished();
+					/*activity_search_empty_storelist.setVisibility(View.VISIBLE);*/
 					/*adapter.notifyDataSetChanged();*/
-					
-					
 				}
-				PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-				PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//				PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//				PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				break;
 			}
 			
@@ -403,47 +459,47 @@ public class StoreListFragment extends BaseFragment {
 				});
 			}
 		} else {
-			PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-			PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//			PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+//			PullToRefreshManager.getInstance().onFooterRefreshComplete();
 			progress_text.setText(R.string.net_error_refresh);
 		}
 	}
 
 
 
-	@InjectPullRefresh
-	private void call(int type) {
-		// 这里的type来判断是否是下拉还是上拉
-		switch (type) {
-		case InjectView.PULL:
-			if (list != null) {
-				if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url().contains("null")||list.getNext_page_url() == null) {
-					
-					PullToRefreshManager.getInstance().onFooterRefreshComplete();
-					PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
-					
-					/*try{
-						lv_stores_content.removeFooterView(emptyView);
-					}catch(Exception e ){
-					}
-					lv_stores_content.addFooterView(emptyView);*/
-					
-					CustomToast.show(activity, "到底啦！", "涉及此活动的门店只有这么多");
-				} else {
-					refreshCurrentList(list.getNext_page_url(), null,refreshKey, lv_stores_content);
-					isPull = true;
-				}
-			}
-			break;
-			
-		case InjectView.DOWN:
-			if (list != null) {
-				refreshCurrentList(refreshUrl, null, refreshKey,
-						lv_stores_content);
-			}
-			break;
-		}
-	}
+//	@InjectPullRefresh
+//	private void call(int type) {
+//		// 这里的type来判断是否是下拉还是上拉
+//		switch (type) {
+//		case InjectView.PULL:
+//			if (list != null) {
+//				if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url().contains("null")||list.getNext_page_url() == null) {
+//					
+//					PullToRefreshManager.getInstance().onFooterRefreshComplete();
+//					PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
+//					
+//					/*try{
+//						lv_stores_content.removeFooterView(emptyView);
+//					}catch(Exception e ){
+//					}
+//					lv_stores_content.addFooterView(emptyView);*/
+//					
+//					CustomToast.show(activity, "到底啦！", "涉及此活动的门店只有这么多");
+//				} else {
+//					refreshCurrentList(list.getNext_page_url(), null,refreshKey, lv_stores_content);
+//					isPull = true;
+//				}
+//			}
+//			break;
+//			
+//		case InjectView.DOWN:
+//			if (list != null) {
+//				refreshCurrentList(refreshUrl, null, refreshKey,
+//						lv_stores_content);
+//			}
+//			break;
+//		}
+//	}
 
 	/**
 	 * 加载活动列表,最后走的都是refreshCurrentList,只不过携带的参数不同
@@ -488,7 +544,7 @@ public class StoreListFragment extends BaseFragment {
 
 	@Override
 	public void onDestroy() {
-		PullToRefreshManager.getInstance().footerEnable();
+//		PullToRefreshManager.getInstance().footerEnable();
 		super.onDestroy();
 	}
 	

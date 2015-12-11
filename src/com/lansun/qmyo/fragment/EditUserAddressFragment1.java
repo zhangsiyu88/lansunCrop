@@ -184,8 +184,13 @@ public class EditUserAddressFragment1 extends BaseFragment
 		tv_edit_city = (TextView) rootView.findViewById(R.id.tv_edit_city);
 		
 		if((mUserAddressCity!=null&&mUserAddressCity!="" )||(mUserAddressArea!=null&&mUserAddressArea!="")){
-			tv_edit_city.setText(mUserAddressCity);
-			v.et_edit_user_address.setText(mUserAddressArea);
+			if(mUserAddressCity.equals("点击选择您所在的城市")){
+				tv_edit_city.setText(mUserAddressCity);
+				tv_edit_city.setTextColor(getResources().getColor(R.color.line_bg));
+			}else{
+				tv_edit_city.setText(mUserAddressCity);
+				v.et_edit_user_address.setText(mUserAddressArea);
+			}
 		}
 	}
 	

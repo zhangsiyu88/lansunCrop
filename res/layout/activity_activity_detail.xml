@@ -63,7 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="1px"
             android:layout_alignParentBottom="true"
-            android:background="@color/line_bg" />
+            android:background="@color/line_bg1" />
     </RelativeLayout>
 
     <ScrollView
@@ -308,7 +308,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_marginTop="@dimen/margin_top_35"
-                android:background="@color/line_bg" />
+                android:background="@color/line_bg1" />
 
             <RelativeLayout
                 android:id="@+id/yh_detail_header"
@@ -414,7 +414,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"
-                android:background="@color/line_bg" />
+                android:background="@color/line_bg1" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -460,7 +460,7 @@
                     android:layout_marginBottom="@dimen/margin_top_32"
                     android:layout_marginLeft="@dimen/l_r_35"
                     android:layout_marginTop="@dimen/margin_top_32"
-                    android:background="@color/line_bg" />
+                    android:background="@color/line_bg1" />
 
                 <LinearLayout
                     android:id="@+id/iv_activity_detail_map"
@@ -480,7 +480,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"
-                android:background="@color/line_bg" />
+                android:background="@color/line_bg1" />
 
             
             
@@ -622,7 +622,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"
-                android:background="@color/line_bg" 
+                android:background="@color/line_bg1" 
                 
                 android:visibility="gone"
                />

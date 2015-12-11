@@ -45,7 +45,10 @@
             android:background="@color/app_white"
             android:password="true"
             android:hint="设置6~16位的数字或英文"
-            android:textColor="@color/line_bg" >
+            android:textColor="@color/text_gray1"
+            android:textColorHint="@color/line_bg"
+            android:singleLine="true"
+             >
 
             <requestFocus />
         </EditText>
@@ -78,7 +81,9 @@
             android:background="@color/app_white"
             android:password="true"
              android:hint="请保持一致"
-            android:textColor="@color/line_bg" />
+            android:textColor="@color/text_gray1"
+            android:textColorHint="@color/line_bg"
+            android:singleLine="true"/>
     </RelativeLayout>
 
     <TextView

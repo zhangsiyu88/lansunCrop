@@ -1,15 +1,25 @@
 package com.lansun.qmyo.fragment;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.zip.Inflater;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.renderscript.Allocation;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,7 +27,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -57,7 +69,9 @@ import com.lansun.qmyo.fragment.secretary_detail.SecretaryStudentShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryTravelShowFragment;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.override.CircleImageView;
+import com.lansun.qmyo.utils.DataUtils;
 import com.lansun.qmyo.utils.DialogUtil;
+import com.lansun.qmyo.utils.FastBlurBitmap;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
@@ -66,7 +80,7 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-public class SecretaryFragment extends BaseFragment {
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1) public class SecretaryFragment extends BaseFragment {
 	private String secretary_size;
 	private CircleImageView iv_secretary_head;
 	private LinearLayout ll_secretary_setting;
@@ -122,14 +136,29 @@ public class SecretaryFragment extends BaseFragment {
 						//并无设置秘书信息时，需要将  立即登录设置私人秘书的提示界面弹出
 						if ("false".equals(GlobalValue.mySecretary.getHas())) {
 							final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
-							dialog.show();
 							
 							/**
 							 * 提示去设置私人秘书
 							 */
 							dialog.setContentView(R.layout.dialog_setting_secretary);
 							
-							Window window = dialog.getWindow();
+//							rootView.buildDrawingCache();
+//							Bitmap bitmap = rootView.getDrawingCache();
+//							//blur(bitmap, window, radius);
+//							
+//							Bitmap fastblurBitmap = FastBlurBitmap.fastblur(activity, bitmap, 5);
+//						 	
+					    	Window window = dialog.getWindow();
+//							WindowManager.LayoutParams lp = window.getAttributes();
+//
+//							// 模糊度
+//							window.setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND, WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+//							//透明度
+//							lp.alpha=1f;//（0.0-1.0）
+//							//黑暗度
+//							lp.dimAmount=0.5f;
+//							window.setAttributes(lp);
+							
 							window.findViewById(R.id.setting_now).setOnClickListener(new OnClickListener() {
 								@Override
 								public void onClick(View v) {
@@ -140,6 +169,9 @@ public class SecretaryFragment extends BaseFragment {
 									EventBus.getDefault().post(entity);
 								}
 							});
+							dialog.show();
+//							window.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+//							window.setBackgroundDrawable(new BitmapDrawable(fastblurBitmap));
 						}else {
 							setSecretaryInformation();
 						}
@@ -422,9 +454,27 @@ public class SecretaryFragment extends BaseFragment {
 			switch (r.getKey()) {
 			case 0:
 				Token token = Handler_Json.JsonToBean(Token.class,r.getContentAsString());
-				CustomToast.show(activity, "权限更新成功", "已获取最新令牌");
+				CustomToast.show(activity, "欢迎回来", "小迈静候多时");
+				//CustomToast.show(activity, "权限更新成功", "已获取最新令牌");
 				App.app.setData("access_token", token.getToken());
 				
+				
+				/**
+				 * 大前提： App.app.getData("LastRefreshTokenTime")不为 空
+				 */
+				if(App.app.getData("LastRefreshTokenTime")!=null&&
+						!App.app.getData("LastRefreshTokenTime").equals("")&&
+						!TextUtils.isEmpty(App.app.getData("LastRefreshTokenTime"))){
+					
+					long LastRefreshTokenTime = Long.valueOf(App.app.getData("LastRefreshTokenTime"));
+					LogUtils.toDebugLog("LastRefreshTokenTime", "上次最近更新token服务的时刻： "+DataUtils.dataConvert(LastRefreshTokenTime));
+					App.app.setData("LastRefreshTokenTime",String.valueOf(System.currentTimeMillis()));
+					LogUtils.toDebugLog("LastRefreshTokenTime", "两次更新token的时间差"+((System.currentTimeMillis()-LastRefreshTokenTime))/1000/60);
+					LogUtils.toDebugLog("LastRefreshTokenTime", 
+							"此次最近更新token服务的时刻： "+DataUtils.dataConvert(Long.valueOf(App.app.getData("LastRefreshTokenTime"))));
+				}
+				
+				LogUtils.toDebugLog("LastRefreshTokenTime", "在SercretaryFragment中令牌更新操作成功！");
 				/*
 				 出现场景： 原本存在本地的token过期，当app启动时开启服务，去拿token，但此时由于与服务器访问的交互信息的过程较漫长，
 				导致出现了拿着原本存在本地的token前去访问，此时页面正在或已经生成完毕，即使更新了本地的token后，由于仍未刷新首页的数据，
@@ -468,4 +518,21 @@ public class SecretaryFragment extends BaseFragment {
 		 activity.unregisterReceiver(broadCastReceiver);
 		super.onDestroy();
 	}
+	 
+	  private void blur(Bitmap bkg, View view, float radius) {
+	        Bitmap overlay = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+	        Canvas canvas = new Canvas(overlay);
+	        canvas.drawBitmap(bkg, -view.getLeft(), -view.getTop(), null);
+	        RenderScript rs = RenderScript.create(App.app);
+	        Allocation overlayAlloc = Allocation.createFromBitmap(rs, overlay);
+	        ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create(rs, overlayAlloc.getElement());
+	        blur.setInput(overlayAlloc);
+	        blur.setRadius(radius);
+	        blur.forEach(overlayAlloc);
+	        overlayAlloc.copyTo(overlay);
+	        view.setBackground(new BitmapDrawable(getResources(), overlay));
+	        rs.destroy();
+	    }
+	 
+
 }

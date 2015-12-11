@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -110,6 +112,7 @@ public class StoreDetailFragment extends BaseFragment {
 		@InjectBinder(listeners = { OnItemClick.class }, method = "fendianClick")
 		private MySubListView lv_activity_detail_fendian;
 		private RatingBar rb_store_details;
+		private LinearLayout ll_blank_gray;
 		
 		
 		@InjectBinder(listeners = { OnItemClick.class }, method = "headItemClick")
@@ -366,6 +369,9 @@ public class StoreDetailFragment extends BaseFragment {
 					
 					//少了一个对活动的描述内容   map.put("", data.getContent());
 					dataList.add(map);
+				}
+				if(shopActivity.getData().size()==1){
+					v.ll_blank_gray.setVisibility(View.VISIBLE);
 				}
 				//dataList中存储了分店的信息
 				v.lv_activity_detail_fendian.setAdapter(new SearchAdapter(v.lv_activity_detail_fendian, dataList,R.layout.activity_search_item));

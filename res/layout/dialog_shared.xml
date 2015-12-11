@@ -6,8 +6,9 @@
 
     <LinearLayout
         style="@style/w_h_full"
-        android:layout_marginTop="@dimen/margin_top_32"
-        android:orientation="horizontal" >
+        android:paddingTop="-10dp"
+        android:paddingBottom="10dp"
+        android:orientation="horizontal" ><!-- android:layout_marginTop="@dimen/margin_top_32" -->
 
         <LinearLayout
             android:id="@+id/ll_shared_wx_friend"
@@ -15,7 +16,8 @@
             android:layout_marginLeft="@dimen/l_r_35"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical" >
+            android:orientation="vertical" 
+            android:paddingTop="30dp">
 
             <com.android.pc.ioc.image.RecyclingImageView
                 style="@style/w_wrap_h_wrap"
@@ -35,7 +37,8 @@
             android:layout_marginLeft="@dimen/l_r_14"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical" >
+            android:orientation="vertical" 
+            android:paddingTop="30dp">
 
             <com.android.pc.ioc.image.RecyclingImageView
                 style="@style/w_wrap_h_wrap"
@@ -55,7 +58,8 @@
             android:layout_marginLeft="@dimen/l_r_14"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical" >
+            android:orientation="vertical" 
+            android:paddingTop="30dp">
 
             <com.android.pc.ioc.image.RecyclingImageView
                 style="@style/w_wrap_h_wrap"
@@ -76,7 +80,8 @@
             android:layout_marginRight="@dimen/l_r_35"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:paddingTop="30dp" >
 
             <com.android.pc.ioc.image.RecyclingImageView
                 style="@style/w_wrap_h_wrap"
@@ -95,17 +100,18 @@
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_marginTop="@dimen/margin_top_32"
-        android:background="@color/app_grey5" />
+        android:background="@color/app_grey5" 
+        android:visibility="invisible"/>
 
     <TextView
         android:id="@+id/tv_shared_cancle"
         style="@style/text_style_big_34"
+        android:background="@color/app_grey8"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginBottom="@dimen/margin_top_32"
-        android:layout_marginTop="@dimen/margin_top_32"
+        android:paddingTop="@dimen/margin_top_32"
+        android:paddingBottom="@dimen/margin_top_32"
         android:gravity="center"
-        android:text="@string/cancle" />
-
+        android:text="@string/cancle" /><!-- android:layout_marginTop="@dimen/margin_top_32" android:layout_marginBottom="@dimen/margin_top_32" -->
 </LinearLayout>

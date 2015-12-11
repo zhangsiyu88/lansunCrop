@@ -17,7 +17,9 @@
         android:background="@drawable/edit_bg_green"
         android:ems="10"
         android:inputType="textPersonName"
-        android:textColor="@color/text_gray1" >
+        android:textColor="@color/text_gray1"
+        android:textColorHint="@color/line_bg"
+        android:textSize ="14dp" >
 
         <requestFocus />
     </EditText>

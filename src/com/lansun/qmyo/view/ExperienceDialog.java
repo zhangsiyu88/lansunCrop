@@ -40,12 +40,15 @@ import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.HomeFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
+
+import fr.tvbarthel.lib.blurdialogfragment.BlurDialogFragment;
 
 /**
  * 体验dialog
@@ -54,7 +57,7 @@ import com.lansun.qmyo.R;
  * 
  */
 @SuppressLint("ValidFragment")
-public class ExperienceDialog extends DialogFragment {
+public class ExperienceDialog extends BlurDialogFragment {
 
 	private DisplayImageOptions options = new DisplayImageOptions.Builder()
 	.cacheInMemory(true).cacheOnDisk(true).considerExifParams(true)
@@ -113,7 +116,18 @@ public class ExperienceDialog extends DialogFragment {
 			Bundle savedInstanceState) {
 		getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getDialog().getWindow().setBackgroundDrawable(
-				new ColorDrawable(Color.TRANSPARENT));
+				new ColorDrawable(Color.TRANSPARENT)); 
+		getDialog().setOnKeyListener(new OnKeyListener() {
+			
+			@Override
+			public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+			 if (keyCode == KeyEvent.KEYCODE_BACK){
+	             return true; // pretend we've processed it
+			 }else{
+	        	   return false; // pass on to be processed as normal
+	           }
+			}
+		});
 		getDialog().setCanceledOnTouchOutside(true);
 		View view = inflater.inflate(R.layout.dialog_experience, container);
 		Handler_Inject.injectFragment(this, view);
@@ -198,7 +212,9 @@ public class ExperienceDialog extends DialogFragment {
 				Token token = Handler_Json.JsonToBean(Token.class,
 						r.getContentAsString());
 				App.app.setData("access_token", token.getToken());
+				App.app.setData("LastRefreshTokenTime",String.valueOf(System.currentTimeMillis()));
 				
+				LogUtils.toDebugLog("LastRefreshTokenTime", "首次拿到Token，从三无到体验用户"+App.app.getData("LastRefreshTokenTime"));
 				Log.i("临时用户拿到token","临时用户拿到的token为："+App.app.getData("access_token"));
 				
 				/**

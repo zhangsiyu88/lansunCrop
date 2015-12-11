@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EBEBEB" 
+    android:id="@+id/rl_mine_root"
     xmlns:app="http://schemas.android.com/apk/res/com.lansun.qmyo">
 
     <ScrollView

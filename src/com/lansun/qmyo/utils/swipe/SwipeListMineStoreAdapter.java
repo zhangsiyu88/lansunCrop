@@ -94,7 +94,7 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(final int position, View convertView, ViewGroup parent) {
 		
 		data = mDataList.get(position);
 		mPosition = position;
@@ -118,7 +118,8 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 				/* 居然连类型都得分开识别，这里的shopId是int类型
 				 * args.putInt("shopId",Integer.parseInt(dataList.get(position).get("shop_id")));*/
 				
-				args.putString("shopId",mDataList.get(mPosition).get("shop_id"));
+				/*args.putString("shopId",mDataList.get(mPosition).get("shop_id"));*/
+				args.putString("shopId",mDataList.get(position).get("shop_id"));
 				fragment.setArguments(args);
 				FragmentEntity event = new FragmentEntity();
 				event.setFragment(fragment);

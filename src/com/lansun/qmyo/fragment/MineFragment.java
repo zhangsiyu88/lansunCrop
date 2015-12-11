@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -53,6 +54,8 @@ import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CircularImage;
 import com.lansun.qmyo.view.CustomToast;
+import com.lansun.qmyo.view.UpdateAppVersionDialog;
+import com.lansun.qmyo.view.UpdateAppVersionDialog.OnConfirmListener;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -90,7 +93,8 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 	public  ArrayList<HashMap<String,String>> dataList = new ArrayList<HashMap<String,String>>();
 	private MineFragmentBroadCastReceiver broadCastReceiver = null;
 	private IntentFilter filter;
-	public boolean isFirstReceiveBroadcast = true; 
+	public boolean isFirstReceiveBroadcast = true;
+	private View rootView; 
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -144,7 +148,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.activity_mine,container,false);
+		rootView = inflater.inflate(R.layout.activity_mine,container,false);
 		Handler_Inject.injectFragment(this, rootView);
 		v.iv_mine_icon.setPressed(true);
 		
@@ -380,8 +384,29 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 
 			break;
 		case R.id.rl_mine_about:
-//			fragment = new AboutFragment();
-			fragment = new PromoteDetailFragment();
+			fragment = new AboutFragment();
+//			fragment = new PromoteDetailFragment();
+//			供测试使用
+//			App.app.setData("access_token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIx" +
+//					"NDU4IiwiaXNzIjoiaHR0cDpcL1wvYXBwYXBpLnFteW8uY29tXC90b2tlblwvbXpwaWMzemlhcCIsImlhd" +
+//					"CI6IjE0NDkxOTE1NTIiLCJleHAiOiIxNDQ5MTk1MTUyIiwibmJmIjoiMTQ0OTE5MTU1MiIsImp0aSI6ImZlZDRkZTRmMDJ" +
+//					"mOGYwMGNjNjFhMTUwOTBjOGM2N2IyIn0.WEXsGxrSvmO1sGhQ3pVjFJf2gWlTIgkzVc5XPT2G-QY");
+//			App.app.setData("LastRefreshTokenTime",String.valueOf(30*60*1000));
+			
+//			rootView.buildDrawingCache();
+//			Bitmap bitmap = rootView.getDrawingCache();
+//			
+//			UpdateAppVersionDialog dialog = new UpdateAppVersionDialog();//这么个体验的对话框，需要单独在其内部设置点击响应事件
+//			//进来首先就弹出对话框
+//			dialog.setOnConfirmListener(new OnConfirmListener(){
+//				@Override
+//				public void confirm() {
+//					CustomToast.show(activity, "看好咯", "我要下载咯");
+//				}
+//			});
+//			dialog.show(getActivity().getFragmentManager(), "update");
+//			return;
+			
 			break;
 		case R.id.rl_mine_shared://分享APP
 			fragment = new SharedFragment();

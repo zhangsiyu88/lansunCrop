@@ -97,7 +97,9 @@ public class EditUserFragment extends BaseFragment {
 		v.tv_edit_user_degress.setText(GlobalValue.user.getDegrees()=="null"?"":GlobalValue.user.getDegrees());
 		v.tv_edit_user_position.setText(GlobalValue.user.getPosition()=="null"?"":GlobalValue.user.getPosition());
 		v.tv_edit_user_job.setText(GlobalValue.user.getJob()=="null"?"":GlobalValue.user.getJob());
-		v.tv_edit_user_address.setText(GlobalValue.user.getAddress()=="null"?"":GlobalValue.user.getAddress());
+		
+		v.tv_edit_user_address.setText((GlobalValue.user.getAddress()=="null "||GlobalValue.user.getAddress()=="null"||GlobalValue.user.getAddress().contains("null"))?"请输入地址":GlobalValue.user.getAddress());
+		
 		v.tv_edit_user_name.setText(GlobalValue.user.getName()=="null"?"":GlobalValue.user.getName());
 		v.tv_edit_user_email.setText(GlobalValue.user.getEmail()=="null"?"":GlobalValue.user.getEmail());
 		v.tv_edit_user_gender.setText(GlobalValue.user.getGender()=="null"?"":GlobalValue.user.getGender());
@@ -134,19 +136,24 @@ public class EditUserFragment extends BaseFragment {
 			fragment = new EditUserAddressFragment1();
 			Bundle bundle = new Bundle();
 
-			if(GlobalValue.user.getAddress()!=null&&(GlobalValue.user.getAddress()!="")){
-				String longAddress = GlobalValue.user.getAddress();
-				if(!longAddress.contains(" ")){
-					userAddressCity = longAddress;
-					userAddressArea = "";
-				}else{
-					int blankIndex = longAddress.indexOf(" ");
-					userAddressCity  = longAddress.substring(0, blankIndex); 
-					userAddressArea = longAddress.substring(blankIndex+1, longAddress.length());
+			if(GlobalValue.user.getAddress().contains("null")){
+				bundle.putString("userAddressCity","点击选择您所在的城市");
+			}else{
+				if(GlobalValue.user.getAddress()!=null&&(GlobalValue.user.getAddress()!="")){
+					String longAddress = GlobalValue.user.getAddress();
+					if(!longAddress.contains(" ")){
+						userAddressCity = longAddress;
+						userAddressArea = "";
+					}else{
+						int blankIndex = longAddress.indexOf(" ");
+						userAddressCity  = longAddress.substring(0, blankIndex); 
+						userAddressArea = longAddress.substring(blankIndex+1, longAddress.length());
+					}
+					bundle.putString("userAddressCity",userAddressCity);
+					bundle.putString("userAddressArea",userAddressArea);
 				}
-				bundle.putString("userAddressCity",userAddressCity);
-				bundle.putString("userAddressArea",userAddressArea);
 			}
+			
 			fragment.setArguments(bundle);
 			event = new FragmentEntity();
 			event.setFragment(fragment);

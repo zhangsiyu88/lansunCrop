@@ -112,12 +112,13 @@ public class MainActivity extends FragmentActivity {
 		if (TextUtils.isEmpty(App.app.getData("isFirst"))) {
 			startFragmentAdd(new IntroductionPageFragment());
 		} else {
+			getTokenService();
 			/*startFragmentAdd(new HomeFragment());    */                 //--------------------->by Yeun 11.16//TODO
 			/*startFragmentAdd(new HomeFragmentOld());*/					//--------------------->by Yeun 11.13//TODO
-			startFragmentAdd(new MainFragment());
+//			startFragmentAdd(new MainFragment());
 			/*startFragmentAdd(new TestMineActivityFragment());*/
 			
-			getTokenService();
+			
 		}
 		
 		
@@ -156,13 +157,15 @@ public class MainActivity extends FragmentActivity {
 	 * 获取token的服务
 	 */
 	private void getTokenService() {
-		Intent service = new Intent(this, AccessTokenService.class);
-		startService(service);
-		
+		accesstokenService = new Intent(this, AccessTokenService.class);
+		startService(accesstokenService);
+		LogUtils.toDebugLog("accesstokenService", "accesstokenService正常启动");
 
 		LogUtils.toDebugLog("location", "locationService正常启动");
 		locationService = new Intent(this, LocationService.class);
 		startService(locationService);
+		
+		startFragmentAdd(new MainFragment());
 	}
 	
 	
@@ -177,7 +180,6 @@ public class MainActivity extends FragmentActivity {
 		
 		
 	// fragmentTransaction.setCustomAnimations(R.anim.left_in,R.anim.left_out, R.anim.right_in, R.anim.right_out);
-
 		/*将这里的动画效果取消掉，即隐去淡入淡出的效果
 		 * */
 	 //fragmentTransaction.setCustomAnimations(R.anim.fade_in,R.anim.fade_out, R.anim.fade_in, R.anim.fade_out);
@@ -345,6 +347,8 @@ public class MainActivity extends FragmentActivity {
 		App.app.setData("access_token", "");*/
 		/*App.app.setData("exp_secret","dypesq1zsn");
 		App.app.setData("isExperience","");*/
+		GlobalValue.isWaitingForUpdateApp =  true;
+		
 		unregisterReceiver(mMessageReceiver);
 		EventBus eventBus = EventBus.getDefault();
 		eventBus.unregister(this);
@@ -354,6 +358,8 @@ public class MainActivity extends FragmentActivity {
 		 */
 		stopService(locationService);
 		LogUtils.toDebugLog("location", "locationService被停止掉");
+		stopService(accesstokenService);
+		LogUtils.toDebugLog("accesstokenService", "accesstokenService被停止掉");
 		
 		if(App.app.getData("isExperience")=="true"){
 			System.out.println("走到了onDestory!");
@@ -378,6 +384,7 @@ public class MainActivity extends FragmentActivity {
 		public static final String KEY_EXTRAS = "extras";
 		private Intent intent;
 		private Intent locationService;
+		private Intent accesstokenService;
 		
 		public void registerMessageReceiver() {
 			mMessageReceiver = new MessageReceiver();

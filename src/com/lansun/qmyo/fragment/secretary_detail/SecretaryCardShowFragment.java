@@ -1,11 +1,14 @@
 package com.lansun.qmyo.fragment.secretary_detail;
 import android.app.Dialog;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,6 +23,7 @@ import com.lansun.qmyo.fragment.SecretarySettingFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryDetailsBaseFragment.ExecutInitData;
 import com.lansun.qmyo.fragment.task.TaskAssignment;
 import com.lansun.qmyo.override.CircleImageView;
+import com.lansun.qmyo.utils.FastBlurBitmap;
 import com.lansun.qmyo.utils.GlobalValue;
 
 
@@ -31,6 +35,7 @@ public class SecretaryCardShowFragment extends SecretaryDetailsBaseFragment impl
 	private CircleImageView iv_secretary_head;
 	private String owner_name;
 	private String tv_secretary_answer_text;
+	private View rootView;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		
@@ -53,14 +58,14 @@ public class SecretaryCardShowFragment extends SecretaryDetailsBaseFragment impl
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		this.inflater=inflater;
-		View view=inflater.inflate(R.layout.secretary_card_fragment,container,false);
-		initView(view);
+		rootView = inflater.inflate(R.layout.secretary_card_fragment,container,false);
+		initView(rootView);
 		initData();
 		setListener();
 		
 		setExecutInitData(this);//将接口对象放进去
 		
-		return view;
+		return rootView;
 	}
 	private void setListener() {
 		commit_tv.setOnClickListener(new OnClickListener() {
@@ -93,6 +98,28 @@ public class SecretaryCardShowFragment extends SecretaryDetailsBaseFragment impl
 							dialog.show();
 							dialog.setContentView(R.layout.dialog_setting_secretary);
 							Window window = dialog.getWindow();
+							
+//							dialog.setContentView(R.layout.dialog_setting_secretary);
+//							rootView.buildDrawingCache();
+//							Bitmap bitmap = rootView.getDrawingCache();
+//							Bitmap fastblurBitmap = FastBlurBitmap.fastblur(activity, bitmap, 20);
+//							WindowManager.LayoutParams lp = window.getAttributes();
+//							window.setBackgroundDrawable(new BitmapDrawable(fastblurBitmap));
+//							window.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+//							
+//							// 模糊度
+//							window.setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND, WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+//							//透明度
+//							lp.alpha=1f;//（0.0-1.0）
+//							//黑暗度
+//							lp.dimAmount=0.7f;
+//							window.setAttributes(lp);
+							
+							
+							
+							
+							
+							
 							window.findViewById(R.id.setting_now).setOnClickListener(new OnClickListener() {
 								@Override
 								public void onClick(View v) {
@@ -109,6 +136,26 @@ public class SecretaryCardShowFragment extends SecretaryDetailsBaseFragment impl
 								dialog.show();
 								dialog.setContentView(R.layout.dialog_setting_secretary);
 								Window window = dialog.getWindow();
+								
+//								dialog.setContentView(R.layout.dialog_setting_secretary);
+//								rootView.buildDrawingCache();
+//								Bitmap bitmap = rootView.getDrawingCache();
+//								Bitmap fastblurBitmap = FastBlurBitmap.fastblur(activity, bitmap, 5);
+//								WindowManager.LayoutParams lp = window.getAttributes();
+//								window.setBackgroundDrawable(new BitmapDrawable(fastblurBitmap));
+//								window.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+//								// 模糊度
+//								window.setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND, WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+//								//透明度
+//								lp.alpha=1f;//（0.0-1.0）
+//								//黑暗度
+//								lp.dimAmount=0.5f;
+//								window.setAttributes(lp);
+								
+								
+								
+								
+								
 								window.findViewById(R.id.setting_now).setOnClickListener(new OnClickListener() {
 									@Override
 									public void onClick(View v) {

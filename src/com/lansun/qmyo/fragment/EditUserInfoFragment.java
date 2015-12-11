@@ -96,8 +96,13 @@ public class EditUserInfoFragment extends BaseFragment {
 			}
 			break;
 		case "nickname":
-			v.et_edit_content.setText(GlobalValue.user.getNickname());
-			v.et_edit_content.setSelection(String.valueOf(GlobalValue.user.getNickname()).length());
+			if(GlobalValue.user.getNickname()=="null"||GlobalValue.user.getNickname()==null||
+			GlobalValue.user.getNickname().isEmpty()||GlobalValue.user.getNickname().contains("null")){
+				v.et_edit_content.setHint("请输入您的昵称");
+			}else{
+				v.et_edit_content.setText(GlobalValue.user.getNickname());
+				v.et_edit_content.setSelection(String.valueOf(GlobalValue.user.getNickname()).length());
+			}
 			break;
 		}
 		autoHiddenKey();

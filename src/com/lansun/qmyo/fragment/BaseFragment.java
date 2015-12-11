@@ -1,6 +1,13 @@
 package com.lansun.qmyo.fragment;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -10,6 +17,7 @@ import android.os.Handler;
 import android.os.Message;
 
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,6 +33,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectListener;
 import com.android.pc.ioc.inject.InjectMethod;
 import com.android.pc.ioc.internet.FastHttpHander;
@@ -32,13 +43,28 @@ import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.view.GifMovieView;
 import com.android.pc.ioc.view.PullToRefreshManager;
 import com.android.pc.ioc.view.listener.OnClick;
+import com.android.pc.util.Handler_Json;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.lansun.qmyo.MainActivity;
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.domain.Token;
+import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.service.AccessTokenService;
+import com.lansun.qmyo.utils.DataUtils;
+import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
+import com.lansun.qmyo.view.CustomToast;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.lansun.qmyo.R;
-public class BaseFragment extends Fragment implements OnTouchListener{
+import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.ResponseInfo;
+import com.lidroid.xutils.http.callback.RequestCallBack;
+import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
+@SuppressLint("SimpleDateFormat") public class BaseFragment extends Fragment implements OnTouchListener{
 
 	protected LayoutInflater inflater ;
 	public  Activity activity;
@@ -55,6 +81,8 @@ public class BaseFragment extends Fragment implements OnTouchListener{
 	protected LinkedHashMap<String, String> refreshParams;
 	protected TextView progress_text;
 	protected int first_enter = 0;
+	protected Gson gson = new Gson();
+	
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -126,6 +154,10 @@ public class BaseFragment extends Fragment implements OnTouchListener{
 	}
 
 	Handler handler;
+	private int mKey;
+	private String mUrl;
+	private LinkedHashMap<String, String> mParams;
+	private View mmView;
 
 	protected void hideProgress() {
 		handler = new Handler() {
@@ -156,8 +188,70 @@ public class BaseFragment extends Fragment implements OnTouchListener{
 	 * @param params
 	 *            参数 默认返回 0 的消息
 	 */
-	protected void refreshCurrentList(String url,
-			LinkedHashMap<String, String> params, int key, View view) {
+	protected void refreshCurrentList(final String url,
+			final LinkedHashMap<String, String> params, final int key, final View view) {
+		
+//		App.app.setData("LastRefreshTokenTime",String.valueOf(System.currentTimeMillis()-31*60*1000));
+		
+		/**
+		 * 大前提： App.app.getData("LastRefreshTokenTime")不为 空
+		 */
+		if(App.app.getData("LastRefreshTokenTime")!=null&&
+				!App.app.getData("LastRefreshTokenTime").equals("")&&
+				!TextUtils.isEmpty(App.app.getData("LastRefreshTokenTime"))){
+			
+			long LastRefreshTokenTime = Long.valueOf(App.app.getData("LastRefreshTokenTime"));
+			LogUtils.toDebugLog("LastRefreshTokenTime", "上次最近更新token服务的时刻： "+DataUtils.dataConvert(LastRefreshTokenTime));
+			LogUtils.toDebugLog("LastRefreshTokenTime", "两次更新token的时间差"+((System.currentTimeMillis()-LastRefreshTokenTime))/1000/60);
+			
+			if((System.currentTimeMillis()-LastRefreshTokenTime)>30*60*1000){
+				//进行刷新token的操作
+				HttpUtils httpUtils = new HttpUtils();
+				RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
+					@Override
+					public void onFailure(HttpException e, String result) {
+					}
+					@Override
+					public void onSuccess(ResponseInfo<String> result) {
+						Token token = Handler_Json.JsonToBean(Token.class,result.result.toString());
+//					try {
+//						JSONObject jObject = new JSONObject(result.result.toString());
+//						token = (String) jObject.get("token");
+//						App.app.setData("access_token", token);
+//					} catch (JSONException e) {
+//						e.printStackTrace();
+//					}
+						//Token token = gson.fromJson(result.toString(), Token.class);
+						App.app.setData("access_token", token.getToken());
+						
+						App.app.setData("LastRefreshTokenTime",String.valueOf(System.currentTimeMillis()));
+						
+						LogUtils.toDebugLog("Token",token.getToken() );
+						LogUtils.toDebugLog("Token", App.app.getData("access_token"));
+						LogUtils.toDebugLog("LastRefreshTokenTime", 
+								"此次最近更新token服务的时刻： "+DataUtils.dataConvert(Long.valueOf(App.app.getData("LastRefreshTokenTime"))));
+						LogUtils.toDebugLog("LastRefreshTokenTime", "在BaseFragment中令牌更新操作成功！");
+						
+						InternetConfig config = new InternetConfig();
+						config.setKey(key);
+						HashMap<String, Object> head = new HashMap<>();
+						head.put("Authorization", "Bearer " + App.app.getData("access_token"));
+						
+						config.setHead(head);
+						FastHttpHander.ajaxGet(url, params, config, this);
+						if (view != null) {
+							setProgress(view);
+							startProgress();
+						}
+						return;
+					}
+				};
+				httpUtils.send(HttpMethod.GET, GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"), null,requestCallBack );
+			}
+			
+		}
+		
+		
 		InternetConfig config = new InternetConfig();
 		config.setKey(key);
 		HashMap<String, Object> head = new HashMap<>();
@@ -169,6 +263,8 @@ public class BaseFragment extends Fragment implements OnTouchListener{
 			setProgress(view);
 			startProgress();
 		}
+		
+		
 	}
 
 	OnScrollListener onScrollListener = new OnScrollListener() {
@@ -358,8 +454,6 @@ public class BaseFragment extends Fragment implements OnTouchListener{
 	
 	@Override
 	public void onDestroy() {
-		
-		
 		super.onDestroy();
 	}
 	

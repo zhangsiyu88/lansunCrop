@@ -131,7 +131,7 @@ public class ActivityDetailFragment extends BaseFragment {
 		
 		
 		broadCastReceiver = new ActivityDetailsRefreshBroadCastReceiver();
-		System.out.println("注册广播 ing");
+		System.out.println(" 活动详情页 注册广播 ing");
 		IntentFilter filter = new IntentFilter();
 		filter.addAction("com.lansun.qmyo.refreshTheActivityDetailsFrag");
 		filter.addAction("com.lansun.qmyo.refreshActivityDetailPage");

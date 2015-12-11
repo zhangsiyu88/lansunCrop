@@ -98,7 +98,8 @@
 				            android:layout_marginTop="10dp"
 				            android:layout_width="wrap_content"
 				            android:layout_height="wrap_content"
-				            android:text="暂无相关门店关注记录哦"/>
+				            android:text="暂无相关门店关注记录哦"
+				            android:textColor="@color/line_bg"/>
 				        
 		         </LinearLayout>
 		    </RelativeLayout>

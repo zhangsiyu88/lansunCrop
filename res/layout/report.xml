@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:background="#EBEBEB"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:orientation="horizontal" >
 
     <com.android.pc.ioc.image.RecyclingImageView
@@ -17,7 +17,7 @@
     <TextView
         android:id="@+id/tv_report_content"
         style="@style/text_style_small_24"
-        android:layout_gravity="center_vertical"
+        android:layout_marginTop="@dimen/margin_top_50"
         android:layout_marginLeft="@dimen/l_r_15"
         android:text="@string/i_report"
         android:textColor="#6F6F6F" />

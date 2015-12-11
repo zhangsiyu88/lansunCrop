@@ -1,44 +1,35 @@
 package com.lansun.qmyo.service;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Handler;
 
 import android.app.Service;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.amap.api.mapcore2d.ev;
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectHttp;
-import com.android.pc.ioc.internet.AjaxCallBack;
-import com.android.pc.ioc.internet.AjaxTimeCallBack;
 import com.android.pc.ioc.internet.FastHttp;
 import com.android.pc.ioc.internet.FastHttpHander;
 import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
-import com.lansun.qmyo.R;
 import com.lansun.qmyo.app.App;
-import com.lansun.qmyo.biz.ServiceAllBiz;
 import com.lansun.qmyo.domain.Token;
 import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.event.entity.RefreshTokenEntity;
 import com.lansun.qmyo.fragment.BaseFragment;
 import com.lansun.qmyo.fragment.ExperienceSearchFragment;
-import com.lansun.qmyo.fragment.MineBankcardFragment;
-import com.lansun.qmyo.fragment.MineFragment;
-import com.lansun.qmyo.utils.CustomDialog;
+import com.lansun.qmyo.utils.DataUtils;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
@@ -47,8 +38,6 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 /**
  * 获取Accesstoken
@@ -57,8 +46,16 @@ import com.squareup.okhttp.Response;
  * 
  */
 public class AccessTokenService extends Service {
-	private int delay = 1000 * 60 * 15;//间隔15分钟进行一次token重新获取
+	private int delay = 1000 * 60 * 30;//间隔30分钟进行一次token重新获取
 	public static Timer timer = new Timer();
+	Handler handler = new Handler(){
+		
+		public void handleMessage(Message msg) {
+			
+			
+		};
+	};
+	
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -80,6 +77,8 @@ public class AccessTokenService extends Service {
 			FastHttpHander.ajaxGet(GlobalValue.URL_GET_ACCESS_TOKEN+ App.app.getData("secret"), config, this);
 		}
 		Handler_Inject.injectFragment(this, null);
+		
+		
 		return START_STICKY;
 	}
 
@@ -124,6 +123,7 @@ public class AccessTokenService extends Service {
 				
 				if(result.toString().contains("false") ||result.toString().equals(false)||result.toString()=="false"){
 					Toast.makeText(App.app,"来自启动自服务的提示 ：您的临时用户身份已被清掉！请重新体验，或注册登录！", Toast.LENGTH_LONG).show();
+					LogUtils.toDebugLog("App.app","HttpUtils 的请求 ："+"来自启动自服务的提示 ：您的临时用户身份已被清掉！请重新体验，或注册登录！");
 					/**
 					 * 一旦发现临时用户的secret去访问获取token失败，那么需要立即将secret和token全部清除掉，以便于后面前去生成新的体验用户
 					 */
@@ -142,17 +142,41 @@ public class AccessTokenService extends Service {
 			}
 			@Override
 			public void onSuccess(ResponseInfo<String> result) {
-				Token token = Handler_Json.JsonToBean(Token.class,result.toString());
+				Token token = Handler_Json.JsonToBean(Token.class,result.result.toString());
 				App.app.setData("access_token", token.getToken());
+				
+				/**
+				 * 大前提： App.app.getData("LastRefreshTokenTime")不为 空
+				 */
+				if(App.app.getData("LastRefreshTokenTime")!=null&&
+						!App.app.getData("LastRefreshTokenTime").equals("")&&
+						!TextUtils.isEmpty(App.app.getData("LastRefreshTokenTime"))){
+					
+					long LastRefreshTokenTime = Long.valueOf(App.app.getData("LastRefreshTokenTime"));
+					LogUtils.toDebugLog("LastRefreshTokenTime", "上次最近更新token服务的时刻： "+DataUtils.dataConvert(LastRefreshTokenTime));
+					
+					LogUtils.toDebugLog("LastRefreshTokenTime", "两次更新token的时间差"+((System.currentTimeMillis()-LastRefreshTokenTime))/1000/60);
+					LogUtils.toDebugLog("LastRefreshTokenTime", "HttpUtils在AccessTokenService中令牌更新操作成功！");
+				}
+				
+				App.app.setData("LastRefreshTokenTime",String.valueOf(System.currentTimeMillis()));
+				LogUtils.toDebugLog("LastRefreshTokenTime", 
+						"此次最近更新token服务的时刻： "+DataUtils.dataConvert(Long.valueOf(App.app.getData("LastRefreshTokenTime"))));
+				
+				
+				LogUtils.toDebugLog("accessTokenSer", "令牌更新成功！");
 				CustomToast.show(getApplicationContext(), "提示", "令牌更新成功！");
+				
 				
 				//混杂着FastHttpHander的网络访问
 				InternetConfig config = new InternetConfig();
 				config.setKey(1);
 				HashMap<String, Object> head = new HashMap<String, Object>();
-				head.put("Authorization", "Bearer " + token.getToken());
+				head.put("Authorization", "Bearer " + App.app.getData("access_token"));
 				config.setHead(head);
-				FastHttpHander.ajaxGet(GlobalValue.URL_FRESHEN_USER, config,this);
+				FastHttpHander.ajaxGet(GlobalValue.URL_FRESHEN_USER, config,AccessTokenService.this);
+//				handler.sendEmptyMessage(0);
+				
 			}
 		};
 		httpUtils.send(HttpMethod.GET, GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"), null,requestCallBack );
@@ -205,6 +229,7 @@ public class AccessTokenService extends Service {
 		
 		if(r.getContentAsString().contains("false") ||r.getContentAsString().equals(false)||r.getContentAsString()=="false"){
 			Toast.makeText(App.app,"来自启动自服务的提示 ：您的临时用户身份已被清掉！请重新体验，或注册登录！", Toast.LENGTH_LONG).show();
+			LogUtils.toDebugLog("App.app","FastHander 的请求 ："+"来自启动自服务的提示 ：您的临时用户身份已被清掉！请重新体验，或注册登录！");
 			/**
 			 * 一旦发现临时用户的secret去访问获取token失败，那么需要立即将secret和token全部清除掉，以便于后面前去生成新的体验用户
 			 */
@@ -223,11 +248,28 @@ public class AccessTokenService extends Service {
 
 			switch (r.getKey()) {
 			case 0:
-				Token token = Handler_Json.JsonToBean(Token.class,
-						r.getContentAsString());
+				Token token = Handler_Json.JsonToBean(Token.class,r.getContentAsString());
 				App.app.setData("access_token", token.getToken());
-				//CustomToast.show(getApplicationContext(), "提示", "令牌更新成功！");
+				App.app.setData("LastRefreshTokenTime",String.valueOf(System.currentTimeMillis()));
+				
+				/**
+				 * 大前提： App.app.getData("LastRefreshTokenTime")不为 空
+				 */
+				if(App.app.getData("LastRefreshTokenTime")!=null&&
+						!App.app.getData("LastRefreshTokenTime").equals("")&&
+						!TextUtils.isEmpty(App.app.getData("LastRefreshTokenTime"))){
+					
+					long LastRefreshTokenTime = Long.valueOf(App.app.getData("LastRefreshTokenTime"));
+					LogUtils.toDebugLog("LastRefreshTokenTime", "上次最近更新token服务的时刻： "+DataUtils.dataConvert(LastRefreshTokenTime));
+					LogUtils.toDebugLog("LastRefreshTokenTime", "两次更新token的时间差"+((System.currentTimeMillis()-LastRefreshTokenTime))/1000/60);
+					LogUtils.toDebugLog("LastRefreshTokenTime", 
+							"此次最近更新token服务的时刻： "+DataUtils.dataConvert(Long.valueOf(App.app.getData("LastRefreshTokenTime"))));
+				}
+				
+				LogUtils.toDebugLog("LastRefreshTokenTime", "FastHander在AccessTokenService中令牌更新操作成功！");
 				LogUtils.toDebugLog("accessTokenSer", "令牌更新成功！");
+				
+				//CustomToast.show(getApplicationContext(), "提示", "令牌更新成功！");
 				
 				InternetConfig config = new InternetConfig();
 				config.setKey(1);

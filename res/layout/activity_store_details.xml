@@ -358,8 +358,17 @@
 
                 
                 <!-- android:layout_marginTop="@dimen/l_r_35" -->
-                <include
-                    layout="@layout/report" />
+                <include layout="@layout/report" />
+                
+                <LinearLayout 
+                   		android:visibility="gone"
+                        android:id="@+id/ll_blank_gray"
+					    android:layout_width="fill_parent"
+					    android:layout_height="100dp"
+					    android:background="#EBEBEB"
+					    android:gravity="center_horizontal"
+					    android:orientation="horizontal" ><!--  -->
+               </LinearLayout>
                 
             </LinearLayout>       
         </LinearLayout>

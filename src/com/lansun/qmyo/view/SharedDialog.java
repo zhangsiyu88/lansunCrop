@@ -1,20 +1,39 @@
 package com.lansun.qmyo.view;
 
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import android.R.interpolator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.graphics.Interpolator;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
+import android.view.animation.RotateAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.Toast;
 
+import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.R;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.bean.SocializeEntity;
@@ -47,13 +66,17 @@ public class SharedDialog implements OnClickListener {
 			.getUMSocialService(GlobalValue.DESCRIPTOR);
 	
 	private PopupWindow window;
+	private float mDensity;
+	public int i = 0 ;
+	private ArrayList<View> viewList = new ArrayList<View>();
+	private boolean mNeedShake = true;
+	
 
-	/*
-	 * 以构造函数的形式将其传递进来，以便进行分享--------------------------------------此构造函数，不带有当前活动分享的url
-	 */
 	public void showPopwindow(View v, final Activity activity, String title,
 			String content, String imageUrl) {
 		this.activity = activity;
+		
+		 
 		configPlatforms();
 		setShareContent(title, content, imageUrl,null);//分享的内容
 		
@@ -61,6 +84,12 @@ public class SharedDialog implements OnClickListener {
 		LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		
 		View view = inflater.inflate(R.layout.dialog_shared, null);
+		View ll_shared_wx_friend = view.findViewById(R.id.ll_shared_wx_friend);
+		View rl_shared_friend = view.findViewById(R.id.rl_shared_friend);
+		View ll_shared_tx_wb = view.findViewById(R.id.ll_shared_tx_wb);
+		View ll_shared_sina_wb = view.findViewById(R.id.ll_shared_sina_wb);
+		
+		
 		view.findViewById(R.id.ll_shared_wx_friend).setOnClickListener(this);
 		view.findViewById(R.id.rl_shared_friend).setOnClickListener(this);
 		view.findViewById(R.id.ll_shared_tx_wb).setOnClickListener(this);
@@ -104,15 +133,17 @@ public class SharedDialog implements OnClickListener {
 	
 	
 	
-	/*
-	 * 以构造函数的形式将其传递进来，以便进行分享
-	 */
-	public void showPopwindow(View v, final Activity activity, String title,
+	
+	@SuppressLint("HandlerLeak") public void showPopwindow(View v, final Activity activity, String title,
 			String content, String imageUrl, String currentActivityUrl) {
 		this.activity = activity;
-		
+		DisplayMetrics dm = new DisplayMetrics(); 
+		activity.getWindowManager().getDefaultDisplay().getMetrics(dm);  
+        if (dm != null) {  
+            mDensity = dm.density;  
+        } 
+        
 		configPlatforms();
-		
 		
 		setShareContent(title, content, imageUrl,currentActivityUrl);//分享的内容
 		
@@ -120,12 +151,26 @@ public class SharedDialog implements OnClickListener {
 		LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		
 		View view = inflater.inflate(R.layout.dialog_shared, null);
+		ll_shared_wx_friend = view.findViewById(R.id.ll_shared_wx_friend);
+		rl_shared_friend = view.findViewById(R.id.rl_shared_friend);
+		ll_shared_tx_wb = view.findViewById(R.id.ll_shared_tx_wb);
+		ll_shared_sina_wb = view.findViewById(R.id.ll_shared_sina_wb);
+		
 		view.findViewById(R.id.ll_shared_wx_friend).setOnClickListener(this);
 		view.findViewById(R.id.rl_shared_friend).setOnClickListener(this);
 		view.findViewById(R.id.ll_shared_tx_wb).setOnClickListener(this);
 		view.findViewById(R.id.ll_shared_sina_wb).setOnClickListener(this);
 		view.findViewById(R.id.tv_shared_cancle).setOnClickListener(this);
-
+		
+		
+		
+		final ArrayList<View> viewList = new ArrayList<View>();
+		viewList.add(ll_shared_wx_friend);
+		viewList.add(rl_shared_friend);
+		viewList.add(ll_shared_tx_wb);
+		viewList.add(ll_shared_sina_wb);
+		
+		
 		// 下面是两种方法得到宽度和高度 getWindow().getDecorView().getWidth()
 
 		window = new PopupWindow(view, WindowManager.LayoutParams.MATCH_PARENT,
@@ -148,17 +193,41 @@ public class SharedDialog implements OnClickListener {
 
 		// 在底部显示
 		window.showAtLocation(v, Gravity.BOTTOM, 0, 0);
+		
+		handler = new Handler(){
+			@Override
+			public void handleMessage(Message msg) {
+				/*super.handleMessage(msg);*/
+				if(i<4){
+					shakeAnimation(viewList.get(i));
+					i++;
+//					LogUtils.toDebugLog("shake", "shakeAnimation中的i为："+ i);
+				}else if(i>=4){
+//					mNeedShake = false;
+//					LogUtils.toDebugLog("shake", "shakeAnimation中的i为："+ i);
+				}
+			}
+		};
+		
+		
 
 		window.setOnDismissListener(new OnDismissListener() {
 
 			@Override
 			public void onDismiss() {
-				WindowManager.LayoutParams params = activity.getWindow()
-						.getAttributes();
+				WindowManager.LayoutParams params = activity.getWindow().getAttributes();
 				params.alpha = 1f;
 				activity.getWindow().setAttributes(params);
 			}
 		});
+		
+		new Timer().schedule(new TimerTask() {
+			@Override
+			public void run() {
+				handler.sendEmptyMessage(0);
+			}
+		}, 400,200);
+		
 	}
 
 	/**
@@ -309,7 +378,7 @@ public class SharedDialog implements OnClickListener {
 	    sinaShareContent.setTitle(title);
 	    
 	    
-	    String newSinaShareContent = "#迈界惊喜好活动#我发现了一个超赞的活动,就在【"+title+"】,"+"content"+", 戳我戳我-->"+currentActivityUrl;
+	    String newSinaShareContent = "#迈界惊喜好活动#我发现了一个超赞的活动,就在【"+title+"】,"+content+", 戳我戳我-->"+currentActivityUrl;
 	    /*sinaShareContent.setShareContent(content+"."+currentActivityUrl);//-->test*/	
 	    sinaShareContent.setShareContent(newSinaShareContent);
     
@@ -375,4 +444,74 @@ public class SharedDialog implements OnClickListener {
 			}
 		});
 	}
+	
+//	private static final int ICON_WIDTH = 80;  
+//    private static final int ICON_HEIGHT = 80;  
+//    private static final float DEGREE_0 = 1.8f;  
+//    private static final float DEGREE_1 = -2.0f;  
+//    private static final float DEGREE_2 = 2.0f;  
+//    private static final float DEGREE_3 = -1.5f;  
+//    private static final float DEGREE_4 = 1.5f;  
+    private static final int ANIMATION_DURATION = 200;
+//    private static final int DELAY_ANIMATION_DURATION = 2000;
+    
+	private View ll_shared_wx_friend;
+	private View rl_shared_friend;
+	private View ll_shared_tx_wb;
+	private View ll_shared_sina_wb; 
+	private Handler handler;
+	
+	private void shakeAnimation(final View v) {  
+       
+		
+		 final TranslateAnimation mra = new TranslateAnimation(0, 0, 0, -50);
+		 final TranslateAnimation mrb = new TranslateAnimation(0, 0, -50, 0);
+		
+//        final RotateAnimation mra = new RotateAnimation(rotate, -rotate, ICON_WIDTH * mDensity / 2, ICON_HEIGHT * mDensity / 2);  
+//        final RotateAnimation mrb = new RotateAnimation(-rotate, rotate, ICON_WIDTH * mDensity / 2, ICON_HEIGHT * mDensity / 2);  
+  
+//		mra.setInterpolator(new DecelerateInterpolator());
+//		mrb.setInterpolator(new DecelerateInterpolator());
+        mra.setDuration(ANIMATION_DURATION);  
+        mrb.setDuration(ANIMATION_DURATION);  
+  
+        mra.setAnimationListener(new AnimationListener() {  
+            @Override  
+            public void onAnimationEnd(Animation animation) {  
+                if (mNeedShake) {  
+                    mra.reset();  
+                    v.startAnimation(mrb);  
+                }  
+            }  
+            @Override  
+            public void onAnimationRepeat(Animation animation) {  
+            }  
+            @Override  
+            public void onAnimationStart(Animation animation) {  
+            }  
+        });  
+  
+//        mrb.setAnimationListener(new AnimationListener() {  
+//			@Override  
+//            public void onAnimationEnd(Animation animation) {  
+//                if (mNeedShake) {  
+//                    //mrb.reset(); 
+//                    //v.startAnimation(mra);  
+//                    //v.startAnimation(null);
+//                }  
+//            }  
+//            @Override  
+//            public void onAnimationRepeat(Animation animation) {  
+//            }  
+//            @Override  
+//            public void onAnimationStart(Animation animation) {  
+//            }  
+//        });  
+        
+        v.startAnimation(mra);  
+    } 
+	
+	
+	  
+	 
 }

@@ -340,7 +340,9 @@ public class SwipeListSearchBankcardAdapter extends  BaseAdapter{//LazyAdapter<H
 		
 		
 		//条目中的那个绿色的一小块区域的点击添加
-		viewHold.iv_bank_card_add.setOnClickListener(new OnClickListener() {
+//		viewHold.iv_bank_card_add.setOnClickListener(new OnClickListener() {
+		
+			view.getFrontView().setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				if ("true".equals(App.app.getData("isExperience"))) {//体验用户状态下

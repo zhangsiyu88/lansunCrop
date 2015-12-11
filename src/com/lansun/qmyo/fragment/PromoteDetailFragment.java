@@ -139,9 +139,8 @@ public class PromoteDetailFragment extends BaseFragment {
 				
 				if(url.contains("lansunqmyo://maijieclient/?")){
 					
-					setNewFrag(url);
-					
-					//getUrlTailDict(url);
+					//setNewFrag(url);
+					getUrlTailDict(url);
 					return true;
 				}else{
 					return super.shouldOverrideUrlLoading(view, url);
@@ -170,7 +169,6 @@ public class PromoteDetailFragment extends BaseFragment {
 			} else {
 				v.ll_promote_detail_title.setVisibility(View.VISIBLE);
 			}
-
 		}
 	};
 	private boolean my_attention;
@@ -208,7 +206,6 @@ public class PromoteDetailFragment extends BaseFragment {
 			dialog.showPopwindow(v.webView, activity, promote.getName(),
 					promote.getTag(), promote.getPhoto());
 			break;
-
 		}
 	}
 
@@ -269,6 +266,7 @@ public class PromoteDetailFragment extends BaseFragment {
 	}
 	
 	
+	
 	public void setNewFrag(String url) {
 		
 		LogUtils.toDebugLog("webview", url);
@@ -286,7 +284,7 @@ public class PromoteDetailFragment extends BaseFragment {
 	private void getUrlTailDict(String url) {
 		int headIndex = url.indexOf("{");
 		//int tailIndex = url.indexOf("}");
-		String urlTailStr = url.substring(headIndex, url.length());
+		String urlTailStr = url.substring(headIndex, url.length()).replaceAll("\'","\"" );
 		LogUtils.toDebugLog("webviewUrl", urlTailStr);
 		Gson gson = new Gson();
 		ClickGoUrl goUrlData = gson.fromJson(urlTailStr, ClickGoUrl.class);
@@ -297,10 +295,14 @@ public class PromoteDetailFragment extends BaseFragment {
 		if(tag == 9){
 			ActivityDetailFragment activtiFragment = new ActivityDetailFragment();
 			Bundle args = new Bundle();
-			/*args.putString("activityId",activity_id);
-			args.putString("shopId", shop_id);*/
-			args.putString("activityId","8147");
-			args.putString("shopId", "116629");
+			args.putString("activityId",activity_id);
+			args.putString("shopId",shop_id);
+			LogUtils.toDebugLog("activityId", activity_id);
+			LogUtils.toDebugLog("shopId", shop_id);
+			
+			/*args.putString("activityId","8147");
+			args.putString("shopId", "116629");*/
+			
 			activtiFragment.setArguments(args);
 			FragmentEntity fEntity = new FragmentEntity();
 			fEntity.setFragment(activtiFragment);

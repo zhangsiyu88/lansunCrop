@@ -196,7 +196,8 @@ public class HomeFragmentOld extends BaseFragment {
 					v.iv_top_card.setVisibility(View.GONE);
 				}
 			});
-			dialog.show(getFragmentManager(), "experience");
+			/*dialog.show(getFragmentManager(), "experience");*/
+			dialog.show(getActivity().getFragmentManager(), "experience");
 		}
 		super.onCreate(savedInstanceState);
 	}

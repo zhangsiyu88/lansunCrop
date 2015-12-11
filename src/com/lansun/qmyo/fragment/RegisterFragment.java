@@ -117,7 +117,7 @@ public class RegisterFragment extends BaseFragment{
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 
-		getActivity().getWindow().setFormat(PixelFormat.TRANSLUCENT);
+		//getActivity().getWindow().setFormat(PixelFormat.TRANSLUCENT);
 
 		View rootView = inflater.inflate(R.layout.activity_register, null);
 		Handler_Inject.injectFragment(this, rootView);

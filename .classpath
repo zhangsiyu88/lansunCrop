@@ -4,7 +4,6 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="lib" path="libs/badgeview.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/xUtils-2.5.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/okhttp-2.5.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/AMap_Services_V2.5.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/Android_2DMapApi_V2.5.0.jar"/>
@@ -27,6 +26,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/SocialSDK_WeiXin_2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/umeng_social_sdk.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/nineoldandroids-2.4.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/xUtils-2.6.14.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="output" path="bin/classes"/>

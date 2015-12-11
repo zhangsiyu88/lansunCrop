@@ -72,8 +72,7 @@
                     android:layout_alignTop="@id/tv_bank_card_name"
                     android:paddingBottom="5dp"
                     android:paddingLeft="15dp"
-                    android:paddingRight="10dp"
-                     >
+                     ><!-- android:paddingRight="10dp"  -->
                     <com.android.pc.ioc.image.RecyclingImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

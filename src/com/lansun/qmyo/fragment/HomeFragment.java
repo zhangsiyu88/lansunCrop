@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,6 +18,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -101,10 +106,11 @@ import com.lansun.qmyo.utils.swipe.EightPartActivityAdapter;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExperienceDialog;
 import com.lansun.qmyo.view.LoginDialog;
-import com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener;
+import com.lansun.qmyo.view.UpdateAppVersionDialog;
 import com.lansun.qmyo.view.MyListView;
 import com.lansun.qmyo.view.TestMyListView;
 import com.lansun.qmyo.view.TestMyListView.OnRefreshListener;
+import com.lansun.qmyo.view.UpdateAppVersionDialog.OnConfirmListener;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -135,6 +141,15 @@ import com.squareup.okhttp.Response;
 	private View searchView;
 	private static int currY;
 	private static int hiddenY;
+	
+//	private Handler uiHandler=new Handler(){
+//		public void handleMessage(android.os.Message msg) {
+//			switch (msg.what) {
+//			case 10:
+//				ToggleDialogByUserStatus();
+//				break;
+//			}
+//		}
 
 	/**
 	 * LoonAndroid框架规定，上拉和下拉刷新只能针对ListView进行设置，其他的View类型不可识别
@@ -164,8 +179,9 @@ import com.squareup.okhttp.Response;
 	private View tv_home_search;
 
 	private boolean isPlay = false;
-
+	
 	private ArrayList<HashMap<String, Object>> shopDataList = new ArrayList<HashMap<String, Object>>();
+	private PackageManager manager;
 	public HomeFragment(boolean mIsFirstEnter) {
 		mFromBankCardFragment = mIsFirstEnter;
 	}
@@ -182,7 +198,6 @@ import com.squareup.okhttp.Response;
 		justComeBackFromHome = true;
 		
 		if(searchView!=null){
-			
 			justComeBackFromHome = true;
 			//currY = getLocation(searchView);
 			if (hiddenY > currY + 66) {
@@ -193,7 +208,6 @@ import com.squareup.okhttp.Response;
 				//startTopOutAnim(activity, v.fl_home_top_menu);
 				//v.fl_home_top_menu.setVisibility(View.GONE);
 				LogUtils.toDebugLog("回到后台测试", "重新进入首页界面");
-				
 				
 				//v.fl_home_top_menu.setVisibility(View.GONE);
 			}
@@ -227,7 +241,6 @@ import com.squareup.okhttp.Response;
 	public void onPause() {
 		
 //		PullToRefreshManager.getInstance().headerUnable();
-		
 		//v.fl_home_top_menu.setVisibility(View.GONE);
 		LogUtils.toDebugLog("回到后台测试", "离开首页界面");
 		/*if (adapter != null) {                  //adapter若置为空，在退出后台时，再进去页面进行刷新，会导致刷新后至顶部 
@@ -237,11 +250,7 @@ import com.squareup.okhttp.Response;
 		if (promoteAdapter != null) {
 			promoteAdapter = null;
 		}
-		
-		
 		//isPlay = false;
-		
-		
 		v.iv_home_icon.setPressed(true);
 		v.tv_home_icon.setTextColor(getResources().getColor(R.color.app_green1));
 
@@ -299,10 +308,30 @@ import com.squareup.okhttp.Response;
 		getActivity().registerReceiver(broadCastReceiver, filter);
 		
 		
+		
+		PackageInfo info = null;
+		manager = App.app.getPackageManager();
+		try {
+		  info = manager.getPackageInfo(App.app.getPackageName(), 0);
+		} catch (NameNotFoundException e) {
+		  e.printStackTrace();
+		}
+		InternetConfig config = new InternetConfig();
+		config.setKey(1);
+		LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
+		params.put("key", "Android");
+		params.put("version", "1");
+		
+		FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION + info.versionCode , config, this);
+		//FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION+"?key=Android&version="+1 ,params, config, this);
+		
+		
 		intent = new Intent("com.lansun.qmyo.fragment.newbrand");
 		
 		Log.e("token",App.app.getData("access_token"));
-		Log.e("gps",""+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
+		if(GlobalValue.gps!=null){
+			Log.e("gps",""+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
+		}
 		
 		LayoutInflater inflater  = LayoutInflater.from(activity);
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
@@ -356,24 +385,21 @@ import com.squareup.okhttp.Response;
 		});
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		refresh_footer = inflater.inflate(R.layout.refresh_footer, null);
 
+		//根据用户状态来判断是否弹出Dialog,为了保证模糊的背景为正常的首页界面图像，故现在将其放到首页轮播图加载出来之后，才判断弹窗
+//		ToggleDialogByUserStatus();
+		
+		super.onCreate(savedInstanceState);
+	}
+
+	private void ToggleDialogByUserStatus() {
 		if (TextUtils.isEmpty(App.app.getData("exp_secret"))
 				&& TextUtils.isEmpty(App.app.getData("secret"))
 				&& !GlobalValue.isFirst){
 			ExperienceDialog dialog = new ExperienceDialog();//这么个体验的对话框，需要单独在其内部设置点击响应事件
 			//进来首先就弹出对话框
-			dialog.setOnConfirmListener(new OnConfirmListener() {
+			dialog.setOnConfirmListener(new com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener() {
 				@Override
 				public void confirm() {
 					v.rl_bg.setPressed(true);//这是“体验”二字后面的背景绿色和灰色选择器，那么为了取消点击效果，则在此将选择器设置为  点击和非点击都为 统一效果
@@ -384,10 +410,12 @@ import com.squareup.okhttp.Response;
 					v.iv_top_card.setVisibility(View.GONE);
 				}
 			});
-			dialog.show(getFragmentManager(), "experience");
+			dialog.show(getActivity().getFragmentManager(), "experience");
 		}
-		super.onCreate(savedInstanceState);
 	}
+	
+	
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -975,10 +1003,32 @@ import com.squareup.okhttp.Response;
 //					PullToRefreshManager.getInstance().headerUnable();
 					
 					
+					//1.当界面出现图片时，才进行随机银行卡的弹窗操作
+					new Timer().schedule(new TimerTask() {
+						@Override
+						public void run() {
+							handler.sendEmptyMessage(10);
+							//ToggleDialogByUserStatus();
+						}
+					}, 200);
+					
 				//loadPhoto(photoUrl, iv_home_ad);
 				break;
 			case 1:// 极文列表
-
+				
+				if(GlobalValue.isWaitingForUpdateApp){//根据case10的访问结果，来判断是否需要弹出对话框
+					UpdateAppVersionDialog dialog = new UpdateAppVersionDialog();//这么个体验的对话框，需要单独在其内部设置点击响应事件
+					//进来首先就弹出对话框
+					dialog.setOnConfirmListener(new OnConfirmListener(){
+						@Override
+						public void confirm() {
+							//CustomToast.show(activity, "看好咯", "我要下载咯");
+						}
+					});
+					dialog.show(getActivity().getFragmentManager(), "update");
+					GlobalValue.isWaitingForUpdateApp =  false;
+				}
+				
 				if (!isChina) {
 					promoteList = Handler_Json.JsonToBean(HomePromote.class,r.getContentAsString());
 
@@ -1010,7 +1060,6 @@ import com.squareup.okhttp.Response;
 				} else {//如果选择的城市是China的城市,换句话说,常规进来的界面是走下面的代码的
 					lv_home_list.onLoadMoreFished();
 					lv_home_list.onRefreshFinshed(true);
-					
 					
 					list = Handler_Json.JsonToBean(ActivityList.class,r.getContentAsString());
 					
@@ -1058,6 +1107,14 @@ import com.squareup.okhttp.Response;
 						isFirstRequest = false;
 					}
 				}
+				break;
+			case 10:
+				LogUtils.toDebugLog("case10", r.getContentAsString().toString());
+				
+				if(r.getContentAsString().contains("false")){//服务器的回复为{data："false"},表示不需要等待更新
+					GlobalValue.isWaitingForUpdateApp = false;
+				}
+				
 				break;
 			}
 		} else {
@@ -1200,21 +1257,13 @@ import com.squareup.okhttp.Response;
 			
 //			if(position%adPhotoNum==0){
 //				imageView.setBackgroundResource(R.drawable.home_ad_poster1);
-//				
-//				
 //			}else if(position%adPhotoNum==1){
-//				
-//				
 //				imageView.setBackgroundResource(R.drawable.home_ad_poster2);
 //			}else if(position%adPhotoNum==2){
-//				
-//				
 //				imageView.setBackgroundResource(R.drawable.home_ad_poster3);
 //			}
 			
 			loadPhoto(mList.get(position%adPhotoNum).get("photoDataPhotoUrl"), imageView);
-			
-			
 			
 			/*
 			 * 以后的服务器返回回来的数据需要拥有这张图外接的连接地址，目前暂时将其设置为点击第二张图片进入私人秘书页
@@ -1272,12 +1321,20 @@ import com.squareup.okhttp.Response;
 	class InternalHandler extends Handler{
 		@Override
 		public void handleMessage(Message msg) {
-			/*int nextIndex = (vp_home_ad.getCurrentItem()+1)%homeAdPhotoList.size();*/
-			int nextIndex = vp_home_ad.getCurrentItem()+1;
-			mScroller.setmDuration(3000);
-			vp_home_ad.setCurrentItem(nextIndex);
-			//vp_home_ad.setFadingEdgeLength(100);
-			handler.postDelayed(new InternalTask(), 5000);//自己给自己发信息
+			
+			switch(msg.what){
+				case 10:
+					ToggleDialogByUserStatus();
+					break;	
+				default:
+					/*int nextIndex = (vp_home_ad.getCurrentItem()+1)%homeAdPhotoList.size();*/
+					int nextIndex = vp_home_ad.getCurrentItem()+1;
+					mScroller.setmDuration(3000);
+					vp_home_ad.setCurrentItem(nextIndex);
+					//vp_home_ad.setFadingEdgeLength(100);
+					handler.postDelayed(new InternalTask(), 5000);//自己给自己发信息
+				    break;
+			}
 		}
 	}
 	
@@ -1432,6 +1489,7 @@ import com.squareup.okhttp.Response;
 	@Override
 	public void onDestroy() {
 		getActivity().unregisterReceiver(broadCastReceiver);
+		
 		super.onDestroy();
 	}
 	

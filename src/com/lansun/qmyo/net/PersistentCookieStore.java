@@ -68,7 +68,10 @@ public class PersistentCookieStore implements CookieStore {
         if (!cookie.hasExpired()) {
             if(!cookies.containsKey(uri.getHost()))
                 cookies.put(uri.getHost(), new ConcurrentHashMap<String, HttpCookie>());
-            cookies.get(uri.getHost()).put(name, cookie);
+           
+            if( cookies.get(uri.getHost())!= null){
+            	cookies.get(uri.getHost()).put(name, cookie);
+            }
         } else {
             if(cookies.containsKey(uri.toString()))
                 cookies.get(uri.getHost()).remove(name);

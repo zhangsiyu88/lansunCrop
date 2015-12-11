@@ -228,7 +228,6 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 						LinkedHashMap<String, String> params = new LinkedHashMap<>();
 						params.put("bankcard_id", bankCardId);
 						
-						
 						//使用post方式去提交，是选中其中的卡作为选中卡 
 					    FastHttpHander.ajax(GlobalValue.URL_SELECT_BANKCARD, params,config, SwipeListMineBankcardAdapter.this);
 						
@@ -523,7 +522,6 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 						}
 					}else{//此时是我的银行卡页中列表的点击事件，那么需要将原始卡替换掉
 						/*App.app.setData("MainBankcard",selectCardId);*/
-						
 					}
 					MineBankcardFragment fragment = new MineBankcardFragment();
 					FragmentEntity event = new FragmentEntity();
@@ -633,15 +631,17 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 				requestParams.addHeader("Authorization","Bearer " + App.app.getData("access_token"));
 				httpUtils.send(HttpMethod.DELETE, GlobalValue.URL_BANKCARD_DELETE + deleteId, requestParams,new RequestCallBack<String>(){
 					@Override
-					public void onFailure(HttpException arg0, String arg1) {
+					public void onFailure(HttpException arg0, String arg1){
+						
 					}
 					@Override
-					public void onSuccess(ResponseInfo arg0) {
+					public void onSuccess(ResponseInfo arg0){
 						if ("true".equals(arg0.result)) {
 							//很明显,前面的删除银行卡操作是没有起到作用的,若有作用至少是会有toast提醒
 							/*CustomToast.show(mContext, mContext.getString(R.string.tip),
 									mContext.getString(R.string.delete_success));*/
 							Utils.showToast(mContext, "删除成功");
+							notifyDataSetChanged();
 							
 						} else {
 							System.out.println("获取到返回值,但显示是删除失败!");
@@ -650,7 +650,7 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 						}
 					}
 				});
-				notifyDataSetChanged();
+				//notifyDataSetChanged();
 			}
 		}
 	};

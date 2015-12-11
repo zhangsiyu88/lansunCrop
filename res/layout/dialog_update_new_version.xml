@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dialog_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:alpha="10"
+    android:background="@color/transparent"
+    ><!-- android:paddingBottom="@dimen/margin_top_50" 
+          android:alpha="100"-->
+
+    <!-- 主界面  -->
+    <LinearLayout
+        android:id="@+id/ll_dialog_content"
+        android:layout_width="230dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/tv_style_white"
+        android:gravity="center"
+        android:orientation="vertical" 
+        android:layout_centerHorizontal="true"><!-- android:layout_width="@dimen/expe_dialog_w"  android:layout_marginTop="@dimen/expe_dialog_content_margin_top" -->
+
+		<!--   -->
+        <TextView
+            android:id="@+id/tv_tittle1"
+            android:textSize="16dp"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_top_35"
+            android:text="总裁大大~发现版本啦~"
+            android:textColor="@color/text_nomal" />
+        
+         <TextView
+            android:id="@+id/tv_tittle2"
+            android:gravity="center_horizontal"
+            android:textSize="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="17dp"
+            android:text="Ver 1.X"
+            android:textColor="@color/update_text_tittle_green" />
+         
+         <View
+             android:id="@+id/line_splite"
+           android:layout_width="match_parent"
+           android:layout_height="2px"
+           android:background="@color/app_bg"/>
+         
+         <!-- 进度条内容 -->
+         <ProgressBar 
+            android:id="@+id/pb_update"
+            style="?android:attr/progressBarStyleHorizontal"
+	        android:layout_gravity="center_vertical" 
+	        android:background="#90000000"
+	        android:max="100"
+	        android:progress="0"
+	        android:progressDrawable="@drawable/progressbar_bg"
+            android:layout_height="2dp"
+            android:layout_width="200dp"
+            android:visibility="gone"/><!-- android:secondaryProgress="70"  -->
+         
+         <!--  下载中的百分比展示 -->
+         <TextView 
+             android:layout_marginTop="35px"
+             android:visibility="gone"
+             android:id="@+id/tv_update_progress"
+             android:layout_height="wrap_content"
+             android:layout_width="wrap_content"
+             android:text=""
+             android:textSize="10dp"
+             android:textColor="@color/app_black"
+             />
+
+         <!--版本新增内容的 标题  -->
+	        <LinearLayout 
+	            android:id="@+id/ll_desc_tittle"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:gravity="left"
+	            android:orientation="vertical"
+	            >   
+		        <TextView
+		            android:id="@+id/tv_desc_header"
+		            android:textSize="12dp"
+		            android:layout_marginTop="17dp"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:textColor="#9fa0a0" 
+		            android:lineSpacingExtra="3dp"
+		            android:text="版本更新内容："/>
+	        </LinearLayout>
+        
+	        <!--版本新增内容的 条目内容1  -->
+	        <LinearLayout 
+	            android:id="@+id/ll_desc_item1"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="15dp"
+	            android:visibility="gone"
+	            >
+
+	           <TextView
+	               android:id="@+id/tv_desc_num1"
+	               style="@style/text_style_nomal_28"
+	               android:layout_width="wrap_content"
+	               android:layout_height="wrap_content"
+	               android:layout_marginLeft="35px"
+	               android:gravity="center_horizontal"
+	               android:lineSpacingExtra="4dp"
+	               android:text="1."
+	               android:textColor="#6F6F6F"
+	               android:textSize="12dp" />
+	            
+	             <TextView
+		            android:id="@+id/tv_desc_content1"
+		            android:layout_width="match_parent"
+		            android:layout_height="wrap_content"
+		            android:layout_marginRight="35px"
+		            android:layout_marginLeft="15px"
+		            android:textColor="#6F6F6F" 
+		            android:lineSpacingExtra="3dp"
+		            android:text="开放评论咯~您可以对参与的活动，发表评论"
+		            android:textSize="12dp"/><!-- style="@style/text_style_nomal_28" -->
+	        </LinearLayout>
+	        <!--版本新增内容的 条目内容2  -->
+	         <LinearLayout 
+	            android:id="@+id/ll_desc_item2"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="15dp"
+	            android:visibility="gone"
+	            >
+	           <TextView
+		            android:id="@+id/tv_desc_num2"
+		            style="@style/text_style_nomal_28"
+		            android:layout_marginLeft="35px"
+		            android:gravity="center_horizontal"
+		            android:textColor="#6F6F6F" 
+		            android:lineSpacingExtra="4dp"
+		            android:textSize="12dp"
+		            android:text="2."/> 
+	            
+	             <TextView
+		            android:id="@+id/tv_desc_content2"
+		            android:layout_width="match_parent"
+		            android:layout_height="wrap_content"
+		            android:layout_marginRight="35px"
+		            android:layout_marginLeft="15px"
+		            android:textColor="#6F6F6F" 
+		            android:lineSpacingExtra="3dp"
+		            android:text="优惠券每天拿到手软哦"
+		            android:textSize="12dp"/><!-- style="@style/text_style_nomal_28" -->
+	        </LinearLayout>
+	        
+	         
+	        <!--版本新增内容的 条目内容3  -->
+	         <LinearLayout 
+	            android:id="@+id/ll_desc_item3"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="15dp"
+	            android:visibility="gone"
+	            >
+	           <TextView
+		            android:id="@+id/tv_desc_num3"
+		            style="@style/text_style_nomal_28"
+		            android:layout_marginLeft="35px"
+		            android:gravity="center_horizontal"
+		            android:textColor="#6F6F6F" 
+		            android:lineSpacingExtra="4dp"
+		            android:textSize="12dp"
+		            android:text="3."/> 
+	            
+	             <TextView
+		            android:id="@+id/tv_desc_content3"
+		            android:layout_width="match_parent"
+		            android:layout_height="wrap_content"
+		            android:layout_marginRight="35px"
+		            android:layout_marginLeft="15px"
+		            android:textColor="#6F6F6F" 
+		            android:lineSpacingExtra="3dp"
+		            android:text=" 修复部分bug，提高了版本的稳定性及用户体验"
+		            android:textSize="12dp"/><!-- style="@style/text_style_nomal_28" -->
+	        </LinearLayout>
+	        <!--版本新增内容的 条目内容4  -->
+	          <LinearLayout 
+	            android:id="@+id/ll_desc_item4"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="15dp"
+	            android:visibility="gone"
+	            >
+	           <TextView
+		            android:id="@+id/tv_desc_num4"
+		            style="@style/text_style_nomal_28"
+		            android:layout_marginLeft="35px"
+		            android:gravity="center_horizontal"
+		            android:textColor="#6F6F6F" 
+		            android:lineSpacingExtra="3dp"
+		            android:textSize="12dp"
+		            android:text="4."/> 
+	            
+	             <TextView
+		            android:id="@+id/tv_desc_content4"
+		            android:layout_width="match_parent"
+		            android:layout_height="wrap_content"
+		            android:layout_marginRight="35px"
+		            android:layout_marginLeft="15px"
+		            android:textColor="#6F6F6F" 
+		            android:lineSpacingExtra="3dp"
+		            android:text=" 修复部分bug，提高了版本的稳定性及用户体验"
+		            android:textSize="12dp"/><!-- style="@style/text_style_nomal_28" -->
+	        </LinearLayout>
+	        <!--版本新增内容的 条目内容5  -->
+	          <LinearLayout 
+	            android:id="@+id/ll_desc_item5"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="15dp"
+	            android:visibility="gone"
+	            >
+	           <TextView
+		            android:id="@+id/tv_desc_num5"
+		            style="@style/text_style_nomal_28"
+		            android:layout_marginLeft="35px"
+		            android:gravity="center_horizontal"
+		            android:textColor="#6F6F6F" 
+		            android:lineSpacingExtra="4dp"
+		            android:textSize="12dp"
+		            android:text="5."/> 
+	            
+	             <TextView
+		            android:id="@+id/tv_desc_content5"
+		            android:layout_width="match_parent"
+		            android:layout_height="wrap_content"
+		            android:layout_marginRight="35px"
+		            android:layout_marginLeft="15px"
+		            android:textColor="#6F6F6F" 
+		            android:lineSpacingExtra="3dp"
+		            android:text=" 修复部分bug，提高了版本的稳定性及用户体验"
+		            android:textSize="12dp"/><!-- style="@style/text_style_nomal_28" -->
+	        </LinearLayout>
+	        
+	        <FrameLayout
+	           android:layout_marginTop="10dp"
+	           android:layout_width="wrap_content"
+		       android:layout_height="wrap_content">
+	           <ImageView
+			        android:id="@+id/iv_confirmtoupdate"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:src="@drawable/update_tail"
+			        android:scaleType="fitEnd"
+			        /> <!-- android:layout_marginTop="@dimen/expe_dialog_icon_margin_top" -->
+	           <!-- <ImageView
+	                 android:layout_width="match_parent"
+	                 android:layout_height="50dp"
+	                 android:layout_gravity="bottom"
+	                 android:background="@drawable/tv_style_white_update_textview"
+	                 android:visibility="invisible" /> -->
+	        </FrameLayout>
+	        
+	        
+	       
+    </LinearLayout>
+
+   <com.dd.CircularProgressButton
+        android:id="@+id/btn_update_app_confirm"
+        
+        android:layout_width="110dp"
+        android:layout_height="40dp"
+        android:layout_below="@id/ll_dialog_content"
+        android:layout_marginTop="@dimen/margin_top_35"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button"
+        android:text="@string/confirm_update"
+        android:textColor="@color/app_white"
+        android:textSize="14dp" 
+        app:cpb_cornerRadius="20dp"
+        app:cpb_textComplete="下载完成"
+        app:cpb_textError="下载失败"
+        app:cpb_textIdle="点击升级哦"
+        app:cpb_selectorIdle="@drawable/idle_state_selector"
+        app:cpb_selectorComplete="@drawable/complete_state_selector"
+        app:cpb_selectorError="@drawable/error_state_selector"
+        
+        /><!--  android:paddingLeft="4dp" android:paddingRight="4dp" -->
+        
+
+    <!-- <TextView
+        android:id="@+id/tv_expe_relogin"
+        style="@style/text_style_nomal_28"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="@dimen/l_r_35"
+        android:layout_marginRight="@dimen/l_r_35"
+        android:layout_marginTop="@dimen/margin_top_20"
+        android:text="残忍拒绝"
+        android:textColor="@color/app_white"
+        android:visibility="gone" /> -->
+        <!-- android:text="@string/re_login" 重新登录，不见咯-->
+
+  <!--   <com.android.pc.ioc.image.RecyclingImageView
+        android:id="@+id/bt_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/expe_dialog_icon_margin_top"/>  -->
+
+  
+</RelativeLayout>

@@ -122,6 +122,7 @@
     <string name="new_pwd">新密码 ：</string>
     <string name="re_new_pwd">确认新密码 ：</string>
     <string name="confirm">确认</string>
+    <string name="confirm_update"> 点击升级哦  </string>
     <string name="i_know">立即设置</string>
     <string name="email">邮箱</string>
     <string name="truname">姓名</string>
@@ -136,7 +137,7 @@
     <string name="exit_login">退出登录</string>
     <string name="replay">回复</string>
     <string name="store">门店</string>
-    <string name="qmyo_version">迈界 V1.2.7</string>
+    <string name="qmyo_version">迈界 V1.2.8</string>
     <string name="qmyo_desc">收集世界各地惊喜\n伴随迈友走遍世界</string>
     <string name="qmyo_wx">迈界微信公众号：<Data><![CDATA[<font color="#9DC14F">qmyoclub</font>]]></Data></string>
     <string name="qmyo_net">迈界官网：<Data><![CDATA[<font color="#9DC14F">www.qmyo.com</font>]]></Data></string>
