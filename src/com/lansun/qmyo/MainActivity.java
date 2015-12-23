@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.Toast;
 import cn.jpush.android.api.JPushInterface;
 
 import com.android.pc.ioc.event.EventBus;
@@ -41,18 +42,29 @@ import com.lansun.qmyo.fragment.StoreDetailFragment;
 import com.lansun.qmyo.fragment.TestMineActivityFragment;
 import com.lansun.qmyo.service.AccessTokenService;
 import com.lansun.qmyo.service.LocationService;
+import com.lansun.qmyo.utils.CommitStaticsinfoUtils;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.ExampleUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
+import com.nostra13.universalimageloader.core.ImageLoader;
 @InjectLayer(R.layout.activity_main)
 public class MainActivity extends FragmentActivity {
 	private FragmentTransaction fragmentTransaction;
 	public static boolean isForeground = false;
+	private long exitTime = 0;
 	@Override
-	protected void onCreate(@Nullable Bundle arg0) {
+	protected void onCreate(@Nullable Bundle savedInstanceState) {
+		
+		
+		
+		
+		if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+			finish();
+			return;
+		}
 		
 		//注册一个广播接收者
 		registerMessageReceiver();
@@ -74,7 +86,6 @@ public class MainActivity extends FragmentActivity {
 		String versionName =  ExampleUtil.GetVersion(getApplicationContext());
 		/*TextView mVersion = (TextView) findViewById(R.id.tv_version);*/
 		/*mVersion.setText("Version: " + versionName);*/
-		
 		
 		
 		//若发现权限被关闭后，那么进入之后会弹出开启定位权限的提醒
@@ -101,7 +112,8 @@ public class MainActivity extends FragmentActivity {
 		}else{
 			System.out.println("android.permission.ACCESS_FINE_LOCATION已经打开！"+checkCallingOrSelfPermission);
 		}
-		super.onCreate(arg0);
+		
+		super.onCreate(savedInstanceState);
 	}
 	
 	@InjectInit
@@ -110,7 +122,14 @@ public class MainActivity extends FragmentActivity {
 		eventBus.register(this);
 
 		if (TextUtils.isEmpty(App.app.getData("isFirst"))) {
+			//一进来，首先开启后台的两个服务
+			accesstokenService = new Intent(this, AccessTokenService.class);
+			startService(accesstokenService);
+			locationService = new Intent(this, LocationService.class);
+			startService(locationService);
+			
 			startFragmentAdd(new IntroductionPageFragment());
+			
 		} else {
 			getTokenService();
 			/*startFragmentAdd(new HomeFragment());    */                 //--------------------->by Yeun 11.16//TODO
@@ -142,6 +161,17 @@ public class MainActivity extends FragmentActivity {
 	protected void onPause() {
 		JPushInterface.onPause(this);
 		isForeground = true;
+		//ImageLoader.getInstance().clearMemoryCache();  
+		ImageLoader.getInstance().clearDiskCache();  //清除imageloader在Disk中的缓存
+		LogUtils.toDebugLog("ImageLoader", "ImageLoader清除掉Disk缓存");
+		
+		if(App.app.getData("firstUseApp")=="true"){
+			if(locationService!=null){
+				stopService(locationService);
+				LogUtils.toDebugLog("firstUseApp", "退至后台，关闭定位服务");
+			}
+		}
+		
 		super.onPause();
 	}
 
@@ -150,6 +180,13 @@ public class MainActivity extends FragmentActivity {
 		JPushInterface.onResume(this);
 		isForeground = false;
 		//getTokenService();
+		
+		if(App.app.getData("firstUseApp")=="true"){
+			if(locationService!=null){
+				startService(locationService);
+				LogUtils.toDebugLog("firstUseApp", "回到前台，重新启动定位服务，加速");
+			}
+		}
 		super.onResume();
 	}
 
@@ -275,23 +312,31 @@ public class MainActivity extends FragmentActivity {
 			
 			if (fragment.getClass().getName()
 					.equals(ExperienceSearchFragment.class.getName())) {
-				DialogUtil.createTipAlertDialog(this, R.string.is_exit,
-						new TipAlertDialogCallBack() {
-							@Override
-							public void onPositiveButtonClick(
-									DialogInterface dialog, int which) {
-								dialog.dismiss();
-								/*//直接将进程关掉
-								android.os.Process.killProcess(android.os.Process.myPid());*/
-								MainActivity.this.finish();
-							}
-
-							@Override
-							public void onNegativeButtonClick(
-									DialogInterface dialog, int which) {
-								dialog.dismiss();
-							}
-						});
+//				DialogUtil.createTipAlertDialog(this, R.string.is_exit,
+//						new TipAlertDialogCallBack() {
+//							@Override
+//							public void onPositiveButtonClick(
+//									DialogInterface dialog, int which) {
+//								dialog.dismiss();
+//								/*//直接将进程关掉
+//								android.os.Process.killProcess(android.os.Process.myPid());*/
+//								MainActivity.this.finish();
+//							}
+//
+//							@Override
+//							public void onNegativeButtonClick(
+//									DialogInterface dialog, int which) {
+//								dialog.dismiss();
+//							}
+//						});
+				
+				if((System.currentTimeMillis()-exitTime ) > 1000){  
+		            Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();                                
+		            exitTime = System.currentTimeMillis();   
+		        } else {
+		        	MainActivity.this.finish();
+		        }
+				
 				return true;
 			} else if (fragment.getClass().getName()
 					.equals(HomeFragment.class.getName())||fragment.getClass().getName()
@@ -300,26 +345,33 @@ public class MainActivity extends FragmentActivity {
 					.equals(SecretaryFragment.class.getName())||fragment.getClass().getName()
 					.equals(MainFragment.class.getName())) {
 
-				DialogUtil.createTipAlertDialog(MainActivity.this,R.string.is_exit, new TipAlertDialogCallBack() {
-
-							@Override
-							public void onPositiveButtonClick(
-									DialogInterface dialog, int which) {
-								/*finish();*/
-								dialog.dismiss();
-								/*onPause();*/
-								//在四大板块上时，需要在点击确定按钮时，执行onDestory()的操作
-								/*fragmentTransaction = null;*/
-								/*onDestroy();*/
-								finish();
-							}
-
-							@Override
-							public void onNegativeButtonClick(DialogInterface dialog, int which) {
-								dialog.dismiss();
-							}
-						});
-
+//				DialogUtil.createTipAlertDialog(MainActivity.this,R.string.is_exit, new TipAlertDialogCallBack() {
+//
+//							@Override
+//							public void onPositiveButtonClick(
+//									DialogInterface dialog, int which) {
+//								/*finish();*/
+//								dialog.dismiss();
+//								/*onPause();*/
+//								//在四大板块上时，需要在点击确定按钮时，执行onDestory()的操作
+//								/*fragmentTransaction = null;*/
+//								/*onDestroy();*/
+//								finish();
+//							}
+//
+//							@Override
+//							public void onNegativeButtonClick(DialogInterface dialog, int which) {
+//								dialog.dismiss();
+//							}
+//						});
+				
+				
+				if((System.currentTimeMillis()-exitTime ) > 1000){  
+		            Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();                                
+		            exitTime = System.currentTimeMillis();   
+		        } else {
+		        	MainActivity.this.finish();
+		        }
 				return true;
 			}/*else if(fragment.getClass().getName()
 					.equals(ExperienceDialog.class.getName())){//当Fragment为ExperienceDialog时，取消返回键效果
@@ -342,11 +394,25 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onDestroy() {
 		
+		
+		GlobalValue.commitedStatisticsInfo_Login=false;
+		
 		/*App.app.setData("isExperience","true");
 		GlobalValue.isFirst = false;
 		App.app.setData("access_token", "");*/
 		/*App.app.setData("exp_secret","dypesq1zsn");
 		App.app.setData("isExperience","");*/
+		
+		if(App.app.getData("firstUseApp")=="true"){
+			App.app.setData("firstUseApp","");
+			LogUtils.toDebugLog("firstUseApp", "正常退出App，结束使用者的App首秀");
+		}
+		
+		
+		ImageLoader.getInstance().clearMemoryCache();  
+		ImageLoader.getInstance().clearDiskCache();  
+		LogUtils.toDebugLog("ImageLoader", "ImageLoader清除掉缓存");
+		
 		GlobalValue.isWaitingForUpdateApp =  true;
 		
 		unregisterReceiver(mMessageReceiver);
@@ -356,14 +422,26 @@ public class MainActivity extends FragmentActivity {
 		/**
 		 * 离开程序时，将定位服务给禁掉
 		 */
-		stopService(locationService);
-		LogUtils.toDebugLog("location", "locationService被停止掉");
-		stopService(accesstokenService);
-		LogUtils.toDebugLog("accesstokenService", "accesstokenService被停止掉");
 		
+		if(locationService!=null){
+			stopService(locationService);
+			LogUtils.toDebugLog("location", "locationService被停止掉");
+		}
+		if(accesstokenService!=null){
+			stopService(accesstokenService);
+			LogUtils.toDebugLog("accesstokenService", "accesstokenService被停止掉");
+		}
+		App.app.setData("toUpdateApp","");
+		LogUtils.toDebugLog("toUpdateApp", "toUpdateApp重新设置为 空！保证了版本更新弹窗在App打开的第一次仅一次的有效性");
+		
+		
+		/*
+		 * 体验用户离开此次应用后，会将token置为空，为啥？
+		 */
 		if(App.app.getData("isExperience")=="true"){
-			System.out.println("走到了onDestory!");
-			App.app.setData("access_token", "");
+			System.out.println("走到了onDestory!暂时未清除临时用户的token");
+			//App.app.setData("access_token", "");
+			
 			
 		/* App.app.setData("exp_secret","dypesq1zsn");*/
 			//GlobalValue.isFirst = false;
@@ -429,10 +507,8 @@ public class MainActivity extends FragmentActivity {
 		public boolean onSearchRequested() {
 			return super.onSearchRequested();
 		}
-		@Override
-		protected void onRestoreInstanceState(Bundle savedInstanceState) {
-			super.onRestoreInstanceState(savedInstanceState);
-		}
+		
+		
 		/* protected void onSaveInstanceState(Bundle outState) {
 			  outState.putString(loginname, App.app.LOGINNAME);
 			  outState.putInt(classId, Application.classId);
@@ -450,5 +526,24 @@ public class MainActivity extends FragmentActivity {
 			  }
 			 }*/
 		
+		/**
+		 * 存储Activity被清除那一瞬之前的希望保留的内容
+		 * @see android.support.v4.app.FragmentActivity#onSaveInstanceState(android.os.Bundle)
+		 */
+		@Override
+		protected void onSaveInstanceState(Bundle outState) {
+			super.onSaveInstanceState(outState);
+			
+			
+		}
+		
+		/**
+		 * (non-Javadoc)
+		 * @see android.app.Activity#onRestoreInstanceState(android.os.Bundle)
+		 */
+		@Override
+		protected void onRestoreInstanceState(Bundle savedInstanceState) {
+			super.onRestoreInstanceState(savedInstanceState);
+		}
 		
 }

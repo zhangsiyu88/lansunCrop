@@ -1,4 +1,5 @@
 package com.lansun.qmyo.fragment;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Timer;
@@ -25,6 +26,9 @@ import com.lansun.qmyo.domain.ErrorInfo;
 import com.lansun.qmyo.domain.Token;
 import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.fragment.SecretaryFragment.InternalHandler;
+import com.lansun.qmyo.fragment.SecretaryFragment.InternalTask;
+import com.lansun.qmyo.fragment.SecretaryFragment.SecretaryBgPagerAdapter;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryCardShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryInvestmentShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryLifeShowFragment;
@@ -32,18 +36,25 @@ import com.lansun.qmyo.fragment.secretary_detail.SecretaryPartyShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryShoppingShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryStudentShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryTravelShowFragment;
+import com.lansun.qmyo.utils.CommitStaticsinfoUtils;
+import com.lansun.qmyo.utils.FixedSpeedScroller;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CloudView;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
+import com.ryanharter.viewpager.PagerAdapter;
+import com.ryanharter.viewpager.ViewPager;
+
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.text.format.Time;
@@ -52,8 +63,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.LinearInterpolator;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ImageView.ScaleType;
 
 /**
  * 注册界面
@@ -83,6 +97,13 @@ public class RegisterFragment extends BaseFragment{
 	private String fragment_name;
 	private boolean isResetPsw;
 	private Token token;
+	/**
+	 * 注意下面的adapter的类型为： SecretaryBgPagerAdapter，而非常规的V4包中的PagerAdapter
+	 */
+	private SecretaryBgPagerAdapter adapter;
+	private FixedSpeedScroller mScroller;
+	private InternalHandler handler = new InternalHandler();
+	
 	private boolean isTheSameCardAsUsual = false;
 	private RecyclingImageView iv_activity_back;
 	private boolean mIsFromRegisterAndHaveNothingThenGoToRegister = false;
@@ -103,7 +124,9 @@ public class RegisterFragment extends BaseFragment{
 		/*@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private RecyclingImageView iv_activity_back;*/
 
-		/*private CloudView iv_register_bg;*/
+		//private CloudView iv_register_bg;
+		
+		private ViewPager vp_sercretary_bg_pager;
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -125,15 +148,32 @@ public class RegisterFragment extends BaseFragment{
 		activity.getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
 						| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+		
+		
+		
+		adapter = new SecretaryBgPagerAdapter();
+		v.vp_sercretary_bg_pager.setAdapter(adapter);
+		try {
+			Field mField = ViewPager.class.getDeclaredField("mScroller");
+			mField.setAccessible(true);//允许暴力反射
+			mScroller = new FixedSpeedScroller(v.vp_sercretary_bg_pager.getContext(),new LinearInterpolator());//CycleInterpolator(Float.MAX_VALUE)
+			mScroller.setmDuration(15000);
+			mField.set(v.vp_sercretary_bg_pager, mScroller);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		//mScroller.setmDuration(8000);
+		handler.removeCallbacksAndMessages(null);
+		handler.postDelayed(new InternalTask(), 0);
+		v.vp_sercretary_bg_pager.setCurrentItem(1000*300);
+		
 
 //		activity.getWindow().setSoftInputMode(
 //				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 		
-//		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | 
+//		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE| 
 //				WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-		
-		
 		/*SpannableString ss = new SpannableString("输入密码");
 		AbsoluteSizeSpan ass = new AbsoluteSizeSpan(7,true);
 		ss.setSpan(ass, 0, ss.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -550,6 +590,9 @@ public class RegisterFragment extends BaseFragment{
 				Log.i("打出包含secret的返回信息内容",r.getContentAsString());
 				
 				
+					
+				
+				
 				if (GlobalValue.user != null) {
 					Log.i("","用户的status状态为： "+GlobalValue.user.getStatus());
 					if(GlobalValue.user.getStatus().contains("0")){
@@ -566,7 +609,7 @@ public class RegisterFragment extends BaseFragment{
 						config.setKey(3);
 						LinkedHashMap<String, String> params = new LinkedHashMap<>();
 						FastHttpHander.ajaxGet(GlobalValue.URL_GET_ACCESS_TOKEN+ App.app.getData("secret"), config, this);
-						CustomToast.show(activity, "迈界欢迎您", "小迈一定会尽心尽力为您服务哦");
+						CustomToast.show(activity, "迈界欢迎您", "不用找，优惠到，随身小秘帮您挑~");
 						App.app.setData("isExperience", "false");//将体验用户标示置为 false
 						App.app.getData("isEmbrassStatus").equals("");//此时用户状态不再是尴尬的状态时
 						
@@ -578,6 +621,14 @@ public class RegisterFragment extends BaseFragment{
 				token = Handler_Json.JsonToBean(Token.class,r.getContentAsString());
 				App.app.setData("access_token", token.getToken());
 				Log.d("token", "token : "+token.getToken());
+				
+				
+				/**
+				 * 向服务器端提交一次，用户登录的信息
+				 */
+				CommitStaticsinfoUtils.commitStaticsinfo(2);
+				
+				
 				
 				/*back();*/
 				InternetConfig config1 = new InternetConfig();
@@ -649,6 +700,10 @@ public class RegisterFragment extends BaseFragment{
 				GlobalValue.user = Handler_Json.JsonToBean(User.class,r.getContentAsString());
 				pd.dismiss();
 				pd = null;
+				
+				//和AccessTokenSer服务中保持一致
+				App.app.setData("user_avatar",GlobalValue.user.getAvatar());
+				App.app.setData("user_nickname",GlobalValue.user.getNickname());
 				
 				if(isResetPsw){
 					/*MineFragment mineFragment = new MineFragment();*/
@@ -870,19 +925,69 @@ public class RegisterFragment extends BaseFragment{
 		
 		/**
 		 * 背景上的云暂关闭掉
-		 * v.iv_register_bg.threadFlag = true;*/
+		 **/ //v.iv_register_bg.threadFlag = true;
 
 		super.onResume();
 	}
 
 	@Override
 	public void onPause() {//在Fragmentment暂停的时候，将背景设置成单图
-		/*v.iv_register_bg.threadFlag = false;
-		v.iv_register_bg.setBackgroundResource(R.drawable.cloud_1);*/
+		/**///v.iv_register_bg.threadFlag = false;
+		//v.iv_register_bg.setBackgroundResource(R.drawable.cloud_1);
 		super.onPause();
 	}
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 	}
+	
+	
+	
+	
+	
+	   class SecretaryBgPagerAdapter extends PagerAdapter {
+		   
+				@Override
+				public int getCount() {
+					return Integer.MAX_VALUE;
+				}
+
+				@Override
+				public boolean isViewFromObject(View view, Object object) {
+					return view == object;
+				}
+				@Override
+				public Object instantiateItem(ViewGroup container, int position) {
+					ImageView imageView = new ImageView(activity);
+					imageView.setScaleType(ScaleType.CENTER_CROP);
+					if(position%2==0){
+						imageView.setBackgroundResource(R.drawable.cloud_1);
+					}else{
+						imageView.setBackgroundResource(R.drawable.cloud_2);
+					}
+					container.addView(imageView);
+					return imageView;
+				}
+				@Override
+				public void destroyItem(ViewGroup container, int position, Object object) {
+					container.removeView((View) object);
+				}
+			}
+		   
+			@SuppressLint("HandlerLeak")
+			class InternalHandler extends Handler{
+				@Override
+				public void handleMessage(Message msg) {
+							int nextIndex = v.vp_sercretary_bg_pager.getCurrentItem()+1;
+							v.vp_sercretary_bg_pager.setCurrentItem(nextIndex);
+							handler.postDelayed(new InternalTask(), 15000);//自己给自己发信息
+				}
+			}
+			class InternalTask implements Runnable{
+				@Override
+				public void run() {
+					handler.sendEmptyMessage(0);
+				}
+			}
+	
 }

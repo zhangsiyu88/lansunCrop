@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res/com.lansun.qmyo"
        android:layout_width="match_parent"
        android:layout_height="match_parent"
        android:scrollbars="none"
@@ -14,11 +15,18 @@
 
     
     <!-- 云图被压在最底下作为背景图 -->
-    <!-- <com.lansun.qmyo.view.CloudView
+    <!--  <com.lansun.qmyo.view.CloudView
         android:id="@+id/iv_register_bg"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" /> -->
-        
+        android:layout_height="match_parent" /> --> 
+   
+   <!-- 借用秘书页的动态背景，两个为同一个背景 -->
+   <com.ryanharter.viewpager.ViewPager
+       android:id="@+id/vp_sercretary_bg_pager"
+       style="@style/w_h_full"
+       android:focusable="false"
+       android:focusableInTouchMode="false"
+       app:orientation="vertical"/>
   
 	    <RelativeLayout
 	        android:layout_width="match_parent"

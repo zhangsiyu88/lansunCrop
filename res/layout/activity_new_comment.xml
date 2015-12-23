@@ -22,7 +22,8 @@
             android:hint="@string/new_comment_tip"
             android:paddingLeft="@dimen/l_r_35"
             android:paddingRight="@dimen/l_r_35"
-            android:paddingTop="@dimen/margin_top_35" >
+            android:paddingTop="@dimen/margin_top_35" 
+            android:maxLength="1000">
 
             <requestFocus />
         </EditText>

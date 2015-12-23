@@ -95,8 +95,7 @@ public class SwipeListSearchBankcardAdapter extends  BaseAdapter{//LazyAdapter<H
 	private boolean mIsFromRegisterAndHaveNoBankcard = false;
 	private DisplayImageOptions options = new DisplayImageOptions.Builder().cacheInMemory(true)
 			.cacheOnDisk(true).considerExifParams(true)
-			.displayer(new FadeInBitmapDisplayer(300))
-			.displayer(new RoundedBitmapDisplayer(10)).build();
+			.displayer(new RoundedBitmapDisplayer(10)).build();//.displayer(new FadeInBitmapDisplayer(300))
 	private Fragment mFragment;
 	private boolean isSlide = true;
 	
@@ -338,6 +337,7 @@ public class SwipeListSearchBankcardAdapter extends  BaseAdapter{//LazyAdapter<H
 		});
 
 		
+		//此时convertView占了之前那块小绿块的操作
 		
 		//条目中的那个绿色的一小块区域的点击添加
 //		viewHold.iv_bank_card_add.setOnClickListener(new OnClickListener() {

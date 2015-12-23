@@ -111,6 +111,8 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 			//NO-OP
 		}
 		initMySecretary();
+		
+		//此方法暂无任何具体操作
 		initInformation();
 	}
 	private void initInformation() {
@@ -124,7 +126,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 		
 		LogUtils.toDebugLog("initMySecretary", "initMySecretary()");
 		
-		if (!isExperience()) {
+		if (!isExperience()) {//登录用户
 			OkHttp.asyncGet(GlobalValue.URL_SECRETARY_SAVE, "Authorization","Bearer "+App.app.getData("access_token"), null, new Callback() {
 				@Override
 				public void onResponse(Response response) throws IOException {
@@ -149,48 +151,18 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		rootView = inflater.inflate(R.layout.activity_mine,container,false);
-		Handler_Inject.injectFragment(this, rootView);
+		
+		Handler_Inject.injectFragment(this, rootView);//此方法一旦被调用，由于随即调用了init()方法，所以看到log显示init()方法优于onCreatView()方法，实则不然
+		
 		v.iv_mine_icon.setPressed(true);
 		
-		/**
-		 * 保证从后台重新进入当前fragment时，头像部分可以重新加载上去
-		 */
-		if (GlobalValue.user != null) {
-			String avatar = GlobalValue.user.getAvatar();
-			if (!TextUtils.isEmpty(avatar)) {
-				//加载头像上去
-				loadPhoto(avatar, v.iv_mine_head);
-			}
-			
-			if (!TextUtils.isEmpty(GlobalValue.user.getNickname())) {
-				
-				if(GlobalValue.user.getNickname() == null||GlobalValue.user.getNickname() =="null"||GlobalValue.user.getNickname().contains("null")){
-					v.tv_mine_nickname.setText("请设置昵称");
-					Log.i("Tag：nickName","NickName应该为设置昵称");
-					
-				}else{
-					Log.i("Tag：nickName","NickName有值："+GlobalValue.user.getNickname());
-					v.tv_mine_nickname.setText(GlobalValue.user.getNickname());
-				}
-			}else{
-				v.tv_mine_nickname.setText("请注册或登陆");
-			}
-		}else{    //--- >GlobalValue.user == null
-			
-			LogUtils.toDebugLog("userinfo", "onCreatView()方法里： GlobalValue.user为空");
-			//CustomToast.show(activity, "onCreatView()方法里： GlobalValue.user为空", "同上");
-			
-			if(!TextUtils.isEmpty(App.app.getData("user_avatar"))&&!TextUtils.isEmpty(App.app.getData("user_nickname"))){
-				loadPhoto(App.app.getData("user_avatar"), v.iv_mine_head);
-				v.tv_mine_nickname.setText(App.app.getData("user_nickname"));
-			}else{
-				
-			}
-		}
+		loadNickAndAvatar();
+		
 		//v.tv_mine_icon.setTextColor(getResources().getColor(R.color.app_green2));
 		return rootView;
 	}
 
+	
 	@InjectInit
 	private void init() {
 		
@@ -205,45 +177,13 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 //		refreshCurrentList(majieMessageUrl, null, 1, null);
 //		LogUtils.toDebugLog("infos", "去拿关于迈界的信息");
 		
+		
 		v.iv_mine_icon.setPressed(true);
 		v.tv_mine_icon.setTextColor(getResources().getColor(R.color.app_green2));
-
-		if(App.app.getData("isExperience").equals("true")){ //此处的isExperience是无用
-			v.tv_mine_nickname.setText("请注册或登陆");
-			
-		}else{
-			if (GlobalValue.user != null) {
-				String avatar = GlobalValue.user.getAvatar();
-				if (!TextUtils.isEmpty(avatar)) {
-					//加载头像上去
-					loadPhoto(avatar, v.iv_mine_head);
-				}
-				if (!TextUtils.isEmpty(GlobalValue.user.getNickname())) {
-					if(GlobalValue.user.getNickname() == null||GlobalValue.user.getNickname() =="null"||GlobalValue.user.getNickname().contains("null")){
-						v.tv_mine_nickname.setText("请设置昵称");
-						Log.i("Tag：nickName","NickName应该为设置昵称");
-						
-					}else{
-						Log.i("Tag：nickName","NickName有值："+GlobalValue.user.getNickname());
-						v.tv_mine_nickname.setText(GlobalValue.user.getNickname());
-					}
-				}else{
-					v.tv_mine_nickname.setText("请注册或登陆");
-				}
-			}else{   		 //--- >GlobalValue.user == null
-				
-				LogUtils.toDebugLog("userinfo", "init()方法里： GlobalValue.user为空");
-				//CustomToast.show(activity, "init()方法里： GlobalValue.user为空", "同上");
-				
-				if(!TextUtils.isEmpty(App.app.getData("user_avatar"))&&!TextUtils.isEmpty(App.app.getData("user_nickname"))){
-					loadPhoto(App.app.getData("user_avatar"), v.iv_mine_head);
-					v.tv_mine_nickname.setText(App.app.getData("user_nickname"));
-				}else{
-					
-				}
-			}
-		}
-		//refreshCurrentList(GlobalValue.URL_USER_MESSAGE, null, 0, null);//去刷新消息
+		
+		loadNickAndAvatar();
+		
+		
 	}
 
 	@Override
@@ -395,7 +335,10 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 			
 //			rootView.buildDrawingCache();
 //			Bitmap bitmap = rootView.getDrawingCache();
-//			
+//
+			
+			
+//			App.app.setData("firstCommitPersonalSecretaryAsk","");
 //			UpdateAppVersionDialog dialog = new UpdateAppVersionDialog();//这么个体验的对话框，需要单独在其内部设置点击响应事件
 //			//进来首先就弹出对话框
 //			dialog.setOnConfirmListener(new OnConfirmListener(){
@@ -609,5 +552,58 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 	public void onDestroy() {
 		activity.unregisterReceiver(broadCastReceiver);
 		super.onDestroy();
+	}
+	
+	private void loadNickAndAvatar() {
+		
+		LogUtils.toDebugLog("userinfo", "init()方法里：App.app.getData(isExperience)=： "+App.app.getData("isExperience"));
+		if(App.app.getData("isExperience").equals("true")){ //此处的isExperience是无用
+			v.tv_mine_nickname.setText("请注册或登陆");
+			
+		}else{
+			if (GlobalValue.user != null) {
+				String avatar = GlobalValue.user.getAvatar();
+				if (!TextUtils.isEmpty(avatar)) {
+					//加载头像上去
+					loadPhoto(avatar, v.iv_mine_head);
+				}
+				if (!TextUtils.isEmpty(GlobalValue.user.getNickname())) {
+					if(GlobalValue.user.getNickname() == null||GlobalValue.user.getNickname() =="null"||GlobalValue.user.getNickname().contains("null")){
+						v.tv_mine_nickname.setText("请设置昵称");
+						Log.i("Tag：nickName","NickName应该为设置昵称");
+						
+					}else{
+						Log.i("Tag：nickName","NickName有值："+GlobalValue.user.getNickname());
+						v.tv_mine_nickname.setText(GlobalValue.user.getNickname());
+					}
+				}else{
+					v.tv_mine_nickname.setText("请注册或登陆");
+				}
+			}else{   		 //--- >GlobalValue.user == null
+				LogUtils.toDebugLog("userinfo", "init()方法里： GlobalValue.user为空");
+				
+				if(!TextUtils.isEmpty(App.app.getData("user_avatar"))&&!TextUtils.isEmpty(App.app.getData("user_nickname"))){
+					loadPhoto(App.app.getData("user_avatar"), v.iv_mine_head);
+					/*
+					 * 下面的判断是针对由于强行退出程序，导致类GlobalValue的类数据丢失，在重新启动程序时，因为AccessTokenService的服务含有网络请求，导致获取user对象时，
+					 	速度不及页面加载的速度，故在此针对user为空时，以防万一，将其设置为 ： 请设置昵称的提示语，
+					 	实际上，此处的防护基本上用不到，
+					 	因为在登录用户保持登录状态度的情况下，已将用户的头像和昵称的基本信息已存入本地保存起来，一旦启动程序时，都将从本地获取，
+					 	代码并不会走到此处
+					 */
+					
+					if(App.app.getData("user_nickname").equals("null")){
+						v.tv_mine_nickname.setText("请设置昵称");
+					}else{
+						v.tv_mine_nickname.setText(App.app.getData("user_nickname"));
+					}
+					
+					LogUtils.toDebugLog("userinfo", "init()方法里： App.app.getData(user_nickname)=： "+App.app.getData("user_nickname"));
+				}else{
+					LogUtils.toDebugLog("userinfo", "init()方法里：  GlobalValue.user为空，App.app.getData(user_nickname)为空，App.app.getData(user_avatar)为空");
+				}
+			}
+		}
+		//refreshCurrentList(GlobalValue.URL_USER_MESSAGE, null, 0, null);//去刷新消息
 	}
 }

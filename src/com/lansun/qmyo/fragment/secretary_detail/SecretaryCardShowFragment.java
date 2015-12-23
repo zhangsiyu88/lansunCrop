@@ -1,5 +1,9 @@
 package com.lansun.qmyo.fragment.secretary_detail;
+import jp.wasabeef.blurry.Blurry;
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.DialogInterface.OnDismissListener;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -74,6 +78,7 @@ public class SecretaryCardShowFragment extends SecretaryDetailsBaseFragment impl
 				if (isExperience()) {
 					final Dialog dialog=new Dialog(getActivity(), R.style.Translucent_NoTitle);
 			        dialog.setCancelable(true);
+			        blurryView(rootView, dialog);
 			        dialog.show();
 			        Window window = dialog.getWindow();
 			        window.clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
@@ -95,17 +100,14 @@ public class SecretaryCardShowFragment extends SecretaryDetailsBaseFragment impl
 					if (GlobalValue.user!=null) {
 						if (GlobalValue.mySecretary==null) {
 							final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
+							
+							blurryView(rootView, dialog);
+							
+							
 							dialog.show();
 							dialog.setContentView(R.layout.dialog_setting_secretary);
 							Window window = dialog.getWindow();
 							
-//							dialog.setContentView(R.layout.dialog_setting_secretary);
-//							rootView.buildDrawingCache();
-//							Bitmap bitmap = rootView.getDrawingCache();
-//							Bitmap fastblurBitmap = FastBlurBitmap.fastblur(activity, bitmap, 20);
-//							WindowManager.LayoutParams lp = window.getAttributes();
-//							window.setBackgroundDrawable(new BitmapDrawable(fastblurBitmap));
-//							window.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 //							
 //							// 模糊度
 //							window.setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND, WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
@@ -114,12 +116,6 @@ public class SecretaryCardShowFragment extends SecretaryDetailsBaseFragment impl
 //							//黑暗度
 //							lp.dimAmount=0.7f;
 //							window.setAttributes(lp);
-							
-							
-							
-							
-							
-							
 							window.findViewById(R.id.setting_now).setOnClickListener(new OnClickListener() {
 								@Override
 								public void onClick(View v) {
@@ -133,17 +129,13 @@ public class SecretaryCardShowFragment extends SecretaryDetailsBaseFragment impl
 						}else {
 							if ("false".equals(GlobalValue.mySecretary.getHas())) {
 								final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
+								
+								blurryView(rootView, dialog);
+								
 								dialog.show();
 								dialog.setContentView(R.layout.dialog_setting_secretary);
 								Window window = dialog.getWindow();
 								
-//								dialog.setContentView(R.layout.dialog_setting_secretary);
-//								rootView.buildDrawingCache();
-//								Bitmap bitmap = rootView.getDrawingCache();
-//								Bitmap fastblurBitmap = FastBlurBitmap.fastblur(activity, bitmap, 5);
-//								WindowManager.LayoutParams lp = window.getAttributes();
-//								window.setBackgroundDrawable(new BitmapDrawable(fastblurBitmap));
-//								window.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 //								// 模糊度
 //								window.setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND, WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
 //								//透明度
@@ -151,11 +143,6 @@ public class SecretaryCardShowFragment extends SecretaryDetailsBaseFragment impl
 //								//黑暗度
 //								lp.dimAmount=0.5f;
 //								window.setAttributes(lp);
-								
-								
-								
-								
-								
 								window.findViewById(R.id.setting_now).setOnClickListener(new OnClickListener() {
 									@Override
 									public void onClick(View v) {

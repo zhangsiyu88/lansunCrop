@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -53,8 +54,10 @@ public class EightPartActivityAdapter extends BaseAdapter {
 	private int deletePosition;
 	
 	  private DisplayImageOptions options = new DisplayImageOptions.Builder()
-	    .cacheInMemory(true).cacheOnDisk(true).considerExifParams(true)
-	    .displayer(new FadeInBitmapDisplayer(300)).build();
+	    .cacheInMemory(true)
+	    .cacheOnDisk(true)
+	    .considerExifParams(true)
+	    .build();//.displayer(new FadeInBitmapDisplayer(300))
 	  
 	  public EightPartActivityAdapter(Context mContext) {
 		super();
@@ -89,7 +92,7 @@ public class EightPartActivityAdapter extends BaseAdapter {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public View getView(final int position, View convertView, ViewGroup parent) {
+	public View getView(final int position,  View convertView, ViewGroup parent) {
 		mPosition = position;
 		HashMap<String, Object> data = mList.get(position);
 		
@@ -101,11 +104,22 @@ public class EightPartActivityAdapter extends BaseAdapter {
 			viewHold = ViewHolder.fromValues(convertView);
 			convertView.setTag(viewHold);
 		}
-		convertView.setOnClickListener(new OnClickListener() {
+		
+		
+		/**
+		 * convertView 整体设置点击事件，会造成跳转逻辑乱套，Item整体的跳转是需要在Adapter外部使用ListView的OnItemClickListener去完成
+		 */
+		/*convertView.setOnClickListener(new OnClickListener() {
 		
 		@Override
 		public void onClick(View arg0) {
 			LogUtils.toDebugLog("click", "点击事件");
+			
+			//1,解决先按筛选栏，后按Item的问题
+			if(mClickBackPress!=null){
+				mClickBackPress.closeExpandTabView();
+			}
+			
 			ActivityDetailFragment fragment = new ActivityDetailFragment();
 			Bundle args = new Bundle();
 			args.putString("activityId",
@@ -117,8 +131,13 @@ public class EightPartActivityAdapter extends BaseAdapter {
 			event.setFragment(fragment);
 			EventBus.getDefault().post(event);
 			
+			//2,解决先按Item后按筛选栏的问题
+			if(mClickBackPress!=null){
+				mClickBackPress.recoverExpandTabViewTouch();
+			}
+			
 		}
-	});
+	});*/
 
 		if (position+1 == mList.size()) {//当获取到的数据列表的size()正好为view的位置position+1时,那么最后一个viewHold中line的可见性设置为GONE掉
 			viewHold.line.setVisibility(View.GONE);
@@ -134,7 +153,6 @@ public class EightPartActivityAdapter extends BaseAdapter {
 			 */
 			String name = data.get("tv_search_activity_desc").toString();
 			viewHold.tv_search_activity_name.setText(name);
-			
 		}
 		if (data.get("tv_search_activity_distance") != null) {
 			String distance = data.get("tv_search_activity_distance")
@@ -191,6 +209,7 @@ public class EightPartActivityAdapter extends BaseAdapter {
 	}
 
 	private int mPosition;
+	private IClickBackPress mClickBackPress;
 	public static class ViewHolder {
 
 		public Button mButtonCall;
@@ -249,5 +268,17 @@ public class EightPartActivityAdapter extends BaseAdapter {
 	
 	public void download(ImageView view, String url) {
 		ImageLoader.getInstance().displayImage(url, view, this.options);
+	}
+	
+	/**
+	 * 设计click()事件中的回调函数，共ActivityFragment进行使用
+	 * @author Yeun.Zhang
+	 */
+	public interface IClickBackPress{
+		void closeExpandTabView ();
+		void recoverExpandTabViewTouch();
+	}
+	public void setIClickBackPress(IClickBackPress clickBackPress){
+		this.mClickBackPress = clickBackPress;
 	}
 }

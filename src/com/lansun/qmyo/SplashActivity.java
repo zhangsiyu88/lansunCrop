@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -43,6 +44,7 @@ import com.lansun.qmyo.domain.AdCode;
 import com.lansun.qmyo.domain.Sensitive;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 /**
  * 欢迎界面
@@ -260,7 +262,11 @@ public class SplashActivity extends FragmentActivity {
 	}
 
 	@Override
-	protected void onCreate(Bundle arg0) {
+	protected void onCreate(Bundle savedInstanceState) {
+		
+		
+		
+		
 	//---后期修改
 		 if (((LocationManager) getSystemService("location")).isProviderEnabled("gps")){
 			 
@@ -290,7 +296,7 @@ public class SplashActivity extends FragmentActivity {
 		//------------------
 		    
 		Handler_Inject.injectFragment(this, null);
-		super.onCreate(arg0);
+		super.onCreate(savedInstanceState);
 	}
 
 	
@@ -313,8 +319,21 @@ public class SplashActivity extends FragmentActivity {
 	@InjectInit
 	private void init() {
 		
+		TelephonyManager TelephonyMgr = (TelephonyManager)getSystemService(TELEPHONY_SERVICE); 
+		String szImei = TelephonyMgr.getDeviceId(); // Requires READ_PHONE_STATE
+		//CustomToast.show(getApplicationContext(), "deviceImei", szImei);
+		LogUtils.toDebugLog("id", "设备的deviceImei： "+szImei);
+		
 		String sdk = android.os.Build.VERSION.SDK;
 		String brand = android.os.Build.BRAND;
+		String id = android.os.Build.ID;
+		String device = android.os.Build.DEVICE;
+		
+		LogUtils.toDebugLog("id", "设备的id： "+id);
+		LogUtils.toDebugLog("id", "设备的device： "+device);
+//		CustomToast.show(getApplicationContext(), "id", id);
+//		CustomToast.show(getApplicationContext(), "device", device);
+		
 		
 		if(Integer.valueOf(sdk) < 17){
 			DialogUtil.createTipAlertDialog(SplashActivity.this,

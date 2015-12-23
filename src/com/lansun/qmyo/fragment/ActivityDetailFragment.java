@@ -1,5 +1,7 @@
 package com.lansun.qmyo.fragment;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -45,6 +47,7 @@ import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Gps;
+import com.android.pc.util.Handler_File;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
 import com.lansun.qmyo.adapter.ActivityDetailPagerAdapter;
@@ -60,6 +63,7 @@ import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.AnimUtils;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.MyListView;
@@ -107,7 +111,8 @@ public class ActivityDetailFragment extends BaseFragment {
 				tv_activity_coupons_remainder_1,
 				tv_activity_coupons_remainder_2,
 				tv_activity_coupons_denomination_1,
-				tv_activity_coupons_denomination_2;
+				tv_activity_coupons_denomination_2,
+				tv_comments_counts,tv_left_bracket,tv_right_bracket;
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private View iv_activity_detail_map, iv_back, ll_activity_detail_none,
 				iv_activity_detail_join_store, iv_open_activity_detail,
@@ -120,6 +125,7 @@ public class ActivityDetailFragment extends BaseFragment {
 		private MySubListView lv_comments_list;
 		private MySubListView lv_tip_list;
 		private RecyclingImageView iv_activity_collection;
+		
 	}
 
 	@Override
@@ -129,6 +135,7 @@ public class ActivityDetailFragment extends BaseFragment {
 		rootView = inflater.inflate(R.layout.activity_activity_detail, null);
 		Handler_Inject.injectFragment(this, rootView);
 		
+		activity.sendBroadcast(new Intent("com.lansun.qmyo.backPressedExpandTabView"));
 		
 		broadCastReceiver = new ActivityDetailsRefreshBroadCastReceiver();
 		System.out.println(" 活动详情页 注册广播 ing");
@@ -137,6 +144,8 @@ public class ActivityDetailFragment extends BaseFragment {
 		filter.addAction("com.lansun.qmyo.refreshActivityDetailPage");
 		filter.addAction("com.lansun.qmyo.refreshActivityDetailPageAndClick");
 		getActivity().registerReceiver(broadCastReceiver, filter);
+		
+	  
 		
 		return rootView;
 	}
@@ -186,7 +195,8 @@ public class ActivityDetailFragment extends BaseFragment {
 	private void initData() {
 		refreshUrl = String.format(GlobalValue.URL_ACTIVITY_SHOP, activityId+ "", shopId + "");
 		refreshCurrentList(refreshUrl, null, 0, v.sc_activity_detail);//获取活动详情
-		//refreshCurrentList(String.format(GlobalValue.URL_ACTIVITY_COMMENTS, activityId),null, 1, null);//获取评论内容
+		
+		refreshCurrentList(String.format(GlobalValue.URL_ACTIVITY_COMMENTS, activityId),null, 1, null);//获取评论内容
 	}
 
 	@InjectHttp
@@ -202,7 +212,7 @@ public class ActivityDetailFragment extends BaseFragment {
 				String tag = data.getActivity().getTag();
 				
 				/*
-				 * 这一步私自篡改了我的定位信息,气伤我了!
+				 * 这一步私自篡改了定位信息!
 				 * 关键这里的gps在当前类中还是没有被用到的玩意
 				 * 暂禁下面的方法*/
 				 /* GlobalValue.gps = new Gps(Double.parseDouble(data.getShop()
@@ -334,11 +344,23 @@ public class ActivityDetailFragment extends BaseFragment {
 					clickToCollectActivity();
 				}
 				break;
-			case 1:
+				
+				
+			case 1://评论的列表
 				CommentList list = Handler_Json.JsonToBean(CommentList.class,
 						r.getContentAsString());
 				ArrayList<HashMap<String, Object>> dataList = new ArrayList<HashMap<String, Object>>();
 				if (list.getData() != null) {
+					
+					LogUtils.toDebugLog("total",list.getTotal()+"");
+					if(list.getData().size()>0){
+						v.tv_left_bracket.setVisibility(View.VISIBLE);
+						v.tv_right_bracket.setVisibility(View.VISIBLE);
+						v.tv_comments_counts.setText(String.valueOf(list.getTotal()));
+					}else{
+						v.tv_left_bracket.setVisibility(View.INVISIBLE);
+						v.tv_right_bracket.setVisibility(View.INVISIBLE);
+					}
 
 					for (CommentListData commentListData : list.getData()) {
 						HashMap<String, Object> map = new HashMap<String, Object>();
@@ -358,8 +380,7 @@ public class ActivityDetailFragment extends BaseFragment {
 						dataList.add(map);
 					}
 					MaiCommentAdapter2 maiCommentAdapter2 = new MaiCommentAdapter2(
-							v.lv_comments_list, dataList,
-							R.layout.mai_comment_lv_item2);
+							v.lv_comments_list, dataList, R.layout.mai_comment_lv_item2);
 					maiCommentAdapter2.setActivity(this);
 					v.lv_comments_list.setAdapter(maiCommentAdapter2);
 				} else {
@@ -493,8 +514,8 @@ public class ActivityDetailFragment extends BaseFragment {
 
 			break;
 		case R.id.iv_activity_detail_report_list://评论列表
-			if (HasComment) {
-				fragment = new MaiCommentListFragment();
+			if (HasComment) {//此活动下 拥有评论
+				fragment = new MaiCommentListFragment();//迈友评论的所有列表
 				args = new Bundle();
 				args.putString("activityId", activityId);
 				args.putString("shopId", shopId);
@@ -524,7 +545,7 @@ public class ActivityDetailFragment extends BaseFragment {
 							dialog.dismiss();
 						}
 					});
-				}else{
+				}else{//登录用户，但没有评论内容
 					fragment = new NewCommentFragment();
 					bundle.putString("activity_id", activityId);
 					bundle.putString("shop_id", shopId);

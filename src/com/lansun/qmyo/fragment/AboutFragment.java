@@ -1,11 +1,15 @@
 package com.lansun.qmyo.fragment;
 
+import java.io.File;
 import java.math.BigDecimal;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,6 +32,7 @@ import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.TelDialog;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.lansun.qmyo.R;
 
 /**
@@ -39,10 +44,11 @@ import com.lansun.qmyo.R;
 public class AboutFragment extends BaseFragment {
 	@InjectAll
 	Views v;
+	private PackageManager manager;
 
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
-		private TextView tv_about_qmyo_net, tv_setting_cache_size,tv_about_qmyo_wx;
+		private TextView tv_about_qmyo_net, tv_setting_cache_size,tv_about_qmyo_wx,tv_about_qmyo_version;
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private View rl_mine_common_problem, rl_mine_feedback,
 				rl_mine_clear_cache, rl_mine_user_agreement;
@@ -70,18 +76,22 @@ public class AboutFragment extends BaseFragment {
 		v.tv_about_qmyo_wx
 			.setText(Html.fromHtml(getString(R.string.qmyo_wx)));
 		
+		
+		PackageInfo info = null;
+		manager = App.app.getPackageManager();
+		try {
+		  info = manager.getPackageInfo(App.app.getPackageName(), 0);
+		} catch (NameNotFoundException e) {
+		  e.printStackTrace();
+		}
+		v.tv_about_qmyo_version
+		.setText(Html.fromHtml(getString(R.string.qmyo_version))+info.versionName);
+		
+		
+		
 		initCacheSize();
 		
-		init325435435();
 		
-	}
-	
-	private void init325435435() {
-		initCacheSize();
-		initCacheSize();
-		initCacheSize();
-		initCacheSize();
-		initCacheSize();
 	}
 	
 	
@@ -106,9 +116,11 @@ public class AboutFragment extends BaseFragment {
 						public void onClick(DialogInterface arg0, int arg1) {
 							
 							//实质上清除图片的缓存内容来达到节省空间的作用
-							ImageLoader.getInstance().getDiskCache()
-									.getDirectory().delete();
+							ImageLoader.getInstance().getDiskCache().getDirectory().delete();
 							ImageLoader.getInstance().getDiskCache().clear();
+							
+							ImageLoader.getInstance().clearMemoryCache();  
+							ImageLoader.getInstance().clearDiskCache();  
 							initCacheSize();
 						}
 					});
@@ -156,8 +168,12 @@ public class AboutFragment extends BaseFragment {
 	}
 
 	private void initCacheSize() {
-		long length = ImageLoader.getInstance().getDiskCache().getDirectory()
-				.length();
+		
+//		long length = ImageLoader.getInstance().getDiskCache().getDirectory().length();
+		
+		 File cacheDirectory = StorageUtils.getCacheDirectory(activity.getApplicationContext());
+		 long length = cacheDirectory.length();
+		 
 		float mbSize = (float) length / 1024 / 1024;
 		BigDecimal b = new BigDecimal(mbSize);
 		float f1 = b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();

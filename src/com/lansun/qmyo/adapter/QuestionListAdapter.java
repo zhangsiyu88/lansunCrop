@@ -31,6 +31,7 @@ import com.android.pc.ioc.image.RecyclingImageView;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.domain.QuestionDetailItem;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.swipe.SwipeLayout;
 import com.lansun.qmyo.view.CircularImage;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -99,80 +100,93 @@ public class QuestionListAdapter extends BaseAdapter {
 				holder.have_information.setVisibility(View.INVISIBLE);
 			}
 			
-			ImageLoader.getInstance().displayImage(GlobalValue.mySecretary.getAvatar(), holder.c_iv, new ImageLoadingListener() {
-				@Override
-				public void onLoadingStarted(String arg0, View arg1) {
-					
+			/**
+			 * 若用户点击过快，进入我的私人秘书页面时，GlobalValue.mySecretary还没有从网络获取到，那么下面去get()会出现奔溃的现象，故在此进行防护
+			 */
+			if(GlobalValue.mySecretary != null){
+				
+				ImageLoader.getInstance().displayImage(GlobalValue.mySecretary.getAvatar(), holder.c_iv, new ImageLoadingListener() {
+					@Override
+					public void onLoadingStarted(String arg0, View arg1) {
+						
+					}
+					@Override
+					public void onLoadingFailed(String arg0, View view, FailReason arg2) {
+						((ImageView)view).setImageResource(R.drawable.secretary_default_avatar);
+					}
+					@Override
+					public void onLoadingComplete(String arg0, View view, Bitmap bitmap) {
+						((ImageView)view).setImageBitmap(bitmap);
+					}
+					@Override
+					public void onLoadingCancelled(String arg0, View arg1) {
+						
+					}
+				});
+				
+				holder.tv_title.setText(GlobalValue.mySecretary.getName());
+				type=mList.get(position).getType();
+				if ("travel".equals(type)) {
+					type="旅游度假";
+				}else if ("shopping".equals(type)) {
+					type="新品购物";
+				}else if ("party".equals(type)) {
+					type="盛宴狂欢";
+				}else if ("life".equals(type)) {
+					type="高质生活";
+				}else if ("student".equals(type)) {
+					type="留学服务";
+				}else if ("investment".equals(type)) {
+					type="理财投资";
+				}else if ("card".equals(type)) {
+					type="办卡推荐";
 				}
-				@Override
-				public void onLoadingFailed(String arg0, View view, FailReason arg2) {
-					((ImageView)view).setImageResource(R.drawable.secretary_default_avatar);
+				holder.tv_type.setText(type);
+				//获得返回时间
+				String get_time=mList.get(position).getTime();
+				//截取返回日期
+				String current_date=get_time.substring(0,10).trim();
+				Log.e("current_date", current_date);
+				//截取返回时间
+				String current_time=get_time.substring(11,get_time.length());
+				long time=System.currentTimeMillis();
+				//格式化日期
+				SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+				Date date=new Date(time);
+				//获取当前日期
+				String newDate=format.format(date).trim();
+				Log.e("newDate", newDate);
+				//对比日期是否一样
+				if (newDate.equals(current_date)){
+					holder.tv_time.setText(current_time);
+				}else {
+					holder.tv_time.setText(current_date);
 				}
-				@Override
-				public void onLoadingComplete(String arg0, View view, Bitmap bitmap) {
-					((ImageView)view).setImageBitmap(bitmap);
-				}
-				@Override
-				public void onLoadingCancelled(String arg0, View arg1) {
-					
-				}
-			});
-			holder.tv_title.setText(GlobalValue.mySecretary.getName());
-			type=mList.get(position).getType();
-			if ("travel".equals(type)) {
-				type="旅游度假";
-			}else if ("shopping".equals(type)) {
-				type="新品购物";
-			}else if ("party".equals(type)) {
-				type="盛宴狂欢";
-			}else if ("life".equals(type)) {
-				type="高质生活";
-			}else if ("student".equals(type)) {
-				type="留学服务";
-			}else if ("investment".equals(type)) {
-				type="理财投资";
-			}else if ("card".equals(type)) {
-				type="办卡推荐";
+				SpannableString sp_question=new SpannableString("问题:");
+				SpannableString sp_question_content=new SpannableString(Html.fromHtml("<font style='font-size:12pt' color='#939393'>"+" "+mList.get(position).getContent()+"</font>"));
+				SpannableStringBuilder builder_question=new SpannableStringBuilder();
+				builder_question.append(sp_question).append(sp_question_content);
+				holder.tv_question.setText(builder_question);
+				
+				SpannableString sp_answer=new SpannableString("回复:");
+				SpannableString sp_answer_content=new SpannableString(Html.fromHtml("<font style='font-size:12pt' color='#939393'>"+" "+GlobalValue.mySecretary.getName()+"已收到您的任务指派哦,2小时内必有回复,请耐心等待哟。如果您对收到的回答不满意,还可以继续追问哦~</font>"));
+				SpannableStringBuilder answer=new SpannableStringBuilder();
+				answer.append(sp_answer).append(sp_answer_content);
+				holder.tv_answer.setText(answer);
+				
+				holder.view.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						
+						if(position >= mList.size()){//点击的位置position超过了列表的长度
+							LogUtils.toDebugLog("mySercretary", "点击了，但不做反应");
+							return;
+						}
+						callBack.callBack(Integer.valueOf(mList.get(position).getId()),type);
+					}
+				});
+				
 			}
-			holder.tv_type.setText(type);
-			//获得返回时间
-			String get_time=mList.get(position).getTime();
-			//截取返回日期
-			String current_date=get_time.substring(0,10).trim();
-			Log.e("current_date", current_date);
-			//截取返回时间
-			String current_time=get_time.substring(11,get_time.length());
-			long time=System.currentTimeMillis();
-			//格式化日期
-			SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
-			Date date=new Date(time);
-			//获取当前日期
-			String newDate=format.format(date).trim();
-			Log.e("newDate", newDate);
-			//对比日期是否一样
-			if (newDate.equals(current_date)){
-				holder.tv_time.setText(current_time);
-			}else {
-				holder.tv_time.setText(current_date);
-			}
-			SpannableString sp_question=new SpannableString("问题:");
-			SpannableString sp_question_content=new SpannableString(Html.fromHtml("<font style='font-size:12pt' color='#939393'>"+" "+mList.get(position).getContent()+"</font>"));
-			SpannableStringBuilder builder_question=new SpannableStringBuilder();
-			builder_question.append(sp_question).append(sp_question_content);
-			holder.tv_question.setText(builder_question);
-			
-			SpannableString sp_answer=new SpannableString("回复:");
-			SpannableString sp_answer_content=new SpannableString(Html.fromHtml("<font style='font-size:12pt' color='#939393'>"+" "+GlobalValue.mySecretary.getName()+"已收到您的任务指派哦,2小时内必有回复,请耐心等待哟。如果您对收到的回答不满意,还可以继续追问哦~</font>"));
-			SpannableStringBuilder answer=new SpannableStringBuilder();
-			answer.append(sp_answer).append(sp_answer_content);
-			holder.tv_answer.setText(answer);
-			
-			holder.view.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					callBack.callBack(Integer.valueOf(mList.get(position).getId()),type);
-				}
-			});
 			return convertView;
 		}
 	

@@ -1,6 +1,8 @@
 package com.lansun.qmyo.view;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -34,4 +36,21 @@ public class MainViewPager extends ViewPager {
 	    public void setPagingEnabled(boolean b) {
 	        this.isPagingEnabled = b;
 	    }
+
+	    
+/*	    
+	     * 实现Parcelable接口
+	     * 
+	     * @see android.os.Parcelable#describeContents()
+	     
+		@Override
+		public int describeContents() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public void writeToParcel(Parcel dest, int flags) {
+			// TODO Auto-generated method stub
+		}*/
 }

@@ -226,7 +226,7 @@ public class SharedDialog implements OnClickListener {
 			public void run() {
 				handler.sendEmptyMessage(0);
 			}
-		}, 400,200);
+		}, 200,100);//TODO
 		
 	}
 
@@ -452,7 +452,7 @@ public class SharedDialog implements OnClickListener {
 //    private static final float DEGREE_2 = 2.0f;  
 //    private static final float DEGREE_3 = -1.5f;  
 //    private static final float DEGREE_4 = 1.5f;  
-    private static final int ANIMATION_DURATION = 200;
+    private static final int ANIMATION_DURATION = 250;
 //    private static final int DELAY_ANIMATION_DURATION = 2000;
     
 	private View ll_shared_wx_friend;

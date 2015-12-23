@@ -24,6 +24,7 @@ import android.widget.ToggleButton;
 import com.android.pc.ioc.image.RecyclingImageView;
 import com.ns.mutiphotochoser.adapter.ImageGridAdapter.ViewHolder;
 import com.lansun.qmyo.R;
+import com.lansun.qmyo.utils.LogUtils;
 
 /**
  * 菜单控件头部，封装了下拉动画，动态生成头部按钮个数
@@ -118,6 +119,8 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 			tv_expand_name.setTag(i);
 			tv_expand_name.setText(textArray.get(i).toString());
 
+			
+			//r对应的就是筛选栏中的三（或 四）个按钮
 			r.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -128,6 +131,14 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 			mRl.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View view) {
+					
+					if (popupWindow!= null) {
+					LogUtils.toDebugLog("popupWindow", popupWindow.isShowing() == true?"isShowing 为true":"isShowing 不为true");
+					LogUtils.toDebugLog("popupWindow", popupWindow == null?"popupWindow 为空":"popupWindow 不为空");
+					}else{
+					LogUtils.toDebugLog("popupWindow", popupWindow == null?"popupWindow 为空":"popupWindow 不为空");
+					}
+					
 					if (popupWindow != null && popupWindow.isShowing()) {      //展开状态，当点击后，将箭头置为 朝下
 						for (int i = 0; i < mToggleButton.size(); i++) {
 							mToggleButton.get(i).setTextColor(mContext.getResources().getColor(R.color.text_gray1));
@@ -140,6 +151,17 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 								.getColor(R.color.text_gray1));
 						view.setTag("true");
 						iv_expand_more.setImageResource(R.drawable.arrow_down);
+						
+						/*
+						 * 由于这些监听器实际上都是在公用一些指示变量，须分清对应的监听判断标准
+						   场景： 虽然popoupWindow已经展开，如果按照原先展开前的Button点回去，不会有任何影响，
+						     但此时，更换下次点击的Button对象，那么走的是另一个监听器，此时，popoupWindow展开，点击按钮时，
+						  不应该仅仅将popoupWindow收回，还需将整个expandTabView上的字体置回灰色，箭头向下
+						 */
+							for (int i = 0; i < mToggleButton.size(); i++) {
+								mToggleButton.get(i).setTextColor(mContext.getResources().getColor(R.color.text_gray1));
+								ivs.get(i).setImageResource(R.drawable.arrow_down);
+							}
 						isShow = false;
 					} else {                                                   //非展示状态，点击后需要做展开操作
 						tv_expand_name.setTextColor(mContext.getResources()

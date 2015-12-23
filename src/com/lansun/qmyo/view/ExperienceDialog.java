@@ -3,9 +3,11 @@ package com.lansun.qmyo.view;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -83,6 +85,8 @@ public class ExperienceDialog extends BlurDialogFragment {
 	Views v;
 	private OnConfirmListener listener;
 
+	private Activity mActivity;
+
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		Button btn_expe_confirm, tv_expe_relogin;
@@ -105,6 +109,14 @@ public class ExperienceDialog extends BlurDialogFragment {
 		mCardDesc = cardDesc;
 		mCardId = cardId2;
 		mIsFirstEnter = isFirstEnter;
+	}
+
+	public ExperienceDialog(Activity activity) {
+		this.mActivity = activity;
+		// 获取当前推荐信用卡(随机分配的cardID)
+		InternetConfig config = new InternetConfig();
+		config.setKey(1);
+		FastHttpHander.ajaxGet(GlobalValue.URL_BANKCARD_RECOMMEND, config, this);
 	}
 
 	public void setOnConfirmListener(OnConfirmListener listener) {
@@ -249,12 +261,20 @@ public class ExperienceDialog extends BlurDialogFragment {
 				App.app.setData("isExperience", "true");
 				App.app.getData("isEmbrassStatus").equals("");//此时用户状态不再是尴尬的状态时
 				
-				/*HomeFragment fragment = new HomeFragment();*/
-				MainFragment fragment = new MainFragment();
-				FragmentEntity entity = new FragmentEntity();
-				entity.setFragment(fragment);
-				EventBus.getDefault().post(entity);
 				
+				
+				/**
+				 * 完成一系列操作后，进行了重新加载MainFragment的操作，这样体验比较差，再此处进行局部刷新的操作
+				 */
+				/*HomeFragment fragment = new HomeFragment();*/
+//				MainFragment fragment = new MainFragment();
+//				FragmentEntity entity = new FragmentEntity();
+//				entity.setFragment(fragment);
+//				EventBus.getDefault().post(entity);
+				
+				//1.通知首页进行底部列表的加载工作，类似于登录用户进入首页时进行的操作
+				mActivity.sendBroadcast(new Intent("com.lansun.qmyo.refreshHomeList"));
+				System.out.println("ExperienceDialog 发送列表局部刷新的广播了");
 				
 				break;
 			}

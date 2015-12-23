@@ -15,12 +15,15 @@ import com.lansun.qmyo.R;
 import android.R.raw;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.renderscript.Type;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
@@ -97,6 +100,29 @@ public class HomePagerAdapter extends CommonPagerAdapter implements
 			
 		}
 
+		item.setOnTouchListener(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent ev) {
+				switch (ev.getAction()) {
+              case MotionEvent.ACTION_DOWN:
+                 
+                  break;
+              case MotionEvent.ACTION_MOVE:
+            	  
+                  break;
+              case MotionEvent.ACTION_UP:
+                
+                  break;
+              case MotionEvent.ACTION_CANCEL:
+                 
+                  break;
+              }
+			 return false;
+			}
+        });
+		
+		
 		pageMap.put(position, item);
 		view.addView(item);
 		return item;
@@ -155,5 +181,10 @@ public class HomePagerAdapter extends CommonPagerAdapter implements
 
 	public void setIsChina(boolean isChina) {
 		this.isChina = isChina;
+	}
+	
+	@Override
+	public void restoreState(Parcelable state, ClassLoader loader) {
+		super.restoreState(state, loader);
 	}
 }

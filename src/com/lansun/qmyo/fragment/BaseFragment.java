@@ -153,7 +153,7 @@ import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 		}
 	}
 
-	Handler handler;
+	Handler handler ;
 	private int mKey;
 	private String mUrl;
 	private LinkedHashMap<String, String> mParams;
@@ -204,7 +204,7 @@ import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 			LogUtils.toDebugLog("LastRefreshTokenTime", "上次最近更新token服务的时刻： "+DataUtils.dataConvert(LastRefreshTokenTime));
 			LogUtils.toDebugLog("LastRefreshTokenTime", "两次更新token的时间差"+((System.currentTimeMillis()-LastRefreshTokenTime))/1000/60);
 			
-			if((System.currentTimeMillis()-LastRefreshTokenTime)>30*60*1000){
+			if((System.currentTimeMillis()-LastRefreshTokenTime)>10*60*1000){
 				//进行刷新token的操作
 				HttpUtils httpUtils = new HttpUtils();
 				RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
@@ -214,13 +214,15 @@ import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 					@Override
 					public void onSuccess(ResponseInfo<String> result) {
 						Token token = Handler_Json.JsonToBean(Token.class,result.result.toString());
-//					try {
-//						JSONObject jObject = new JSONObject(result.result.toString());
-//						token = (String) jObject.get("token");
-//						App.app.setData("access_token", token);
-//					} catch (JSONException e) {
-//						e.printStackTrace();
-//					}
+					
+					/* 手动解析返回的结果
+					 * try {
+						JSONObject jObject = new JSONObject(result.result.toString());
+						token = (String) jObject.get("token");
+						App.app.setData("access_token", token);
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}*/
 						//Token token = gson.fromJson(result.toString(), Token.class);
 						App.app.setData("access_token", token.getToken());
 						
@@ -246,9 +248,14 @@ import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 						return;
 					}
 				};
-				httpUtils.send(HttpMethod.GET, GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"), null,requestCallBack );
+				if(isExperience()){//体验用户的情况下，是需要使用临时Exp_Secret去更新Token
+					if(App.app.getData("exp_secret")!=""){
+						httpUtils.send(HttpMethod.GET, GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("exp_secret"), null,requestCallBack );
+					}
+				}else{//非体验用户（登陆用户），是需要使用正式的Secret去更新Token
+					httpUtils.send(HttpMethod.GET, GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"), null,requestCallBack );
+				}
 			}
-			
 		}
 		
 		

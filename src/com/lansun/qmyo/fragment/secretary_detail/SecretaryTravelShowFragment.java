@@ -37,6 +37,7 @@ public class SecretaryTravelShowFragment extends SecretaryDetailsBaseFragment im
 	private CircleImageView iv_secretary_head;
 	private String owner_name;
 	private String tv_secretary_answer_text;
+	private View rootView;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -56,12 +57,12 @@ public class SecretaryTravelShowFragment extends SecretaryDetailsBaseFragment im
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		this.inflater=inflater;
-		View view=inflater.inflate(R.layout.secretary_travel_fragment,container,false);
-		initView(view);
+		rootView = inflater.inflate(R.layout.secretary_travel_fragment,container,false);
+		initView(rootView);
 		initData();
 		setListener();
 		setExecutInitData(this);//将接口对象放进去
-		return view;
+		return rootView;
 	}
 	private void setListener() {
 		commit_tv.setOnClickListener(new OnClickListener() {
@@ -70,6 +71,7 @@ public class SecretaryTravelShowFragment extends SecretaryDetailsBaseFragment im
 				if (isExperience()) {
 					final Dialog dialog=new Dialog(getActivity(), R.style.Translucent_NoTitle);
 			        dialog.setCancelable(true);
+			        blurryView(rootView, dialog);
 			        dialog.show();
 			        Window window = dialog.getWindow();
 			        window.clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
@@ -91,6 +93,7 @@ public class SecretaryTravelShowFragment extends SecretaryDetailsBaseFragment im
 					if (GlobalValue.user!=null) {
 						if (GlobalValue.mySecretary==null) {
 							final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
+							blurryView(rootView, dialog);
 							dialog.show();
 							dialog.setContentView(R.layout.dialog_setting_secretary);
 							Window window = dialog.getWindow();
@@ -107,6 +110,7 @@ public class SecretaryTravelShowFragment extends SecretaryDetailsBaseFragment im
 						}else {
 							if ("false".equals(GlobalValue.mySecretary.getHas())) {
 								final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
+								blurryView(rootView, dialog);
 								dialog.show();
 								dialog.setContentView(R.layout.dialog_setting_secretary);
 								Window window = dialog.getWindow();

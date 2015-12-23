@@ -32,6 +32,8 @@ import com.android.pc.util.Handler_Json;
 import com.android.pc.util.Handler_SharedPreferences;
 
 
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechUtility;
 import com.lansun.qmyo.domain.Address;
 import com.lansun.qmyo.domain.Address2;
 import com.lansun.qmyo.domain.Address3;
@@ -59,6 +61,8 @@ public class App extends Application {
 	
 	@Override
 	public void onCreate() {
+		
+		SpeechUtility.createUtility(getApplicationContext(), SpeechConstant.APPID +"=567209d1"); 
 		
 		Ioc.getIoc().init(this);
 		
@@ -230,16 +234,16 @@ public class App extends Application {
 				"qmyo/Cachee");
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
 				context)
-				.memoryCacheExtraOptions(720, 1080)
+				.memoryCacheExtraOptions(1920, 1080)
 				// 缓存图片的大小
-				.threadPoolSize(5)
+				.threadPoolSize(20)
 				// 线程池数量
 				.threadPriority(Thread.NORM_PRIORITY - 2)
 				// 线程的优先等级
 				.denyCacheImageMultipleSizesInMemory()
 				// 缓存图片在内存
 				.diskCacheFileNameGenerator(new Md5FileNameGenerator())
-				.memoryCache(new UsingFreqLimitedMemoryCache(16 * 1024 * 1024))
+				.memoryCache(new UsingFreqLimitedMemoryCache(8 * 1024 * 1024))
 				// 内存缓存大小
 				.memoryCacheSize(16 * 1024 * 1024)
 				// 内存缓存最大值

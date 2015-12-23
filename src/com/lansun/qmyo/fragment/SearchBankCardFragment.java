@@ -10,6 +10,7 @@ import java.util.List;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,10 +27,12 @@ import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.RelativeLayout;
@@ -68,7 +71,9 @@ import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.listener.PuzzyItemClickCallBack;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.override.MyGridLayoutManager;
+import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.utils.swipe.SwipeListMineBankcardAdapter;
 import com.lansun.qmyo.utils.swipe.SwipeListSearchBankcardAdapter;
 import com.lansun.qmyo.view.BankcardListView;
@@ -203,18 +208,18 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 	private ProgressDialog dialogpg;
 	private boolean tagOfSearchBankCardFragment = true;
 	private boolean mIsFromRegisterAndHaveNoBankcard = false;
+	private View rootView;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
-		View rootView = inflater.inflate(R.layout.activity_search_bank_card,container,false);
+		rootView = inflater.inflate(R.layout.activity_search_bank_card,container,false);
 		initView(rootView);
 		
 		if(getArguments()!= null){
 			mIsFromRegisterAndHaveNoBankcard  = getArguments().getBoolean("isFromRegisterAndHaveNoBankcard");
 		}
-		
 		/*
 		 * if(mIsFromRegisterAndHaveNoBankcard){
 			//当我点击银行卡的搜索结果页时，需要直接将卡添置到用户选中的卡上，作为默认的选中卡
@@ -222,11 +227,10 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 		 */
 		Handler_Inject.injectFragment(this, rootView);
 		
+		
 		lv_search_bank_card.setNoHeader(true);
 //		lv_search_bank_card.onLoadMoreOverFished();
 		lv_search_bank_card.setOnRefreshListener(new OnRefreshListener() {
-			
-			
 
 			@Override
 			public void onRefreshing() {
@@ -247,7 +251,7 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 						}else{
 							lv_search_bank_card.onLoadMoreOverFished();
 						}
-					} else {
+					}else{
 						String next_page_url = bankList.getNext_page_url();
 						int from = next_page_url.indexOf("[");
 						int to = next_page_url.indexOf("]");

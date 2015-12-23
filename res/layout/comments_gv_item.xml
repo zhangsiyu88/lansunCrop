@@ -12,6 +12,7 @@
             android:layout_width="@dimen/activity_detail_comment_head_w"
             android:layout_height="@dimen/activity_detail_comment_head_h"
             android:scaleType="fitXY" />
+        
     </LinearLayout>
 
 </RelativeLayout>

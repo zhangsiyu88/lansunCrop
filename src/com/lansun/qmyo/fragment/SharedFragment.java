@@ -79,7 +79,7 @@ public class SharedFragment extends BaseFragment {
 	@InjectAll
 	Views v;
 	private UMSocialService mController = UMServiceFactory.getUMSocialService(GlobalValue.DESCRIPTOR);
-	private String targetUrl = "http://android.myapp.com/myapp/detail.htm?apkName=com.lansun.qmyo";;
+	private String targetUrl = "http://a.app.qq.com/o/simple.jsp?pkgname=com.lansun.qmyo";
 
 	class Views {
 		private TextView tv_activity_title;

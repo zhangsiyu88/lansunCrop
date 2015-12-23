@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="@dimen/margin_top_35"
-            android:layout_marginLeft="@dimen/l_r_35" >
+            ><!--  android:layout_marginLeft="@dimen/l_r_35" -->
 
             <TextView
                 android:id="@+id/store_detail_num"

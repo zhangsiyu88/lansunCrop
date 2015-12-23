@@ -38,7 +38,8 @@
             layout="@layout/search_menu" />
     </RelativeLayout>
 
-    <View style="@style/line_style_1" />
+    <View style="@style/line_style_1"
+         />
 
 
 
@@ -59,7 +60,7 @@
             android:layout_below="@id/line" />
     </RelativeLayout>
 
-    <View style="@style/line_style_2" />
+    <View style="@style/line_style_1" />
 
     <FrameLayout style="@style/w_match_h_match" 
         >
@@ -95,7 +96,7 @@
                 android:text="@string/maijie_tip"
                 android:textColor="@color/app_green2" />
             <View
-                style="@style/line_style_2"
+                style="@style/line_style_1"
                 android:layout_marginTop="@dimen/margin_top_22"
                 android:background="@color/line_bg2" />
             <TextView
@@ -104,7 +105,14 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/margin_top_22"
                 android:lineSpacingExtra="6px"
-                android:text="@string/search_card_tip" />
+                android:text="@string/search_card_tip1" />
+            <TextView
+                android:id="@+id/textView2"
+                style="@style/text_style_small_26"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="4dp"
+                android:lineSpacingExtra="6px"
+                android:text="@string/search_card_tip2" />
             <View
                 style="@style/line_style_2"
                 android:layout_marginTop="@dimen/margin_top_22"

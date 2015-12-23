@@ -39,7 +39,7 @@
     <dimen name="mai_comment_head_h">40dp</dimen>
     <dimen name="mai_comment_lv_head_w">23dp</dimen>
     <dimen name="mai_comment_lv_head_h">23dp</dimen>
-    <dimen name="home_pager_h">121dp</dimen>
+    <dimen name="home_pager_h">135dp</dimen><!-- 针对高分辨率屏的Nexu5x重置了高度 -->
     <dimen name="home_ad_w">360dp</dimen>
     <dimen name="shared_dialog_h">240dp</dimen>
     <dimen name="home_item_h">202dp</dimen>

@@ -46,10 +46,12 @@ import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -78,6 +80,8 @@ import com.android.pc.util.Gps;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
 import com.google.gson.Gson;
+import com.jfeinstein.jazzyviewpager.JazzyViewPager;
+import com.jfeinstein.jazzyviewpager.JazzyViewPager.TransitionEffect;
 import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.HomeListAdapter;
@@ -106,6 +110,7 @@ import com.lansun.qmyo.utils.swipe.EightPartActivityAdapter;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExperienceDialog;
 import com.lansun.qmyo.view.LoginDialog;
+import com.lansun.qmyo.view.MyMesureSelfViewPager;
 import com.lansun.qmyo.view.UpdateAppVersionDialog;
 import com.lansun.qmyo.view.MyListView;
 import com.lansun.qmyo.view.TestMyListView;
@@ -305,10 +310,13 @@ import com.squareup.okhttp.Response;
 		filter.addAction("com.lansun.qmyo.refreshHome");
 		filter.addAction("com.lansun.qmyo.refreshTheIcon");
 		filter.addAction("com.lansun.qmyo.ChangeTheLGPStatus");
+		filter.addAction("com.lansun.qmyo.refreshHomeList");
 		getActivity().registerReceiver(broadCastReceiver, filter);
 		
 		
-		
+		/**
+		 * 判断是否需要进行版本的更新
+		 */
 		PackageInfo info = null;
 		manager = App.app.getPackageManager();
 		try {
@@ -317,13 +325,13 @@ import com.squareup.okhttp.Response;
 		  e.printStackTrace();
 		}
 		InternetConfig config = new InternetConfig();
-		config.setKey(1);
+		config.setKey(10);
 		LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
-		params.put("key", "Android");
-		params.put("version", "1");
-		
-		FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION + info.versionCode , config, this);
-		//FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION+"?key=Android&version="+1 ,params, config, this);
+//		params.put("key", "Android");
+//		params.put("version", "1");
+		//FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION + info.versionCode , config, this);
+//		FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION+"?key=Android&version="+1 ,params, config, this);
+		FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION + "?key=Android&version="+info.versionCode , config, this);
 		
 		
 		intent = new Intent("com.lansun.qmyo.fragment.newbrand");
@@ -342,6 +350,31 @@ import com.squareup.okhttp.Response;
 		/*head =  rootView.findViewById(R.id.head_banner);*/
 		Handler_Inject.injectFragment(this, rootView);//当前的fragment里面使用 自动去注入组件
 
+		
+		
+		lv_home_list.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long arg3) {
+				
+				if(position-2 >= shopDataList.size()){
+					return;
+				}
+				ActivityDetailFragment fragment = new ActivityDetailFragment();
+				Bundle args = new Bundle();
+				args.putString("activityId",
+						shopDataList.get(position-2).get("activityId").toString());
+				args.putString("shopId", shopDataList.get(position-2).get("shopId")
+						.toString());
+				fragment.setArguments(args);
+				FragmentEntity event = new FragmentEntity();
+				event.setFragment(fragment);
+				EventBus.getDefault().post(event);
+				
+				
+			}
+		});
 		lv_home_list.setNoHeader(true);
 		lv_home_list.onLoadMoreOverFished();
 		lv_home_list.setOnRefreshListener(new OnRefreshListener() {
@@ -397,7 +430,7 @@ import com.squareup.okhttp.Response;
 		if (TextUtils.isEmpty(App.app.getData("exp_secret"))
 				&& TextUtils.isEmpty(App.app.getData("secret"))
 				&& !GlobalValue.isFirst){
-			ExperienceDialog dialog = new ExperienceDialog();//这么个体验的对话框，需要单独在其内部设置点击响应事件
+			ExperienceDialog dialog = new ExperienceDialog(activity);//这么个体验的对话框，需要单独在其内部设置点击响应事件
 			//进来首先就弹出对话框
 			dialog.setOnConfirmListener(new com.lansun.qmyo.view.ExperienceDialog.OnConfirmListener() {
 				@Override
@@ -432,7 +465,7 @@ import com.squareup.okhttp.Response;
 			v.iv_top_card.setVisibility(View.GONE);
 			mFromBankCardFragment = false;//使者用完后，要马上清除
 		}
-
+		
 
 		return rootView;
 	}
@@ -657,57 +690,7 @@ import com.squareup.okhttp.Response;
 				}
 			});
 
-
-			InternetConfig config = new InternetConfig();
-			config.setKey(0);
-			/**
-			 * 去获取数据内容,暂关闭依据定位地点获取数据的方法
-			 FastHttpHander.ajaxGet(GlobalValue.URL_HOME_AD + getSelectCity()[0], config, this);*/
 			
-			Log.i("TAGTAGTAGTAGTAG", "准备向服务器发起请求，等待回执");
-			
-			/**
-			 * 去拿头部的广告图片-->>
-			 */
-			FastHttpHander.ajaxGet(GlobalValue.URL_HOME_AD + 310000, config, this);//已去访问头部的数据
-			
-			Log.i("TAGTAGTAGTAGTAG", "已经向服务器发起请求，等待回执");
-			//定值去访问页面顶头上的图
-
-
-			refreshParams = new LinkedHashMap<String, String>();
-
-			if (Character.isLetter(getSelectCity()[0].charAt(0))) {//-->目前是走不到的
-				isChina = false;
-				refreshParams = null;
-
-				/*暂时关闭依据定位地点刷新底部列表的操作
-				 * refreshUrl = String.format(GlobalValue.URL_ARTICLE_PROMOTE,getSelectCity()[0]);*/
-				refreshUrl = String.format(GlobalValue.URL_ARTICLE_PROMOTE,310000);
-				//当是极文的时候,需要加入个footerView
-				View footView = inflater.inflate(R.layout.home_item_bottom,null);
-				lv_home_list.addFooterView(footView);
-
-			} else {
-				refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
-				/*refreshParams.put("location", "31.293688,121.524448");*/
-				refreshParams.put("location", String.valueOf(GlobalValue.gps.getWgLat()+","+ GlobalValue.gps.getWgLon()));
-				/* refreshParams.put("site", getSelectCity()[0]);*/
-				//-----注意：我在这个地方手动设置了刷新列表的地点参数，需要注意在后面将其改回来
-				/*refreshParams.put("site", "310000");*/ 
-
-				refreshParams.put("site", getSelectCity()[0]);
-				/*refreshParams.put("intelligent", "recommend");*/
-				refreshParams.put("intelligent", "home");
-				isChina = true;
-			}
-			refreshKey = 1;
-			//刷新当前的ListView，展示List条目内容：提交get请求
-			refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_home_list);//这个地方需要进行去服务器访问数据，                                                           setKey为1      
-
-			/*移至head从xml被填充后就立马addHeaderView进去
-			 *lv_home_list.addHeaderView(head, null, true);*/
-
 			/**
 			 * 下面两个点获取不正常
 			 */
@@ -720,10 +703,22 @@ import com.squareup.okhttp.Response;
 			iv_homead_point2 = (ImageView) head.findViewById(R.id.iv_homead_point2);
 			iv_homead_point3 = (ImageView) head.findViewById(R.id.iv_homead_point3);
 			
+			
+			
+			
+			/**
+			 * 为保证八大板块的展示效果不是那么容易丢失，故在此提升其绘制展示的顺序，
+			 * 一定程度上减少丢失的可能性
+			 */
 
 			//放了个ViewPager的头在ListView上面
 			/*final ViewPager banner = (ViewPager) lv_home_list.findViewById(R.id.vp_home_pager);*/
+			
+			
 			final ViewPager banner = (ViewPager) head.findViewById(R.id.vp_home_pager);
+			
+			//final MyMesureSelfViewPager banner = (MyMesureSelfViewPager) head.findViewById(R.id.vp_home_pager);
+			
 
 			// banner.setOnTouchListener(new OnTouchListener() {
 			// @Override
@@ -747,7 +742,9 @@ import com.squareup.okhttp.Response;
 			// });
 
 
-			/*
+			/* 
+			 * 八大板块的ViewPager   -->此处易丢失
+			 * 
 			 * 这个HomePagerAdapter真是别有洞天啊！里面设计了一系列的点击跳转操作和事件的监听
 			 */
 			HomePagerAdapter adapter = new HomePagerAdapter(activity);//这个ViewPager的Adapter中含有大量操作方法  //TODO
@@ -757,6 +754,53 @@ import com.squareup.okhttp.Response;
 			adapter.setIsChina(isChina);
 			banner.setAdapter(adapter); //banner是ListView里面的上部的ViewPager
 			banner.setOnPageChangeListener(pageChangeListener);
+			
+			
+			
+			
+			
+
+			InternetConfig config = new InternetConfig();
+			config.setKey(0);
+			/**
+			 * 去获取数据内容,暂关闭依据定位地点获取数据的方法
+			 FastHttpHander.ajaxGet(GlobalValue.URL_HOME_AD + getSelectCity()[0], config, this);*/
+			
+			/* 去拿头部的广告图片-->>
+			 */
+			FastHttpHander.ajaxGet(GlobalValue.URL_HOME_AD + 310000, config, this);//已去访问头部的数据
+			 
+			
+			Log.i("TAGTAGTAGTAGTAG", "已经向服务器发起请求，等待回执");
+			//定值去访问页面顶头上的图
+
+
+			refreshParams = new LinkedHashMap<String, String>();
+
+			if (Character.isLetter(getSelectCity()[0].charAt(0))) {//-->目前是走不到的
+				isChina = false;
+				refreshParams = null;
+
+				/*暂时关闭依据定位地点刷新底部列表的操作
+				 * refreshUrl = String.format(GlobalValue.URL_ARTICLE_PROMOTE,getSelectCity()[0]);*/
+				refreshUrl = String.format(GlobalValue.URL_ARTICLE_PROMOTE,310000);
+				//当是极文的时候,需要加入个footerView
+				View footView = inflater.inflate(R.layout.home_item_bottom,null);
+				lv_home_list.addFooterView(footView);
+
+			} else {
+				refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
+				refreshParams.put("location", String.valueOf(GlobalValue.gps.getWgLat()+","+ GlobalValue.gps.getWgLon()));
+				/* refreshParams.put("site", getSelectCity()[0]);*/
+
+				refreshParams.put("site", getSelectCity()[0]);
+				refreshParams.put("intelligent", "home");
+				isChina = true;
+			}
+			refreshKey = 1;
+			
+			//列表也有可能展示不出来，导致下方代码无法执行下去，便出现了八大板块页面无法展示的问题
+			refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_home_list);//这个地方需要进行去服务器访问数据，                                                           setKey为1      
 		}
 		
 		
@@ -831,6 +875,8 @@ import com.squareup.okhttp.Response;
 
 		@Override
 		public void onPageScrolled(int arg0, float arg1, int arg2) {
+			//1.页面滑动时取消ViewPager内部View的点击事件
+			
 		}
 
 		@Override
@@ -838,6 +884,7 @@ import com.squareup.okhttp.Response;
 			changePointColor(position);
 			
 		}
+	   
 
 	};
 
@@ -855,6 +902,7 @@ import com.squareup.okhttp.Response;
 	private ImageView iv_homead_point2;
 	private ImageView iv_homead_point3;
 	private ViewPager vp_home_ad;
+//	private JazzyViewPager vp_home_ad;
 	private HomeRefreshBroadCastReceiver broadCastReceiver;
 	private IntentFilter filter;
 	private FixedSpeedScroller mScroller;
@@ -948,7 +996,12 @@ import com.squareup.okhttp.Response;
 				    
 				    
 				    //拿到数据后，进行viewpager的负载问题
-					vp_home_ad = (ViewPager) head.findViewById(R.id.vp_home_ad);
+				    vp_home_ad = (ViewPager) head.findViewById(R.id.vp_home_ad);
+				    
+				    /*vp_home_ad = (JazzyViewPager) head.findViewById(R.id.vp_home_ad);
+					vp_home_ad.setTransitionEffect(TransitionEffect.CubeIn);*/
+				    
+				    
 					//1.给ViewPager设置上资源适配器
 			/*		MyHomeAdPagerAdapter homeAdPagerAdapter = new MyHomeAdPagerAdapter(homeAdPhotoList);*/		
 					MyHomeAdPagerAdapter homeAdPagerAdapter = new MyHomeAdPagerAdapter(homePhotoList);
@@ -974,16 +1027,22 @@ import com.squareup.okhttp.Response;
 					vp_home_ad.setAdapter(homeAdPagerAdapter);
 //					vp_home_ad.setOnTouchListener(new MyOnTouchListener());
 					
+					/**
+					 * 利用Android的反射机制，试图减缓图片的滑动速度
+					 * 但却减缓了用户手指在滑动时的效果
+					 * 故暂时将其禁掉
+					 */
 					try {
 						Field mField = ViewPager.class.getDeclaredField("mScroller");
 						mField.setAccessible(true);//允许暴力反射
-						mScroller = new FixedSpeedScroller(vp_home_ad.getContext(),new AccelerateInterpolator());
-						mScroller.setmDuration(3000);
+						mScroller = new FixedSpeedScroller(vp_home_ad.getContext(),new LinearInterpolator());
+						mScroller.setmDuration(450);
 						mField.set(vp_home_ad, mScroller);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					mScroller.setmDuration(3000);
+					mScroller.setmDuration(450);
+					
 					vp_home_ad.setOnPageChangeListener(homeAdPageChangeListener);
 					handler.removeCallbacksAndMessages(null);
 					handler.postDelayed(new InternalTask(), 5000);
@@ -1016,18 +1075,30 @@ import com.squareup.okhttp.Response;
 				break;
 			case 1:// 极文列表
 				
-				if(GlobalValue.isWaitingForUpdateApp){//根据case10的访问结果，来判断是否需要弹出对话框
-					UpdateAppVersionDialog dialog = new UpdateAppVersionDialog();//这么个体验的对话框，需要单独在其内部设置点击响应事件
-					//进来首先就弹出对话框
-					dialog.setOnConfirmListener(new OnConfirmListener(){
-						@Override
-						public void confirm() {
-							//CustomToast.show(activity, "看好咯", "我要下载咯");
-						}
-					});
-					dialog.show(getActivity().getFragmentManager(), "update");
-					GlobalValue.isWaitingForUpdateApp =  false;
+				LogUtils.toDebugLog("AppUpdate", "result(1)中决定是否弹出弹窗： GlobalValue.isWaitingForUpdateApp: "+GlobalValue.isWaitingForUpdateApp);
+				
+				/**
+				 * 当App.app.getData("toUpdateApp")为空时，才会去进行弹窗的判断，
+				 * 否则无需进行下面的判断，
+				 * 避免在App启动的当前一次效用内，用户一打开app首次拒绝了更新要求后，当使用过程中刷新HomeFragment时，造成重复的弹窗更新提醒，这样体验很差
+				 * 故而，在当前次的使用过程中，需保持弹出一次即可，正常退出后，下次开启，可再弹框提醒
+				 */
+				if(TextUtils.isEmpty(App.app.getData("toUpdateApp"))){//App.app.getData("toUpdateApp")为空的时候，表明是第一次开启App
+					if(GlobalValue.isWaitingForUpdateApp){//根据case10的访问结果，来判断是否需要弹出对话框
+						UpdateAppVersionDialog dialog = new UpdateAppVersionDialog();//这么个体验的对话框，需要单独在其内部设置点击响应事件
+						//进来首先就弹出对话框
+						dialog.setOnConfirmListener(new OnConfirmListener(){
+							@Override
+							public void confirm() {
+								//CustomToast.show(activity, "看好咯", "我要下载咯");
+							}
+						});
+						dialog.show(getActivity().getFragmentManager(), "update");
+						GlobalValue.isWaitingForUpdateApp =  false;
+					}
+					App.app.setData("toUpdateApp","NotBlank");
 				}
+				
 				
 				if (!isChina) {
 					promoteList = Handler_Json.JsonToBean(HomePromote.class,r.getContentAsString());
@@ -1058,6 +1129,8 @@ import com.squareup.okhttp.Response;
 					}
 
 				} else {//如果选择的城市是China的城市,换句话说,常规进来的界面是走下面的代码的
+					
+					LogUtils.toDebugLog("result", "result(1)中拿到首页下面的HomeList内容了");
 					lv_home_list.onLoadMoreFished();
 					lv_home_list.onRefreshFinshed(true);
 					
@@ -1113,8 +1186,10 @@ import com.squareup.okhttp.Response;
 				
 				if(r.getContentAsString().contains("false")){//服务器的回复为{data："false"},表示不需要等待更新
 					GlobalValue.isWaitingForUpdateApp = false;
+					LogUtils.toDebugLog("更新版本的弹框", "result(10)中决定版本的弹框GlobalValue.isWaitingForUpdateApp："+GlobalValue.isWaitingForUpdateApp);
+				}else{
+					GlobalValue.isWaitingForUpdateApp = true;
 				}
-				
 				break;
 			}
 		} else {
@@ -1248,6 +1323,7 @@ import com.squareup.okhttp.Response;
 		@Override
 		public Object instantiateItem(ViewGroup container, int position) {
 			ImageView imageView = new ImageView(activity);
+			imageView.setBackgroundResource(R.drawable.default_details);
 			
 			imageView.setScaleType(ScaleType.CENTER_CROP);
 			
@@ -1274,6 +1350,9 @@ import com.squareup.okhttp.Response;
 			imageView.setOnClickListener(new MyOnClickListener(position));
 			
 			container.addView(imageView);
+			/* 针对特殊效果的JazzyViewPager调用的方法
+			 * vp_home_ad.setObjectForPosition(imageView, position);
+			 */
 			return imageView;
 		}
 		@Override
@@ -1329,7 +1408,9 @@ import com.squareup.okhttp.Response;
 				default:
 					/*int nextIndex = (vp_home_ad.getCurrentItem()+1)%homeAdPhotoList.size();*/
 					int nextIndex = vp_home_ad.getCurrentItem()+1;
-					mScroller.setmDuration(3000);
+					/**
+					 * mScroller.setmDuration(3000);
+					 * */
 					vp_home_ad.setCurrentItem(nextIndex);
 					//vp_home_ad.setFadingEdgeLength(100);
 					handler.postDelayed(new InternalTask(), 5000);//自己给自己发信息
@@ -1489,7 +1570,6 @@ import com.squareup.okhttp.Response;
 	@Override
 	public void onDestroy() {
 		getActivity().unregisterReceiver(broadCastReceiver);
-		
 		super.onDestroy();
 	}
 	
@@ -1531,6 +1611,20 @@ import com.squareup.okhttp.Response;
 				v.rl_top_bg.setPressed(false);
 				System.out.println("首页收到刷新Icon的广播了");
 				
+			}
+			if(intent.getAction().equals("com.lansun.qmyo.refreshHomeList")){
+				
+				refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_home_list);
+				
+				v.iv_card.setVisibility(View.GONE);//原本右边银行卡不可见
+				v.iv_top_card.setVisibility(View.GONE);//滑动出现的右边银行卡不可见
+				v.tv_home_experience.setVisibility(View.VISIBLE);//原本  体验可见
+				v.tv_top_home_experience.setVisibility(View.VISIBLE);//滑动出现的右边 体验二字 可见
+				v.rl_bg.setPressed(false);
+				v.rl_bg.setBackgroundResource(R.drawable.circle_background_green);
+				v.rl_top_bg.setBackgroundResource(R.drawable.circle_background_green);
+				v.rl_top_bg.setPressed(false);
+				System.out.println("首页收到来自ExperienceDialog页面的广播了");
 			}
 			
 		}

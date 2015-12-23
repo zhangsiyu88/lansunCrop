@@ -2,12 +2,14 @@ package com.lansun.qmyo.fragment;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -18,6 +20,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -59,6 +63,7 @@ import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.ioc.view.listener.OnItemClick;
+import com.android.pc.util.Handler_File;
 import com.android.pc.util.Handler_Inject;
 import com.lansun.qmyo.adapter.DetailHeaderPagerAdapter;
 import com.lansun.qmyo.adapter.UpLoadPhotoAdapter;
@@ -66,6 +71,7 @@ import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.Sensitive;
 import com.lansun.qmyo.event.entity.DeleteEntity;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ImageGalleryDialog2;
 import com.lansun.qmyo.view.MyGridView;
@@ -90,8 +96,9 @@ public class NewCommentFragment extends BaseFragment {
 	private UpLoadPhotoAdapter adapter;
 	private DetailHeaderPagerAdapter headAdapter;
 	private ImageGalleryDialog2 dialog;
+	private SQLiteDatabase db;
 
-	public static List<Sensitive> sensitiveList;
+	public  List<Sensitive> sensitiveList = new ArrayList<Sensitive>() ;
 
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
@@ -110,8 +117,6 @@ public class NewCommentFragment extends BaseFragment {
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_new_comment, null);
-		
-
 		
 		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
@@ -133,21 +138,60 @@ public class NewCommentFragment extends BaseFragment {
 		EventBus.getDefault().register(this);
 		
 		provinceSelector = Selector.from(Sensitive.class);
-		provinceSelector.select(" * ");
+		provinceSelector.select("*");
 		provinceSelector.limit(Integer.MAX_VALUE);
+		
 		/*
 		 * 猜测： 读取数据库的速度 影响了整个UI进程的速度
 		 * 初步解决办法： 在子线程中进行本地数据库的加载任务
 		 */
-		
+		LogUtils.toDebugLog("数据库的路径", activity.getCacheDir().getPath());
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				sensitiveList = Ioc.getIoc().getDb(activity.getCacheDir().getPath(), "qmyo_sensitive.db").findAll(provinceSelector);
+			/*
+			 * 方法1：
+			 */
+			//String path = Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"Download"+File.separator+"info.db";  
+	       
+			String path = activity.getCacheDir().getPath()+File.separator+"qmyo_sensitive_new.db";
+		    db = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READWRITE);  
+		    sensitiveList = getToDbData();
+			/*
+			 * 2.sensitiveList = Ioc.getIoc().getDb(activity.getCacheDir().getPath(), "qmyo_sensitive.db").findAll(provinceSelector);
+			*/
 			}
 		}).start();
 	}
 
+	/**
+	 * 读取数据库里面的内容，将内容写入到之前就生成好的容器中去
+	 * @return
+	 */
+	  public List<Sensitive> getToDbData(){  
+         
+		  List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();  
+          //Cursor cursor = db.query("person", null, null, null, null, null, null);  
+          Cursor cursor=db.query("com_qmyo_domain_Sensitive_new", null,null, null, null, null, "_id desc");  
+        
+          while(cursor.moveToNext()){  
+              Map<String, Object> map = new HashMap<String, Object>();  
+              Sensitive sens = new Sensitive();
+              int id = cursor.getInt(cursor.getColumnIndex("_id"));  
+              String name = cursor.getString(cursor.getColumnIndex("name"));  
+              
+              map.put("_id", id);  
+              map.put("name", name);  
+              list.add(map);  
+              
+              sens.set_id(id);
+              sens.setName(name);
+              sensitiveList.add(sens);
+              
+          }
+		return sensitiveList;  
+      }
+	
 	@Override
 	public void onDestroy() {
 		EventBus.getDefault().unregister(this);
@@ -360,9 +404,10 @@ public class NewCommentFragment extends BaseFragment {
 				// 指定图片选择数
 
 				int max = 9;
+				
+				//此处判断写的好玩些
 				if (max - files.size() < 0) {
-					CustomToast.show(activity, R.string.tip,
-							R.string.max_photos);
+					CustomToast.show(activity, R.string.tip,R.string.max_photos);
 					return;
 				} else {
 					max = max - files.size();

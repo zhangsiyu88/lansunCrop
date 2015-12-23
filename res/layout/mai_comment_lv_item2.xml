@@ -52,7 +52,11 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="@dimen/margin_top_25"
-                android:src="@drawable/arrow_down" />
+                android:src="@drawable/arrow_down" 
+                
+                android:visibility="gone"
+                
+                />
         </LinearLayout>
 
         <RelativeLayout
@@ -70,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:horizontalSpacing="@dimen/l_r_10"
                 android:listSelector="@android:color/transparent"
-                android:numColumns="3"
+                android:numColumns="4"
                 android:scrollbars="none" />
 
             <TextView

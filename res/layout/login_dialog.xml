@@ -12,8 +12,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:orientation="vertical" 
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
+        android:paddingTop="25dp"
+        android:paddingBottom="25dp"
         android:background="@drawable/tv_style_white"
         >
         <ImageView

@@ -1,7 +1,13 @@
 package com.lansun.qmyo.fragment;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.zip.Inflater;
+
+import jp.wasabeef.blurry.Blurry;
+import jp.wasabeef.blurry.Blurry.Composer;
+import jp.wasabeef.blurry.internal.Helper;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -9,14 +15,17 @@ import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.renderscript.Allocation;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
@@ -26,14 +35,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.CycleInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ImageView.ScaleType;
 
 import cn.jpush.android.util.ac;
 
@@ -60,6 +75,11 @@ import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.domain.information.InformationCount;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.HomeFragment.HomeRefreshBroadCastReceiver;
+import com.lansun.qmyo.fragment.HomeFragment.InternalHandler;
+import com.lansun.qmyo.fragment.HomeFragment.InternalTask;
+import com.lansun.qmyo.fragment.HomeFragment.MyHomeAdPagerAdapter;
+import com.lansun.qmyo.fragment.HomeFragment.MyOnClickListener;
+import com.lansun.qmyo.fragment.HomeFragment.MyOnTouchListener;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryCardShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryInvestmentShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryLifeShowFragment;
@@ -72,10 +92,14 @@ import com.lansun.qmyo.override.CircleImageView;
 import com.lansun.qmyo.utils.DataUtils;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.FastBlurBitmap;
+import com.lansun.qmyo.utils.FixedSpeedScroller;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
+import com.lansun.qmyo.view.CloudView;
 import com.lansun.qmyo.view.CustomToast;
+import com.ryanharter.viewpager.PagerAdapter;
+import com.ryanharter.viewpager.ViewPager;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -99,6 +123,10 @@ import com.squareup.okhttp.Response;
 		ll_licai_touzi, ll_handlecard, ll_secretary_help;
 		private ImageView iv_secretary_icon;
 		private TextView tv_secretary_icon, tv_secretary_name,tv_secretary_tip1,have_information;
+		//private CloudView iv_register_bg;
+		
+		private ViewPager vp_sercretary_bg_pager;
+		
 	}
 	private String[] secretaryTitle;
 	private String[] secretaryhint;
@@ -121,67 +149,18 @@ import com.squareup.okhttp.Response;
 									R.drawable.details_cannot },
 									{ R.drawable.details_card01, R.drawable.details_cannot } };
 	private Fragment fragment;
+	private boolean avatarShowedOnce = false;
+	private InternalHandler handler = new InternalHandler();
 	private Handler handleOk=new Handler(){
-		
-
+	
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
 			case 0:
 				if (isExperience()) {
 					setSecretaryInformation();
 				}else {
-					//只有因为点击私人秘书的页面，才可以弹出提示窗口
-					if(clickOpen){
-						
-						//并无设置秘书信息时，需要将  立即登录设置私人秘书的提示界面弹出
-						if ("false".equals(GlobalValue.mySecretary.getHas())) {
-							final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
-							
-							/**
-							 * 提示去设置私人秘书
-							 */
-							dialog.setContentView(R.layout.dialog_setting_secretary);
-							
-//							rootView.buildDrawingCache();
-//							Bitmap bitmap = rootView.getDrawingCache();
-//							//blur(bitmap, window, radius);
-//							
-//							Bitmap fastblurBitmap = FastBlurBitmap.fastblur(activity, bitmap, 5);
-//						 	
-					    	Window window = dialog.getWindow();
-//							WindowManager.LayoutParams lp = window.getAttributes();
-//
-//							// 模糊度
-//							window.setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND, WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
-//							//透明度
-//							lp.alpha=1f;//（0.0-1.0）
-//							//黑暗度
-//							lp.dimAmount=0.5f;
-//							window.setAttributes(lp);
-							
-							window.findViewById(R.id.setting_now).setOnClickListener(new OnClickListener() {
-								@Override
-								public void onClick(View v) {
-									dialog.dismiss();
-									FragmentEntity entity=new FragmentEntity();
-									Fragment fragment=new SecretarySettingFragment();
-									entity.setFragment(fragment);
-									EventBus.getDefault().post(entity);
-								}
-							});
-							dialog.show();
-//							window.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-//							window.setBackgroundDrawable(new BitmapDrawable(fastblurBitmap));
-						}else {
-							setSecretaryInformation();
-						}
-						
-					}
 					
-					
-					
-					
-					
+					isToggleDialog(clickOpen);
 				}
 				break;
 			case 1:
@@ -206,9 +185,19 @@ import com.squareup.okhttp.Response;
 	private SecretaryFragmentBroadCastReceiver broadCastReceiver;
 	private IntentFilter filter;
 	private View rootView;
+	/**
+	 * 注意下面的adapter的类型为： SecretaryBgPagerAdapter，而非常规的V4包中的PagerAdapter
+	 */
+	private SecretaryBgPagerAdapter adapter;
+	private FixedSpeedScroller mScroller;
+	
+	
 	private void setSecretaryInformation(){
-		v.tv_secretary_name.setText(GlobalValue.mySecretary.getName());
-		loadPhoto(GlobalValue.mySecretary.getAvatar(),iv_secretary_head);
+		if(!avatarShowedOnce){
+			v.tv_secretary_name.setText(GlobalValue.mySecretary.getName());
+			loadPhoto(GlobalValue.mySecretary.getAvatar(),iv_secretary_head);
+			avatarShowedOnce=!avatarShowedOnce;
+		}
 	};
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -217,6 +206,22 @@ import com.squareup.okhttp.Response;
 		rootView = inflater.inflate(R.layout.activity_secretary, container,false);
 		Handler_Inject.injectFragment(this, rootView);
 		
+		
+		adapter = new SecretaryBgPagerAdapter();
+		v.vp_sercretary_bg_pager.setAdapter(adapter);
+		try {
+			Field mField = ViewPager.class.getDeclaredField("mScroller");
+			mField.setAccessible(true);//允许暴力反射
+			mScroller = new FixedSpeedScroller(v.vp_sercretary_bg_pager.getContext(),new LinearInterpolator());//CycleInterpolator(Float.MAX_VALUE)
+			mScroller.setmDuration(15000);
+			mField.set(v.vp_sercretary_bg_pager, mScroller);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		//mScroller.setmDuration(8000);
+		handler.removeCallbacksAndMessages(null);
+		handler.postDelayed(new InternalTask(), 0);
+		v.vp_sercretary_bg_pager.setCurrentItem(1000*300);
 		
 		
 		v.iv_secretary_icon.setPressed(true);
@@ -227,10 +232,43 @@ import com.squareup.okhttp.Response;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		
+		broadCastReceiver = new SecretaryFragmentBroadCastReceiver();
+		System.out.println("私人秘书 页面 注册广播 ing");
+		filter = new IntentFilter();
+		filter.addAction("com.lansun.qmyo.checkMySecretary");
+		filter.addAction("com.lansun.qmyo.refreshMySecretary");
+		filter.addAction("com.lansun.qmyo.showFirstCommitSecretaryAskGuide");
+		getActivity().registerReceiver(broadCastReceiver, filter);
+
 		super.onCreate(savedInstanceState);
 		
 	}
 	private void setListener() {
+		
+		
+		//下面两个方法仅供游戏操作,暂时暂停-----------------------------------------------------------------------------
+		/**iv_secretary_head.setOnLongClickListener(new OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				Blurry.with(getActivity())
+	              .radius(25)
+	              .sampling(2)
+	              .async()
+	              .animate(500)
+	              .onto((ViewGroup) rootView);
+				return true;
+			}
+		});
+		ll_secretary_setting.setOnLongClickListener(new OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				Blurry.delete((ViewGroup) rootView);
+				return true;
+			}
+		});*/
+		//---------------------------------------------------------------------------------
+		
+		
 		iv_secretary_head.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -265,6 +303,9 @@ import com.squareup.okhttp.Response;
 
 			}
 		});
+		
+		
+		
 		ll_secretary_setting.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -293,8 +334,29 @@ import com.squareup.okhttp.Response;
 					if (GlobalValue.mySecretary!=null) {
 						if ("false".equals(GlobalValue.mySecretary.getHas())) {
 							final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
-							dialog.show();
+							
+							
+//							//当dialog弹出时，背景(当前界面和底部的buttom)进行虚化的操作
+//							Blurry.with(getActivity())
+//							.radius(25)
+//							.sampling(2)
+//							.async()
+//							.animate(500)
+//							.onto((ViewGroup) rootView);
+							
+							activity.sendBroadcast(new Intent("com.lansun.qmyo.hideTheBottomMenu"));
+							System.out.println("SecretaryFragment的  发送   隐藏MainFrag的底部菜单按钮的广播了");
+							
 							dialog.setContentView(R.layout.dialog_setting_secretary);
+							//dialog消失时，需要恢复背景页面的效果
+							dialog.setOnDismissListener(new OnDismissListener() {
+								@Override
+								public void onDismiss(DialogInterface arg0) {
+//									Blurry.delete((ViewGroup) rootView);
+									activity.sendBroadcast(new Intent("com.lansun.qmyo.recoverTheBottomMenu"));
+									System.out.println("SecretaryFragment的  发送   恢复MainFrag的底部菜单按钮的广播了");
+								}
+							});
 							Window window = dialog.getWindow();
 							window.findViewById(R.id.setting_now).setOnClickListener(new OnClickListener() {
 								@Override
@@ -306,22 +368,24 @@ import com.squareup.okhttp.Response;
 									EventBus.getDefault().post(entity);
 								}
 							});
+							dialog.show();
 						}else {
 							EventBus bus = EventBus.getDefault();
 							FragmentEntity entity = new FragmentEntity();
-							Fragment fragment = new MineSecretaryFragment();
+//							Fragment fragment = new MineSecretaryFragment();
+							Fragment fragment = new MineSecretaryListFragment();
 							entity.setFragment(fragment);
 							bus.post(entity);
 						}
-					}else {
+					}else{
 						EventBus bus = EventBus.getDefault();
 						FragmentEntity entity = new FragmentEntity();
-						Fragment fragment = new MineSecretaryFragment();
+//						Fragment fragment = new MineSecretaryFragment();
+						Fragment fragment = new MineSecretaryListFragment();
 						entity.setFragment(fragment);
 						bus.post(entity);
 					}
 				}
-
 			}
 		});
 	}
@@ -340,7 +404,7 @@ import com.squareup.okhttp.Response;
 						GlobalValue.mySecretary=gson.fromJson(json,MySecretary.class);
 						handleOk.sendEmptyMessage(0);
 					}else {
-						handleOk.sendEmptyMessage(1);
+						handleOk.sendEmptyMessage(1);//有正常回复，但回复内容不是正确访问的
 					}
 				}
 				@Override
@@ -375,18 +439,13 @@ import com.squareup.okhttp.Response;
 		v.tv_secretary_icon.setTextColor(getResources().getColor(
 				R.color.app_green2));
 		
-		broadCastReceiver = new SecretaryFragmentBroadCastReceiver();
-		System.out.println("私人秘书 页面 注册广播 ing");
-		filter = new IntentFilter();
-		filter.addAction("com.lansun.qmyo.checkMySecretary");
-		filter.addAction("com.lansun.qmyo.refreshMySecretary");
-		getActivity().registerReceiver(broadCastReceiver, filter);
-
+		
 	}
 
 	@Override
 	public void onResume() {
 		v.iv_secretary_icon.setPressed(true);
+		//v.iv_register_bg.threadFlag = true;
 		super.onResume();
 	}
 	@Override
@@ -394,6 +453,8 @@ import com.squareup.okhttp.Response;
 		/*	v.iv_secretary_icon.setPressed(false);
 		v.tv_secretary_icon.setTextColor(getResources().getColor(
 				R.color.text_nomal));*/
+		//v.iv_register_bg.threadFlag = false;
+		
 		justOneTimes = true;
 		super.onPause();
 	}
@@ -477,8 +538,8 @@ import com.squareup.okhttp.Response;
 				LogUtils.toDebugLog("LastRefreshTokenTime", "在SercretaryFragment中令牌更新操作成功！");
 				/*
 				 出现场景： 原本存在本地的token过期，当app启动时开启服务，去拿token，但此时由于与服务器访问的交互信息的过程较漫长，
-				导致出现了拿着原本存在本地的token前去访问，此时页面正在或已经生成完毕，即使更新了本地的token后，由于仍未刷新首页的数据，
-				故而首页出现刷不出数据的问题
+						导致出现了拿着原本存在本地的token前去访问，此时页面正在或已经生成完毕，即使更新了本地的token后，由于仍未刷新首页的数据，
+						故而首页出现刷不出数据的问题
 				解决方案：  再次通知首页重新获取数据，局部刷新界面
 				*/
 				getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshHome"));
@@ -491,6 +552,7 @@ import com.squareup.okhttp.Response;
 	
 	 class SecretaryFragmentBroadCastReceiver extends BroadcastReceiver{
 
+		private int time = 0;
 		@Override
 		public void onReceive(Context ctx, Intent intent) {
 			
@@ -499,12 +561,39 @@ import com.squareup.okhttp.Response;
 					System.out.println("秘书页收到来自MainFragment的提示检测私人秘书信息的广播了");
 					
 					clickOpen = true;//由点击   进入此页面的  标签
-					initView(rootView);
-					setListener();
+					
+					if(GlobalValue.mySecretary != null){//表明mySecretary已设置过，无需重复进行   网络访问   ,只需要拿到mySecretary值进行判断即可
+						isToggleDialog(clickOpen);//具体弹不弹由GlobalValue.mySecretary.getHas()自己去决定
+					}else{
+						initView(rootView);//其实App一打开，就已经跑去访问网络，并且已经拿到了GlobalValue.mySecretary的信息（前提：已拥有token内容）
+					}
+					setListener();//当广播通知来了之后，才会出现设置私人秘书的点击监听
 					justOneTimes = false;
-				}
-//			}
-			if(intent.getAction().equals("com.lansun.qmyo.refreshMySecretary")){
+					
+				}else if(intent.getAction().equals("com.lansun.qmyo.showFirstCommitSecretaryAskGuide")){
+					
+					if(time == 0){//保证即使接收到两次广播，但只会生成一个的指引Dialog
+						
+						inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+						final Dialog dialog2 = new Dialog(activity,R.style.CustomDialogForNewUserTip);
+						View layout2 = inflater.inflate(R.layout.dialog_secretaryfirstcommit, null);
+						dialog2.setContentView(layout2, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+						layout2.setOnClickListener(new OnClickListener(){
+							
+							@Override
+							public void onClick(View arg0) {
+								//一旦点击就要将其置为 true，下一次进入不再执行下面的弹框操作
+								App.app.setData("firstCommitPersonalSecretaryAsk","true");
+								dialog2.dismiss();
+								time++;
+							}
+						});
+						dialog2.show();
+						dialog2.setCanceledOnTouchOutside(true);
+						dialog2.setCancelable(true);
+					}
+					
+				   }else if(intent.getAction().equals("com.lansun.qmyo.refreshMySecretary")){
 				
 				setSecretaryInformation();
 
@@ -533,6 +622,103 @@ import com.squareup.okhttp.Response;
 	        view.setBackground(new BitmapDrawable(getResources(), overlay));
 	        rs.destroy();
 	    }
+	  
+	  
+	 public void isToggleDialog(boolean b){
+		
+		 //只有因为点击私人秘书的页面，才可以弹出提示窗口	
+		 if(b){
+				//并无设置秘书信息时，需要将  立即登录设置私人秘书的提示界面弹出
+				if ("false".equals(GlobalValue.mySecretary.getHas())) {
+					final Dialog dialog = new Dialog(activity, R.style.Translucent_NoTitle);
+					
+					/**
+					 *  提示去设置私人秘书
+					 */
+					dialog.setContentView(R.layout.dialog_setting_secretary);
+			    	Window window = dialog.getWindow();
+//					WindowManager.LayoutParams lp = window.getAttributes();
+//
+//					// 模糊度
+//					window.setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND, WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+//					//透明度
+//					lp.alpha=1f;//（0.0-1.0）
+//					//黑暗度
+//					lp.dimAmount=0.5f;
+//					window.setAttributes(lp);
+			    	
+					window.findViewById(R.id.setting_now).setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							dialog.dismiss();
+							FragmentEntity entity=new FragmentEntity();
+							Fragment fragment=new SecretarySettingFragment();
+							entity.setFragment(fragment);
+							EventBus.getDefault().post(entity);
+						}
+					});
+					//dialog消失时，需要恢复背景页面的效果
+					dialog.setOnDismissListener(new OnDismissListener() {
+						@Override
+						public void onDismiss(DialogInterface arg0) {
+//							Blurry.delete((ViewGroup) rootView);
+							activity.sendBroadcast(new Intent("com.lansun.qmyo.recoverTheBottomMenu"));
+							System.out.println("SecretaryFragment的  发送   恢复MainFrag的底部菜单按钮的广播了");
+						}
+					});
+					dialog.show();
+					dialog.setCanceledOnTouchOutside(false);
+					
+					activity.sendBroadcast(new Intent("com.lansun.qmyo.hideTheBottomMenu"));
+					System.out.println("SecretaryFragment的  发送   隐藏MainFrag的底部菜单按钮的广播了");
+				}else {
+						setSecretaryInformation();
+				}
+			}
+	   }
 	 
+	   class SecretaryBgPagerAdapter extends PagerAdapter {
+		   
+			@Override
+			public int getCount() {
+				return Integer.MAX_VALUE;
+			}
 
+			@Override
+			public boolean isViewFromObject(View view, Object object) {
+				return view == object;
+			}
+			@Override
+			public Object instantiateItem(ViewGroup container, int position) {
+				ImageView imageView = new ImageView(activity);
+				imageView.setScaleType(ScaleType.CENTER_CROP);
+				if(position%2==0){
+					imageView.setBackgroundResource(R.drawable.cloud_1);
+				}else{
+					imageView.setBackgroundResource(R.drawable.cloud_2);
+				}
+				container.addView(imageView);
+				return imageView;
+			}
+			@Override
+			public void destroyItem(ViewGroup container, int position, Object object) {
+				container.removeView((View) object);
+			}
+		}
+	   
+		@SuppressLint("HandlerLeak")
+		class InternalHandler extends Handler{
+			@Override
+			public void handleMessage(Message msg) {
+						int nextIndex = v.vp_sercretary_bg_pager.getCurrentItem()+1;
+						v.vp_sercretary_bg_pager.setCurrentItem(nextIndex);
+						handler.postDelayed(new InternalTask(), 15000);//自己给自己发信息
+			}
+		}
+		class InternalTask implements Runnable{
+			@Override
+			public void run() {
+				handler.sendEmptyMessage(0);
+			}
+		}
 }

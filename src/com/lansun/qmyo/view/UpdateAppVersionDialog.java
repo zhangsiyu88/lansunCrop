@@ -163,7 +163,7 @@ public class UpdateAppVersionDialog extends BlurDialogFragment {
 		params.put("version", "1");
 		
 //		FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION + info.versionCode , config, this);
-		FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION+"?key=Android&version="+1 ,params, config, this);
+		FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION+"?key=Android&version="+info.versionCode , config, this);
 		
 	}
 

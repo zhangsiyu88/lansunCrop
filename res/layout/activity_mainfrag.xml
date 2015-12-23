@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/w_match_h_match"
+    android:background="@color/app_bg">
+    
+    
+<LinearLayout 
     style="@style/w_match_h_match"
     android:orientation="vertical" 
     android:background="@color/app_bg">
@@ -15,19 +21,27 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"/> 
 	 
-	 <LinearLayout 
+    
+   <RelativeLayout 
 	    android:layout_weight="0"
 	    android:id="@+id/bottom"
 	    android:layout_width="match_parent"
         android:layout_height="wrap_content"
-	    android:orientation="vertical">
+	   > 
+	 <LinearLayout 
+	    android:id="@+id/ll_bottom"
+	    android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+	    android:orientation="vertical"><!-- android:layout_weight="0"  -->
 
 		    <View
+		        android:id="@+id/line_bottom"
 		        android:layout_width="match_parent"
 		        android:layout_height="1px"
 		        android:background="@color/line_bg1" />
 		
 		    <LinearLayout
+		        android:id="@+id/bottom_menu"
 		        android:layout_width="match_parent"
 		        android:layout_height="@dimen/bottom_menu_h"
 		        android:background="@color/app_white" >
@@ -151,6 +165,7 @@
 		        </LinearLayout>
 		    </LinearLayout>
 		</LinearLayout>
-		
+	 </RelativeLayout>	
 	 <!-- </LinearLayout> -->
 </LinearLayout>
+</RelativeLayout>

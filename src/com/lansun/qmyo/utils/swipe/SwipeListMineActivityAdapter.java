@@ -53,7 +53,7 @@ public class SwipeListMineActivityAdapter extends BaseAdapter {
 	
 	  private DisplayImageOptions options = new DisplayImageOptions.Builder()
 	    .cacheInMemory(true).cacheOnDisk(true).considerExifParams(true)
-	    .displayer(new FadeInBitmapDisplayer(300)).build();
+	    .build();//.displayer(new FadeInBitmapDisplayer(300))
 	private boolean isSlide = true;
 
 	

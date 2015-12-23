@@ -62,7 +62,8 @@
     <string name="all_stroes">查看所有分店</string>
     <string name="check_all">查看所有分店</string>
     <string name="all_join_stroes">参与此活动的分店</string>
-    <string name="mai_communicate">迈友沟通 （%1$s）</string>
+    <string name="mai_communicate">迈友评论回复 （%1$s）</string>
+    <string name="try_speech">试试语音输入吧，更方便哦~</string>
     <string name="wx_friend">微信好友</string>
     <string name="friend_c">朋友圈</string>
     <string name="qq_friend">QQ好友</string>
@@ -137,7 +138,7 @@
     <string name="exit_login">退出登录</string>
     <string name="replay">回复</string>
     <string name="store">门店</string>
-    <string name="qmyo_version">迈界 V1.2.8</string>
+    <string name="qmyo_version">迈界 V</string>
     <string name="qmyo_desc">收集世界各地惊喜\n伴随迈友走遍世界</string>
     <string name="qmyo_wx">迈界微信公众号：<Data><![CDATA[<font color="#9DC14F">qmyoclub</font>]]></Data></string>
     <string name="qmyo_net">迈界官网：<Data><![CDATA[<font color="#9DC14F">www.qmyo.com</font>]]></Data></string>
@@ -210,7 +211,8 @@
     <string name="loading_city">正在定位当前城市...</string>
     <string name="select_city">选择城市</string>
     <string name="maijie_tip">迈界小贴士</string>
-    <string name="search_card_tip">在您的银行卡正面左上角印有所持卡的全称\n \t\t也可以输入相关银行名称进行搜索</string>
+    <string name="search_card_tip1">在您的银行卡正面左上角印有所持卡的全称</string>
+    <string name="search_card_tip2">也可以输入相关银行名称进行搜索</string>
     <string name="search">搜索</string>
     <string name="add_bankCard">您是否要添加该银行卡？</string>
     <string name="delete_success">删除成功</string>
@@ -250,7 +252,7 @@
     <string name="ask_question">您或许想要询问以下问题</string>
     <string name="secretary_tip">%1$s，请选择一个类别事项，让我快速帮您解决吧</string>
     <string name="new_shopping">新品购物</string>
-    <string name="shengyan_part">盛宴狂欢</string>
+    <string name="shengyan_part">盛宴派对</string>
     <string name="gaozhi_life">高质生活</string>
     <string name="studybroad">留学服务</string>
     <string name="licai_touzi">理财投资</string>

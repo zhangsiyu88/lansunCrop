@@ -130,6 +130,7 @@
         android:layout_marginLeft="@dimen/l_r_35"
         android:layout_marginRight="@dimen/l_r_35"
         android:layout_marginTop="@dimen/margin_top_25"
+        android:padding="10dp"
         android:background="@drawable/tv_style_white"
         android:gravity="top|left"
         android:hint="@string/please_enter_content"

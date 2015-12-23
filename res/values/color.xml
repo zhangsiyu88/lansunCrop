@@ -25,6 +25,10 @@
     <color name="line_bg1">#EBEBEB</color>
     <color name="app_circle_gray">#9C9C9C</color>
     <color name="text_gray1">#6F6F6F</color>
+    <color name="pink">#e91e63</color>
+    <color name="pink_pressed">#ec407a</color>
+    <color name="green">#9DC14F</color>
+    <color name="green_pressed">#909DC14F</color>
     
     <color name="text_gray2">#AFAFAF</color>
     <color name="text_gray3">#898989</color>

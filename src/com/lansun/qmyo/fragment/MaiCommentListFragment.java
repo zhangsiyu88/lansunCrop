@@ -1,10 +1,14 @@
 package com.lansun.qmyo.fragment;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -41,6 +45,7 @@ import com.lansun.qmyo.domain.Sensitive;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.event.entity.ReplyEntity;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.MyListView;
 import com.lansun.qmyo.R;
@@ -66,7 +71,8 @@ public class MaiCommentListFragment extends BaseFragment {
 	private MyListView lv_comments_list;
 	private ArrayList<HashMap<String, Object>> dataList = new ArrayList<>();
 	private CommentList list;
-	private List<Sensitive> sensitiveList;
+	private List<Sensitive> sensitiveList = new ArrayList<Sensitive>();
+	private SQLiteDatabase db;
 
 	class Views {
 
@@ -91,7 +97,13 @@ public class MaiCommentListFragment extends BaseFragment {
 			activityId = getArguments().getString("activityId");
 			shopId = getArguments().getString("shopId");
 		}
+		
+		/**
+		 * 注册Eventbus的接收者  */
 		EventBus.getDefault().register(this);
+		
+		
+		
 		refreshUrl = String.format(GlobalValue.URL_ACTIVITY_COMMENTS,
 				activityId);
 		refreshKey = 0;
@@ -101,18 +113,26 @@ public class MaiCommentListFragment extends BaseFragment {
 		//终于知道将其设置在子线程中类
 		new Thread() {
 			public void run() {
-				if (sensitiveList == null) {
+				String path = activity.getCacheDir().getPath()+File.separator+"qmyo_sensitive_new.db";
+			    db = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READWRITE);  
+			    sensitiveList = getToDbData();
+				
+				/*
+				 * if (sensitiveList == null) {
 					Selector provinceSelector = Selector.from(Sensitive.class);
 					provinceSelector.select(" * ");
 					provinceSelector.limit(Integer.MAX_VALUE);
 					sensitiveList = Ioc.getIoc().getDb(activity.getCacheDir().getPath(),
 									"qmyo_sensitive.db").findAll(provinceSelector);
-				}
+				}*/
 			};
-
 		}.start();
 	}
 
+	/**
+	 * 对在上部注册的Eventbus接收者，进行事件的处理
+	 * @param event
+	 */
 	public void onEventMainThread(ReplyEntity event) {
 		if (event.isEnable()) {
 			v.ll_mai_comment_reply.setVisibility(View.VISIBLE);
@@ -129,12 +149,43 @@ public class MaiCommentListFragment extends BaseFragment {
 		}
 	}
 
+	/**
+	 * 读取数据库里面的内容，将内容写入到之前就生成好的容器中去
+	 * @return
+	 */
+	  public List<Sensitive> getToDbData(){  
+         
+		  List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();  
+          //Cursor cursor = db.query("person", null, null, null, null, null, null);  
+          Cursor cursor=db.query("com_qmyo_domain_Sensitive_new", null,null, null, null, null, "_id desc");  
+        
+          while(cursor.moveToNext()){  
+              Map<String, Object> map = new HashMap<String, Object>();  
+              Sensitive sens = new Sensitive();
+              int id = cursor.getInt(cursor.getColumnIndex("_id"));  
+              String name = cursor.getString(cursor.getColumnIndex("name"));  
+              
+              map.put("_id", id);  
+              map.put("name", name);  
+              list.add(map);  
+              
+              sens.set_id(id);
+              sens.setName(name);
+              sensitiveList.add(sens);
+              
+          }
+          LogUtils.toDebugLog("start", "完成敏感词列表的写入操作");
+          
+		return sensitiveList;  
+      }
+	
 	@Override
 	public void onPause() {
-		list = null;
+		/*list = null;
 		dataList.clear();
-		adapter = null;
-		EventBus.getDefault().unregister(this);
+		adapter = null;*/
+		//EventBus.getDefault().unregister(this);
+		
 		super.onPause();
 	}
 
@@ -142,16 +193,22 @@ public class MaiCommentListFragment extends BaseFragment {
 	private void result(ResponseEntity r) {
 		if (r.getStatus() == FastHttp.result_ok) {
 			endProgress();
+			PullToRefreshManager.getInstance().footerEnable();
+			PullToRefreshManager.getInstance().onFooterRefreshComplete();
 			switch (r.getKey()) {
 			case 0: //拿到评论列表，将评论列表重新展示
 				list = Handler_Json.JsonToBean(CommentList.class,
 						r.getContentAsString());
 				if (list.getData() != null) {
-					dataList.clear();
-					if (adapter != null) {
-						adapter.notifyDataSetChanged();
+					
+					if(isPullDown){
+						dataList.clear();
+						isPullDown = false;
 					}
-
+					/*
+					 * if (adapter != null) {
+						adapter.notifyDataSetChanged();
+					}*/
 					for (CommentListData data : list.getData()) {
 						HashMap<String, Object> map = new HashMap<>();
 						map.put("iv_comment_head", data.getUser().getAvatar());
@@ -174,12 +231,12 @@ public class MaiCommentListFragment extends BaseFragment {
 							R.layout.mai_comment_lv_item);
 					adapter.setActivity(this);
 					adapter.setParentScrollView(lv_comments_list);
+					
 					lv_comments_list.setAdapter(adapter);
 					lv_comments_list.setOnScrollListener(mOnScrollListener);
 				} else {
 					adapter.notifyDataSetChanged();
 				}
-
 				break;
 
 			case 1:
@@ -195,7 +252,6 @@ public class MaiCommentListFragment extends BaseFragment {
 				break;
 			}
 		} else {
-
 			progress_text.setText(R.string.net_error_refresh);
 		}
 		
@@ -218,6 +274,9 @@ public class MaiCommentListFragment extends BaseFragment {
 
 		}
 	};
+	
+	
+	private boolean isPullDown = false;
 
 	/**
 	 * 替换关键字
@@ -284,11 +343,13 @@ public class MaiCommentListFragment extends BaseFragment {
 				params.put("to_user_id", replyUserId + "");
 			}
 			//点击提交，针对某个迈友的回复内容
-			FastHttpHander.ajaxForm(GlobalValue.URL_USER_ACTIVITY_COMMENT,
-					params, null, config, this);
+			/*FastHttpHander.ajaxForm(GlobalValue.URL_USER_ACTIVITY_COMMENT,
+					params, null, config, this);*/
+			FastHttpHander.ajax(GlobalValue.URL_USER_ACTIVITY_COMMENT,
+					params, config, this);
 			break;
 			
-		case R.id.iv_activity_reply://点击进入写"我的评论"一栏
+		case R.id.iv_activity_reply://点击  右上角   进入写"我的评论"一栏
 			if ("true".equals(App.app.getData("isExperience"))) {
 				RegisterFragment fragment = new RegisterFragment();
 				FragmentEntity event = new FragmentEntity();
@@ -314,13 +375,13 @@ public class MaiCommentListFragment extends BaseFragment {
 		switch (type) {
 		case InjectView.PULL:
 			//下拉是可以识别出来的，并且是有效的，但是由于下面的
-			CustomToast.show(activity, "加载进度", "目前所有内容都已经加载完成");
+			//CustomToast.show(activity, "加载进度", "目前所有内容都已经加载完成");
 			Log.i("list是否有值", list.getNext_page_url());
 			
 			if (list != null) {
 				//根据服务器返回回来的数据中含有next_page_url的内容
 				if (TextUtils.isEmpty(list.getNext_page_url())) {
-					CustomToast.show(activity, "加载进度", "目前所有内容都已经加载完成");
+					CustomToast.show(activity, "到底啦！", "评论内容暂时只有这么多，期待您的评论~");
 					
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					/*
@@ -328,9 +389,16 @@ public class MaiCommentListFragment extends BaseFragment {
 					   CustomToast.show(activity, "加载进度", "目前所有内容都已经加载完成");
 					 */
 				} else {
-					refreshCurrentList(list.getNext_page_url(), null, 0,
-							lv_comments_list);
+					refreshCurrentList(list.getNext_page_url(), null, 0,lv_comments_list);
 				}
+			}else{
+				CustomToast.show(activity, "到底啦！", "评论内容暂时只有这么多，期待您的评论~");
+				PullToRefreshManager.getInstance().footerUnable();
+			}
+			
+			if(list.getNext_page_url()=="null"){
+				CustomToast.show(activity, "到底啦！", "评论内容暂时只有这么多，期待您的评论~");
+				PullToRefreshManager.getInstance().footerUnable();
 			}
 			break;
 		case InjectView.DOWN:
@@ -338,7 +406,9 @@ public class MaiCommentListFragment extends BaseFragment {
 				
 				refreshCurrentList(refreshUrl, null, refreshKey,
 						lv_comments_list);
-				CustomToast.show(activity, "数据来了", "来了一页！");
+				isPullDown  = true;
+				
+				//CustomToast.show(activity, "数据来了", "来了一页！");
 			}
 			break;
 		}

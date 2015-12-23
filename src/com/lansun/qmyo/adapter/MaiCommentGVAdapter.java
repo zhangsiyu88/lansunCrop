@@ -47,8 +47,8 @@ public class MaiCommentGVAdapter extends CommonAdapter {
 		if (photos == null) {
 			return 0;
 		}
-		if (photos.size() >= 3) {
-			return 3;
+		if (photos.size() >= 4) {
+			return 4;
 		}
 		return photos.size();
 	}

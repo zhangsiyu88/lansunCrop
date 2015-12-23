@@ -28,6 +28,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.LinearLayout;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
@@ -203,7 +204,7 @@ public class NewBrandFragment extends BaseFragment{
 						try{
 							lv_activity_list.removeFooterView(emptyView);
 						}catch(Exception e){
-						}
+					  }
 						isRemove=true;
 					}
 					if(isDownChange){//下拉刷新时,需要将数据重新获取,即将shopDataList清空掉
@@ -549,6 +550,28 @@ public class NewBrandFragment extends BaseFragment{
 		initView(view);
 		initListener();
 		
+		lv_activity_list.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long arg3) {
+				if(position-1 >= shopDataList.size()||position-1<0){
+					return;
+				}
+				ActivityDetailFragment fragment = new ActivityDetailFragment();
+				Bundle args = new Bundle();
+				args.putString("activityId",
+						shopDataList.get(position-1).get("activityId").toString());
+				args.putString("shopId", shopDataList.get(position-1).get("shopId")
+						.toString());
+				fragment.setArguments(args);
+				FragmentEntity event = new FragmentEntity();
+				event.setFragment(fragment);
+				EventBus.getDefault().post(event);
+				
+				
+			}
+		});
 		lv_activity_list.setOnRefreshListener(new OnRefreshListener() {
 			
 			@Override
@@ -751,7 +774,7 @@ public class NewBrandFragment extends BaseFragment{
 		LogUtils.toDebugLog("LastRefreshTokenTime", "上次最近更新token服务的时刻： "+DataUtils.dataConvert(LastRefreshTokenTime));
 		LogUtils.toDebugLog("LastRefreshTokenTime", "两次更新token的时间差"+((System.currentTimeMillis()-LastRefreshTokenTime))/1000/60);
 		
-		if((System.currentTimeMillis()-LastRefreshTokenTime)>15*60*1000){
+		if((System.currentTimeMillis()-LastRefreshTokenTime)>10*60*1000){
 			//进行刷新token的操作
 			HttpUtils httpUtils = new HttpUtils();
 			com.lidroid.xutils.http.callback.RequestCallBack<String> requestCallBack = new com.lidroid.xutils.http.callback.RequestCallBack<String>() {
@@ -783,7 +806,15 @@ public class NewBrandFragment extends BaseFragment{
 					return;
 				}
 			};
-			httpUtils.send(HttpMethod.GET, GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"), null,requestCallBack );
+			//httpUtils.send(HttpMethod.GET, GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"), null,requestCallBack );
+			
+			if(isExperience()){//体验用户的情况下，是需要使用临时Exp_Secret去更新Token
+				if(App.app.getData("exp_secret")!=""){
+					httpUtils.send(HttpMethod.GET, GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("exp_secret"), null,requestCallBack );
+				}
+			}else{//非体验用户（登陆用户），是需要使用正式的Secret去更新Token
+				httpUtils.send(HttpMethod.GET, GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"), null,requestCallBack );
+			}
 		}
 	}
 		startSearchData(GlobalValue.URL_ALL_ACTIVITY,App.app.getData("select_cityCode"),HODLER_TYPE,position_bussness,intelligentStr,GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
@@ -1148,11 +1179,23 @@ public class NewBrandFragment extends BaseFragment{
 			String allJson="{name: 全部,data:[{name: 全部,key: 000000},"+App.app.getData(App.TAGS[0])+","+App.app.getData(App.TAGS[1])+","+App.app.getData(App.TAGS[2])+","+App.app.getData(App.TAGS[3])+","+App.app.getData(App.TAGS[4])+","+App.app.getData(App.TAGS[5])+","+App.app.getData(App.TAGS[6])+","+App.app.getData(App.TAGS[7])+"]}";
 			Gson gson=new Gson();
 			root = gson.fromJson(allJson, ServiceRoot.class);
+			
+			if(root.getName()==null){
+				getAllServer();
+				return;
+			}
 			name = root.getName();
+			
 			ArrayList<String> allGroup = new ArrayList<String>();
 			SparseArray<LinkedList<String>> allChild = new SparseArray<LinkedList<String>>();
 			for (int j = 0; j < root.getData().size(); j++) {
 				LinkedList<String> chind = new LinkedList<String>();
+				
+				if(root.getData()==null){
+					getAllServer();//重新去获取新品曝光筛选栏服务部分的内容
+					return;  //结束下面的执行代码
+				}
+				
 				allGroup.add(root.getData().get(j).getName());
 				List<ServiceData> items =root.getData().get(j).getData();
 				if (items != null) {

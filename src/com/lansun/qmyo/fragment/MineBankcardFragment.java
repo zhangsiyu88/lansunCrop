@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,6 +23,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -61,11 +64,13 @@ import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.swipe.SwipeListMineBankcardAdapter;
 import com.lansun.qmyo.utils.swipe.SwipeListMineBankcardAdapter.FromNetCallBack;
+import com.lansun.qmyo.view.BankcardListView;
+import com.lansun.qmyo.view.BankcardListView.OnRefreshListener;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ListViewSwipeGesture;
-import com.lansun.qmyo.view.MyListView;
-import com.lansun.qmyo.view.TestMyListView;
-import com.lansun.qmyo.view.TestMyListView.OnRefreshListener;
+//import com.lansun.qmyo.view.MyListView;
+//import com.lansun.qmyo.view.TestMyListView;
+//import com.lansun.qmyo.view.TestMyListView.OnRefreshListener;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
@@ -77,7 +82,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
-public class MineBankcardFragment extends BaseFragment implements FromNetCallBack{
+@SuppressLint("InflateParams") public class MineBankcardFragment extends BaseFragment implements FromNetCallBack{
 
 	
 	private boolean mIsFromHome = false;
@@ -164,14 +169,14 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 	private MyListView lv_ban_card_other;*/
 	
 	@InjectView
-	private TestMyListView lv_ban_card_other;
+	private BankcardListView lv_ban_card_other;  //这个BankcardListView是无头的ListView
 	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
-		View rootView = inflater.inflate(R.layout.activity_bank_card, null);
+		rootView = inflater.inflate(R.layout.activity_bank_card, null);
 		
 		Handler_Inject.injectFragment(this, rootView);
 		
@@ -187,6 +192,58 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 		
 		touchListener.SwipeType = ListViewSwipeGesture.Dismiss;
 		lv_ban_card_other.setOnTouchListener(touchListener);*/
+		
+		
+		
+		/*
+		 *  listView的整体判断自己的Item被点击效果，暂时使用单个Item被点击的效果
+		 * 
+		 * lv_ban_card_other.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+					long id) {
+
+				final HashMap<String, String> map = dataList.get(position);
+				LogUtils.toDebugLog("", "检测到响应了点击事件");
+				
+				DialogUtil.createTipAlertDialog(activity, R.string.is_switch_card,
+						new TipAlertDialogCallBack() {
+					
+					private String bankCardId;
+	 
+					@Override
+					public void onPositiveButtonClick(
+							DialogInterface dialog, int which) {
+						
+						bankCardId = map.get("id");
+						InternetConfig config = new InternetConfig();
+						config.setKey(2);
+						HashMap<String, Object> head = new HashMap<>();
+						head.put("Authorization","Bearer " + App.app.getData("access_token"));
+						config.setHead(head);
+						LinkedHashMap<String, String> params = new LinkedHashMap<>();
+						params.put("bankcard_id", bankCardId);
+						
+						//使用post方式去提交，是选中其中的卡作为选中卡 
+					    FastHttpHander.ajax(GlobalValue.URL_SELECT_BANKCARD, params,config, MineBankcardFragment.this);
+						
+						//mList.clear();
+						//this = null;
+						
+						//Handler_Inject.injectFragment(this, rootView);
+						
+						dialog.dismiss();
+					}
+					@Override
+					public void onNegativeButtonClick(
+							DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+			}
+		});*/
+		
 		
 		lv_ban_card_other.setNoHeader(true);
 		/**
@@ -459,6 +516,7 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 	private boolean isChangeTheChoseCard = false;
 	private boolean isChangeTheChoseCardUnderSearchBankcardPage = false;
 	private TimerTask timerTask;
+	private View rootView;
 
 	@InjectHttp
 	private void result(ResponseEntity r) {
@@ -854,7 +912,12 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 		Log.d("bankcard","mIsFromRigisterFragToMyBankcardFrag  :"+ mIsFromRigisterFragToMyBankcardFrag );
 		
 	
-		
+		/**
+		 * 注意： isChangeTheChoseCard：  未进入银行卡的搜索页，仅在现有卡池中，进行了替换当前卡的操作
+		 *     isChangeTheChoseCardUnderSearchBankcardPage： 从搜索银行卡页返回回来，且在全新的 卡池中进行了替换当前卡的操作（同上面完全是两种情况，无 先后串联关系）
+		 *     
+		 *     mIsFromInsertBankcardAdapterPage： 在搜索银行卡页进行了添卡的行为操作
+		 */
 		
 		
 		
@@ -917,7 +980,7 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 				return;
 			}
 			
-			//从添加搜索银行卡页回来，并且 在我的银行卡页进行了换卡的操作,即表明肯定进行了换卡的操作
+			//从添加搜索银行卡页回来，并且 在  我的银行卡页  进行了换卡的操作,即表明肯定进行了换卡的操作
 			if(mIsFromInsertBankcardAdapterPage){  
 				if(App.app.getData("isFromHome")=="true"&&App.app.getData("isFromNewPart")==""&&App.app.getData("isFromEightPart")==""){
 					/*HomeFragment homeFragment = new HomeFragment();*/
@@ -943,6 +1006,11 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 					FragmentEntity fEntity = new FragmentEntity();
 					fEntity.setFragment(fragment);
 					EventBus.getDefault().post(fEntity);
+					
+					Intent intent=new Intent("com.lansun.qmyo.refreshHome");
+					getActivity().sendBroadcast(intent);
+					System.out.println("从新品曝光页跳往我的银行卡页，再跳往搜索银行卡页，且添加卡入卡池后，还在我的银行卡页换卡后，需发送广播！");
+					
 					return;
 				}
 				//来自 8大板块页
@@ -961,11 +1029,6 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 			
 			super.back();
 			return;
-			
-			
-			
-			
-			
 			
 			
 		}else if(!isChangeTheChoseCard&&mIsFromRigisterFragToMyBankcardFrag){//虽然没有进行换卡的操作，但是是从注册页返回回来的，故而仍需进行刷新返回页面的操作
@@ -1013,7 +1076,9 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 				Log.d("morenfangfa", "走到默认返回方法");
 				super.back();
 				return;*/
-			}else {
+				
+			}else {  //上面的判断条件!isChangeTheChoseCard&&mIsFromRigisterFragToMyBankcardFrag&&mIsFromInsertBankcardAdapterPage
+				
 				if(mIsFromHome){//从登录页返回回来，回到我的银行卡页，再按返回键时，重新刷新之前的Home页内容
 					/*HomeFragment homeFragment = new HomeFragment();*/
 					MainFragment mainFragment = new MainFragment(0);
@@ -1035,18 +1100,24 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 					return;
 				}
 				
-				if(mIsFromNewPart){//从登录页返回回来，回到我的银行卡页，再按返回键时，重新刷新之前的新品曝光板块页内容
-					ActivityFragment activityFragment = new ActivityFragment();
-					Bundle args = new Bundle();
-					args.putBoolean("IsNew", true);
-					args.putInt("type", R.string.new_exposure);
-					args.putBoolean("isHasChangeTheBankcardInMineBankcardPage", true);
-					activityFragment.setArguments(args);
+				if(mIsFromNewPart){//从登录页返回回来(包括了正常进入登录注册页，但未进行登录操作，只是简单的进去了，又退出去了)，回到我的银行卡页，再按返回键时，重新刷新之前的新品曝光板块页内容
+//					ActivityFragment activityFragment = new ActivityFragment();
+//					Bundle args = new Bundle();
+//					args.putBoolean("IsNew", true);
+//					args.putInt("type", R.string.new_exposure);
+//					args.putBoolean("isHasChangeTheBankcardInMineBankcardPage", true);
+//					activityFragment.setArguments(args);
+//					FragmentEntity fEntity = new FragmentEntity();
+//					fEntity.setFragment(activityFragment);
+//					EventBus.getDefault().post(fEntity);
+					
+					Fragment fragment = new NewBrandFragment();
 					FragmentEntity fEntity = new FragmentEntity();
-					fEntity.setFragment(activityFragment);
+					fEntity.setFragment(fragment);
 					EventBus.getDefault().post(fEntity);
 					return;
 				}
+				super.back();//若不做任何操作，那么需要将返回按钮执行正常的返回上一级的操作
 			}
 			
 			if(mIsFromEightPart){//从登录页返回回来，回到我的银行卡页，再按返回键时，重新刷新之前的八大板块页内容
@@ -1070,10 +1141,10 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 			}
 		    return;	
 			
+		//如果是从添卡搜索页回来，并且在当前页进行换卡操作
+		}else if(mIsFromInsertBankcardAdapterPage&&isChangeTheChoseCardUnderSearchBankcardPage){
 			
-		}else if(mIsFromInsertBankcardAdapterPage&&isChangeTheChoseCardUnderSearchBankcardPage){//如果是从添卡搜索页回来，但却没有在当前页进行换卡操作，那么应返回至来源页，且不做刷新操作
-			
-			Log.d("isisis", "home "+App.app.getData("isFromHome")+ "new "+ App.app.getData("isFromNewPart")+ "eight "+App.app.getData("isFromEightPart"));
+			Log.d("isisis", "home:  "+App.app.getData("isFromHome")+ "   new:  "+ App.app.getData("isFromNewPart")+ "   eight:  "+App.app.getData("isFromEightPart"));
 			
 			/*if(App.app.getData("isFromHome")=="true"&&App.app.getData("isFromNewPart")==""&&App.app.getData("isFromEightPart")==""){*/
 			if(App.app.getData("isFromHome").equals("true")&&App.app.getData("isFromNewPart").equals("")&&App.app.getData("isFromEightPart").equals("")){
@@ -1086,8 +1157,8 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 				
 			}
 			//来自 New页
-			if(App.app.getData("isFromHome")==""&&App.app.getData("isFromNewPart")=="true"&&App.app.getData("isFromEightPart")==""){
-				Fragment fragment = new NewBrandFragment();
+			if(App.app.getData("isFromHome").equals("")&&App.app.getData("isFromNewPart").equals("true")&&App.app.getData("isFromEightPart").equals("")){
+				
 			/*if(App.app.getData("isFromHome")==""&&App.app.getData("isFromNewPart")=="true"&&App.app.getData("isFromEightPart")==""){*/
 //			if(App.app.getData("isFromHome").equals("")&&App.app.getData("isFromNewPart").equals("true")&&App.app.getData("isFromEightPart").equals("")){
 //				ActivityFragment activityFragment = new ActivityFragment();
@@ -1096,9 +1167,20 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 //				args.putInt("type", R.string.new_exposure);
 //				args.putBoolean("isHasChangeTheBankcardInMineBankcardPage", true);
 //				activityFragment.setArguments(args);
+				Fragment fragment = new NewBrandFragment();
 				FragmentEntity fEntity = new FragmentEntity();
 				fEntity.setFragment(fragment);
 				EventBus.getDefault().post(fEntity);
+				
+				
+				/**
+				 * 实际这个地方不应该出现广播事件，根据判断逻辑，此处在两处皆进行换卡操作时，是不会走到此处的判断的
+				 * 但出于功能性保障考虑，此处补加首页进行列表刷新广播推送的操作
+				 */
+				Intent intent=new Intent("com.lansun.qmyo.refreshHome");
+				getActivity().sendBroadcast(intent);
+				//System.out.println("从新品曝光页跳往我的银行卡页,需发送广播！");
+			  System.out.println("从新品曝光页跳往我的银行卡页，再跳往搜索银行卡页，且添加卡入卡池后，还在我的银行卡页换卡后，需发送广播！");
 				
 //				ActivityFragment activityFragment = new ActivityFragment();
 //				Bundle args = new Bundle();
@@ -1121,16 +1203,18 @@ public class MineBankcardFragment extends BaseFragment implements FromNetCallBac
 				FragmentEntity fEntity = new FragmentEntity();
 				fEntity.setFragment(activityFragment);
 				EventBus.getDefault().post(fEntity);
+				
+				Intent intent=new Intent("com.lansun.qmyo.refreshHome");
+				getActivity().sendBroadcast(intent);
+				//System.out.println("从新品曝光页跳往我的银行卡页,需发送广播！");
+			  System.out.println("从八大板块跳往我的银行卡页，再跳往搜索银行卡页，且添加卡入卡池后，还在我的银行卡页换卡后，需发送广播！");
 				return;
 			}
 			
 			Log.d("morenfangfa", "走到默认返回方法");
 			super.back();
 			return;
-			
-			
 		}
-		
 		super.back();
 		
 	}

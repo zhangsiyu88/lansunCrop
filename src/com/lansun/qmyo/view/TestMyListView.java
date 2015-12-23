@@ -216,6 +216,13 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 	public boolean onTouchEvent(MotionEvent ev) {
 		switch (ev.getAction()) {
 		case MotionEvent.ACTION_DOWN:
+			
+			//解决下拉同时触发点击事件的问题
+//			if(CURRENT_STATE==PULLDOWN_REFRESH){
+//		     return true;
+//			}
+			
+			
 			downY = (int) ev.getY();
 			break;
 		case MotionEvent.ACTION_MOVE:

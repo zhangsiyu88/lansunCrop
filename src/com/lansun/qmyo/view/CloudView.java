@@ -5,12 +5,15 @@ import com.lansun.qmyo.R;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.ImageView;
@@ -32,19 +35,24 @@ public class CloudView extends SurfaceView implements SurfaceHolder.Callback,
 	private Paint paint;
 	public boolean threadFlag = true;
 	private Thread thread;
+	public  Context mContext;
 
 	public CloudView(Context context) {
 		super(context);
+		mContext = context;
 		setZOrderOnTop(true);
 		getHolder().setFormat(PixelFormat.TRANSPARENT);
 		sfh = this.getHolder();
+		
 		sfh.setFormat(PixelFormat.TRANSPARENT);
 		sfh.addCallback(this);
 		paint = new Paint();
+		paint.setDither(true);
 	}
 
 	public CloudView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		mContext = context;
 		sfh = this.getHolder();
 		sfh.addCallback(this);
 		paint = new Paint();
@@ -52,6 +60,7 @@ public class CloudView extends SurfaceView implements SurfaceHolder.Callback,
 
 	public CloudView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
+		mContext = context;
 		sfh = this.getHolder();
 		sfh.addCallback(this);
 		paint = new Paint();
@@ -61,17 +70,31 @@ public class CloudView extends SurfaceView implements SurfaceHolder.Callback,
 	public void surfaceCreated(SurfaceHolder arg0) {
 		screen_width = this.getWidth();
 		screen_height = this.getHeight();
+		sfh.setFixedSize((int)screen_width, (int)screen_height);
 		initBitmap();
 		thread = new Thread(this);
 		thread.start();
 	}
 
+	
+	
 	public void initBitmap() {
-		// TODO Auto-generated method stub
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+		options.inTargetDensity = displayMetrics.densityDpi;
+		options.inDensity = 96;
+		options.inScaled = true;
+		//getBitmapDensity()用于设置图片将要被显示的密度。
+		//options.inDensity = getBitmapDensity();
+		
+		options.inDensity = TypedValue.DENSITY_NONE;
+		options.inTargetDensity = TypedValue.DENSITY_NONE ;
 		background = BitmapFactory.decodeResource(getResources(),
-				R.drawable.cloud_1);
+				R.drawable.listbg,options);
+		
 		background2 = BitmapFactory.decodeResource(getResources(),
-				R.drawable.cloud_2);
+				R.drawable.cloud_2,options);
+		
 		scalex = screen_width / background.getWidth();
 		scaley = screen_height / background.getHeight();
 		bg_y = screen_height;
@@ -96,10 +119,12 @@ public class CloudView extends SurfaceView implements SurfaceHolder.Callback,
 		try {
 			canvas = sfh.lockCanvas();
 			if (canvas != null) {
-				canvas.drawColor(Color.WHITE); // 绘制背景色
+				//canvas.drawColor(Color.WHITE); // 绘制背景色
 				canvas.save();
+				
 				// 计算背景图片与屏幕的比例
 				canvas.scale(scalex, scaley, 0, 0);
+				
 				canvas.drawBitmap(background, 0, bg_y, paint); // 绘制背景图
 				canvas.drawBitmap(background2, 0, bg_y2, paint); // 绘制背景图
 

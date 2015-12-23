@@ -1,5 +1,8 @@
 package com.lansun.qmyo.fragment.secretary_detail;
+import jp.wasabeef.blurry.Blurry;
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -30,6 +33,7 @@ public class SecretaryInvestmentShowFragment extends SecretaryDetailsBaseFragmen
 	private CircleImageView iv_secretary_head;
 	private String owner_name;
 	private String tv_secretary_answer_text;
+	private View rootView;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -49,12 +53,12 @@ public class SecretaryInvestmentShowFragment extends SecretaryDetailsBaseFragmen
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		this.inflater=inflater;
-		View view=inflater.inflate(R.layout.secretary_investment_fragment,container,false);
-		initView(view);
+		rootView = inflater.inflate(R.layout.secretary_investment_fragment,container,false);
+		initView(rootView);
 		initData();
 		setListener();
 		setExecutInitData(this);//将接口对象放进去
-		return view;
+		return rootView;
 	}
 	private void setListener() {
 		commit_tv.setOnClickListener(new OnClickListener() {
@@ -63,6 +67,7 @@ public class SecretaryInvestmentShowFragment extends SecretaryDetailsBaseFragmen
 				if (isExperience()) {
 					final Dialog dialog=new Dialog(getActivity(), R.style.Translucent_NoTitle);
 			        dialog.setCancelable(true);
+			        blurryView(rootView, dialog);
 			        dialog.show();
 			        Window window = dialog.getWindow();
 			        window.clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
@@ -84,6 +89,12 @@ public class SecretaryInvestmentShowFragment extends SecretaryDetailsBaseFragmen
 					if (GlobalValue.user!=null) {//登陆后 且 拥有用户user信息
 						if (GlobalValue.mySecretary==null) {//私人秘书 的信息为空
 							final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
+							
+							/**
+							 * 使用基类中的方法，模糊当前的dialog
+							 */
+							blurryView(rootView, dialog);
+							
 							dialog.show();
 							dialog.setContentView(R.layout.dialog_setting_secretary);
 							Window window = dialog.getWindow();
@@ -100,6 +111,14 @@ public class SecretaryInvestmentShowFragment extends SecretaryDetailsBaseFragmen
 						}else {
 							if ("false".equals(GlobalValue.mySecretary.getHas())) {//没有私人秘书
 								final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
+								
+								/**
+								 * 使用基类中的方法，模糊当前的dialog
+								 */
+								blurryView(rootView, dialog);
+								
+								
+								
 								dialog.show();
 								dialog.setContentView(R.layout.dialog_setting_secretary);
 								Window window = dialog.getWindow();
@@ -166,8 +185,13 @@ public class SecretaryInvestmentShowFragment extends SecretaryDetailsBaseFragmen
 			loadPhoto(GlobalValue.mySecretary.getAvatar(), iv_secretary_head);
 			owner_name=GlobalValue.mySecretary.getOwner_name();
 		}else {
-			owner_name="总裁大人";
+			owner_name="总裁大大";
 		}
 		tv_secretary_answer.setText(owner_name+","+tv_secretary_answer_text);
 	}
+	
+//	@Override
+//	public void exeBluryView(View rootView, Dialog dialog) {
+//		this.rootView = rootView;
+//	}
 }

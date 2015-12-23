@@ -48,8 +48,10 @@ public class DetailHeaderPagerAdapter extends CommonPagerAdapter implements
 	}
 
 	public Object instantiateItem(ViewGroup view, int position) {
-		View convertView = inflater.inflate(R.layout.store_detail_head_item,
-				null);
+		
+		// view.removeAllViews();
+		View convertView = inflater.inflate(R.layout.store_detail_head_item,null);
+		
 		DisplayMetrics dm = new DisplayMetrics();
 		dm = context.getResources().getDisplayMetrics();
 		if (photos.get(position).contains("http")) {
@@ -70,10 +72,11 @@ public class DetailHeaderPagerAdapter extends CommonPagerAdapter implements
 			}
 		});
 		pageMap.put(position, convertView);
+		
 		view.addView(convertView);
+		
 		return convertView;
 	}
-
 	private int mChildCount = 0;
 
 	@Override
@@ -95,4 +98,6 @@ public class DetailHeaderPagerAdapter extends CommonPagerAdapter implements
 	public void destroyItem(View collection, int position, Object o) {
 		((ViewGroup) collection).removeView((View) o);
 	}
+	
+	
 }

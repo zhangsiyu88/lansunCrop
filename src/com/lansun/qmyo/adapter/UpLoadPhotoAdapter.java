@@ -61,7 +61,8 @@ public class UpLoadPhotoAdapter extends CommonAdapter {
 		convertView = inflater.inflate(R.layout.upload_photo_item, null);
 		RecyclingImageView iv_upload_photo = (RecyclingImageView) convertView
 				.findViewById(R.id.iv_upload_photo);
-		iv_upload_photo.setScaleType(ScaleType.FIT_XY);
+		//iv_upload_photo.setScaleType(ScaleType.FIT_XY);
+		iv_upload_photo.setScaleType(ScaleType.CENTER_CROP);//改成居中展示
 		String path = data.get(position);
 		
 		ImageLoader.getInstance().displayImage(path, iv_upload_photo);

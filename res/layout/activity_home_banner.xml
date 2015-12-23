@@ -22,7 +22,14 @@
 	                android:src="@drawable/default_home" 
 	                android:visibility="gone"/> 
 	                
-	             <android.support.v4.view.ViewPager
+	             <!-- <android.support.v4.view.ViewPager
+	                    android:id="@+id/vp_home_ad"
+	                    android:layout_width="match_parent"
+	                    android:layout_height="@dimen/home_ad_h"
+	                    android:layout_gravity="center_vertical"
+	                    android:scaleType="fitXY" />  -->
+	                    
+	           <com.jfeinstein.jazzyviewpager.JazzyViewPager
 	                    android:id="@+id/vp_home_ad"
 	                    android:layout_width="match_parent"
 	                    android:layout_height="@dimen/home_ad_h"
@@ -66,17 +73,17 @@
                 android:gravity="center_vertical"
                 android:orientation="vertical" ><!-- android:layout_below="@id/iv_home_ad" -->
 
-              <com.lansun.qmyo.view.MyViewPager 
+              <android.support.v4.view.ViewPager 
                     android:id="@+id/vp_home_pager"
                     style="@style/w_full_h_wrap"
                     android:layout_height="@dimen/home_pager_h"
                     android:layout_gravity="center_vertical"
-                    android:paddingTop="@dimen/home_pager_item_margin_top" />
+                    android:paddingTop="@dimen/home_pager_item_margin_top" /><!--android:layout_height="@dimen/home_pager_h"   android:layout_gravity="center_vertical" -->
 
                 <LinearLayout
                     style="@style/w_full_h_wrap"
                     android:layout_marginBottom="@dimen/margin_top_30"
-                    android:layout_marginTop="@dimen/margin_top_20"
+                    android:layout_marginTop="@dimen/margin_top_18"
                     android:gravity="center_horizontal"
                     android:orientation="horizontal" >
 
@@ -122,7 +129,7 @@
     <LinearLayout
         android:id="@+id/ll_home_type"
         style="@style/w_full_h_wrap"
-        android:layout_marginTop="@dimen/margin_top_32"
+        android:layout_marginTop="@dimen/margin_top_35"
         android:background="@color/app_white"
         android:orientation="vertical" >
 

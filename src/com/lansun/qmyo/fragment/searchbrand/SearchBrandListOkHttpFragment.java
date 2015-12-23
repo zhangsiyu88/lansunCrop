@@ -695,10 +695,10 @@ import com.squareup.okhttp.Response;
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View view, int position,
 					long id) {
-				if(position >= datas.size()){
+				if(position-1 >= datas.size()){
 					LogUtils.toDebugLog("ListView的点击监听","点击了，但就不响应");
 				}else{
-					HashMap<String, Object> data = datas.get(position);
+					HashMap<String, Object> data = datas.get(position-1);
 					String activityId = data.get("activityId").toString();
 					String shopId = data.get("shopId").toString();
 					ActivityDetailFragment fragment = new ActivityDetailFragment();

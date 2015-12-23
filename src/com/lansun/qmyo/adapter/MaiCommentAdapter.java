@@ -36,6 +36,7 @@ import com.lansun.qmyo.event.entity.ReplyEntity;
 import com.lansun.qmyo.fragment.ReportCommentFragment;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.GridViewUtils;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CircularImage;
 import com.lansun.qmyo.view.ImageGalleryDialog;
 import com.lansun.qmyo.view.MyGridView;
@@ -112,8 +113,8 @@ public class MaiCommentAdapter extends
 			convertView.setTag(viewHold);
 		}
 		viewHold = (ViewHolder) convertView.getTag();
-		if (position != Integer.parseInt(viewHold.lv_activity_mai_comments
-				.getTag().toString())) {
+		
+		if (position != Integer.parseInt(viewHold.lv_activity_mai_comments.getTag().toString())) {//子级评论的列表展示
 			viewHold.lv_activity_mai_comments.setAdapter(null);
 		}
 
@@ -129,7 +130,12 @@ public class MaiCommentAdapter extends
 	@Override
 	public void deal(final HashMap<String, Object> data,
 			final ViewHolder viewHold, final int position) {
+		
+		
 		holders.add(viewHold);
+		LogUtils.toDebugLog("holder", "holder的个数"+holders.size());
+		
+		
 		if (position + 1 == dataList.size()) {
 			viewHold.line.setVisibility(View.GONE);
 		} else {
@@ -181,18 +187,23 @@ public class MaiCommentAdapter extends
 					context.getString(R.string.mai_communicate),
 					mai_communicate));
 		}
-		if ("0".equals(mai_communicate)) {
-			holders.get(position).lv_activity_mai_comments
-					.setVisibility(View.GONE);
-		} else {
-			if (holders.get(position).lv_activity_mai_comments
-					.getTag(R.id.tag_show) != null
-					&& (boolean) holders.get(position).lv_activity_mai_comments
-							.getTag(R.id.tag_show)) {
-				viewHold.lv_activity_mai_comments.setVisibility(View.VISIBLE);
+		
+		
+		if(holders.size()-1<position){
+			//holders的大小需 大于等于 位置position的值，否则会造成下方代码越界
+		}else{
+			
+			if ("0".equals(mai_communicate)) {
+				holders.get(position).lv_activity_mai_comments.setVisibility(View.GONE);
 			} else {
-				viewHold.lv_activity_mai_comments.setVisibility(View.GONE);
+				if (holders.get(position).lv_activity_mai_comments.getTag(R.id.tag_show) != null
+						&& (boolean) holders.get(position).lv_activity_mai_comments.getTag(R.id.tag_show)) {
+					viewHold.lv_activity_mai_comments.setVisibility(View.VISIBLE);
+				} else {
+					viewHold.lv_activity_mai_comments.setVisibility(View.GONE);
+				}
 			}
+			
 		}
 		viewHold.tv_mai_comment_communicate
 				.setOnClickListener(new OnClickListener() {
@@ -262,7 +273,7 @@ public class MaiCommentAdapter extends
 						}
 						contentAdapter = new MaiCommentContentAdapter(
 								viewHold.lv_activity_mai_comments, dataList,
-								R.layout.activity_mai_comments_item);
+								R.layout.activity_mai_comments_item);//涉及到子级评论的具体列表内容，与之前列表的显示与否无关
 
 						viewHold.lv_activity_mai_comments
 								.setAdapter(contentAdapter);
@@ -281,8 +292,8 @@ public class MaiCommentAdapter extends
 			@SuppressLint("NewApi")
 			@Override
 			public void onClick(View arg0) {
-				if (viewHold.tv_comment_desc.getMaxLines() > 2) {
-					viewHold.tv_comment_desc.setMaxLines(2);
+				if (viewHold.tv_comment_desc.getMaxLines() > 5) {
+					viewHold.tv_comment_desc.setMaxLines(5);
 					viewHold.iv_comment_more
 							.setImageResource(R.drawable.arrow_down);
 				} else {
@@ -310,15 +321,17 @@ public class MaiCommentAdapter extends
 			} else {
 				viewHold.gv_comment_images.setVisibility(View.GONE);
 			}
-			MaiCommentGVAdapter gvAdapter = new MaiCommentGVAdapter(context,
-					photos);
+			MaiCommentGVAdapter gvAdapter = new MaiCommentGVAdapter(context,photos);
 
 			viewHold.gv_comment_images.setAdapter(gvAdapter);
+			
+			//针对GridView的工具类
 			GridViewUtils.updateGridViewLayoutParams(
-					viewHold.gv_comment_images, 3, (int) context.getResources()
+					viewHold.gv_comment_images, 4, (int) context.getResources()
 							.getDimension(R.dimen.l_r_10));
 		}
 
+		//图片点击后展开的展示效果
 		viewHold.gv_comment_images
 				.setOnItemClickListener(new OnItemClickListener() {
 					@Override
@@ -326,7 +339,7 @@ public class MaiCommentAdapter extends
 							int arg2, long arg3) {
 						DetailHeaderPagerAdapter headPagerAdapter = new DetailHeaderPagerAdapter(
 								activity.getActivity(), photos);
-						ImageGalleryDialog dialog = new ImageGalleryDialog()
+						ImageGalleryDialog dialog = ImageGalleryDialog
 								.newInstance(headPagerAdapter, arg2);
 						dialog.show(activity.getFragmentManager(), "gallery");
 					}

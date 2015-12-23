@@ -57,12 +57,12 @@
                 android:visibility="gone" />
         </LinearLayout>
 
-        <com.android.pc.ioc.image.RecyclingImageView
+        <!-- <com.android.pc.ioc.image.RecyclingImageView
             android:id="@+id/iv_comment_report"
             style="@style/w_wrap_h_wrap"
             android:layout_alignParentRight="true"
             android:layout_alignTop="@id/tv_comment_name"
-            android:background="@drawable/report_user_icon" />
+            android:background="@drawable/report_user_icon" /> -->
 
         <RelativeLayout
             android:id="@+id/rl_gv_comment_images"
@@ -74,13 +74,14 @@
             android:layout_toRightOf="@id/iv_comment_head"
             android:orientation="horizontal" >
 
+            <!-- 图片展示的模块 -->
             <com.lansun.qmyo.view.MyGridView
                 android:id="@+id/gv_comment_images"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:horizontalSpacing="@dimen/l_r_10"
                 android:listSelector="@android:color/transparent"
-                android:numColumns="3"
+                android:numColumns="4"
                 android:scrollbars="none" />
 
             <TextView
@@ -116,13 +117,46 @@
             android:listSelector="@android:color/transparent"
             android:scrollbars="none"
             android:visibility="gone" />
-
-        <com.android.pc.ioc.image.RecyclingImageView
-            android:id="@+id/iv_comment_reply"
+        
+        
+        
+       <RelativeLayout
             style="@style/w_wrap_h_wrap"
             android:layout_alignParentRight="true"
             android:layout_alignTop="@id/tv_mai_comment_communicate"
-            android:src="@drawable/mai_reply_icon" />
+            android:orientation="horizontal"> 
+            
+	       <com.android.pc.ioc.image.RecyclingImageView
+	           android:id="@+id/iv_comment_reply"
+	           style="@style/w_wrap_h_wrap"
+	           android:src="@drawable/mai_reply_icon" /><!--android:layout_alignParentRight="true"
+	           							android:layout_alignTop="@id/tv_mai_comment_communicate"  -->
+	      <TextView
+	          android:id="@+id/tv_reply"
+	          android:layout_toRightOf="@id/iv_comment_reply"
+	           android:layout_marginLeft="4dp"
+	           android:layout_marginRight="5dp"
+	           android:text="回复" 
+	          style="@style/text_style_small_24"/> 
+	      <TextView
+	           android:id="@+id/tv_line_vertical"
+	           android:layout_toRightOf="@id/tv_reply"
+	           android:layout_marginLeft="4dp"
+               style="@style/text_style_small_24"
+               android:text=" | " /> 
+               
+	       <com.android.pc.ioc.image.RecyclingImageView
+	           android:id="@+id/iv_comment_report"
+	           android:layout_toRightOf="@id/tv_line_vertical"
+	           style="@style/w_wrap_h_wrap"
+	           android:background="@drawable/report_user_icon" /><!--  android:layout_marginLeft="4dp" -->
+	       <TextView
+	           android:layout_toRightOf="@id/iv_comment_report"
+	           android:layout_marginLeft="4dp"
+	           style="@style/text_style_small_24"
+	           android:text="举报" />
+     
+     </RelativeLayout>
     </RelativeLayout>
 
     <View

@@ -86,8 +86,12 @@ public class ImageGalleryDialog extends DialogFragment {
 		getDialog().getWindow().setBackgroundDrawable(
 				new ColorDrawable(Color.TRANSPARENT));
 		getDialog().setCanceledOnTouchOutside(true);
+		
 		View view = inflater.inflate(R.layout.dialog_gallery, container);
+		
 		dialog_gallery = (ViewPager) view.findViewById(R.id.dialog_gallery);
+		
+		
 		rl_dialog_gallery = (FrameLayout) view
 				.findViewById(R.id.rl_dialog_gallery);
 		store_detail_count = (TextView) view
@@ -100,10 +104,15 @@ public class ImageGalleryDialog extends DialogFragment {
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
 				screenWidth, FrameLayout.LayoutParams.WRAP_CONTENT);
 		dialog_gallery.setLayoutParams(params);
+	
 		dialog_gallery.setAdapter(adapter);
+		
+		
+		
 		store_detail_num.setText((currentPosition + 1) + "");
 		dialog_gallery.setCurrentItem(currentPosition);
 		store_detail_count.setText(adapter.getCount() + "");
+		
 		return view;
 	}
 

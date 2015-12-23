@@ -10,6 +10,8 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:background="@drawable/tv_style_white"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:orientation="vertical" >
 
         <TextView

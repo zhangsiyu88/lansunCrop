@@ -30,6 +30,7 @@
         android:lineSpacingExtra="6dp"
         android:textIsSelectable="true"
         android:autoLink="web|email|phone" 
+        android:textColorLink="@color/update_text_tittle_green"
         android:gravity="left"
         android:singleLine="false"
         android:text="什么叫乱七八糟什么叫乱七八糟什么叫乱七八糟什么叫乱七八糟什么叫乱七八糟什么叫乱七八糟什么叫乱七八糟什么叫乱七八糟什么叫乱"/>

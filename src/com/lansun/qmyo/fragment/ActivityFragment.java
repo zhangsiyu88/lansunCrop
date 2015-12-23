@@ -24,12 +24,15 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewParent;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -75,6 +78,7 @@ import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.swipe.EightPartActivityAdapter;
+import com.lansun.qmyo.utils.swipe.EightPartActivityAdapter.IClickBackPress;
 import com.lansun.qmyo.view.ActivityMyListView;
 import com.lansun.qmyo.view.ActivityMyListView.OnRefreshListener;
 import com.lansun.qmyo.view.CustomDialogProgress;
@@ -87,7 +91,7 @@ import com.lansun.qmyo.view.ViewRight;
 import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 
-public class ActivityFragment extends BaseFragment {
+@SuppressLint("ClickableViewAccessibility") public class ActivityFragment extends BaseFragment implements IClickBackPress {
 
 	private String HODLER_TYPE;
 
@@ -108,6 +112,7 @@ public class ActivityFragment extends BaseFragment {
 
 
 	int index = 0;
+	private String currentPage = String.valueOf(Integer.MAX_VALUE);
 	private ActivityList activityList;
 //	private SearchAdapter activityAdapter;
 	private EightPartActivityAdapter activityAdapter;
@@ -184,7 +189,65 @@ public class ActivityFragment extends BaseFragment {
 		System.out.println("注册广播 ing");
 		filter = new IntentFilter();
 		filter.addAction("com.lansun.qmyo.refreshTheIcon");
+		filter.addAction("com.lansun.qmyo.backPressedExpandTabView");
 		getActivity().registerReceiver(broadCastReceiver, filter);
+		
+		lv_activity_list.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long arg3) {
+				
+				if(position-1 >= shopDataList.size()||position-1<0){
+					return;
+				}
+				ActivityDetailFragment fragment = new ActivityDetailFragment();
+				Bundle args = new Bundle();
+				args.putString("activityId",
+						shopDataList.get(position-1).get("activityId").toString());
+				args.putString("shopId", shopDataList.get(position-1).get("shopId")
+						.toString());
+				fragment.setArguments(args);
+				FragmentEntity event = new FragmentEntity();
+				event.setFragment(fragment);
+				EventBus.getDefault().post(event);
+				
+//				/*
+//				 * 对触摸事件的操作监听
+//				 */
+//				OnTouchListener onTouchListener = new OnTouchListener() {
+//					@Override
+//					public boolean onTouch(View v, MotionEvent event) {
+//						switch(event.getAction()){
+//						case MotionEvent.ACTION_DOWN:
+//							lv_activity_list.requestDisallowInterceptTouchEvent(true);
+//							System.out.println("Touch的操作之：：---ACTION_DOWN");
+//							break;
+//						case MotionEvent.ACTION_CANCEL:
+//							System.out.println("Touch的操作之：：---ACTION_CANCEL");
+//							break;
+//						case MotionEvent.ACTION_MOVE:
+//							System.out.println("Touch的操作之：：---ACTION_MOVE");
+//							break;
+//						case MotionEvent.ACTION_POINTER_DOWN:
+//							System.out.println("Touch的操作之：：---ACTION_POINTER_DOWN");
+//							return false;
+//							//break;
+//						case MotionEvent.ACTION_POINTER_UP:
+//							System.out.println("Touch的操作之：：---ACTION_POINTER_UP");
+//							break;
+//						case MotionEvent.ACTION_UP:
+//							//lv_activity_list.requestDisallowInterceptTouchEvent(true);
+//							System.out.println("Touch的操作之：：---ACTION_UP");
+//							break;
+//						}
+//						return true;
+//					}
+//				};
+				
+			}
+		});
+		
 		
 		lv_activity_list.setOnRefreshListener(new OnRefreshListener() {
 			
@@ -245,7 +308,7 @@ public class ActivityFragment extends BaseFragment {
 						if(times == 0){
 							lv_activity_list.onLoadMoreOverFished();
 							lv_activity_list.addFooterView(emptyView);
-				              CustomToast.show(activity, "到底啦！", "该关键字下的银行卡暂时只有这么多");
+				              CustomToast.show(activity, "到底啦！", "小迈会加油搜集更多惊喜哦");
 				              times++;
 				            }else{
 				            	lv_activity_list.addFooterView(emptyView);
@@ -289,6 +352,7 @@ public class ActivityFragment extends BaseFragment {
 
 						/**
 						 * 处理一下nextPageUrl 的参数
+						 * 刷新下一个页面，需要将nextPageUrl中的内容进行截取出来
 						 */
 						String next_page_url = activityList.getNext_page_url();
 						int lastIndexOfEqualCode = next_page_url.lastIndexOf("=");
@@ -296,14 +360,22 @@ public class ActivityFragment extends BaseFragment {
 						LogUtils.toDebugLog("page", "page的页数为：  "+ page);
 						refreshParams.put("page", page);
 						
-						//更新当前页面的下一个页面时,前面的数据不应该被取消掉,应该拼接在后面
-						/**
-						 * 刷新下一个页面，需要将nextPageUrl中的内容进行截取出来
-						 */
-						/*refreshCurrentList(activityList.getNext_page_url(),null, 4, lv_activity_list);*/
-						refreshCurrentList(GlobalValue.URL_ALL_ACTIVITY ,refreshParams, 4, lv_activity_list);
 						
-						lv_activity_list.setNoHeader(true);
+						/*
+						 * 为防止用户多次滑动至底端，重复提交加载下一页操作的情况出现，在此添加制动阀
+						 * 仅当当前页数currentPage和即将作为请求参数传至服务器端的page不相同时，即前往服务器提交请求
+						 */
+						
+						if(page!=currentPage){
+							//更新当前页面的下一个页面时,前面的数据不应该被取消掉,应该拼接在后面
+							/*refreshCurrentList(activityList.getNext_page_url(),null, 4, lv_activity_list);*/
+							refreshCurrentList(GlobalValue.URL_ALL_ACTIVITY ,refreshParams, 4, lv_activity_list);
+							currentPage = page;
+							lv_activity_list.setNoHeader(true);
+						}
+						/*else{
+							NO-OP
+						}*/
 					}
 				}
 			}
@@ -919,8 +991,6 @@ public class ActivityFragment extends BaseFragment {
 			public void getValue(String distance, String showText, int position) {
 				type = sxintelligent.getData().get(position).getKey();
 				shopDataList.clear();
-
-				
 				try{
 					lv_activity_list.removeFooterView(emptyView);
 				}catch(Exception e ){
@@ -934,7 +1004,6 @@ public class ActivityFragment extends BaseFragment {
 					activityAdapter.notifyDataSetChanged();
 					activityAdapter=null;
 				}
-				
 //				PullToRefreshManager.getInstance().footerEnable();
 				loadActivityList();
 				onRefresh(viewRight, showText);
@@ -1226,6 +1295,7 @@ public class ActivityFragment extends BaseFragment {
 								shopDataList, R.layout.activity_search_item);*/
 						
 						activityAdapter = new EightPartActivityAdapter(activity,shopDataList);
+						activityAdapter.setIClickBackPress(this);
 						
 						//expandTabViewButtomLine.setVisibility(View.VISIBLE);//当拿到数据加载到ListView上后，再将下面的Line线条展示出来
 						
@@ -1379,18 +1449,36 @@ public class ActivityFragment extends BaseFragment {
 	}
 
 	private void setFirstValue(String json) {
+		
+		//在getServerBanner()调用请求网络后，执行了setFirstValue的操作，故此处需先将得到的json写入到本地存储起来
 		App.app.setData(App.TAGS[type_index], json);
+		
 		String name;
 		AllService = Handler_Json.JsonToBean(Service.class,json);
 		name = AllService.getName();
 		//Log.e("name===", name);
 		if (name == null) {
+			
+			/*当AllService并不完整时，即之前存在本地的json不完整，需要重新去网络上获取到，
+			    而不是弹出空指针异常，导致下面的代码无法执行下去，
+			    出现顶部标题丢失，并且走不到列表请求数据的那一步
+			*/
+			if(AllService.getData()==null){
+				getServerBanner();//重新去获取点击按钮对应的八大板块筛选栏就服务部分的内容
+				return;  //结束下面的执行代码
+			}
 			name = AllService.getData().get(0).getName();
 		}
 		ArrayList<String> allGroup = new ArrayList<String>();
 		SparseArray<LinkedList<String>> allChild = new SparseArray<LinkedList<String>>();
 		for (int j = 0; j < AllService.getData().size(); j++) {
 			LinkedList<String> chind = new LinkedList<String>();
+			
+			if(AllService.getData().get(j)==null){
+				getServerBanner();//重新去获取点击按钮对应的八大板块筛选栏就服务部分的内容
+				return;  //结束下面的执行代码
+			}
+			
 			allGroup.add(AllService.getData().get(j).getName());
 			ArrayList<ServiceDataItem> items = AllService.getData().get(j).getItems();
 			if (items != null) {
@@ -1556,12 +1644,11 @@ public class ActivityFragment extends BaseFragment {
 	 */
 	private void onRefresh(View view, String showText) {
 		v.expandtab_view.onPressBack();
-		int position = getPositon(view);
+		int position = getPositon(view);//拿到这个View在ExpandTabView中对应的位置
 		if (position >= 0&& !v.expandtab_view.getTitle(position).equals(showText)) {
 			v.expandtab_view.setTitle(showText, position);
 		}
 	}
-
 	private int getPositon(View tView) {
 		for (int i = 0; i < mViewArray.size(); i++) {
 			if (mViewArray.get(i) == tView) {
@@ -1614,8 +1701,79 @@ public class ActivityFragment extends BaseFragment {
 				//v.rl_bg.setPressed(true);
 				v.rl_bg.setBackgroundResource(R.drawable.circle_background_gray);
 				
-			
+			}else if(intent.getAction().equals("com.lansun.qmyo.backPressedExpandTabView")){
+				System.out.println("八大板块刷新页面  收到  退回popWindow的广播了");
+				v.expandtab_view.onPressBack();
+				
 			}
 		}
 	 }
+
+	@Override
+	public void closeExpandTabView(){
+		/**
+		 * 1,先点击筛选栏，当筛选栏即将展开时，紧接着点击List中的Item，item产生开启详情页面    解决方向： 与此同时，需将即将展开的筛选栏关闭掉
+		 * 2,先点击List的条目，当详情页即将展示时，立即去点击筛选栏，出现筛选栏存留在详情页的情况  解决方向：取消筛选栏的触摸（点击事件）
+		 */
+		v.expandtab_view.onPressBack();
+		
+		/*
+		 * 对触摸事件的操作监听
+		 */
+		OnTouchListener onTouchListener = new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				switch(event.getAction()){
+				case MotionEvent.ACTION_DOWN:
+					lv_activity_list.requestDisallowInterceptTouchEvent(true);
+					System.out.println("Touch的操作之：：---ACTION_DOWN");
+					break;
+				case MotionEvent.ACTION_CANCEL:
+					System.out.println("Touch的操作之：：---ACTION_CANCEL");
+					break;
+				case MotionEvent.ACTION_MOVE:
+					System.out.println("Touch的操作之：：---ACTION_MOVE");
+					break;
+				case MotionEvent.ACTION_POINTER_DOWN:
+					System.out.println("Touch的操作之：：---ACTION_POINTER_DOWN");
+					return false;
+					//break;
+				case MotionEvent.ACTION_POINTER_UP:
+					System.out.println("Touch的操作之：：---ACTION_POINTER_UP");
+					break;
+				case MotionEvent.ACTION_UP:
+					//lv_activity_list.requestDisallowInterceptTouchEvent(true);
+					System.out.println("Touch的操作之：：---ACTION_UP");
+					break;
+				}
+				return true;
+			}
+		};
+		
+		
+		
+//		viewLeft.setOnTouchListener(onTouchListener);
+//		viewLeft2.setOnTouchListener(onTouchListener);
+//		viewMiddle.setOnTouchListener(onTouchListener);
+//		viewRight.setOnTouchListener(onTouchListener);
+//		v.expandtab_view.setOnTouchListener(onTouchListener);
+		
+//		lv_activity_list.requestDisallowInterceptTouchEvent(true);//listView不去拦截触摸事件
+		
+		//lv_activity_list.setOnTouchListener(onTouchListener);
+		LogUtils.toDebugLog("click", "实现closeExpandTabView()方法");
+		
+//		v.expandtab_view.requestDisallowInterceptTouchEvent(false);
+	}
+	@Override
+	public void recoverExpandTabViewTouch() {
+//		v.expandtab_view.setOnTouchListener(null);
+//		v.expandtab_view.setOnClickListener(null);
+		
+		lv_activity_list.setOnTouchListener(null);
+	}
+	
+	
+	
+	
 }

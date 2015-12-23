@@ -29,6 +29,7 @@ import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.event.entity.RefreshTokenEntity;
 import com.lansun.qmyo.fragment.BaseFragment;
 import com.lansun.qmyo.fragment.ExperienceSearchFragment;
+import com.lansun.qmyo.utils.CommitStaticsinfoUtils;
 import com.lansun.qmyo.utils.DataUtils;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
@@ -46,15 +47,14 @@ import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
  * 
  */
 public class AccessTokenService extends Service {
-	private int delay = 1000 * 60 * 30;//间隔30分钟进行一次token重新获取
+	private int delay = 1000 * 60 * 15;//间隔30分钟进行一次token重新获取
 	public static Timer timer = new Timer();
-	Handler handler = new Handler(){
-		
-		public void handleMessage(Message msg) {
-			
-			
-		};
-	};
+//	Handler handler = new Handler(){
+//		
+//		public void handleMessage(Message msg) {
+//			
+//		};
+//	};
 	
 	
 	@Override
@@ -90,8 +90,6 @@ public class AccessTokenService extends Service {
 //		InternetConfig config = new InternetConfig();
 //		config.setKey(0);
 //		FastHttpHander.ajaxGet(GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"),config, this);
-		
-		
 		
 //		//2. 重复绑定主卡
 //		//刷新token的同时，将主卡再一次绑定至 用的token上，供测试排查问题使用                         -->Yeun.zhang 12-04
@@ -165,7 +163,7 @@ public class AccessTokenService extends Service {
 				
 				
 				LogUtils.toDebugLog("accessTokenSer", "令牌更新成功！");
-				CustomToast.show(getApplicationContext(), "提示", "令牌更新成功！");
+				//CustomToast.show(getApplicationContext(), "提示", "令牌更新成功！");
 				
 				
 				//混杂着FastHttpHander的网络访问
@@ -174,13 +172,20 @@ public class AccessTokenService extends Service {
 				HashMap<String, Object> head = new HashMap<String, Object>();
 				head.put("Authorization", "Bearer " + App.app.getData("access_token"));
 				config.setHead(head);
-				FastHttpHander.ajaxGet(GlobalValue.URL_FRESHEN_USER, config,AccessTokenService.this);
+				FastHttpHander.ajaxGet(GlobalValue.URL_FRESHEN_USER, config, AccessTokenService.this);
 //				handler.sendEmptyMessage(0);
 				
 			}
 		};
-		httpUtils.send(HttpMethod.GET, GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"), null,requestCallBack );
-	   
+		if("true".equals(App.app.getData("isExperience"))){//体验用户的情况下，是需要使用临时Exp_Secret去更新Token   
+			if(!TextUtils.isEmpty(App.app.getData("exp_secret"))){
+				httpUtils.send(HttpMethod.GET, GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("exp_secret"), null,requestCallBack );
+			}
+		}else{//非体验用户（登陆用户），是需要使用正式的Secret去更新Token
+			if(!TextUtils.isEmpty(App.app.getData("secret"))){
+				httpUtils.send(HttpMethod.GET, GlobalValue.URL_GET_ACCESS_TOKEN + App.app.getData("secret"), null,requestCallBack );
+			}
+		}
 	}
 
 	@Override
@@ -225,7 +230,9 @@ public class AccessTokenService extends Service {
 
 	@InjectHttp
 	private void getAccesstoken(ResponseEntity r) {
-		Log.i("AccessTokenService中的r返回回来的值为： ",r.getContentAsString());
+		if(r!=null&&r.getContentAsString()!=null){
+			Log.i("AccessTokenService中的r返回回来的值为： ",r.getContentAsString());
+		}
 		
 		if(r.getContentAsString().contains("false") ||r.getContentAsString().equals(false)||r.getContentAsString()=="false"){
 			Toast.makeText(App.app,"来自启动自服务的提示 ：您的临时用户身份已被清掉！请重新体验，或注册登录！", Toast.LENGTH_LONG).show();
@@ -283,6 +290,28 @@ public class AccessTokenService extends Service {
 				//拿到access_token就可以去拿到用户信息，并且将其存在本地的静态变量GlobalValue.user中，供后面使用
 				GlobalValue.user = Handler_Json.JsonToBean(User.class,r.getContentAsString());
 				Log.i("AccessTokenService中的user返回回来的值为： ",GlobalValue.user.toString());
+				LogUtils.toDebugLog("start", "App.app.getData(secret)==: "+App.app.getData("secret"));
+				/**
+				 * 此处需要保证App打开后，已登录用户的信息正常获取到
+				 * 
+				 * 此处需注意，因为后台服务会多次进行token的更新，那么也就会多次执行到此处，造成登录用户开启App的次数异常（每当token更新就会发送一次统计信息，很愚蠢）
+				 * 向服务器端提交一次使用信息
+				 */
+				if(!TextUtils.isEmpty(App.app.getData("secret"))){//App.app.getData("secret")不为空，那么即为登录用户
+					/*
+					 * commitedStatisticsInfo_Login,顾名思义，"已经提交过登录用户开启App的统计信息",反之，一开始进来则未提交！
+					 * 一次使用流程直至退出，下次重新启动，才会因为GlobalValue的重新生成而重新发送消息
+					 */
+					LogUtils.toDebugLog("start", "GlobalValue.commitedStatisticsInfo_Login : "+ GlobalValue.commitedStatisticsInfo_Login);
+					
+					if(GlobalValue.commitedStatisticsInfo_Login==false){
+						CommitStaticsinfoUtils.commitStaticsinfo(2);
+						GlobalValue.commitedStatisticsInfo_Login=true;
+					}
+				}
+				
+				
+				//和RegistrFragment()中的方法保持一致
 				App.app.setData("user_avatar",GlobalValue.user.getAvatar());
 				App.app.setData("user_nickname",GlobalValue.user.getNickname());
 				

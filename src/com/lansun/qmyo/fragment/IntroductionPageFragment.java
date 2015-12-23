@@ -1,7 +1,20 @@
 package com.lansun.qmyo.fragment;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -10,7 +23,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,19 +33,34 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectInit;
+import com.android.pc.ioc.internet.FastHttpHander;
+import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
+import com.android.pc.util.Handler_Json;
 import com.lansun.qmyo.adapter.CommonPagerAdapter;
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.domain.Token;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.service.AccessTokenService;
+import com.lansun.qmyo.utils.DataUtils;
+import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
+import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
+import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.ResponseInfo;
+import com.lidroid.xutils.http.callback.RequestCallBack;
+import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 
 /**
  * 欢迎首页
@@ -56,8 +86,59 @@ public class IntroductionPageFragment extends BaseFragment implements
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		App.app.setData("isFirst", "true");
+		
+		/*
+		 * 为解决首次安装app后，home键退至后台，再使用桌面的图标进行启动后，由于服务冲突，导致出现长时间的绿色欢迎页面的情况
+		 * 那么，首次安装后不进行正常退出app的行之前，要求每当Home键退至后台时，需将服务停掉，回到前台时，重新开启服务
+		 */
+		App.app.setData("firstUseApp", "true");
+		
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_introduction, null);
+		
+		/**
+		 * 上传渠道包的标示内容
+		 * 
+		 * 1.拿到写在MEAT-INF文件中的不同的标示code
+		 * 2.从本地拿到该手机的IMEI号码
+		 * 3.拿到定位成功后需要的地址
+		 * 4.将上面获取到的两个参数，一起作为接口的参数，上传到服务器上
+		 */
+		
+		String phoneIMEI = getPhoneIMEI();
+		String channelCode = getChannelCode(App.getInstance());
+		int intChannelCode = 0;
+		if(channelCode.equals("default")){
+			//NO-OP
+		}else{
+			intChannelCode = Integer.valueOf(channelCode);
+		}
+		String cityName = App.app.getData("cityName");
+		
+		LogUtils.toDebugLog("start", "phoneIMEI :"+phoneIMEI);
+		LogUtils.toDebugLog("start", "channelCode :"+channelCode);
+		//CustomToast.show(activity, "渠道号", channelCode);
+		LogUtils.toDebugLog("start", "cityName :"+cityName);
+		
+		//网络请求
+		
+	    //http://appapi.qmyo.org/statistic/collection?device=Android&device_id=IMEI_here1&platform=10&city=云南
+		
+		HttpUtils httpUtils = new HttpUtils();
+		RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
+			@Override
+			public void onFailure(HttpException e, String result ) {
+			}
+			@Override
+			public void onSuccess(ResponseInfo<String> arg0) {
+				LogUtils.toDebugLog("start", "已提交至后台记录");
+			}
+		};
+		
+		httpUtils.send(HttpMethod.POST, "http://appapi.qmyo.com/statistic/collection?device=Android&device_id="+
+					phoneIMEI+"&platform="+intChannelCode+"&city="+cityName , null,requestCallBack );
+		
+		
 		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
@@ -172,5 +253,93 @@ public class IntroductionPageFragment extends BaseFragment implements
 	public void onDestroyView() {
 		super.onDestroyView();
 	}
+	
+	/*
+	 * 手机IMEI唯一标示符
+	 */
+	public String  getPhoneIMEI(){
+		TelephonyManager TelephonyMgr = (TelephonyManager)(App.app.getSystemService("phone")); 
+		
+		String szImei = TelephonyMgr.getDeviceId(); // Requires READ_PHONE_STATE
+		//CustomToast.show(getApplicationContext(), "deviceImei", szImei);
+		LogUtils.toDebugLog("imei", "设备的deviceImei： "+szImei);
+		
+		return szImei;
+	}
+	
+	public String getChannelCode(Context context){
+		String mChannel = "";
+		if(!TextUtils.isEmpty(mChannel)){
+	        return mChannel;
+	    }
+	    mChannel = "default";
+	 
+	    ApplicationInfo appinfo = context.getApplicationInfo();
+	    String sourceDir = appinfo.sourceDir;
+	    Log.d("getChannel sourceDir", sourceDir);
+	 
+	    ZipFile zf = null;
+	    InputStream in = null;
+	    ZipInputStream zin = null;
+	 
+	    try {
+	        zf = new ZipFile(sourceDir);
+	        in = new BufferedInputStream(new FileInputStream(sourceDir));
+	        zin = new ZipInputStream(in);
+	 
+	        ZipEntry ze;
+	        Enumeration<?> entries = zf.entries();
+	 
+	        while (entries.hasMoreElements()) {
+	            ZipEntry entry = ((ZipEntry) entries.nextElement());
+	            Log.d("getChannel getName", entry.getName());
+	            if( entry.getName().equalsIgnoreCase("META-INF/channel_info")){
+	                long size = entry.getSize();
+	                if (size > 0) {
+	                    BufferedReader br = new BufferedReader( new InputStreamReader(zf.getInputStream(entry)));
+	                    String line;
+	                    while ((line = br.readLine()) != null) {
+	                        mChannel = line;
+	                    }
+	                    br.close();
+	                }
+	            }
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	    finally {
+	        if(in != null){
+	            try {
+	                in.close();
+	            }
+	            catch (Exception e){
+	            }
+	        }
+	        if(zin != null){
+	            try {
+	                zin.closeEntry();
+	            }
+	            catch (Exception e){
+	            }
+	        }
+	 
+	        if(zf != null){
+	            try {
+	                zin.closeEntry();
+	            }
+	            catch (Exception e){
+	            }
+	        }
+	        try {
+				zf.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	    }
+	    Log.d("getChannel", mChannel);
+	    return mChannel;
+	}
+	
 
 }

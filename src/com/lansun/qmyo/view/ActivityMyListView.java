@@ -123,8 +123,16 @@ public class ActivityMyListView extends ListView  {//implements OnScrollListener
 
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
-		/*return super.onInterceptTouchEvent(ev)&& mGestureDetector.onTouchEvent(ev);*/
 		return super.onInterceptTouchEvent(ev);//由原始监听器来解决问题，不使用另外写的手势监听
+		
+//		switch (ev.getAction()) {
+//			case MotionEvent.ACTION_DOWN:
+//				if(CURRENT_STATE==PULLDOWN_REFRESH){
+//				     return true;
+//				}
+//			break;
+//		}
+//		return false;
 	}
 
 //	class YScrollDetector extends SimpleOnGestureListener {
@@ -173,6 +181,7 @@ public class ActivityMyListView extends ListView  {//implements OnScrollListener
 	}
 	private void initFooter() {
 		footer = View.inflate(getContext(), R.layout.refresh_test_footer, null);
+		
 		ViewUtils.inject(this, footer);
 		
 		footer.measure(0, 0);
@@ -187,6 +196,7 @@ public class ActivityMyListView extends ListView  {//implements OnScrollListener
 
 	private void initHeader() {
 		header = View.inflate(getContext(), R.layout.refresh_test_header, null);
+		
 		ViewUtils.inject(this, header);
 		
 		// 测量头布局
@@ -216,6 +226,19 @@ public class ActivityMyListView extends ListView  {//implements OnScrollListener
 	public boolean onTouchEvent(MotionEvent ev) {
 		switch (ev.getAction()) {
 		case MotionEvent.ACTION_DOWN:
+			
+//			if(CURRENT_STATE==PULLDOWN_REFRESH){
+//			     return true;
+//				}
+//			
+			if(CURRENT_STATE==REFRESHING){
+				break;
+				//return true;
+			}
+//			if(CURRENT_STATE==RELEASE_REFRESH){
+//				return true;
+//			}
+			
 			downY = (int) ev.getY();
 			break;
 		case MotionEvent.ACTION_MOVE:
@@ -224,16 +247,13 @@ public class ActivityMyListView extends ListView  {//implements OnScrollListener
 				// 只有轮播图完全显示时，才处理下拉刷新动作
 				break;
 			}*/
-			
 			if(mNoHeader){
 				break;
 			}
 			
-			if(!isFirstItemDisplay()){
+			if(!isFirstItemDisplay()){//如果ListView中的第一个条目没有被展示出来时，不响应触摸的事件
 				break;
 			}
-			
-			
 			
 //			if(!isFirstItemDisplay()){
 //				downRefresh = false;
@@ -250,6 +270,7 @@ public class ActivityMyListView extends ListView  {//implements OnScrollListener
 			
 			if (CURRENT_STATE == REFRESHING) {
 				// 正在刷新时，不能再处理刷新动作
+				//return true;
 				break;
 			}
 
@@ -279,8 +300,10 @@ public class ActivityMyListView extends ListView  {//implements OnScrollListener
 					updateRefreshState(CURRENT_STATE);
 				}
 				header.setPadding(0, topPadding, 0, 0);
-				return true;
-				// 消费事件
+				
+				//注意：  下面这段代码要取消掉，避免ListView的OnItemClickListener和下拉触摸中的DOWN事件 被混淆
+				/*return true;// 消费事件*/				
+				
 			}
 			
 //			else if(diffY < 0&& upLoading){													//注意：此处是手指上滑引发的触摸事件
@@ -313,8 +336,18 @@ public class ActivityMyListView extends ListView  {//implements OnScrollListener
 				updateRefreshState(CURRENT_STATE);
 				/* 重复了刷新操作*/
 				  if (mListener != null) {
+					  
+					/*
+					 * 虽然强制将尾部监听去访问服务器的操作屏蔽掉(isLoadMore置为true)，
+					 * 但当刷新操作完成的时候，执行isLoadMoreFished()，此方法中将会重新开启底部的监听操作(isLoadMore重新置回为false) 
+					 * 
+					 * 操作缘由：否则会造成刷新出来的列表和之前列表的下一页数据串在一起进行展示
+					 */
+					setAllowTailLoad(false);
+					
 					mListener.onRefreshing();
-					CURRENT_STATE = PULLDOWN_REFRESH;
+					//此处注掉后，之所以不影响后面的重新刷新操作，是因为在onRefreshFinished()中执行了状态回归的： CURRENT_STATE = PULLDOWN_REFRESH;
+					//CURRENT_STATE = PULLDOWN_REFRESH;
 				}
 			} else if (CURRENT_STATE == PULLDOWN_REFRESH) {
 				header.setPadding(0, -headerHeight, 0, 0);// 隐藏头布局
@@ -355,7 +388,10 @@ public class ActivityMyListView extends ListView  {//implements OnScrollListener
 
 	// 下拉刷新完成，回归的初始状态
 	public void onRefreshFinshed(boolean isSuccess) {
+		
+		//在此处，对当前状态重置为等待下拉刷新的状态，保证了状态回归
 		CURRENT_STATE = PULLDOWN_REFRESH;
+		
 		header.setPadding(0, -headerHeight, 0, 0);
 		iv_refresh_state.setText("下拉刷新");
 		iv_refresh_arrow.setVisibility(View.VISIBLE);
@@ -440,6 +476,7 @@ public class ActivityMyListView extends ListView  {//implements OnScrollListener
 	
 	private View firstItem;
 	private View lastItem;
+	
 	public void onLoadMoreFished(){
 		isLoadMore = false;
 		//footer.setPadding(0, -footerHeight, 0, 0);// 隐藏加载更多布局
@@ -452,6 +489,16 @@ public class ActivityMyListView extends ListView  {//implements OnScrollListener
 		isLoadMore = true;
 		footer.setPadding(0, -footerHeight, 0, 0);// 隐藏加载更多布局
 		
+	}
+	
+	/**
+	 * 设置是否允许底部监听滑动到底部，进行加载下一页的操作
+	 * @param b
+	 * b = true 设置尾部可监听，并执行加载操作                    -->isLoadMore = false;
+	 * b = false 尾部监听，但不执行请求下一页的加载操作   -->isLoadMore = true;
+	 */
+	public void setAllowTailLoad(boolean b){
+		isLoadMore = !b;
 	}
 	
 	class MyOnScrollListener implements OnScrollListener {

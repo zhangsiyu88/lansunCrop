@@ -574,7 +574,10 @@
                 android:background="#EBEBEB"
                 android:orientation="horizontal" />
 
-            
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/line_bg1" />
             
             
             <!-- 迈友评论  这一栏 -->
@@ -582,12 +585,13 @@
                 android:id="@+id/iv_activity_detail_report_list"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/item_h_90" 
-                android:visibility="gone">
+                ><!-- android:visibility="gone" -->
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true" >
+                    android:layout_centerVertical="true" 
+                    android:orientation="horizontal">
 
                     <com.android.pc.ioc.image.RecyclingImageView
                         android:id="@+id/mai_comment_icon"
@@ -604,6 +608,35 @@
                         android:gravity="center_vertical"
                         android:text="@string/mai_comment"
                         android:textColor="#6F6F6F" />
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tv_left_bracket"
+                        style="@style/text_style_nomal_28"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="@dimen/l_r_15"
+                        android:gravity="center_vertical"
+                        android:text="("
+                        android:textColor="#6F6F6F" />
+                    <TextView
+                        android:id="@+id/tv_comments_counts"
+                        style="@style/text_style_nomal_28"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="@dimen/l_r_15"
+                        android:gravity="center_vertical"
+                        android:text=""
+                        android:textColor="#6F6F6F" />
+                    <TextView
+                        android:visibility="gone"
+                         android:id="@+id/tv_right_bracket"
+                        style="@style/text_style_nomal_28"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="@dimen/l_r_15"
+                        android:gravity="center_vertical"
+                        android:text=")"
+                        android:textColor="#6F6F6F" />
                 </LinearLayout>
 
                 <com.android.pc.ioc.image.RecyclingImageView
@@ -618,13 +651,10 @@
 
             
             
-            
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:background="@color/line_bg1" 
-                
-                android:visibility="gone"
                />
 
             

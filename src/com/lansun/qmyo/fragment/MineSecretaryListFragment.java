@@ -48,10 +48,10 @@ import com.squareup.okhttp.Response;
  * @author Yeun.zhang
  */
 public class MineSecretaryListFragment extends BaseFragment implements OnItemClickCallBack{//,OnRefreshListener
-	/*private RecyclerView question_item_recycle;
+	/*private RecyclerView lv_question_recycle;
 	 private QuestionAdapter question_adapter; 不使用原先的RecycleView*/
 	
-	private TestMyListView question_item_recycle;
+	private TestMyListView lv_question_recycle;
 	private QuestionListAdapter question_adapter;
 	private LinearLayoutManager manager;
 	private List<QuestionDetailItem> lists;
@@ -72,20 +72,39 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 			endProgress();
 			switch (msg.what) {
 			case 0:
-				setEmptyView(1);
+				
+//				setEmptyView(1);
+//				lv_question_recycle.setVisibility(View.VISIBLE);
 				question_adapter.notifyDataSetChanged();
+				lv_question_recycle.onLoadMoreFished();//要让下次能够继续监听到话到末尾时，能够继续加载下一页
+				
 				break;
 			case 1:
 				break;
-			case 5:
-				question_item_recycle.onLoadMoreFished();
+			case 5://页面一加载进来，lv_question_recycle要显示出来
+				
+				/*if(lists.size()!=0&&question_adapter!=null){
+					lists.clear();
+					question_adapter.notifyDataSetChanged();
+				}*/
+				
+				lv_question_recycle.setVisibility(View.VISIBLE);
+				lv_question_recycle.onRefreshFinshed(true);
+				lv_question_recycle.onLoadMoreFished();
+				
 				break;
 			case 6:
-				question_item_recycle.onLoadMoreOverFished();
-				break;
 				
+				lv_question_recycle.setVisibility(View.VISIBLE);
+				lv_question_recycle.onLoadMoreOverFished();
+				break;
 			case 10:
-				setEmptyView(0);
+				setEmptyView(0);//lv_question_recycle整个消失掉
+				break;
+			case 20:
+				if(question_adapter!=null){
+					question_adapter.notifyDataSetChanged();
+				}
 				break;
 			}
 			//swiperefresh.setRefreshing(false);
@@ -101,36 +120,47 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 		initView(rootView);
 		Handler_Inject.injectFragment(this, rootView);
 		
+		lv_question_recycle.setNoHeader(true);
+		lv_question_recycle.setVisibility(View.INVISIBLE);
+		
 		//setListener();
-		question_item_recycle.setOnRefreshListener(new OnRefreshListener() {
-			
-			
+		lv_question_recycle.setOnRefreshListener(new OnRefreshListener() {
 
 			@Override
 			public void onRefreshing() {
-				question_item_recycle.onRefreshFinshed(true);
+				
+				lists.clear();//清除之前展示的list
+				first_enter = 0;//将第一次展示的标示重新设置为0
+				
+				startSearch(refreshUrl+"type="+currentType);
+				LogUtils.toDebugLog("mysecretary", refreshUrl+"type="+currentType);
+				
+				//lv_question_recycle.onRefreshFinshed(true);
+			
+				
 			}
 			
 			@Override
 			public void onLoadingMore() {
 				
 				String refresh=String.valueOf(list.getNext_page_url());
+				LogUtils.toDebugLog("", "refresh:   "+refresh);
+				
 				if ("".equals(refresh)||"null".equals(refresh)) {
 					if(times == 0){
 						CustomToast.show(getActivity(), R.string.none_data_tip,R.string.none_data_content);
-						question_item_recycle.onLoadMoreOverFished();
+						lv_question_recycle.onLoadMoreOverFished();
 						times++;
 					}else{
-						question_item_recycle.onLoadMoreOverFished();
+						CustomToast.show(getActivity(), R.string.none_data_tip,R.string.none_data_content);
+						lv_question_recycle.onLoadMoreOverFished();
 					}
 				}else {
-					startSearch(refresh+"&type="+currentType);
+					startSearchForLoadMore(refresh+"&type="+currentType);
 					LogUtils.toDebugLog("refreshUrl", refresh+"&type="+currentType);
 				}
 			}
 		});
-		
-		
 		return rootView;
 	}
 	
@@ -139,7 +169,7 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 	 * 自定义的ListView已经完成了需要的监听
 	 */
 //	private void setListener() {
-//		question_item_recycle.setOnScrollListener(new OnScrollListener() {
+//		lv_question_recycle.setOnScrollListener(new OnScrollListener() {
 //			@Override
 //			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 //				super.onScrolled(recyclerView, dx, dy);
@@ -174,29 +204,75 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 //			}
 //		});
 //	}
+	
+	/**
+	 * 实际进行加载更多的 网络访问操作
+	 * @param string
+	 */
+	private void startSearchForLoadMore(String url) {
+		
+		while (GlobalValue.mySecretary!=null) {
+			break;
+		}
+		try{
+			OkHttp.asyncGet(url, "Authorization", "Bearer "+App.app.getData("access_token"), null, new Callback() {
+				@Override
+				public void onResponse(Response response) throws IOException {
+					if (response.isSuccessful()) {
+						//handleOK.sendEmptyMessage(5);
+						
+						String json=response.body().string();
+						Gson gson=new Gson();
+						list = gson.fromJson(json, SecretaryQuestions.class);
+						if (list.getData().size()==0) {
+							handleOK.sendEmptyMessage(10);
+						}else {
+							if(list.getData().size()<10){
+								times++;
+								handleOK.sendEmptyMessage(6);
+							}
+							for (QuestionDetailItem item:list.getData()) {
+								lists.add(item);
+							}
+							handleOK.sendEmptyMessage(0);
+						}
+					}
+				}
+				@Override
+				public void onFailure(Request request, IOException exception) {
+					
+				}
+			});
+		}catch(Exception e){
+			
+		}
+	}
+	
 	/**
 	 * 设置 emptyview
 	 * @param state 0 add 1 remove
 	 */
 	private void setEmptyView(int state) {
 		if (state==0) {
-			question_item_recycle.setVisibility(View.GONE);
+			lv_question_recycle.setVisibility(View.GONE);
+			empty_liner.setVisibility(View.VISIBLE);
 		}else {
-			question_item_recycle.setVisibility(View.VISIBLE);
+			lv_question_recycle.setVisibility(View.VISIBLE);
+			empty_liner.setVisibility(View.INVISIBLE);
 		}
 	}
 	private void initView(View rootView) {
 		empty_liner=(LinearLayout)rootView.findViewById(R.id.empty_liner);
 		lists=new ArrayList<>();
-		/*question_item_recycle=(RecyclerView)rootView.findViewById(R.id.lv_secretary_list);
+		/*lv_question_recycle=(RecyclerView)rootView.findViewById(R.id.lv_secretary_list);
 		manager=new LinearLayoutManager(getActivity());
-		question_item_recycle.setLayoutManager(manager);*/
+		lv_question_recycle.setLayoutManager(manager);*/
 		
-		question_item_recycle=(TestMyListView)rootView.findViewById(R.id.lv_secretary_list);
+		lv_question_recycle=(TestMyListView)rootView.findViewById(R.id.lv_secretary_list);
 		
 		//注意下面的数据源是 lists（末尾多个s）
 		question_adapter=new QuestionListAdapter(activity,lists,MineSecretaryListFragment.this);
-		question_item_recycle.setAdapter(question_adapter);
+		lv_question_recycle.setAdapter(question_adapter);
 		
 		rootView.findViewById(R.id.look_help).setOnClickListener(new OnClickListener() {
 			@Override
@@ -215,7 +291,7 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 
 	private HashMap<Integer, String> holder_button = new HashMap<>();
 	private HashMap<Integer, View> mViewArray = new HashMap<>();
-	private String currentType = ""; //褰撲笅杩欎釜currentType鍊间负绌哄瓧绗︿覆
+	private String currentType = ""; //
 
 	@InjectInit
 	private void init() {
@@ -242,9 +318,13 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 		viewRight.setOnSelectListener(new ViewRight.OnSelectListener() {
 			@Override
 			public void getValue(String distance, String showText, int position) {
+				
+				lv_question_recycle.setVisibility(View.INVISIBLE);
 				if (!currentType.equals(types[position])) {
 					lists.clear();
 				}
+				
+				//主动刷新页面数据
 				currentType = types[position];
 				startSearch(refreshUrl+"type="+currentType);
 				times = 0;
@@ -254,9 +334,13 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 		});
 	}
 
+	/**
+	 * 一进来加载页面 或 主动刷新的操作
+	 * @param url
+	 */
 	private void startSearch(final String url) {
 		
-		setProgress(question_item_recycle);
+		setProgress(lv_question_recycle);
 		startProgress();
 		
 		while (GlobalValue.mySecretary!=null) {
@@ -270,11 +354,11 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 						
 						handleOK.sendEmptyMessage(5);
 						
-						
 						String json=response.body().string();
 						Gson gson=new Gson();
 						list = gson.fromJson(json, SecretaryQuestions.class);
-						if (list.getData().size()==0) {
+						
+						if (list.getData().size()==0) {//获取到的列表的值为 0 ，显示空图提示
 							handleOK.sendEmptyMessage(10);
 						}else {
 							if(list.getData().size()<10){
@@ -285,6 +369,9 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 							}else{
 								//NO-OP
 							}
+							lists.clear();
+							handleOK.sendEmptyMessage(20);
+							
 							for (QuestionDetailItem item:list.getData()) {
 								lists.add(item);
 							}

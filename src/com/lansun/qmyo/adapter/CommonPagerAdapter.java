@@ -36,5 +36,7 @@ public class CommonPagerAdapter extends PagerAdapter {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	
 
 }

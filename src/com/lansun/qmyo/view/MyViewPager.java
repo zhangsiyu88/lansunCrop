@@ -29,11 +29,11 @@ public class MyViewPager extends ViewPager {
 	private GestureDetector mGestureDetector;
 	View.OnTouchListener mGestureListener;
 
-	@Override
-	public boolean onInterceptTouchEvent(MotionEvent ev) {
-		
-		return super.onInterceptTouchEvent(ev)&& mGestureDetector.onTouchEvent(ev);
-	}
+//	@Override
+//	public boolean onInterceptTouchEvent(MotionEvent ev) {
+//		
+//		return super.onInterceptTouchEvent(ev)&& mGestureDetector.onTouchEvent(ev);
+//	}
 
 	class YScrollDetector extends SimpleOnGestureListener {
 		@Override
@@ -64,5 +64,10 @@ public class MyViewPager extends ViewPager {
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
 		return super.dispatchTouchEvent(ev);
+	}
+	
+	@Override
+	public boolean onInterceptTouchEvent(MotionEvent ev) {
+		return super.onInterceptTouchEvent(ev);
 	}
 }

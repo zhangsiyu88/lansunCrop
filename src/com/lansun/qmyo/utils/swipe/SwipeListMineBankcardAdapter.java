@@ -97,8 +97,7 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 	private boolean mIsFromRegisterAndHaveNoBankcard = false;
 	private DisplayImageOptions options = new DisplayImageOptions.Builder().cacheInMemory(true)
 			.cacheOnDisk(true).considerExifParams(true)
-			.displayer(new FadeInBitmapDisplayer(300))
-			.displayer(new RoundedBitmapDisplayer(10)).build();
+			.displayer(new RoundedBitmapDisplayer(10)).build();//.displayer(new FadeInBitmapDisplayer(300))
 	private Fragment mFragment;
 	
 
@@ -203,8 +202,13 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 		final SwipeLayout view = (SwipeLayout) convertView;
 		Handler_Inject.injectFragment(this, convertView);
 		
-		view.close(false, false);
+		view.getFrontView().setFocusable(false);
+		view.getFrontView().setFocusableInTouchMode(false);
 		
+		view.close(false, false);                                                                         
+		
+/*	ListView的整体点击事件，由ListView自己的OnItemClick()来实现，此处实现不正常                  
+ */
 		view.getFrontView().setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

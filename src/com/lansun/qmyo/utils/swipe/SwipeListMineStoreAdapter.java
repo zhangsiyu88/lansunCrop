@@ -54,7 +54,7 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 	private ArrayList<HashMap<String, String>> mDataList;
 	private DisplayImageOptions options = new DisplayImageOptions.Builder()
 	    .cacheInMemory(true).cacheOnDisk(true).considerExifParams(true)
-	    .displayer(new FadeInBitmapDisplayer(300)).build();
+	    .build();//.displayer(new FadeInBitmapDisplayer(300))
 	private int deletePosition;
 	private LayoutInflater mInflater;
 	HashSet<Integer> mRemoved = new HashSet<Integer>();
@@ -149,7 +149,7 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 		String num = data.get("tv_store_item_num");
 		String distance = data.get("tv_store_item_distance");
 		
-		String rb = data.get("rb_store_item");
+		String rb = mDataList.get(position).get("rb_store_item");
 		Integer rbInt = Integer.valueOf(rb);
 		rbInt = rbInt*2;
 		

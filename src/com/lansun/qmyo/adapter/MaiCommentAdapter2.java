@@ -78,17 +78,25 @@ public class MaiCommentAdapter2 extends
 		download(viewHold.iv_comment2_head, headUrl);
 		viewHold.tv_comment2_name.setText(name);
 		viewHold.tv_comment2_time.setText(time);
+		
 		viewHold.tv_comment2_desc.setText(desc);
-		if (desc.length() < 50) {
+		viewHold.tv_comment2_desc.setMaxLines(5);
+		
+		/*if (desc.length() < 50) {
 			viewHold.iv_comment2_more.setVisibility(View.GONE);
 		} else {
 			viewHold.iv_comment2_more.setVisibility(View.VISIBLE);
-
-		}
+		}*/
+		
 		MaiCommentGVAdapter gvAdapter = new MaiCommentGVAdapter(context, photos);
 		viewHold.gv_comment2_images.setAdapter(gvAdapter);
+		/*
+		 * 此处设定了GridView的布局属性
+		 */
 		GridViewUtils.updateGridViewLayoutParams(viewHold.gv_comment2_images,
-				3, (int) context.getResources().getDimension(R.dimen.l_r_10));
+				4, (int) context.getResources().getDimension(R.dimen.l_r_10));
+		
+		
 		if (photos == null) {
 			viewHold.tv_mai_images_count.setVisibility(View.GONE);
 			viewHold.gv_comment2_images.setVisibility(View.GONE);
@@ -108,19 +116,21 @@ public class MaiCommentAdapter2 extends
 							int position, long arg3) {
 						DetailHeaderPagerAdapter headPagerAdapter = new DetailHeaderPagerAdapter(
 								context, photos);
-						ImageGalleryDialog dialog = new ImageGalleryDialog()
-								.newInstance(headPagerAdapter, position);
+						ImageGalleryDialog dialog = new ImageGalleryDialog().newInstance(headPagerAdapter, position);
 						dialog.show(activity.getFragmentManager(), "gallery");
 					}
 				});
 
-		viewHold.ll_comment_desc.setOnClickListener(new OnClickListener() {
+		/* 
+		 * 暂时禁止掉评论的点击事件
+		 * 
+		 * viewHold.ll_comment_desc.setOnClickListener(new OnClickListener() {
 
 			@SuppressLint("NewApi")
 			@Override
 			public void onClick(View arg0) {
-				if (viewHold.tv_comment2_desc.getMaxLines() > 2) {
-					viewHold.tv_comment2_desc.setMaxLines(2);
+				if (viewHold.tv_comment2_desc.getMaxLines() > 5) {
+					viewHold.tv_comment2_desc.setMaxLines(5);
 					viewHold.iv_comment2_more
 							.setImageResource(R.drawable.arrow_down);
 				} else {
@@ -129,7 +139,7 @@ public class MaiCommentAdapter2 extends
 							.setImageResource(R.drawable.arrow_up);
 				}
 			}
-		});
+		});*/
 
 	}
 

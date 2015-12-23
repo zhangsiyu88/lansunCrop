@@ -48,6 +48,7 @@ import com.lansun.qmyo.utils.swipe.SwipeListMineHistoryActivityAdapter;
 import com.lansun.qmyo.utils.swipe.SwipeListMineHistoryStoreAdapter;
 import com.lansun.qmyo.utils.swipe.SwipeListMineStoreAdapter;
 import com.lansun.qmyo.utils.swipe.Utils;
+import com.lansun.qmyo.view.CustomDialogProgress;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ListViewSwipeGesture;
 import com.lansun.qmyo.view.MyListView;
@@ -70,6 +71,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -108,12 +110,17 @@ import android.widget.TextView;
 	private SwipeListMineStoreAdapter storeAdapter;
 	private SwipeListMineActivityAdapter activityAdapter;
 	
+	private CustomDialogProgress cPd = null;
+	private boolean isShowDialog = false;
+	
 	
 	private HistoryActivity v16list;
 	private MineV16Adapter v16adapter;
 	private boolean isPull = false;
 	private View emptyView;
 	private int times = 0;
+
+
 
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
@@ -252,6 +259,8 @@ import android.widget.TextView;
 		switch (view.getId()) {
 		case R.id.tv_mine_history_activity:// 活动
 			lv_mine_history_list.setVisibility(View.INVISIBLE);//防止脚步局在切换时显示出来
+			emptyView.setVisibility(View.INVISIBLE);
+			v.rl_new_emptyview.setVisibility(View.INVISIBLE);
 			refreshKey = 0;
 			
 			activityAdapter = null;
@@ -262,9 +271,13 @@ import android.widget.TextView;
 			refreshUrl = GlobalValue.URL_USER_ACTIVITYBROWSES;
 			refreshCurrentList(refreshUrl, null, refreshKey,
 					lv_mine_history_list);
+			isShowDialog  = true;
 			break;
 		case R.id.tv_mine_history_store:// 门店
 			lv_mine_history_list.setVisibility(View.INVISIBLE);//防止脚步局在切换时显示出来
+			emptyView.setVisibility(View.INVISIBLE);
+			v.rl_new_emptyview.setVisibility(View.INVISIBLE);
+			
 			refreshKey = 1;
 			
 			storeAdapter = null;
@@ -275,6 +288,7 @@ import android.widget.TextView;
 			changeTextColor(v.tv_mine_history_store);
 			refreshCurrentList(refreshUrl, null, refreshKey,
 					lv_mine_history_list);
+			isShowDialog = true;
 			break;
 			
 		/*case R.id.tv_mine_history_v16:// V16
@@ -370,6 +384,17 @@ import android.widget.TextView;
 					});
 			break;
 		}
+		
+		if (isShowDialog){
+			if(cPd == null ){
+				Log.d("dialog","生成新的dialog！");
+				cPd = CustomDialogProgress.createDialog(activity);
+				cPd.setCanceledOnTouchOutside(false);
+				cPd.show();
+			}else{
+				cPd.show();
+			}
+		}
 	}
 
 	private void changeTextColor(TextView tv) {
@@ -386,6 +411,12 @@ import android.widget.TextView;
 	private void result(ResponseEntity r) {
 		if (r.getStatus() == FastHttp.result_ok) {
 			endProgress();
+			
+			if(cPd!=null){
+				cPd.dismiss();
+				cPd = null;
+			}
+			
 			//lv_mine_history_list.setVisibility(View.VISIBLE);
 			
 			v16DataList.clear();
