@@ -199,9 +199,10 @@
                 android:layout_alignParentBottom="true"
                 android:background="@color/line_bg_expand" />
 
-            <!-- 暂时将我的评论关闭掉 -->
+            
+            <!-- 暂时将我的评论关闭掉 --><!--android:visibility="gone"  -->
             <LinearLayout
-                android:visibility="gone"
+                
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/app_white" >
@@ -244,13 +245,13 @@
             </LinearLayout>
 
             <View
-                android:visibility="gone"
-                
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_alignParentBottom="true"
                 android:background="@color/line_bg_expand" />
 
+            
+            <!-- 最近浏览 -->
             <LinearLayout
                 android:id="@+id/rl_mine_history"
                 android:layout_width="match_parent"

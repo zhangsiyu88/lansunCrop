@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/rl_dialog_gallery"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/dialog_gallery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        
+        <ImageView 
+            android:id="@+id/iv_delete_currentphoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/image_check_on"
+            android:layout_alignRight="@id/dialog_gallery"
+            android:layout_alignTop="@id/dialog_gallery"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="@dimen/margin_top_35"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            ><!--  android:layout_marginLeft="@dimen/l_r_35" -->
+
+            <TextView
+                android:id="@+id/upload_photo_current_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/app_green2" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="/"
+                android:textColor="@color/app_white" />
+
+            <TextView
+                android:id="@+id/upload_photo_total_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/app_white" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

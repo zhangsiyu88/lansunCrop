@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.lansun.qmyo"
     style="@style/w_full_h_wrap"
     android:background="@color/app_white"
     android:orientation="vertical" >
@@ -10,39 +11,58 @@
         android:paddingLeft="@dimen/l_r_35"
         android:paddingRight="@dimen/l_r_35" >
 
-        <com.lansun.qmyo.view.CircularImage
+        <!-- 头像 -->
+        <com.lansun.qmyo.override.CircleImageView
             android:id="@+id/iv_comment_head"
             android:layout_width="@dimen/mai_comment_head_w"
             android:layout_height="@dimen/mai_comment_head_h"
-            android:layout_marginTop="@dimen/margin_top_35" />
-
+            android:layout_marginTop="@dimen/margin_top_35"
+            app:circle_border_color="@color/update_text_tittle_green"
+            app:circle_border_width="2dp" 
+            app:shadow="true"
+            android:src="@drawable/default_avatar"/>
+		<!-- 名字 -->
         <TextView
             android:id="@+id/tv_comment_name"
             style="@style/text_style_nomal_30"
+            android:layout_toRightOf="@id/iv_comment_head"
             android:layout_marginLeft="@dimen/l_r_25"
             android:layout_marginTop="@dimen/margin_top_42"
+            android:textColor="#6F6F6F" 
+            android:text="点"/><!--   -->
+            
+		<!-- 评论来源的门店 -->
+        <TextView
+            android:id="@+id/tv_comment_from"
             android:layout_toRightOf="@id/iv_comment_head"
-            android:textColor="#6F6F6F" />
-
+            android:layout_below="@id/tv_comment_name"
+            android:gravity="center_vertical"
+            style="@style/text_style_small_24"
+            android:layout_marginLeft="@dimen/l_r_25"
+            android:textColor="#AFAFAF" 
+            android:text="@string/tv_comment_from"/><!--android:layout_toRightOf="@id/iv_comment_head"  -->
+        
+        <!-- 评论时间 -->
         <TextView
             android:id="@+id/tv_comment_time"
             style="@style/text_style_small_24"
-            android:layout_below="@id/tv_comment_name"
-            android:layout_marginLeft="@dimen/l_r_25"
-            android:layout_toRightOf="@id/iv_comment_head"
-            android:textColor="#AFAFAF" />
+            android:layout_marginTop="@dimen/margin_top_42"
+            
+            android:layout_alignParentRight="true"
+            android:textColor="#AFAFAF" 
+            android:text="2015-12-28"/><!--android:layout_toRightOf="@id/iv_comment_head" android:layout_marginLeft="@dimen/l_r_25" -->
 
         <LinearLayout
             android:id="@+id/ll_comment_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tv_comment_time"
-            android:layout_marginLeft="@dimen/l_r_25"
+            android:layout_below="@id/tv_comment_from"
+            
             android:layout_marginTop="@dimen/margin_top_10"
-            android:layout_toRightOf="@id/iv_comment_head"
-            android:orientation="vertical" >
+            android:orientation="vertical" ><!-- android:layout_toRightOf="@id/iv_comment_head" android:layout_marginLeft="@dimen/l_r_25" -->
 
             <TextView
+                android:gravity="center_vertical"
                 android:id="@+id/tv_comment_desc"
                 style="@style/text_style_nomal_28"
                 android:ellipsize="end"
@@ -69,10 +89,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/ll_comment_desc"
-            android:layout_marginLeft="@dimen/l_r_25"
+            
             android:layout_marginTop="@dimen/margin_top_25"
-            android:layout_toRightOf="@id/iv_comment_head"
-            android:orientation="horizontal" >
+           
+            android:orientation="horizontal" ><!--  android:layout_toRightOf="@id/iv_comment_head"  android:layout_marginLeft="@dimen/l_r_25"-->
 
             <!-- 图片展示的模块 -->
             <com.lansun.qmyo.view.MyGridView
@@ -96,6 +116,11 @@
                 android:textColor="@color/app_white"
                 android:visibility="gone" />
         </RelativeLayout>
+        
+        <View 
+            android:layout_below="@id/rl_gv_comment_images"
+            android:layout_marginTop="5dp"
+            style="@style/line_style_1"/>
 
         <TextView
             android:id="@+id/tv_mai_comment_communicate"
@@ -103,8 +128,30 @@
             android:layout_alignLeft="@id/ll_comment_desc"
             android:layout_below="@id/rl_gv_comment_images"
             android:layout_marginTop="@dimen/margin_top_25"
-            android:textColor="#AFAFAF" />
+            android:textColor="#AFAFAF" 
+            android:text="maiyougoutong"
+            
+            android:clickable="false"/><!--android:visibility="invisible"  -->
+       
+        <!--评分  -->
+         <RatingBar 
+             
+                android:visibility="gone"
+             
+                android:layout_alignLeft="@id/ll_comment_desc"
+                android:layout_below="@id/rl_gv_comment_images"
+                android:layout_marginTop="@dimen/margin_top_25"
+                android:id="@+id/rb_room_ratingbar"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="5"
+                android:rating="3"
+                android:isIndicator="true"
+                style="@style/roomRatingBar"
+                android:clickable="false"/>
 
+        <!--评论列表，其实已无用  -->
         <com.lansun.qmyo.view.MySubListView
             android:id="@+id/lv_activity_mai_comments"
             style="@style/w_wrap_h_wrap"
@@ -129,14 +176,16 @@
 	       <com.android.pc.ioc.image.RecyclingImageView
 	           android:id="@+id/iv_comment_reply"
 	           style="@style/w_wrap_h_wrap"
-	           android:src="@drawable/mai_reply_icon" /><!--android:layout_alignParentRight="true"
-	           							android:layout_alignTop="@id/tv_mai_comment_communicate"  -->
+	           android:src="@drawable/mai_reply_icon" /><!--android:layout_alignParentRight="true"  
+	           												android:layout_alignTop="@id/tv_mai_comment_communicate"  -->
+	         
+	      <!--回复的数量  -->  							
 	      <TextView
 	          android:id="@+id/tv_reply"
 	          android:layout_toRightOf="@id/iv_comment_reply"
 	           android:layout_marginLeft="4dp"
 	           android:layout_marginRight="5dp"
-	           android:text="回复" 
+	           android:text="@string/rapley_counts" 
 	          style="@style/text_style_small_24"/> 
 	      <TextView
 	           android:id="@+id/tv_line_vertical"

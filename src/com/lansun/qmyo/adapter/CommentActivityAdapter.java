@@ -93,13 +93,12 @@ public class CommentActivityAdapter extends
 					.findViewById(R.id.rl_comment_activity_name);
 			convertView.setTag(viewHold);
 		}
-
 		viewHold = (ViewHolder) convertView.getTag();
-		if (position != Integer.parseInt(viewHold.lv_activity_mai_comments
-				.getTag().toString())) {
+		
+		//如果拿到的convertView对应的viewHold中ListView对象的Tag（即position）信息不对应的话，便将ListView对象的数据适配器置调为null
+		if (position != Integer.parseInt(viewHold.lv_activity_mai_comments.getTag().toString())) {
 			viewHold.lv_activity_mai_comments.setAdapter(null);
 		}
-
 		deal(dataList.get(position), viewHold, position);
 		return convertView;
 	}
@@ -114,7 +113,9 @@ public class CommentActivityAdapter extends
 	@Override
 	public void deal(final HashMap<String, Object> data,
 			final ViewHolder viewHold, final int position) {
+		
 		holders.add(viewHold);
+		
 		String time = data.get("tv_comment_time").toString().trim();
 		String desc = data.get("tv_comment_desc").toString().trim();
 		String name = data.get("tv_comment_activity_name").toString().trim();
@@ -147,7 +148,11 @@ public class CommentActivityAdapter extends
 			viewHold.lv_activity_mai_comments.setVisibility(View.GONE);
 		} else {
 			viewHold.lv_activity_mai_comments.setVisibility(View.VISIBLE);
+			
+			/*将评论默认关闭 
+			viewHold.lv_activity_mai_comments.setVisibility(View.GONE);*/
 		}
+		
 		viewHold.tv_mai_comment_communicate
 				.setOnClickListener(new OnClickListener() {
 					@Override
@@ -173,8 +178,8 @@ public class CommentActivityAdapter extends
 						Fragment fragment = new ActivityDetailFragment();
 						Bundle args = new Bundle();
 						args.putString("shopId", data.get("shopId").toString());
-						args.putString("activityId", data.get("activityId")
-								.toString());
+						args.putString("activityId", data.get("activityId").toString());
+						
 						fragment.setArguments(args);
 						FragmentEntity event = new FragmentEntity();
 						event.setFragment(fragment);
@@ -233,8 +238,7 @@ public class CommentActivityAdapter extends
 					viewHold.iv_comment_more.setImageResource(R.drawable.more);
 				} else {
 					viewHold.tv_comment_desc.setMaxLines(Integer.MAX_VALUE);
-					viewHold.iv_comment_more
-							.setImageResource(R.drawable.more_close);
+					viewHold.iv_comment_more.setImageResource(R.drawable.more_close);
 				}
 			}
 		});
@@ -261,19 +265,16 @@ public class CommentActivityAdapter extends
 					photos);
 			viewHold.gv_comment_images.setAdapter(gvAdapter);
 			GridViewUtils.updateGridViewLayoutParams(
-					viewHold.gv_comment_images, 3, (int) context.getResources()
-							.getDimension(R.dimen.l_r_10));
+					viewHold.gv_comment_images, 4, (int) context.getResources().getDimension(R.dimen.l_r_10));
 		}
 
-		viewHold.gv_comment_images
-				.setOnItemClickListener(new OnItemClickListener() {
+		viewHold.gv_comment_images.setOnItemClickListener(new OnItemClickListener() {
 					@Override
 					public void onItemClick(AdapterView<?> arg0, View arg1,
 							int arg2, long arg3) {
 						DetailHeaderPagerAdapter headPagerAdapter = new DetailHeaderPagerAdapter(
 								fragment.getActivity(), photos);
-						ImageGalleryDialog dialog = new ImageGalleryDialog()
-								.newInstance(headPagerAdapter, arg2);
+						ImageGalleryDialog dialog = new ImageGalleryDialog().newInstance(headPagerAdapter, arg2);
 						dialog.show(fragment.getFragmentManager(), "gallery");
 					}
 				});
@@ -335,11 +336,9 @@ public class CommentActivityAdapter extends
 
 						dataList.add(map);
 					}
-					contentAdapter = new MaiCommentContentAdapter(
-							viewHolder.lv_activity_mai_comments, dataList,
+					contentAdapter = new MaiCommentContentAdapter(viewHolder.lv_activity_mai_comments, dataList,
 							R.layout.activity_mai_comments_item);
-					viewHolder.lv_activity_mai_comments
-							.setAdapter(contentAdapter);
+					viewHolder.lv_activity_mai_comments.setAdapter(contentAdapter);
 				}
 			}
 

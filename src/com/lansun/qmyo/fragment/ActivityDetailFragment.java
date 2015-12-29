@@ -145,8 +145,6 @@ public class ActivityDetailFragment extends BaseFragment {
 		filter.addAction("com.lansun.qmyo.refreshActivityDetailPageAndClick");
 		getActivity().registerReceiver(broadCastReceiver, filter);
 		
-	  
-		
 		return rootView;
 	}
 	
@@ -354,6 +352,7 @@ public class ActivityDetailFragment extends BaseFragment {
 					
 					LogUtils.toDebugLog("total",list.getTotal()+"");
 					if(list.getData().size()>0){
+						v.ll_activity_detail_none.setVisibility(View.GONE);
 						v.tv_left_bracket.setVisibility(View.VISIBLE);
 						v.tv_right_bracket.setVisibility(View.VISIBLE);
 						v.tv_comments_counts.setText(String.valueOf(list.getTotal()));
@@ -391,6 +390,10 @@ public class ActivityDetailFragment extends BaseFragment {
 					 * 即使没有拿到数据也不要将其显示
 					 * v.ll_activity_detail_none.setVisibility(View.VISIBLE);*/
 					HasComment = false;
+					LogUtils.toDebugLog("total","评论为空");
+					
+					v.ll_activity_detail_none.setVisibility(View.VISIBLE);
+					
 				}
 
 				

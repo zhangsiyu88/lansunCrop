@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.lansun.qmyo"
-    android:versionCode="11"
-    android:versionName="1.2.11" >
+    android:versionCode="12"
+    android:versionName="1.2.12" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -22,10 +22,9 @@
 	            android:name="com.amap.api.v2.apikey"
 	            android:value="fa0aa51b559886e355075a4c8697a35b" />  -->
        <!--  包名为 com.qmyo.activity 本人(Yeun's LansunCorp  PC上)申请开发模式下的高德地图的key -->
-   	   <!--  <meta-data
+   	   <!--<meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="7b6ab7010e05188877fb2c29dff0240c" /> -->
-       
        
        
        <!--  包名为com.lansun.qmyo 本人(Yeun's LansunCorp  PC上)申请开发模式下的高德地图的key -->
@@ -44,17 +43,12 @@
 	            android:name="com.amap.api.v2.apikey"
 	            android:value="a81d22502d5958d33c95c7e32f97c656" /> 
 	           
-	           
-	   
 	   
 	    <!-- 后台开启的高德定位服务 -->
         <service
                  android:name="com.lansun.qmyo.service.LocationService"
                  android:exported="false" />   
 	       
-	       
-	       
-	        
        
         <!-- 友盟的元数据 -->
         <meta-data
@@ -114,13 +108,13 @@
         </receiver>
 
         
-        <activity android:name="com.ns.mutiphotochoser.GalleryActivity" >
+         <activity android:name="com.ns.mutiphotochoser.GalleryActivity" 
+              android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="com.ns.mutiphotochoser.sample.action.CHOSE_PHOTOS" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </activity>
+        </activity> 
 
         
         
@@ -219,7 +213,7 @@
         <!-- <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
         <meta-data android:name="JPUSH_APPKEY" android:value="6b048cb9d68d81477c666a16" />     -->
             
-           <!-- 此值来自 以com.lansun.qmyo作为标示并正式上线  开发者平台取得的AppKey--> 
+         <!-- 此值来自 以com.lansun.qmyo作为标示并正式上线  开发者平台取得的AppKey--> 
 	     <!-- Required  . Enable it you can get statistics data with channel -->
         <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
         <meta-data android:name="JPUSH_APPKEY" android:value="dec54ebb0514c3529b7f99ae" />

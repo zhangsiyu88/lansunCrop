@@ -50,6 +50,7 @@ import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.Token;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.service.AccessTokenService;
+import com.lansun.qmyo.utils.CommitStaticsinfoUtils;
 import com.lansun.qmyo.utils.DataUtils;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
@@ -96,6 +97,8 @@ public class IntroductionPageFragment extends BaseFragment implements
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_introduction, null);
 		
+		
+		
 		/**
 		 * 上传渠道包的标示内容
 		 * 
@@ -105,7 +108,7 @@ public class IntroductionPageFragment extends BaseFragment implements
 		 * 4.将上面获取到的两个参数，一起作为接口的参数，上传到服务器上
 		 */
 		
-		String phoneIMEI = getPhoneIMEI();
+		/*String phoneIMEI = getPhoneIMEI();
 		String channelCode = getChannelCode(App.getInstance());
 		int intChannelCode = 0;
 		if(channelCode.equals("default")){
@@ -135,8 +138,14 @@ public class IntroductionPageFragment extends BaseFragment implements
 			}
 		};
 		
-		httpUtils.send(HttpMethod.POST, "http://appapi.qmyo.com/statistic/collection?device=Android&device_id="+
-					phoneIMEI+"&platform="+intChannelCode+"&city="+cityName , null,requestCallBack );
+		httpUtils.send(HttpMethod.POST, "http://appapi.qmyo.com/statistic/collection?" +
+				"device=Android" +
+				"&device_id="+phoneIMEI+
+				"&platform="+intChannelCode+
+				"&city="+cityName , null,requestCallBack );*/
+		
+		//上方代码
+		CommitStaticsinfoUtils.commitStaticsinfo(1);
 		
 		
 		Handler_Inject.injectFragment(this, rootView);

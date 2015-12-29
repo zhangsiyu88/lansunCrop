@@ -1,9 +1,13 @@
 package com.lansun.qmyo.fragment;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import android.R.integer;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -40,13 +44,19 @@ import com.android.pc.util.Handler_Inject;
 import com.google.gson.Gson;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.question.QuestionAnswerAdapter;
+import com.lansun.qmyo.adapter.question.QuestionMultiAnswerAdapter;
 import com.lansun.qmyo.biz.AddQuestionBiz;
+import com.lansun.qmyo.domain.QAMetaData;
 import com.lansun.qmyo.domain.QuestionAnswerDetail;
+import com.lansun.qmyo.domain.QuestionAnswerDetailNew;
 import com.lansun.qmyo.domain.QuestionDetail;
+import com.lansun.qmyo.domain.QuestionDetailNew;
+import com.lansun.qmyo.domain.SubAnswer;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.listener.RequestCallBack;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
@@ -65,10 +75,13 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	Views v;
 	private String question_id;
 	private QuestionDetail list;
+	private QuestionDetailNew newList;
+	private QuestionMultiAnswerAdapter newAdapter;
+	private ArrayList<QAMetaData> processList;
 
 	private String currentType;
 	private ProgressDialog pd;
-	private QuestionAnswerAdapter adapter;
+	/*private QuestionAnswerAdapter adapter;*/
 	private TextView btn_secretary_question_commit;
 	class Views {
 		private ImageView iv_activity_back;
@@ -80,19 +93,48 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
 			case 0:
-				String type=switchType(list.getType());
+				/*String type=switchType(list.getType());
 				v.tv_activity_title.setText(GlobalValue.mySecretary.getName()+"["+type+"]");
 				my_secretary_question_recycle.setAdapter(adapter);
 				my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);//刷新后强制滑动至消息列表上的最后一个位置
+				v.et_secretary_question.setOnFocusChangeListener(QuestionDetailFragment.this);*/
+				
+				
+				String type=switchType(currentType);
+				v.tv_activity_title.setText(GlobalValue.mySecretary.getName()+"["+type+"]");
+				my_secretary_question_recycle.setAdapter(newAdapter);
+				my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);//刷新后强制滑动至消息列表上的最后一个位置
 				v.et_secretary_question.setOnFocusChangeListener(QuestionDetailFragment.this);
 				break;
 			case 1:
-				v.et_secretary_question.setText("");
-				QuestionAnswerDetail detail=new QuestionAnswerDetail();
+				/*v.et_secretary_question.setText("");
+				QuestionAnswerDetail detail = new QuestionAnswerDetail();
 				detail.setContent(question);
 				list.getItems().add(list.getItems().size(), detail);
 				adapter.notifyDataSetChanged();
-				my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);
+				my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);*/
+				
+				v.et_secretary_question.setText("");
+//				QuestionAnswerDetailNew detail=new QuestionAnswerDetailNew();
+//				detail.setContent(question);
+				
+				QAMetaData qaMetaData = new QAMetaData();
+				SimpleDateFormat format=new SimpleDateFormat("HH");
+				final int hour=Integer.valueOf(format.format(new Date(System.currentTimeMillis())));
+				if((hour>=9) && (hour<18)){
+					qaMetaData.setAnswer("收到啦，给我点点时间来处理~爱你哟~我们的工作时间：周一至周五工作日9:00-18:00（周末及法定节假日休息），小秘书将逐步实现7*24无休服务。");
+//					qaMetaData.setAnswer("晓得咯，等一哈子噢~~");
+				}
+				//2.2.2  18-24点      0-9点
+				else if(((hour>=0) && (hour<9))||((hour>=18)&&(hour<=24))){
+					qaMetaData.setAnswer("收到您的留言喽~但但但...人家现在正休息，为了养足精神更好为您服务哦~小秘书开工后立即处理（周一至周五工作日9:00-18:00），谢谢体谅哟~小秘书将逐步实现7*24无休服务。");
+//					qaMetaData.setAnswer("大哥喂，我在休息哦~~");
+				}
+				qaMetaData.setContent(question);
+				processList.add(qaMetaData);
+				
+				newAdapter.notifyDataSetChanged();
+				my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);
 				break;
 			case 2:
 				CustomToast.show(activity, R.string.tip,"提交失败");
@@ -105,7 +147,8 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		};
 	};
 
-	private String question;	
+	private String question;
+	private String simpleAnswer;	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -121,13 +164,11 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
-		View rootView = inflater.inflate(
-				R.layout.activity_secretary_question_detail,container,false);
-		initView(rootView);
-		
-		getNewAnswer(refreshUrl);
-		
+		View rootView = inflater.inflate(R.layout.activity_secretary_question_detail,container,false);
 		Handler_Inject.injectFragment(this, rootView);
+		
+		initView(rootView);
+		getNewAnswer(refreshUrl);
 		return rootView;
 	}
 	private void initView(View view) {
@@ -156,11 +197,24 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 			public void onResponse(Response response) throws IOException {
 				if (response.isSuccessful()) {
 					String json=response.body().string();
-					json=json.replace(" ", "");
+					
+					
+					//LogUtils.toDebugLog("json", response.body().string());
+					//json=json.replace(" ", "");
+					LogUtils.toDebugLog("json", json.toString());
 					Gson gson=new Gson();
-					list=gson.fromJson(json, QuestionDetail.class);
+					
+					
+					/*list=gson.fromJson(json, QuestionDetail.class);
 					currentType=list.getType();
-					adapter=new QuestionAnswerAdapter(list);
+					adapter=new QuestionAnswerAdapter(list);*/
+					
+					/*json = "{'answer':[{'simpleAnswer':'1.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'2.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'3.国家は政治制つまり政制ことができる。'}],'content':'测试数据(主问题)','id':'488','items':[{'content':'测试数据1','id':'491','time':'2015-12-2511:24:59','type':'travel','answer':[{'simpleAnswer':'1.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'2.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'3.国家は政治制つまり政制ことができる。'}]},{'content':'测试数据2','id':'492','time':'2015-12-2514:15:33','type':'travel','answer':[{'simpleAnswer':'1.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'2.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'3.国家は政治制つまり政制ことができる。'}]},{'content':'，测试3','id':'493','time':'2015-12-2514:18:12','type':'travel','answer':[{'simpleAnswer':'1.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'2.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'3.国家は政治制つまり政制ことができる。'}]},{'content':'0还是测试4','id':'494','time':'2015-12-2514:48:55','type':'travel','answer':[{'simpleAnswer':'1.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'2.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'3.国家は政治制つまり政制ことができる。'}]}],'time':'2015-12-2416:41:28','type':'travel'}";*/
+					newList= gson.fromJson(json, QuestionDetailNew.class);
+					currentType = newList.getType();
+					processList = processList(newList);
+					newAdapter = new QuestionMultiAnswerAdapter(processList);
+					
 					handleOk.sendEmptyMessage(0);
 				}
 			}
@@ -264,6 +318,118 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	@Override
 	public void onFocusChange(View v, boolean hasFocus) {
 		Log.e("focus", hasFocus+"");
-		my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);
+		 /*my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);*/
+		
+		my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);
+		
 	}
+	
+	/**
+	 * 对服务器端拿到的数据进行处理，转化成新的可以解析的数据
+	 * 处理对象： 将服务器返回对象中answer的类型转为：数组 []
+	 * 
+	 * @author Yeun.Zhang 
+	 * @param list
+	 * @return 
+	 */
+	public ArrayList<QAMetaData> processList(QuestionDetailNew list) {
+		
+		/**
+		 * 约定 type==1： 一问一答的标准Item
+		 *    type==2：追问底部的多次回答样式
+		 */
+		int type = 1;
+		
+		//假设服务器放回的数据类型已经将answer的类型修改为 数组类型[]
+		//1.根据服务器发挥的标准数据，并且gson解析完成转换后的数据集，来提取数据
+		ArrayList<QAMetaData> arrayDataSource = new ArrayList<QAMetaData>();
+		
+		String questionType = list.getType();
+		//1.1主问题的提问数据
+		String mainContent = list.getContent();//拿到第一次提问的内容
+		QAMetaData qaMetaData = new QAMetaData();
+		
+		//1.2主答复为不为空时，才进行answer的解析
+		if(list.getAnswer()!= null&&list.getAnswer().size()!=0){
+			ArrayList<SubAnswer> answer = list.getAnswer();//拿到主问题的多次回答
+			int i = 0;
+			for(SubAnswer simpleAnswer:answer){
+				qaMetaData = new QAMetaData();
+				qaMetaData.setAnswer(simpleAnswer.getSimpleAnswer());
+				qaMetaData.setContent(mainContent);
+				if(i==0){
+					qaMetaData.setType(1);//一问一答的操作
+					i++;
+				}else{
+					qaMetaData.setType(2);
+				}
+				arrayDataSource.add(qaMetaData);
+			}
+		}
+		//1.3当主答复为空的时候，需要将当前的回答可根据事件进行自行塞入对应提问时间的内容
+		else{
+			QAMetaData qaMetaDataSpareWheel = new QAMetaData();
+			qaMetaDataSpareWheel.setContent(mainContent);
+			qaMetaDataSpareWheel.setType(1);//标准一问一答的操作
+//			qaMetaDataSpareWheel.setAnswer("大哥，终于等到你提问了");
+			qaMetaDataSpareWheel.setAnswer("小秘书已经收到您的留言喽，立即开启暴风处理模式~2小时内必定有回复！为保证答复质量，如需更多处理时间，" +
+					"小秘书也将第一时间告知~全心全意为您哟~我们的服务时间：周一至周五工作日9:00-18:00（周末及法定节假日休息），小秘书将逐步实现7*24无休服务。");
+			arrayDataSource.add(qaMetaDataSpareWheel);
+		}
+		
+		//2.子集追问数据的填入
+		ArrayList<QuestionAnswerDetailNew> items = list.getItems();
+		
+		for(QuestionAnswerDetailNew qADetailNew : items){//循环每个追问的对象
+			int j = 0;
+			String content = qADetailNew.getContent();
+			
+			//2.1 item的子集回答存在
+			if(qADetailNew.getAnswer()!=null&& qADetailNew.getAnswer().size()!=0){
+			ArrayList<SubAnswer> sAnswerList = qADetailNew.getAnswer();
+		
+			for(SubAnswer sAnswer :sAnswerList){
+				qaMetaData = new QAMetaData();
+				qaMetaData.setAnswer(sAnswer.getSimpleAnswer());
+				qaMetaData.setContent(content);
+				if(j==0){
+					qaMetaData.setType(1);
+					j++;
+				}else{
+					qaMetaData.setType(2);
+				}
+				arrayDataSource.add(qaMetaData);
+			}
+			
+		  }
+		   //2.2item的子集回答并不存在时，需自行追加回答作为展示
+			else{
+				QAMetaData qaMetaDataPump = new QAMetaData();
+				qaMetaDataPump.setContent(content);
+				qaMetaDataPump.setType(1);
+				
+				String time = qADetailNew.getTime();
+				LogUtils.toDebugLog("time",qADetailNew.getTime());
+				String hourTime = time.substring(11, 13);
+				int intHourTime = Integer.valueOf(hourTime);
+				
+				//2.2.1 9-18点
+				if((intHourTime>=9) && (intHourTime<18)){
+					qaMetaDataPump.setAnswer("收到啦，给我点点时间来处理~爱你哟~我们的工作时间：周一至周五工作日9:00-18:00（周末及法定节假日休息），小秘书将逐步实现7*24无休服务。");
+//					qaMetaDataPump.setAnswer("晓得咯，等一哈子噢~~");
+				}
+				//2.2.2  18-24点      0-9点
+				else if(((intHourTime>=0) && (intHourTime<9))||((intHourTime>=18)&&(intHourTime<=24))){
+					qaMetaDataPump.setAnswer("收到您的留言喽~但但但...人家现在正休息，为了养足精神更好为您服务哦~小秘书开工后立即处理（周一至周五工作日9:00-18:00），谢谢体谅哟~小秘书将逐步实现7*24无休服务。");
+//					qaMetaDataPump.setAnswer("大哥喂，我在休息哦~~");
+				}
+				arrayDataSource.add(qaMetaDataPump);
+			}
+			
+		}//items 的大号for循环
+		
+		return arrayDataSource;
+		
+	}
+	
 }

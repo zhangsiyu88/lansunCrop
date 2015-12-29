@@ -103,20 +103,16 @@ public class MaiCommentListFragment extends BaseFragment {
 		EventBus.getDefault().register(this);
 		
 		
-		
-		refreshUrl = String.format(GlobalValue.URL_ACTIVITY_COMMENTS,
-				activityId);
+		refreshUrl = String.format(GlobalValue.URL_ACTIVITY_COMMENTS,activityId);
 		refreshKey = 0;
+		LogUtils.toDebugLog("activityId","activityId"+ activityId);
 		// 得到活动评论列表
 		refreshCurrentList(refreshUrl, null, refreshKey, lv_comments_list);
 
 		//终于知道将其设置在子线程中类
 		new Thread() {
 			public void run() {
-				String path = activity.getCacheDir().getPath()+File.separator+"qmyo_sensitive_new.db";
-			    db = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READWRITE);  
 			    sensitiveList = getToDbData();
-				
 				/*
 				 * if (sensitiveList == null) {
 					Selector provinceSelector = Selector.from(Sensitive.class);
@@ -139,8 +135,7 @@ public class MaiCommentListFragment extends BaseFragment {
 			v.et_mai_comment_reply_content.setFocusable(true);
 			v.et_mai_comment_reply_content.setFocusableInTouchMode(true);
 			v.et_mai_comment_reply_content.requestFocus();
-			v.et_mai_comment_reply_content.setHint(getString(R.string.replay)
-					+ event.getReplyUserName());
+			v.et_mai_comment_reply_content.setHint(getString(R.string.replay)+ event.getReplyUserName());
 			replyId = event.getPosition();
 			if (event.getToUserId() != 0) {
 				replyUserId = event.getToUserId();
@@ -154,7 +149,9 @@ public class MaiCommentListFragment extends BaseFragment {
 	 * @return
 	 */
 	  public List<Sensitive> getToDbData(){  
-         
+		  List<Sensitive> sensitiveList = new ArrayList<Sensitive>();
+		  String path = activity.getCacheDir().getPath()+File.separator+"qmyo_sensitive_new.db";
+		  SQLiteDatabase db = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READWRITE);  
 		  List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();  
           //Cursor cursor = db.query("person", null, null, null, null, null, null);  
           Cursor cursor=db.query("com_qmyo_domain_Sensitive_new", null,null, null, null, null, "_id desc");  
@@ -172,7 +169,6 @@ public class MaiCommentListFragment extends BaseFragment {
               sens.set_id(id);
               sens.setName(name);
               sensitiveList.add(sens);
-              
           }
           LogUtils.toDebugLog("start", "完成敏感词列表的写入操作");
           
@@ -197,16 +193,14 @@ public class MaiCommentListFragment extends BaseFragment {
 			PullToRefreshManager.getInstance().onFooterRefreshComplete();
 			switch (r.getKey()) {
 			case 0: //拿到评论列表，将评论列表重新展示
-				list = Handler_Json.JsonToBean(CommentList.class,
-						r.getContentAsString());
+				list = Handler_Json.JsonToBean(CommentList.class,r.getContentAsString());
 				if (list.getData() != null) {
 					
 					if(isPullDown){
 						dataList.clear();
 						isPullDown = false;
 					}
-					/*
-					 * if (adapter != null) {
+					/* if (adapter != null) {
 						adapter.notifyDataSetChanged();
 					}*/
 					for (CommentListData data : list.getData()) {
@@ -214,13 +208,15 @@ public class MaiCommentListFragment extends BaseFragment {
 						map.put("iv_comment_head", data.getUser().getAvatar());
 						map.put("tv_comment_time", data.getComment().getTime());
 						map.put("tv_comment_name", data.getUser().getName());
-						map.put("tv_comment_desc", data.getComment()
-								.getContent());
-						map.put("mai_communicate", data.getComment()
-								.getRespond());
+						map.put("tv_comment_desc", data.getComment().getContent());
+						map.put("mai_communicate", data.getComment().getRespond());
 						map.put("photos", data.getComment().getPhotos());
 						map.put("activityid", activityId);
 						map.put("commentid", data.getComment().getId());
+						/*
+						 * 暂时无法拿到评论书写时对应的门店名称
+						   map.put("store_name", data.getActivity().get。。。);
+						 */
 						dataList.add(map);
 					}
 				} else {
@@ -230,13 +226,15 @@ public class MaiCommentListFragment extends BaseFragment {
 					adapter = new MaiCommentAdapter(lv_comments_list, dataList,
 							R.layout.mai_comment_lv_item);
 					adapter.setActivity(this);
-					adapter.setParentScrollView(lv_comments_list);
+					//adapter.setParentScrollView(lv_comments_list);
 					
 					lv_comments_list.setAdapter(adapter);
 					lv_comments_list.setOnScrollListener(mOnScrollListener);
 				} else {
 					adapter.notifyDataSetChanged();
 				}
+				PullToRefreshManager.getInstance().onHeaderRefreshComplete();
+				PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				break;
 
 			case 1:

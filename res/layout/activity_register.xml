@@ -9,7 +9,7 @@
 
 <FrameLayout 
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/app_white"
     android:orientation="vertical" >
 
@@ -23,14 +23,16 @@
    <!-- 借用秘书页的动态背景，两个为同一个背景 -->
    <com.ryanharter.viewpager.ViewPager
        android:id="@+id/vp_sercretary_bg_pager"
-       style="@style/w_h_full"
+       style="@style/w_match_h_match"
        android:focusable="false"
        android:focusableInTouchMode="false"
-       app:orientation="vertical"/>
+       app:orientation="vertical"
+       android:clickable="false"
+       android:longClickable="false"/>
   
 	    <RelativeLayout
 	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
+	        android:layout_height="match_parent"
 	        android:background="@drawable/leaves" >
 	
 	        <RelativeLayout
@@ -215,7 +217,7 @@
 	                android:layout_height="wrap_content"
 	                android:layout_alignParentBottom="true"
 	                android:layout_centerHorizontal="true"
-	                android:layout_marginBottom="@dimen/bottom_menu_h"
+	                android:layout_marginBottom="50dp"
 	                android:text="@string/forget_password"
 	                android:textColor="#6F6F6F" />
 	        </RelativeLayout>

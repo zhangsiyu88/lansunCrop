@@ -69,6 +69,7 @@
     <string name="qq_friend">QQ好友</string>
     <string name="tx_wb">腾讯微博</string>
     <string name="xl_wb">新浪微博</string>
+    <string name="rapley_counts">回复(%1$s)</string>
     <string name="tele_address">地址：%1$s</string>
     <string name="images_count">共%1$s张</string>
     <string name="tele_address2">办公地址：%1$s</string>
@@ -174,7 +175,9 @@
     <string name="remove_cache_tip">您确定要清空缓存？</string>
     <string name="publish">发表</string>
     <string name="new_comment_tip">亲爱的迈友您好，请简单评论下您此次参与活动的感受，店员服务满意吗？活动是否对您有帮助？</string>
+    <string name="new_comment_tip2">总裁大大，请发表您的评论吧~~</string>
     <string name="upload_photo">上传图片</string>
+    <string name="wait_input_counts">您还剩 15个字等待输入</string>
     <string name="navigation">导航</string>
     <string name="currentCard">当前信用卡</string>
     <string name="otherCard">其他银行卡</string>
@@ -228,7 +231,7 @@
       <string name="please_enter_correct_pwd">请您设置6-16位数字或字母的密码</string>
       <string name="please_enter_correct_code">请您输入正确的验证码哦</string>
     <string name="search_city">中文/拼音搜索城市</string>
-    <string name="none">暂无</string>
+    <string name="none">活动评论暂无，赶紧抢沙发哟~~</string>
     <string name="none_data_tip">到底啦</string>
     <string name="none_data_content">您指派的任务只有这么多哦</string>
     <string name="activity_detail_info">活动详情</string>
@@ -327,6 +330,7 @@
     <string name="expired">已过期</string>
     <string name="has_activity">有活动</string>
     <string name="no_activity">无活动</string>
+    <string name="tv_comment_from">来自于 %1$s </string>
     <string name="only_select_one">只能选一个</string>
     <string name="please_scanning">请商户扫描以下二维码</string>
     <string name="jump">跳过</string>

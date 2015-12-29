@@ -2,7 +2,6 @@ package com.lansun.qmyo.fragment;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,24 +14,23 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Process;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Images.Media;
+import android.support.v4.app.FragmentTransaction;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -42,15 +40,16 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.ListAdapter;
+import android.widget.RatingBar;
+import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.amap.api.services.core.p;
-import com.android.pc.ioc.app.Ioc;
 import com.android.pc.ioc.db.sqlite.Selector;
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
@@ -63,23 +62,29 @@ import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.ioc.view.listener.OnItemClick;
-import com.android.pc.util.Handler_File;
 import com.android.pc.util.Handler_Inject;
+import com.iflytek.cloud.Setting;
+import com.lansun.qmyo.R;
+import com.lansun.qmyo.adapter.DetailHeaderDeletePagerAdapter;
 import com.lansun.qmyo.adapter.DetailHeaderPagerAdapter;
 import com.lansun.qmyo.adapter.UpLoadPhotoAdapter;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.Sensitive;
 import com.lansun.qmyo.event.entity.DeleteEntity;
+import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
+import com.lansun.qmyo.view.ImageGalleryDeleteDialog;
+import com.lansun.qmyo.view.ImageGalleryDeleteDialog.OnNotifyGridViewListener;
+import com.lansun.qmyo.view.ImageGalleryDialog;
 import com.lansun.qmyo.view.ImageGalleryDialog2;
 import com.lansun.qmyo.view.MyGridView;
 import com.ns.mutiphotochoser.GalleryActivity;
 import com.ns.mutiphotochoser.constant.Constant;
-import com.lansun.qmyo.R;
+import com.ns.mutiphotochoser.fragment.ImagePagerFragment;
 
-public class NewCommentFragment extends BaseFragment {
+public class NewCommentFragment extends BaseFragment implements OnNotifyGridViewListener{//implements openSelectPhotoListener
 
 	@InjectAll
 	Views v;
@@ -105,10 +110,14 @@ public class NewCommentFragment extends BaseFragment {
 		private View fl_comments_right_iv, iv_activity_shared,
 				ll_new_comment_upload;
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
-		private TextView tv_activity_title, tv_activity_shared;
+		private TextView tv_activity_title, tv_activity_shared,tv_wait_input_counts,
+						 tv_rb_room_ratingbar_counts,tv_big_num;
 		private EditText et_new_comment_content;
 		@InjectBinder(listeners = { OnItemClick.class }, method = "itemClick")
 		private MyGridView gv_new_comment_images;
+		
+		private RatingBar rb_room_ratingbar;
+		
 
 	}
 
@@ -117,8 +126,69 @@ public class NewCommentFragment extends BaseFragment {
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_new_comment, null);
-		
 		Handler_Inject.injectFragment(this, rootView);
+		
+		v.et_new_comment_content.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+			}
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,int after){
+			}
+			@Override
+			public void afterTextChanged(Editable s) {
+				if(s.length()<=15){
+					v.tv_wait_input_counts.setText(String.format("您还需要输入%1$s个字", String.valueOf(15 - s.length())));
+				}else{
+					v.tv_wait_input_counts.setText(String.format("您还可以输入%1$s个字", String.valueOf(500 - s.length())));
+				}
+			}
+		});
+		
+		
+		v.rb_room_ratingbar.setOnRatingBarChangeListener(new OnRatingBarChangeListener() {
+			
+			@Override
+			public void onRatingChanged(RatingBar ratingBar, float rating,
+					boolean fromUser) {
+				v.tv_rb_room_ratingbar_counts.setText("您的评分为"+String.valueOf(rating).substring(0, 1)+"星");
+				v.tv_big_num.setText(String.valueOf(rating).substring(0, 1));
+			}
+		});
+		
+		
+		/**
+		 * 给GridView设置上条目监听事件
+		 */
+		v.gv_new_comment_images.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				if(position < 8){
+					if(position == adapter.getCount()-1){//点击的位置小于8（即个数小于9），且是所填图的最后一个时
+						upDataHead();
+						return;
+					}
+				}else if(position == 8){//点击对象为9张图片中的最后一张图像
+					View layout = LayoutInflater.from(activity).inflate(
+		    				R.layout.custom_toast, null);
+		    		TextView tv_title = (TextView) layout.findViewById(R.id.tv_title);
+		    		TextView tv_content = (TextView) layout.findViewById(R.id.tv_content);
+		    		tv_title.setText("选择上传的照片已满");
+		    		tv_content.setText("最多上传9张照片哦");
+		    		Toast toast = new Toast(activity);
+		    		toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+		    		toast.setDuration(0);
+		    		toast.setView(layout);
+		    		toast.show();
+		    		
+		    		openPhotoDetails(8);
+		    		return;
+				}
+				 openPhotoDetails(position);
+			}
+		});
 		return rootView;
 	}
 
@@ -134,6 +204,8 @@ public class NewCommentFragment extends BaseFragment {
 			shopId = arguments.getString("shop_id");
 		}
 		adapter = new UpLoadPhotoAdapter(activity, files);
+		//adapter.setOpenSelectPhotoListener(this);
+		
 		v.gv_new_comment_images.setAdapter(adapter);
 		EventBus.getDefault().register(this);
 		
@@ -218,6 +290,12 @@ public class NewCommentFragment extends BaseFragment {
 				CustomToast.show(activity, R.string.tip,R.string.please_enter_activity_comment);
 				return;
 			}
+			/*
+			 * 提交Rating值，需要注意将获取到的rating作为参数提交上去
+			 */
+			float rating = v.rb_room_ratingbar.getRating();
+			LogUtils.toDebugLog("rating", "获取到的Rating值为： "+ rating);
+			
 			
 			//替代关键字的操作
 			replaceSensitive(v.et_new_comment_content.getText().toString().trim());
@@ -327,6 +405,7 @@ public class NewCommentFragment extends BaseFragment {
 	private Uri imageUri;
 	private ProgressDialog pd;
 	private Selector provinceSelector;
+	private ImageGalleryDeleteDialog imageGalleryDeleteDialog;
 
 	public void upDataHead() {
 		View view = inflater.inflate(R.layout.photo_choose_dialog, null);
@@ -402,8 +481,13 @@ public class NewCommentFragment extends BaseFragment {
 				dialog.dismiss();
 				Intent intent = new Intent(getActivity(), GalleryActivity.class);
 				// 指定图片选择数
-
 				int max = 9;
+				
+//				if(adapter==null||adapter.getCount()==0){
+//					max = 9;
+//				}else{
+//					max = 9 - adapter.getCount();
+//				}
 				
 				//此处判断写的好玩些
 				if (max - files.size() < 0) {
@@ -452,7 +536,10 @@ public class NewCommentFragment extends BaseFragment {
 				return;
 			}
 			v.ll_new_comment_upload.setVisibility(View.GONE);
+			
 			v.gv_new_comment_images.setVisibility(View.VISIBLE);
+			
+			
 			// String path = getPath(activity, uri);
 			ArrayList<String> images = data
 					.getStringArrayListExtra(Constant.EXTRA_PHOTO_PATHS);
@@ -461,6 +548,9 @@ public class NewCommentFragment extends BaseFragment {
 			}
 			// setListViewHeightBasedOnChildren(v.gv_new_comment_images);
 			adapter.notifyDataSetChanged();
+			
+			
+			
 			break;
 		}
 		super.onActivityResult(requestCode, resultCode, data);
@@ -613,5 +703,36 @@ public class NewCommentFragment extends BaseFragment {
 		}
 		
 	}
+
+	/*
+	 * 最后面的那个照片按钮点击后，便执行下面的回调方法
+	 * @see com.lansun.qmyo.adapter.UpLoadPhotoAdapter.openSelectPhotoListener#openUpdataHead()
+	 */
+	/*@Override
+	public void openUpdataHead(){
+		upDataHead();
+	}*/
 	
+	
+	
+	public void openPhotoDetails(int position){
+		
+		DetailHeaderDeletePagerAdapter headPagerAdapter = new DetailHeaderDeletePagerAdapter(activity, files);
+		imageGalleryDeleteDialog = ImageGalleryDeleteDialog.newInstance(headPagerAdapter, position,files);
+		imageGalleryDeleteDialog.setOnNotifyGridViewListener(this);
+		imageGalleryDeleteDialog.show(getFragmentManager(), "galleryCanDelete");
+        
+	}
+
+	
+	@Override
+	public void notifyGridView(){
+		//此adapter是GridView挂钩的Adapter数据源
+		adapter.notifyDataSetChanged();
+	}
+	@Override
+	public void notifyGridView(int i) {
+		imageGalleryDeleteDialog.dismiss();
+		adapter.notifyDataSetChanged();
+	}
 }

@@ -38,12 +38,14 @@ import com.lansun.qmyo.domain.Sensitive;
 import com.lansun.qmyo.domain.StoreInfo;
 import com.lansun.qmyo.event.entity.ReplyEntity;
 import com.lansun.qmyo.fragment.MessageCenterFragment.Views;
+import com.lansun.qmyo.utils.DBSensitiveUtils;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.MyListView;
 import com.lansun.qmyo.R;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -88,6 +90,23 @@ public class MineCommentsFragment extends BaseFragment {
 		private EditText et_mai_comment_reply_content;
 	}
 
+	
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		
+		/*
+		 * 猜测： 读取数据库的速度 影响了整个UI进程的速度
+		 * 初步解决办法： 在子线程中进行本地数据库的加载任务
+		 */
+		new Thread(new  Runnable() {
+			public void run() {
+//				sensitiveList = Ioc.getIoc().getDb(activity.getCacheDir().getPath(), "qmyo_sensitive_new.db").findAll(provinceSelector);
+				sensitiveList = DBSensitiveUtils.getToDbData(activity);
+			}
+		}).start();
+		
+		super.onCreate(savedInstanceState);
+	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -115,17 +134,7 @@ public class MineCommentsFragment extends BaseFragment {
 		provinceSelector.select(" * ");
 		provinceSelector.limit(Integer.MAX_VALUE);
 		
-		/*
-		 * 猜测： 读取数据库的速度 影响了整个UI进程的速度
-		 * 初步解决办法： 在子线程中进行本地数据库的加载任务
-		 */
-		new Runnable() {
-			@Override
-			public void run() {
-				sensitiveList = Ioc.getIoc().getDb(activity.getCacheDir().getPath(), "qmyo_sensitive.db").findAll(provinceSelector);
-			}
-		};
-		
+
 	}
 
 	@InjectHttp
@@ -260,8 +269,10 @@ public class MineCommentsFragment extends BaseFragment {
 			} else {
 				params.put("to_user_id", replyUserId + "");
 			}
-			FastHttpHander.ajaxForm(GlobalValue.URL_USER_ACTIVITY_COMMENT,
-					params, null, config, this);
+			/*FastHttpHander.ajaxForm(GlobalValue.URL_USER_ACTIVITY_COMMENT,
+					params, null, config, this);*/
+			FastHttpHander.ajax(GlobalValue.URL_USER_ACTIVITY_COMMENT,
+					params, config, this);
 			break;
 		}
 	}

@@ -34,11 +34,14 @@ import com.lansun.qmyo.fragment.BankCardDetailFragment;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.lansun.qmyo.R;
 
 public class UpLoadPhotoAdapter extends CommonAdapter {
+
+//	private openSelectPhotoListener mOpenSelectPhotoListener;
 
 	public UpLoadPhotoAdapter(Activity activity, ArrayList<String> data) {
 		this.activity = activity;
@@ -47,17 +50,22 @@ public class UpLoadPhotoAdapter extends CommonAdapter {
 	}
 
 	@Override
-	public int getCount() {
+	public int getCount() {//会执行多少次getView（）操作
+		if(data.size()>=9){//当选中的照片为9时，不需要最后哪张图片
+			return 9;
+		}
 		return data.size() + 1;
 	}
 
 	@Override
 	public View view(int position, View convertView, ViewGroup parent) {
+		//position是从0开始计数，故当getCount的值增大时，那么position才有机会和data.size()相等
 		if (position == data.size()) {
+			//在所有选中的图片后面加上一个照相机的图片
 			convertView = inflater.inflate(R.layout.upload_photo, null);
 			return convertView;
 		}
-
+		
 		convertView = inflater.inflate(R.layout.upload_photo_item, null);
 		RecyclingImageView iv_upload_photo = (RecyclingImageView) convertView
 				.findViewById(R.id.iv_upload_photo);
@@ -69,4 +77,12 @@ public class UpLoadPhotoAdapter extends CommonAdapter {
 		return convertView;
 	}
 
+	
+//	public interface openSelectPhotoListener{
+//		public void openUpdataHead();
+//	}
+//	
+//	public void setOpenSelectPhotoListener(openSelectPhotoListener lis){
+//		this.mOpenSelectPhotoListener = lis;
+//	}
 }

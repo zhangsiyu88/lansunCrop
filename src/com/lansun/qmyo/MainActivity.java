@@ -34,6 +34,7 @@ import com.lansun.qmyo.fragment.HomeFragment;
 import com.lansun.qmyo.fragment.HomeFragmentOld;
 import com.lansun.qmyo.fragment.IntroductionPageFragment;
 import com.lansun.qmyo.fragment.MineFragment;
+import com.lansun.qmyo.fragment.NewCommentFragment;
 import com.lansun.qmyo.fragment.PersonCenterFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.fragment.SearchBankCardFragment;
@@ -203,6 +204,7 @@ public class MainActivity extends FragmentActivity {
 		startService(locationService);
 		
 		startFragmentAdd(new MainFragment());
+		//startFragmentAdd(new NewCommentFragment());
 	}
 	
 	

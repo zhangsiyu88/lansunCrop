@@ -60,9 +60,11 @@ import android.text.TextUtils;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.View.OnTouchListener;
 import android.view.animation.LinearInterpolator;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -153,6 +155,12 @@ public class RegisterFragment extends BaseFragment{
 		
 		adapter = new SecretaryBgPagerAdapter();
 		v.vp_sercretary_bg_pager.setAdapter(adapter);
+        v.vp_sercretary_bg_pager.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				return false;
+			}
+		});
 		try {
 			Field mField = ViewPager.class.getDeclaredField("mScroller");
 			mField.setAccessible(true);//允许暴力反射

@@ -33,9 +33,11 @@ import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.animation.AccelerateInterpolator;
@@ -209,6 +211,13 @@ import com.squareup.okhttp.Response;
 		
 		adapter = new SecretaryBgPagerAdapter();
 		v.vp_sercretary_bg_pager.setAdapter(adapter);
+		v.vp_sercretary_bg_pager.setOnTouchListener(new OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				return false;
+			}
+		});
 		try {
 			Field mField = ViewPager.class.getDeclaredField("mScroller");
 			mField.setAccessible(true);//允许暴力反射

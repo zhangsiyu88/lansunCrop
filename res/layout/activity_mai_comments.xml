@@ -59,12 +59,12 @@
             android:cacheColorHint="#00000000"
             android:divider="@color/app_bg"
             android:dividerHeight="10dp"
-            android:transcriptMode="normal"
+            android:transcriptMode="disabled"
             android:listSelector="@android:color/transparent"
-            android:scrollbars="none" />
+            android:scrollbars="none" /><!-- android:transcriptMode="normal" -->
 
         <!-- 底部给咱设置一个 回复框EditText的内容 -->
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/ll_mai_comment_reply"
             android:layout_width="match_parent"
             android:layout_height="@dimen/reply_h"
@@ -98,7 +98,7 @@
                 android:background="@drawable/tv_style_green"
                 android:text="@string/send"
                 android:textColor="@color/app_white" />
-        </RelativeLayout>
+        </LinearLayout>
     </RelativeLayout>
 
 </LinearLayout>

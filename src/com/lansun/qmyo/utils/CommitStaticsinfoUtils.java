@@ -91,16 +91,17 @@ public class CommitStaticsinfoUtils {
 					"device=Android" +
 					"&device_id="+phoneIMEI+
 					"&platform="+intChannelCode+
-					"&city="+cityName , null,requestCallBack );
+					"&city="+cityName+
+					"&version="+version, null,requestCallBack);
 			
 			break;
-		case 2:
+		case 2://用户登录时上传数据
 			RequestParams requestParams = new RequestParams();
 			requestParams.addHeader("Authorization", "Bearer" + App.app.getData("access_token"));
 			
 			user_id = GlobalValue.user.getId();
 			LogUtils.toDebugLog("start", "user_id :"+"新的user_id: "+user_id);
-			httpUtils.send(HttpMethod.POST, "http://appapi.qmyo.org/statistic/collection?" +
+			httpUtils.send(HttpMethod.POST, "http://appapi.qmyo.com/statistic/collection?" +
 					"device=Android" +
 					"&device_id="+phoneIMEI+
 					"&platform="+intChannelCode+
@@ -109,9 +110,7 @@ public class CommitStaticsinfoUtils {
 					"&user_id="+user_id , requestParams,requestCallBack );
 			break;
 		}
-
 	}
-	
 	
 	/*
 	 * 手机IMEI唯一标示符
