@@ -1047,8 +1047,6 @@ import com.squareup.okhttp.Response;
 					handler.removeCallbacksAndMessages(null);
 					handler.postDelayed(new InternalTask(), 5000);
 					vp_home_ad.setCurrentItem(1000*3);
-				    
-					
 					
 					
 					//dataList为空
@@ -1075,7 +1073,7 @@ import com.squareup.okhttp.Response;
 				break;
 			case 1:// 极文列表
 				
-				LogUtils.toDebugLog("AppUpdate", "result(1)中决定是否弹出弹窗： GlobalValue.isWaitingForUpdateApp: "+GlobalValue.isWaitingForUpdateApp);
+				//LogUtils.toDebugLog("AppUpdate", "result(1)中决定是否弹出弹窗： GlobalValue.isWaitingForUpdateApp: "+GlobalValue.isWaitingForUpdateApp);
 				
 				/**
 				 * 当App.app.getData("toUpdateApp")为空时，才会去进行弹窗的判断，

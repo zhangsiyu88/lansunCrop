@@ -200,9 +200,9 @@
                 android:background="@color/line_bg_expand" />
 
             
-            <!-- 暂时将我的评论关闭掉 --><!--android:visibility="gone"  -->
+            <!-- 暂时将我的评论关闭掉 --><!--  -->
             <LinearLayout
-                
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/app_white" >

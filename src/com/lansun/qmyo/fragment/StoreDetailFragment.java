@@ -274,11 +274,24 @@ public class StoreDetailFragment extends BaseFragment {
 				shop = Handler_Json.JsonToBean(Shop.class,r.getContentAsString());
 				shopName = shop.getName();
 				shopAddress = shop.getAddress();
-				shopTelephone = shop.getTelephone();
 				v.tv_store_shop_name.setText(shop.getName());
-				v.tv_store_details_telephone.setText(Html.fromHtml(String
+				
+				
+				
+				shopTelephone = shop.getTelephone();
+				/*v.tv_store_details_telephone.setText(Html.fromHtml(String
 						.format(getString(R.string.telephone),
-								shop.getTelephone())));
+								shop.getTelephone())));*/
+				if(shopTelephone==""||shopTelephone.isEmpty()||shopTelephone.equals(null)){
+					v.tv_store_details_telephone.setText(Html.fromHtml(String
+							.format(getString(R.string.telephone_nothave_now), "暂无")));
+				}else{
+					v.tv_store_details_telephone.setText(Html.fromHtml(String
+							.format(getString(R.string.telephone), shopTelephone)));
+				}
+				
+				
+				
 				v.tv_store_details_address.setText(Html.fromHtml(String.format(
 						getString(R.string.tele_address), shop.getAddress())));
 				

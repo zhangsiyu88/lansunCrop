@@ -1,4 +1,4 @@
-package com.lansun.qmyo.fragment;
+package com.lansun.qmyo.fragment.comment;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,6 +44,9 @@ import com.lansun.qmyo.domain.CommentListData;
 import com.lansun.qmyo.domain.Sensitive;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.event.entity.ReplyEntity;
+import com.lansun.qmyo.fragment.BaseFragment;
+import com.lansun.qmyo.fragment.NewCommentFragment;
+import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
@@ -56,7 +59,7 @@ import com.lansun.qmyo.R;
  * @author bhxx
  * 
  */
-public class MaiCommentListFragment extends BaseFragment {
+public class MaiCommentListFragmentUpdate extends BaseFragment {
 
 	@InjectAll
 	Views v;
@@ -64,7 +67,7 @@ public class MaiCommentListFragment extends BaseFragment {
 	private View rootView;
 	private String shopId;
 	private int replyId;
-	private MaiCommentAdapter adapter;
+	private MaiCommentAdapterUpdate adapter;
 	private int replyUserId;
 
 	@InjectView(down = true, pull = true)
@@ -73,6 +76,7 @@ public class MaiCommentListFragment extends BaseFragment {
 	private CommentList list;
 	private List<Sensitive> sensitiveList = new ArrayList<Sensitive>();
 	private SQLiteDatabase db;
+	private int counts = 0;
 
 	class Views {
 
@@ -100,7 +104,7 @@ public class MaiCommentListFragment extends BaseFragment {
 		
 		/**
 		 * 注册Eventbus的接收者  */
-		EventBus.getDefault().register(this);
+		/*EventBus.getDefault().register(this);*/
 		
 		
 		refreshUrl = String.format(GlobalValue.URL_ACTIVITY_COMMENTS,activityId);
@@ -129,13 +133,14 @@ public class MaiCommentListFragment extends BaseFragment {
 	 * 对在上部注册的Eventbus接收者，进行事件的处理
 	 * @param event
 	 */
-	public void onEventMainThread(ReplyEntity event){
+	public void onEventMainThread(ReplyEntity event) {
 		if (event.isEnable()) {
 			v.ll_mai_comment_reply.setVisibility(View.VISIBLE);
 			v.et_mai_comment_reply_content.setFocusable(true);
 			v.et_mai_comment_reply_content.setFocusableInTouchMode(true);
 			v.et_mai_comment_reply_content.requestFocus();
 			v.et_mai_comment_reply_content.setHint(getString(R.string.replay)+ event.getReplyUserName());
+			
 			replyId = event.getPosition();
 			if (event.getToUserId() != 0) {
 				replyUserId = event.getToUserId();
@@ -181,7 +186,6 @@ public class MaiCommentListFragment extends BaseFragment {
 		dataList.clear();
 		adapter = null;*/
 		//EventBus.getDefault().unregister(this);
-		
 		super.onPause();
 	}
 
@@ -203,6 +207,7 @@ public class MaiCommentListFragment extends BaseFragment {
 					/* if (adapter != null) {
 						adapter.notifyDataSetChanged();
 					}*/
+					
 					for (CommentListData data : list.getData()) {
 						HashMap<String, Object> map = new HashMap<>();
 						map.put("iv_comment_head", data.getUser().getAvatar());
@@ -213,6 +218,14 @@ public class MaiCommentListFragment extends BaseFragment {
 						map.put("photos", data.getComment().getPhotos());
 						map.put("activityid", activityId);
 						map.put("commentid", data.getComment().getId());
+						
+						//将在评论详情页需要的1个参数传递过去，供发表回复使用
+						map.put("shopid", data.getComment().getShop_id());
+						
+						map.put("main_content_user_name", data.getUser().getName());
+						LogUtils.toDebugLog("data.getUser().getName()", "data.getUser().getName() = :"+data.getUser().getName());
+						
+						
 						/*
 						 * 暂时无法拿到评论书写时对应的门店名称
 						   map.put("store_name", data.getActivity().get。。。);
@@ -223,7 +236,7 @@ public class MaiCommentListFragment extends BaseFragment {
 					lv_comments_list.setAdapter(null);
 				}
 				if (adapter == null) {
-					adapter = new MaiCommentAdapter(lv_comments_list, dataList,
+					adapter = new MaiCommentAdapterUpdate(lv_comments_list, dataList,
 							R.layout.mai_comment_lv_item);
 					adapter.setActivity(this);
 					//adapter.setParentScrollView(lv_comments_list);
@@ -320,14 +333,13 @@ public class MaiCommentListFragment extends BaseFragment {
 			InternetConfig config = new InternetConfig();
 			config.setKey(1);
 			HashMap<String, Object> head = new HashMap<>();
-			head.put("Authorization",
-					"Bearer " + App.app.getData("access_token"));
+			head.put("Authorization","Bearer " + App.app.getData("access_token"));
 			config.setHead(head);
 			LinkedHashMap<String, String> params = new LinkedHashMap<>();
-			params.put("activity_id", activityId + "");
-			params.put("content", v.et_mai_comment_reply_content.getText().toString().trim());
 			
-			params.put("shop_id",   list.getData().get(replyId).getComment().getShop_id()+ "");
+			params.put("activity_id", activityId + "");
+			params.put("shop_id", list.getData().get(replyId).getComment().getShop_id()+ "");
+			params.put("content", v.et_mai_comment_reply_content.getText().toString().trim());
 			params.put("principal", list.getData().get(replyId).getComment().getId()+ "");
 			
 			if (replyUserId == 0) {
@@ -335,10 +347,12 @@ public class MaiCommentListFragment extends BaseFragment {
 			} else {
 				params.put("to_user_id", replyUserId + "");
 			}
+			
 			//点击提交，针对某个迈友的回复内容
 			/*FastHttpHander.ajaxForm(GlobalValue.URL_USER_ACTIVITY_COMMENT,
 					params, null, config, this);*/
-			FastHttpHander.ajax(GlobalValue.URL_USER_ACTIVITY_COMMENT,params, config, this);
+			FastHttpHander.ajax(GlobalValue.URL_USER_ACTIVITY_COMMENT,
+					params, config, this);
 			break;
 			
 		case R.id.iv_activity_reply://点击  右上角   进入写"我的评论"一栏

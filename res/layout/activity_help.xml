@@ -10,7 +10,7 @@
     <ExpandableListView
         android:id="@+id/elv_help"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:divider="@color/line_bg1"
         android:dividerHeight="1px"
         android:groupIndicator="@null"
@@ -18,5 +18,28 @@
         android:scrollbars="none" 
         >
     </ExpandableListView>
-
+    
+    <LinearLayout 
+        android:layout_marginTop="1px"
+        android:id="@+id/ll_click_userprotcol"
+        android:layout_width="match_parent"
+	    android:layout_height="@dimen/bottom_menu_h"
+	    android:background="@color/app_white">
+        
+        
+	   <TextView 
+		    style="@style/text_style_nomal_28"
+		    android:layout_width="match_parent"
+		    android:layout_height="@dimen/bottom_menu_h"
+		    android:layout_marginLeft="@dimen/l_r_35"
+		    android:layout_marginRight="@dimen/l_r_35"
+		    android:gravity="center_vertical"
+		    android:singleLine="true"
+		    android:text="六、迈界迈友协议（迈友协议正文）"
+		    android:textColor="@color/text_gray1" />
+        
+        
+        </LinearLayout>
+    
+    
 </LinearLayout>

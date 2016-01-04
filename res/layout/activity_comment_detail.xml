@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/app_bg"
+        android:orientation="vertical" >
+
+        <include layout="@layout/activity_com" />
+        
+        <include layout="@layout/mai_comment_lv_item_update" />
+
+       
+        
+        
+        <LinearLayout
+            android:layout_marginTop="15dp" 
+            style="@style/w_match_h_match"
+            android:orientation="vertical">
+	         <LinearLayout
+	            android:id="@+id/ll_all_rapley_counts"
+	            android:paddingTop="5dp"
+	            android:paddingBottom="5dp"
+	            android:layout_marginBottom="1px"
+	            style="@style/w_full_h_wrap"
+	            android:orientation="horizontal"
+	            android:background="@color/app_white"
+	            android:gravity="center_vertical">
+	            <ImageView 
+	                style="@style/w_wrap_h_wrap"
+	                android:background="@drawable/mai_reply_icon" />
+		        <TextView 
+		            android:id="@+id/tv_all_rapley_counts"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            style="@style/text_style_small_24"
+		            android:text="@string/rapley_counts1"/>
+	        </LinearLayout>
+        
+	       <com.lansun.qmyo.view.MyListView
+	           android:id="@+id/lv_sub_comments"
+	           style="@style/w_match_h_match"
+	           android:background="@color/app_white"
+	           android:divider="@color/app_bg"
+	           />
+        </LinearLayout>
+        
+    </LinearLayout>
+    
+    <!-- 底部给咱设置一个 回复框EditText的内容 -->
+        <LinearLayout
+            android:id="@+id/ll_mai_comment_reply"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/reply_h"
+            android:layout_alignParentBottom="true"
+            android:background="#DBDBDB"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone"
+           >
+
+            <EditText
+                android:id="@+id/et_mai_comment_reply_content"
+                style="@style/text_style_nomal_28"
+                android:layout_width="@dimen/et_reply_w"
+                android:layout_height="@dimen/et_reply_h"
+                android:layout_marginLeft="@dimen/l_r_20"
+                android:background="@drawable/tv_style_white"
+                android:focusable="true"
+                android:hint="@string/reply"
+                android:imeOptions="actionDone"
+                android:paddingLeft="@dimen/l_r_25"
+                android:textColor="#6F6F6F"
+                android:textCursorDrawable="@null" />
+
+            <Button
+                android:id="@+id/btn_mai_comment_reply_commit"
+                style="@style/text_style_nomal_28"
+                android:layout_width="@dimen/btn_reply_w"
+                android:layout_height="@dimen/btn_reply_h"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/l_r_15"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/tv_style_green"
+                android:text="@string/send"
+                android:textColor="@color/app_white" />
+        </LinearLayout>
+
+</RelativeLayout>

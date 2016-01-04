@@ -66,7 +66,6 @@
                 android:id="@+id/tv_comment_desc"
                 style="@style/text_style_nomal_28"
                 android:ellipsize="end"
-                android:maxLines="2"
                 android:textColor="#6F6F6F" />
 
             <com.android.pc.ioc.image.RecyclingImageView
@@ -204,6 +203,9 @@
             android:orientation="horizontal"> 
             
 	       <com.android.pc.ioc.image.RecyclingImageView
+	           
+	           android:visibility="gone"
+	           
 	           android:id="@+id/iv_comment_reply"
 	           style="@style/w_wrap_h_wrap"
 	           android:src="@drawable/mai_reply_icon" /><!--android:layout_alignParentRight="true"  
@@ -211,6 +213,9 @@
 	         
 	      <!--回复的数量  -->  							
 	      <TextView
+	          
+	          android:visibility="gone"
+	          
 	          android:id="@+id/tv_reply"
 	          android:layout_toRightOf="@id/iv_comment_reply"
 	           android:layout_marginLeft="4dp"
@@ -218,6 +223,9 @@
 	           android:text="@string/rapley_counts" 
 	          style="@style/text_style_small_24"/> 
 	      <TextView
+	          
+	          android:visibility="gone"
+	          
 	           android:id="@+id/tv_line_vertical"
 	           android:layout_toRightOf="@id/tv_reply"
 	           android:layout_marginLeft="4dp"

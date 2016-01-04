@@ -26,9 +26,7 @@ import com.lansun.qmyo.domain.ErrorInfo;
 import com.lansun.qmyo.domain.Token;
 import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.event.entity.FragmentEntity;
-import com.lansun.qmyo.fragment.SecretaryFragment.InternalHandler;
-import com.lansun.qmyo.fragment.SecretaryFragment.InternalTask;
-import com.lansun.qmyo.fragment.SecretaryFragment.SecretaryBgPagerAdapter;
+
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryCardShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryInvestmentShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryLifeShowFragment;
@@ -131,7 +129,7 @@ public class RegisterFragment extends BaseFragment{
 		private ViewPager vp_sercretary_bg_pager;
 	}
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		if (getArguments()!=null) {
 			fragment_name=getArguments().getString("fragment_name");
@@ -149,7 +147,7 @@ public class RegisterFragment extends BaseFragment{
 
 		activity.getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
-						| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 		
 		
 		
@@ -888,7 +886,6 @@ public class RegisterFragment extends BaseFragment{
 						
 						fEntity.setFragment(fragment);
 						EventBus.getDefault().post(fEntity);
-						
 						
 //						back();
 					}

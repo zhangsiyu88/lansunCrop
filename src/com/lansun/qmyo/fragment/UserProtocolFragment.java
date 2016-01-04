@@ -43,7 +43,7 @@ public class UserProtocolFragment extends BaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
-		View rootView = inflater.inflate(R.layout.activity_help, null);
+		View rootView = inflater.inflate(R.layout.activity_protocol, null);
 		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}

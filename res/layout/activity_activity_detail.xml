@@ -321,7 +321,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="@dimen/item_h_90"
                     android:gravity="center_vertical" 
-                    android:background="@drawable/found_bcakgroundcolor_selector">
+                    android:background="@color/app_white">
+                    <!-- android:background="@drawable/found_bcakgroundcolor_selector" -->
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -345,7 +346,12 @@
                             android:textColor="#6F6F6F" />
                     </LinearLayout>
 
+                    
+                    <!-- 小按钮暂时隐藏  -->
                     <com.android.pc.ioc.image.RecyclingImageView
+                        
+                        android:visibility="gone"
+                        
                         android:id="@+id/iv_open_activity_detail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -585,8 +591,8 @@
                 android:id="@+id/iv_activity_detail_report_list"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/item_h_90" 
-                
-                ><!--android:visibility="gone"  -->
+                android:visibility="gone"
+                ><!--  -->
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -690,8 +696,9 @@
                 android:cacheColorHint="#00000000"
                 android:divider="@null"
                 android:listSelector="@android:color/transparent"
-                android:scrollbars="none" >
-            </com.lansun.qmyo.view.MySubListView><!-- android:visibility="gone"  -->
+                android:scrollbars="none"
+                android:visibility="gone" >
+            </com.lansun.qmyo.view.MySubListView><!--   -->
 
             <include layout="@layout/report" />
         </LinearLayout>

@@ -101,7 +101,8 @@ import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.view.CloudView;
 import com.lansun.qmyo.view.CustomToast;
 import com.ryanharter.viewpager.PagerAdapter;
-import com.ryanharter.viewpager.ViewPager;
+/*import com.ryanharter.viewpager.ViewPager;*/
+import com.ryanharter.viewpager.NoTouchViewPager;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -127,7 +128,8 @@ import com.squareup.okhttp.Response;
 		private TextView tv_secretary_icon, tv_secretary_name,tv_secretary_tip1,have_information;
 		//private CloudView iv_register_bg;
 		
-		private ViewPager vp_sercretary_bg_pager;
+//		private ViewPager vp_sercretary_bg_pager;
+		private NoTouchViewPager vp_sercretary_bg_pager;
 		
 	}
 	private String[] secretaryTitle;
@@ -215,11 +217,12 @@ import com.squareup.okhttp.Response;
 			
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				return false;
+				return true;
 			}
 		});
 		try {
-			Field mField = ViewPager.class.getDeclaredField("mScroller");
+//			Field mField = ViewPager.class.getDeclaredField("mScroller");
+			Field mField = NoTouchViewPager.class.getDeclaredField("mScroller");
 			mField.setAccessible(true);//允许暴力反射
 			mScroller = new FixedSpeedScroller(v.vp_sercretary_bg_pager.getContext(),new LinearInterpolator());//CycleInterpolator(Float.MAX_VALUE)
 			mScroller.setmDuration(15000);

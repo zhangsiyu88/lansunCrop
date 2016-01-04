@@ -250,6 +250,7 @@ public class MineCommentsFragment extends BaseFragment {
 			head.put("Authorization",
 					"Bearer " + App.app.getData("access_token"));
 			config.setHead(head);
+			
 			LinkedHashMap<String, String> params = new LinkedHashMap<>();
 			params.put("activity_id", list.getData().get(replyId).getActivity()
 					.getId()

@@ -224,7 +224,7 @@ public class TaskAssignment extends BaseFragment implements TextWatcher{//,OnCli
 				tv_ask_type.setText("  留学服务  ");
 				break;
 			case "travel":
-				tv_ask_type.setText("  旅游度假  ");
+				tv_ask_type.setText("  旅行度假  ");
 				break;
 		}
 		

@@ -78,10 +78,15 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	private QuestionDetailNew newList;
 	private QuestionMultiAnswerAdapter newAdapter;
 	private ArrayList<QAMetaData> processList;
+	private int HISTORY_VER = 0;
+	private int NEW_VER = 1;
+	
+	private int type = 1;//默认进来已新的数据格式 解析返回回来的数据内容
+	
 
 	private String currentType;
 	private ProgressDialog pd;
-	/*private QuestionAnswerAdapter adapter;*/
+	private QuestionAnswerAdapter adapter;
 	private TextView btn_secretary_question_commit;
 	class Views {
 		private ImageView iv_activity_back;
@@ -93,48 +98,92 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
 			case 0:
-				/*String type=switchType(list.getType());
-				v.tv_activity_title.setText(GlobalValue.mySecretary.getName()+"["+type+"]");
-				my_secretary_question_recycle.setAdapter(adapter);
-				my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);//刷新后强制滑动至消息列表上的最后一个位置
-				v.et_secretary_question.setOnFocusChangeListener(QuestionDetailFragment.this);*/
 				
+				if(type == HISTORY_VER){
+					String type=switchType(list.getType());
+					v.tv_activity_title.setText(GlobalValue.mySecretary.getName()+"["+type+"]");
+					my_secretary_question_recycle.setAdapter(adapter);
+					my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);//刷新后强制滑动至消息列表上的最后一个位置
+					v.et_secretary_question.setOnFocusChangeListener(QuestionDetailFragment.this);
+				}else if(type == NEW_VER){
+					String type=switchType(currentType);
+					v.tv_activity_title.setText(GlobalValue.mySecretary.getName()+"["+type+"]");
+					my_secretary_question_recycle.setAdapter(newAdapter);
+					my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);//刷新后强制滑动至消息列表上的最后一个位置
+					v.et_secretary_question.setOnFocusChangeListener(QuestionDetailFragment.this);
+				}
 				
-				String type=switchType(currentType);
-				v.tv_activity_title.setText(GlobalValue.mySecretary.getName()+"["+type+"]");
-				my_secretary_question_recycle.setAdapter(newAdapter);
-				my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);//刷新后强制滑动至消息列表上的最后一个位置
-				v.et_secretary_question.setOnFocusChangeListener(QuestionDetailFragment.this);
+		//暂时 关闭		
+//				/*String type=switchType(list.getType());
+//				v.tv_activity_title.setText(GlobalValue.mySecretary.getName()+"["+type+"]");
+//				my_secretary_question_recycle.setAdapter(adapter);
+//				my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);//刷新后强制滑动至消息列表上的最后一个位置
+//				v.et_secretary_question.setOnFocusChangeListener(QuestionDetailFragment.this);*/
+//				
+//				
+//				String type=switchType(currentType);
+//				v.tv_activity_title.setText(GlobalValue.mySecretary.getName()+"["+type+"]");
+//				my_secretary_question_recycle.setAdapter(newAdapter);
+//				my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);//刷新后强制滑动至消息列表上的最后一个位置
+//				v.et_secretary_question.setOnFocusChangeListener(QuestionDetailFragment.this);
 				break;
 			case 1:
-				/*v.et_secretary_question.setText("");
-				QuestionAnswerDetail detail = new QuestionAnswerDetail();
-				detail.setContent(question);
-				list.getItems().add(list.getItems().size(), detail);
-				adapter.notifyDataSetChanged();
-				my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);*/
+				if(type == HISTORY_VER){
+					v.et_secretary_question.setText("");
+					QuestionAnswerDetail detail = new QuestionAnswerDetail();
+					detail.setContent(question);
+					list.getItems().add(list.getItems().size(), detail);
+					adapter.notifyDataSetChanged();
+					my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);
+				}else if(type == NEW_VER){
+					v.et_secretary_question.setText("");
+					QAMetaData qaMetaData = new QAMetaData();
+					SimpleDateFormat format=new SimpleDateFormat("HH");
+					final int hour=Integer.valueOf(format.format(new Date(System.currentTimeMillis())));
+					if((hour>=9) && (hour<18)){
+						qaMetaData.setAnswer("收到啦，给我点点时间来处理~爱你哟~我们的工作时间：周一至周五工作日9:00-18:00（周末及法定节假日休息），小秘书将逐步实现7*24无休服务。");
+					}
+					else if(((hour>=0) && (hour<9))||((hour>=18)&&(hour<=24))){
+						qaMetaData.setAnswer("收到您的留言喽~但但但...人家现在正休息，为了养足精神更好为您服务哦~小秘书开工后立即处理（周一至周五工作日9:00-18:00），谢谢体谅哟~小秘书将逐步实现7*24无休服务。");
+					}
+					qaMetaData.setContent(question);
+					processList.add(qaMetaData);
+					newAdapter.notifyDataSetChanged();
+					my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);
+				}
 				
-				v.et_secretary_question.setText("");
-//				QuestionAnswerDetailNew detail=new QuestionAnswerDetailNew();
+				
+				
+//			暂时关闭
+//				
+//				/*v.et_secretary_question.setText("");
+//				QuestionAnswerDetail detail = new QuestionAnswerDetail();
 //				detail.setContent(question);
-				
-				QAMetaData qaMetaData = new QAMetaData();
-				SimpleDateFormat format=new SimpleDateFormat("HH");
-				final int hour=Integer.valueOf(format.format(new Date(System.currentTimeMillis())));
-				if((hour>=9) && (hour<18)){
-					qaMetaData.setAnswer("收到啦，给我点点时间来处理~爱你哟~我们的工作时间：周一至周五工作日9:00-18:00（周末及法定节假日休息），小秘书将逐步实现7*24无休服务。");
-//					qaMetaData.setAnswer("晓得咯，等一哈子噢~~");
-				}
-				//2.2.2  18-24点      0-9点
-				else if(((hour>=0) && (hour<9))||((hour>=18)&&(hour<=24))){
-					qaMetaData.setAnswer("收到您的留言喽~但但但...人家现在正休息，为了养足精神更好为您服务哦~小秘书开工后立即处理（周一至周五工作日9:00-18:00），谢谢体谅哟~小秘书将逐步实现7*24无休服务。");
-//					qaMetaData.setAnswer("大哥喂，我在休息哦~~");
-				}
-				qaMetaData.setContent(question);
-				processList.add(qaMetaData);
-				
-				newAdapter.notifyDataSetChanged();
-				my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);
+//				list.getItems().add(list.getItems().size(), detail);
+//				adapter.notifyDataSetChanged();
+//				my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);*/
+//				
+//				
+//				
+//				
+//				v.et_secretary_question.setText("");
+////				QuestionAnswerDetailNew detail=new QuestionAnswerDetailNew();
+////				detail.setContent(question);
+//				
+//				QAMetaData qaMetaData = new QAMetaData();
+//				SimpleDateFormat format=new SimpleDateFormat("HH");
+//				final int hour=Integer.valueOf(format.format(new Date(System.currentTimeMillis())));
+//				if((hour>=9) && (hour<18)){
+//					qaMetaData.setAnswer("收到啦，给我点点时间来处理~爱你哟~我们的工作时间：周一至周五工作日9:00-18:00（周末及法定节假日休息），小秘书将逐步实现7*24无休服务。");
+//				}
+//				else if(((hour>=0) && (hour<9))||((hour>=18)&&(hour<=24))){
+//					qaMetaData.setAnswer("收到您的留言喽~但但但...人家现在正休息，为了养足精神更好为您服务哦~小秘书开工后立即处理（周一至周五工作日9:00-18:00），谢谢体谅哟~小秘书将逐步实现7*24无休服务。");
+//				}
+//				qaMetaData.setContent(question);
+//				processList.add(qaMetaData);
+//				
+//				newAdapter.notifyDataSetChanged();
+//				my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);
 				break;
 			case 2:
 				CustomToast.show(activity, R.string.tip,"提交失败");
@@ -193,10 +242,18 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		startProgress();
 		
 		OkHttp.asyncGet(url, new Callback() {
+			
 			@Override
 			public void onResponse(Response response) throws IOException {
 				if (response.isSuccessful()) {
 					String json=response.body().string();
+					
+					
+//					if(json.contains(",'answer'：[")){
+//						type = NEW_VER ;
+//					}else{
+//						type = HISTORY_VER ;
+//					}
 					
 					
 					//LogUtils.toDebugLog("json", response.body().string());
@@ -205,15 +262,17 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 					Gson gson=new Gson();
 					
 					
-					/*list=gson.fromJson(json, QuestionDetail.class);
-					currentType=list.getType();
-					adapter=new QuestionAnswerAdapter(list);*/
-					
-					/*json = "{'answer':[{'simpleAnswer':'1.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'2.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'3.国家は政治制つまり政制ことができる。'}],'content':'测试数据(主问题)','id':'488','items':[{'content':'测试数据1','id':'491','time':'2015-12-2511:24:59','type':'travel','answer':[{'simpleAnswer':'1.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'2.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'3.国家は政治制つまり政制ことができる。'}]},{'content':'测试数据2','id':'492','time':'2015-12-2514:15:33','type':'travel','answer':[{'simpleAnswer':'1.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'2.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'3.国家は政治制つまり政制ことができる。'}]},{'content':'，测试3','id':'493','time':'2015-12-2514:18:12','type':'travel','answer':[{'simpleAnswer':'1.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'2.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'3.国家は政治制つまり政制ことができる。'}]},{'content':'0还是测试4','id':'494','time':'2015-12-2514:48:55','type':'travel','answer':[{'simpleAnswer':'1.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'2.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'3.国家は政治制つまり政制ことができる。'}]}],'time':'2015-12-2416:41:28','type':'travel'}";*/
-					newList= gson.fromJson(json, QuestionDetailNew.class);
-					currentType = newList.getType();
-					processList = processList(newList);
-					newAdapter = new QuestionMultiAnswerAdapter(processList);
+					if(type == HISTORY_VER){
+						list=gson.fromJson(json, QuestionDetail.class);
+						currentType=list.getType();
+						adapter=new QuestionAnswerAdapter(list);
+					}else if(type == NEW_VER){
+						/*json = "{'answer':[{'simpleAnswer':'1.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'2.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'3.国家は政治制つまり政制ことができる。'}],'content':'测试数据(主问题)','id':'488','items':[{'content':'测试数据1','id':'491','time':'2015-12-2511:24:59','type':'travel','answer':[{'simpleAnswer':'1.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'2.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'3.国家は政治制つまり政制ことができる。'}]},{'content':'测试数据2','id':'492','time':'2015-12-2514:15:33','type':'travel','answer':[{'simpleAnswer':'1.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'2.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'3.国家は政治制つまり政制ことができる。'}]},{'content':'，测试3','id':'493','time':'2015-12-2514:18:12','type':'travel','answer':[{'simpleAnswer':'1.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'2.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'3.国家は政治制つまり政制ことができる。'}]},{'content':'0还是测试4','id':'494','time':'2015-12-2514:48:55','type':'travel','answer':[{'simpleAnswer':'1.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'2.国家は政治制つまり政制ことができる。'},{'simpleAnswer':'3.国家は政治制つまり政制ことができる。'}]}],'time':'2015-12-2416:41:28','type':'travel'}";*/
+						newList= gson.fromJson(json, QuestionDetailNew.class);
+						currentType = newList.getType();
+						processList = processList(newList);
+						newAdapter = new QuestionMultiAnswerAdapter(processList);
+					}
 					
 					handleOk.sendEmptyMessage(0);
 				}
@@ -318,9 +377,15 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	@Override
 	public void onFocusChange(View v, boolean hasFocus) {
 		Log.e("focus", hasFocus+"");
-		 /*my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);*/
 		
-		my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);
+		
+		if(type == HISTORY_VER){
+			my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);
+		}else if(type == NEW_VER){
+			my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);
+		}
+		
+		
 		
 	}
 	

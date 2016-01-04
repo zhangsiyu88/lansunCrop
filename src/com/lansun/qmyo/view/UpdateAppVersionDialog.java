@@ -159,8 +159,8 @@ public class UpdateAppVersionDialog extends BlurDialogFragment {
 		InternetConfig config = new InternetConfig();
 		config.setKey(1);
 		LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
-		params.put("key", "Android");
-		params.put("version", "1");
+//		params.put("key", "Android");
+//		params.put("version", "1");
 		
 //		FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION + info.versionCode , config, this);
 		FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION+"?key=Android&version="+info.versionCode , config, this);
@@ -171,22 +171,22 @@ public class UpdateAppVersionDialog extends BlurDialogFragment {
 		super();
 	}
 
-	public UpdateAppVersionDialog(Bitmap bitmap) {
-		
-		this.mBitmap = bitmap;
-		
-		PackageInfo info = null;
-		manager = App.app.getPackageManager();
-		try {
-		  info = manager.getPackageInfo(App.app.getPackageName(), 0);
-		} catch (NameNotFoundException e) {
-		  e.printStackTrace();
-		}
-		InternetConfig config = new InternetConfig();
-		config.setKey(1);
-//		FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION + info.versionCode , config, this);
-		FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION + 1 , config, this);
-	}
+//	public UpdateAppVersionDialog(Bitmap bitmap) {
+//		
+//		this.mBitmap = bitmap;
+//		
+//		PackageInfo info = null;
+//		manager = App.app.getPackageManager();
+//		try {
+//		  info = manager.getPackageInfo(App.app.getPackageName(), 0);
+//		} catch (NameNotFoundException e) {
+//		  e.printStackTrace();
+//		}
+//		InternetConfig config = new InternetConfig();
+//		config.setKey(1);
+////		FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION + info.versionCode , config, this);
+//		FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION + 1 , config, this);
+//	}
 
 	public void setOnConfirmListener(OnConfirmListener listener) {
 		this.listener = listener;
@@ -468,6 +468,7 @@ public class UpdateAppVersionDialog extends BlurDialogFragment {
 						circularButton.setProgress(100);
 						
 						   Intent intent = new Intent(Intent.ACTION_VIEW);
+						   
 						   intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 						   intent.setAction(android.content.Intent.ACTION_VIEW);
 						//   String type = getMIMEType(f);
@@ -489,13 +490,15 @@ public class UpdateAppVersionDialog extends BlurDialogFragment {
 						v.tv_update_progress.setVisibility(View.VISIBLE);
 						v.tv_update_progress.setText("开始下载");
 						File file = new File (Environment.getExternalStorageDirectory().getAbsolutePath()+"/maijie_newVer.apk");
+						
+						LogUtils.toDebugLog("delete", Environment.getExternalStorageDirectory().getAbsolutePath()+"/maijie_newVer.apk");
 						LogUtils.toDebugLog("delete", file.getAbsolutePath());
 						
 						boolean delete = file.delete();
 						if(delete){
 							LogUtils.toDebugLog("delete", "删除成功");
 						}else{
-							LogUtils.toDebugLog("delete)", "删除失败");
+							LogUtils.toDebugLog("delete", "删除失败");
 						}
 					}
 					

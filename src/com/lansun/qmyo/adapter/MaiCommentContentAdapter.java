@@ -45,6 +45,8 @@ public class MaiCommentContentAdapter extends
 		} else {
 			viewHold.line.setVisibility(View.VISIBLE);
 		}
+		
+		
 		if (!TextUtils.isEmpty(data.get("tv_comment_desc"))) {
 			String conetne = data.get("tv_comment_desc").replace(" 回复 ",
 					context.getString(R.string.reply_green));
@@ -55,13 +57,13 @@ public class MaiCommentContentAdapter extends
 			download(viewHold.iv_comment_head, data.get("iv_comment_head"));
 		}
 
+		
 		viewHold.tv_comment_desc.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
 				System.out.println(data.get("to_user_id"));
-				if (GlobalValue.user.getId() == Integer.parseInt(data
-						.get("to_user_id"))) {
+				if (GlobalValue.user.getId() == Integer.parseInt(data.get("to_user_id"))) {
 					return;
 				}
 				String to_user_id = data.get("to_user_id").toString();
@@ -88,8 +90,13 @@ public class MaiCommentContentAdapter extends
 		@InjectView
 		CircularImage iv_comment_head;
 		@InjectView
-		TextView tv_comment_desc;
-		@InjectView
 		View line;
+		
+		@InjectView
+		TextView tv_comment_desc;
+		
+		
+		
+		
 	}
 }

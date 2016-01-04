@@ -151,8 +151,13 @@ public class NewCommentFragment extends BaseFragment implements OnNotifyGridView
 			@Override
 			public void onRatingChanged(RatingBar ratingBar, float rating,
 					boolean fromUser) {
-				v.tv_rb_room_ratingbar_counts.setText("您的评分为"+String.valueOf(rating).substring(0, 1)+"星");
-				v.tv_big_num.setText(String.valueOf(rating).substring(0, 1));
+				if(rating == 5.0){
+					v.tv_rb_room_ratingbar_counts.setText("您的评分为"+String.valueOf(rating*2).substring(0, 2)+"星");
+					v.tv_big_num.setText(String.valueOf(rating*2).substring(0, 2));
+				}else{
+					v.tv_rb_room_ratingbar_counts.setText("您的评分为"+String.valueOf(rating*2).substring(0, 1)+"星");
+					v.tv_big_num.setText(String.valueOf(rating*2).substring(0, 1));
+				}
 			}
 		});
 		

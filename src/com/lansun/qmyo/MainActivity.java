@@ -333,7 +333,7 @@ public class MainActivity extends FragmentActivity {
 //						});
 				
 				if((System.currentTimeMillis()-exitTime ) > 1000){  
-		            Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();                                
+		            Toast.makeText(getApplicationContext(), "再按一次退出迈界哦~", Toast.LENGTH_SHORT).show();                                
 		            exitTime = System.currentTimeMillis();   
 		        } else {
 		        	MainActivity.this.finish();
@@ -369,7 +369,7 @@ public class MainActivity extends FragmentActivity {
 				
 				
 				if((System.currentTimeMillis()-exitTime ) > 1000){  
-		            Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();                                
+		            Toast.makeText(getApplicationContext(), "再按一次退出迈界哟~", Toast.LENGTH_SHORT).show();                                
 		            exitTime = System.currentTimeMillis();   
 		        } else {
 		        	MainActivity.this.finish();

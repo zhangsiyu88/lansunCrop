@@ -228,11 +228,11 @@ import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 						
 						App.app.setData("LastRefreshTokenTime",String.valueOf(System.currentTimeMillis()));
 						
-						LogUtils.toDebugLog("Token",token.getToken() );
+						/*LogUtils.toDebugLog("Token",token.getToken() );
 						LogUtils.toDebugLog("Token", App.app.getData("access_token"));
 						LogUtils.toDebugLog("LastRefreshTokenTime", 
 								"此次最近更新token服务的时刻： "+DataUtils.dataConvert(Long.valueOf(App.app.getData("LastRefreshTokenTime"))));
-						LogUtils.toDebugLog("LastRefreshTokenTime", "在BaseFragment中令牌更新操作成功！");
+						LogUtils.toDebugLog("LastRefreshTokenTime", "在BaseFragment中令牌更新操作成功！");*/
 						
 						InternetConfig config = new InternetConfig();
 						config.setKey(key);

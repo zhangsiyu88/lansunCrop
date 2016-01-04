@@ -69,6 +69,6 @@
         android:layout_height="1px"
         android:layout_marginLeft="@dimen/l_r_35"
         android:layout_marginRight="@dimen/l_r_35"
-        android:background="@color/line_bg" />
+        android:background="@color/line_bg3" />
 
 </LinearLayout>

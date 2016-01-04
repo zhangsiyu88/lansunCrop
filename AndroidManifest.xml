@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.lansun.qmyo"
-    android:versionCode="12"
-    android:versionName="1.2.12" >
+    android:versionCode="14"
+    android:versionName="1.2.14" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -38,7 +38,7 @@
             android:value="" />  -->
         
         
-        <!--  包名为com.lansun.qmyo     申请    发布版本模式下的高德地图的key -->
+        <!--  包名为com.lansun.qmyo  申请    发布版本模式下的高德地图的key -->
 	    <meta-data
 	            android:name="com.amap.api.v2.apikey"
 	            android:value="a81d22502d5958d33c95c7e32f97c656" /> 

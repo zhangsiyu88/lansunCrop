@@ -121,6 +121,7 @@ public class AboutFragment extends BaseFragment {
 							
 							ImageLoader.getInstance().clearMemoryCache();  
 							ImageLoader.getInstance().clearDiskCache();  
+							
 							initCacheSize();
 						}
 					});
@@ -176,9 +177,11 @@ public class AboutFragment extends BaseFragment {
 		 
 		float mbSize = (float) length / 1024 / 1024;
 		BigDecimal b = new BigDecimal(mbSize);
+		
 		float f1 = b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-		v.tv_setting_cache_size.setText(String.format(
-				getString(R.string.cache_size), f1));
+		
+		v.tv_setting_cache_size.setText(String.format(getString(R.string.cache_size), f1));
+		
 	}
 	
 	/*Uri uri = Uri.parse(urlText.getText().toString());

@@ -31,6 +31,7 @@
             android:layout_marginRight="@dimen/l_r_35" >
 
             <LinearLayout
+                android:id="@+id/ll_activity_shared"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/circle_background_gray_1"

@@ -1,10 +1,12 @@
-package com.lansun.qmyo.adapter;
+package com.lansun.qmyo.fragment.comment;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.View;
@@ -27,13 +29,16 @@ import com.android.pc.ioc.internet.FastHttp;
 import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.util.Handler_Json;
-import com.lansun.qmyo.adapter.MaiCommentAdapter.ViewHolder;
+import com.lansun.qmyo.adapter.DetailHeaderPagerAdapter;
+import com.lansun.qmyo.adapter.MaiCommentContentAdapter;
+import com.lansun.qmyo.adapter.MaiCommentGVAdapter;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.CommentList;
 import com.lansun.qmyo.domain.CommentListData;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.event.entity.ReplyEntity;
 import com.lansun.qmyo.fragment.ReportCommentFragment;
+import com.lansun.qmyo.fragment.comment.MaiCommentAdapterUpdate.ViewHolder;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.GridViewUtils;
 import com.lansun.qmyo.utils.LogUtils;
@@ -50,10 +55,11 @@ import com.lansun.qmyo.R;
  * @author bhxx
  * 
  */
-public class MaiCommentAdapter extends
+public class MaiCommentAdapterUpdate extends
 		LazyAdapter<HashMap<String, Object>, ViewHolder> {
 
 	private ListView parentListView;
+
 
 	private Fragment activity;
 	boolean isShow;
@@ -64,7 +70,7 @@ public class MaiCommentAdapter extends
 		this.activity = fragment;
 	}
 
-	public MaiCommentAdapter(ListView listView,
+	public MaiCommentAdapterUpdate(ListView listView,
 			ArrayList<HashMap<String, Object>> dataList, int layout_id) {
 		super(listView, dataList, layout_id);
 	}
@@ -91,6 +97,7 @@ public class MaiCommentAdapter extends
 					.findViewById(R.id.tv_comment_name);
 			viewHold.tv_mai_comment_communicate = (TextView) convertView
 					.findViewById(R.id.tv_mai_comment_communicate);
+			
 			
 			//书写评论时对应的门店名称
 			viewHold.tv_comment_from = (TextView) convertView
@@ -123,10 +130,11 @@ public class MaiCommentAdapter extends
 		
 		viewHold = (ViewHolder) convertView.getTag();
 		LogUtils.toDebugLog("holder", "开始： 我复用的是第"+viewHold.lv_activity_mai_comments.getTag()+"个convertView");
+		viewHold.list = null;
 		
-		if (position != Integer.parseInt(viewHold.lv_activity_mai_comments.getTag().toString())) {//子级评论的列表展示
-			viewHold.lv_activity_mai_comments.setAdapter(null);
-		}
+//		if (position != Integer.parseInt(viewHold.lv_activity_mai_comments.getTag().toString())) {//子级评论的列表展示
+//			viewHold.lv_activity_mai_comments.setAdapter(null);
+//		}
 		
 		
 		/*if(position<holders.size()-1){
@@ -170,35 +178,36 @@ public class MaiCommentAdapter extends
 		}*/
 		
 		
-		LogUtils.toDebugLog("holder", "    position: "+position);
-		LogUtils.toDebugLog("holder", "holders.size: "+holders.size());
-		if(position<=holders.size()-1){
-			/* 如果此时position位置上在Holders中存在时，从convertView中拿到的viewHold是不需要重新塞入到Holders中的
-			 * 之前的数据就存在，所以无需下面的删除 remove和重新 add进入Holders
-			 * */
-//			   holders.remove(position);
-//			   holders.add(position,viewHold);
-			LogUtils.toDebugLog("holder", "position <= holders.size()-1:   去除的是holder中的第"+position+"个对象");
-		}else{
-			//下面这句代码： 保证了在新生成holder时，即使复用了之前的convertView，也要保证此时拿到的viewHold中的lv_activity_mai_comments.getTag(R.id.tag_show)标签为 正常的false;
-			holders.add(position,viewHold);
-//			holders.set(position,viewHold);
-			LogUtils.toDebugLog("holder", "position > holders.size()-1   ，当前添加至Holders列表中的viewHold到第 "+position+" 位上");
-			holders.get(position).lv_activity_mai_comments.setTag(R.id.tag_show,false);
-			
-			LogUtils.toDebugLog("holder", "getTag(R.id.tag_show): "+ holders.get(position).lv_activity_mai_comments.getTag(R.id.tag_show)+"");
-		}
+//		LogUtils.toDebugLog("holder", "    position: "+position);
+//		LogUtils.toDebugLog("holder", "holders.size: "+holders.size());
+//		if(position<=holders.size()-1){
+//			/* 如果此时position位置上在Holders中存在时，从convertView中拿到的viewHold是不需要重新塞入到Holders中的
+//			 * 之前的数据就存在，所以无需下面的删除 remove和重新 add进入Holders
+//			 * */
+////			   holders.remove(position);
+////			   holders.add(position,viewHold);
+//			LogUtils.toDebugLog("holder", "position <= holders.size()-1:   去除的是holder中的第"+position+"个对象");
+//		}else{
+//			//下面这句代码： 保证了在新生成holder时，即使复用了之前的convertView，也要保证此时拿到的viewHold中的lv_activity_mai_comments.getTag(R.id.tag_show)标签为 正常的false;
+//			holders.add(position,viewHold);
+////			holders.set(position,viewHold);
+//			LogUtils.toDebugLog("holder", "position > holders.size()-1   ，当前添加至Holders列表中的viewHold到第 "+position+" 位上");
+//			holders.get(position).lv_activity_mai_comments.setTag(R.id.tag_show,false);
+//			
+//			LogUtils.toDebugLog("holder", "getTag(R.id.tag_show): "+ holders.get(position).lv_activity_mai_comments.getTag(R.id.tag_show)+"");
+//		}
 		
 //		LogUtils.toDebugLog("holder", "添加进去的是holder中的第"+position+"个对象");
 //		LogUtils.toDebugLog("holder", "holder的个数"+holders.size());
 		
 		
 		
-		if (position + 1 == dataList.size()){
-			viewHold.line.setVisibility(View.GONE);
-		} else {
-			viewHold.line.setVisibility(View.VISIBLE);
-		}
+//		if (position + 1 == dataList.size()){
+//			viewHold.line.setVisibility(View.GONE);
+//		} else {
+//			viewHold.line.setVisibility(View.VISIBLE);
+//		}
+		
 		String headUrl = data.get("iv_comment_head").toString().trim();
 		String time = data.get("tv_comment_time").toString().trim();
 		String desc = data.get("tv_comment_desc").toString().trim();
@@ -218,22 +227,22 @@ public class MaiCommentAdapter extends
 		
 		/*final String store_name = data.get("store_name").toString().trim();*/
 		
-		viewHold.iv_comment_reply.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				ReplyEntity event = new ReplyEntity();
-				event.setPosition(position);
-				if (!isShow) {
-					event.setEnable(true);
-					isShow = true;
-				} else {
-					event.setEnable(false);
-					isShow = false;
-				}
-				event.setReplyUserName(name);
-				EventBus.getDefault().post(event);
-			}
-		});
+//		viewHold.iv_comment_reply.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View arg0) {
+//				ReplyEntity event = new ReplyEntity();
+//				event.setPosition(position);
+//				if (!isShow) {
+//					event.setEnable(true);
+//					isShow = true;
+//				} else {
+//					event.setEnable(false);
+//					isShow = false;
+//				}
+//				event.setReplyUserName(name);
+//				EventBus.getDefault().post(event);
+//			}
+//		});
 		if (!TextUtils.isEmpty(headUrl)) {
 			download(viewHold.iv_comment_head, headUrl);
 		}
@@ -280,68 +289,118 @@ public class MaiCommentAdapter extends
 		/*
 		 * 当之前的评论页面并未关闭的时候，当再一次滚动到该条目时，需要获取当前位置上的评论回复列表的展开标签，若为打开则将当前的ViewHold中的评论回复列表展开为可见
 		 */
-		if ("0".equals(mai_communicate)){
-			holders.get(position).lv_activity_mai_comments.setVisibility(View.GONE);
+//		if ("0".equals(mai_communicate)){
+//			holders.get(position).lv_activity_mai_comments.setVisibility(View.GONE);
+//			
+//			viewHold.lv_activity_mai_comments.setVisibility(View.GONE);
+//		} else {
+//			if (holders.get(position).lv_activity_mai_comments.getTag(R.id.tag_show) != null
+//					&& (boolean) holders.get(position).lv_activity_mai_comments.getTag(R.id.tag_show)) {
+//				
+//				
+//				viewHold.lv_activity_mai_comments.setVisibility(View.VISIBLE);
+//				LogUtils.toDebugLog("holder", "可能是最后一个： getView()中的deal()方法中，拿的是holder中的第"+position+"个对象");
+//				
+//			} else {
+//				viewHold.lv_activity_mai_comments.setVisibility(View.GONE);
+//			}
+//		}
+		
+		
+		
+		/**
+		 *       跳转进入     评论详情页
+		 */
+		viewHold.tv_reply.setOnClickListener(new OnClickListener() {
 			
-			viewHold.lv_activity_mai_comments.setVisibility(View.GONE);
-		} else {
-			if (holders.get(position).lv_activity_mai_comments.getTag(R.id.tag_show) != null
-					&& (boolean) holders.get(position).lv_activity_mai_comments.getTag(R.id.tag_show)) {
-				
-				viewHold.lv_activity_mai_comments.setVisibility(View.VISIBLE);
-				LogUtils.toDebugLog("holder", "可能是最后一个： getView()中的deal()方法中，拿的是holder中的第"+position+"个对象");
-				
-			} else {
-				viewHold.lv_activity_mai_comments.setVisibility(View.GONE);
-			}
-		}
-		
-		
-		viewHold.tv_mai_comment_communicate
-				.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View arg0) {
-						if ("0".equals(mai_communicate)) {
-							LogUtils.toDebugLog("holder", "评论列表  为 空！");
-							return;
-						}
-						if (holders.get(position).lv_activity_mai_comments
-								.getVisibility() == View.VISIBLE) {
-							
-							LogUtils.toDebugLog("holder", "评论列表  关闭展示：拿的是holder中的第"+position+"个对象");
-							holders.get(position).lv_activity_mai_comments
-									.setTag(R.id.tag_show, false);
-							holders.get(position).lv_activity_mai_comments
-									.setVisibility(View.GONE);
-							
-							viewHold.lv_activity_mai_comments.setVisibility(View.GONE);//Add
-							
-						} else {
-							LogUtils.toDebugLog("holder", "评论列表  正在展示：拿的是holder中的第"+position+"个对象");
-							holders.get(position).lv_activity_mai_comments
-									.setTag(R.id.tag_show, true);
-							holders.get(position).lv_activity_mai_comments
-									.setVisibility(View.VISIBLE);
-							
-							viewHold.lv_activity_mai_comments.setVisibility(View.VISIBLE);//Add
-						}
-					}
-				});
-
-		viewHold.iv_comment_report.setOnClickListener(new OnClickListener() {
+			private HashMap<String, Object> originalHashMap;
 
 			@Override
-			public void onClick(View arg0) {
-				ReportCommentFragment fragment = new ReportCommentFragment();
-				Bundle args = new Bundle();
-				args.putString("comment_id", data.get("commentid").toString()
-						.trim());
-				fragment.setArguments(args);
-				FragmentEntity event = new FragmentEntity();
-				event.setFragment(fragment);
-				EventBus.getDefault().post(event);
+			public void onClick(View v) {
+				
+				if (Integer.parseInt(mai_communicate) == 0) {//无子级评论回复，点击不作操作 X      应继续继续跳转
+					//NO-OP
+				}else{
+				}
+				
+				//1.跳转至活动评论详情页
+				
+				
+				//1.1 跳转页面需要的数据有    ： 整个当前条目的内容数据 
+				MaiCommentDetailFragment fragment = new MaiCommentDetailFragment();
+				Bundle bundle = new Bundle();
+//				bundle.putSerializable("commentDetail", (Serializable) dataList.get(position));
+				bundle.putSerializable("commentDetail", (Serializable) data);
+				//1.2 子集评论回复
+//				bundle.putSerializable("subcomment",(Serializable)holders.get(position).list);
+				bundle.putSerializable("subcomment",(Serializable)viewHold.list);
+				LogUtils.toDebugLog("subcomment", "点击后拿到的值实际上的位置是为holders列表的第： "+position);
+				
+				bundle.putSerializable("user_name", (Serializable) data.get("main_content_user_name"));
+				
+				
+				LogUtils.toDebugLog("mUserName", "MaiCommentAdapter中准备传出的bundle中的 mUserName: "+ data.get("main_content_user_name"));
+				
+				bundle.putString("commentid", commentid);
+				bundle.putString("activityid", activityid);
+				
+				bundle.putString("shopid", dataList.get(position).get("shopid")+"");
+				//bundle.putString("principal",dataList.get(position).get("principal")+"" );
+				
+				fragment.setArguments(bundle);
+				FragmentEntity fEntity = new FragmentEntity();
+				fEntity.setFragment(fragment);
+				EventBus.getDefault().post(fEntity);
+				
 			}
 		});
+		
+//		viewHold.tv_mai_comment_communicate
+//				.setOnClickListener(new OnClickListener() {
+//					@Override
+//					public void onClick(View arg0) {
+//						if ("0".equals(mai_communicate)) {
+//							LogUtils.toDebugLog("holder", "评论列表  为 空！");
+//							return;
+//						}
+//						if (holders.get(position).lv_activity_mai_comments
+//								.getVisibility() == View.VISIBLE) {
+//							
+//							LogUtils.toDebugLog("holder", "评论列表  关闭展示：拿的是holder中的第"+position+"个对象");
+//							holders.get(position).lv_activity_mai_comments
+//									.setTag(R.id.tag_show, false);
+//							holders.get(position).lv_activity_mai_comments
+//									.setVisibility(View.GONE);
+//							
+//							viewHold.lv_activity_mai_comments.setVisibility(View.GONE);//Add
+//							
+//						} else {
+//							LogUtils.toDebugLog("holder", "评论列表  正在展示：拿的是holder中的第"+position+"个对象");
+//							holders.get(position).lv_activity_mai_comments
+//									.setTag(R.id.tag_show, true);
+//							holders.get(position).lv_activity_mai_comments
+//									.setVisibility(View.VISIBLE);
+//							
+//							viewHold.lv_activity_mai_comments.setVisibility(View.VISIBLE);//Add
+//						}
+//					}
+//				});
+
+//		viewHold.iv_comment_report.setOnClickListener(new OnClickListener() {
+//
+//			@Override
+//			public void onClick(View arg0) {
+//				ReportCommentFragment fragment = new ReportCommentFragment();
+//				Bundle args = new Bundle();
+//				args.putString("comment_id", data.get("commentid").toString()
+//						.trim());
+//				fragment.setArguments(args);
+//				FragmentEntity event = new FragmentEntity();
+//				event.setFragment(fragment);
+//				EventBus.getDefault().post(event);
+//			}
+//		});
+		
 		if (Integer.parseInt(mai_communicate) != 0) {
 
 			InternetConfig config = new InternetConfig();
@@ -361,32 +420,36 @@ public class MaiCommentAdapter extends
 					if (r.getStatus() == FastHttp.result_ok) {
 						CommentList commentList = Handler_Json.JsonToBean(
 								CommentList.class, r.getContentAsString());
-						ArrayList<HashMap<String, String>> dataList = new ArrayList<HashMap<String, String>>();
+						ArrayList<HashMap<String, String>> subCommentDataList = new ArrayList<HashMap<String, String>>();
+						int pos = 0;
 						for (CommentListData data : commentList.getData()) {
 							HashMap<String, String> map = new HashMap<String, String>();
-							map.put("iv_comment_head", data.getUser()
-									.getAvatar());
+							map.put("iv_comment_head", data.getUser().getAvatar());
 							map.put("tv_comment_name", data.getUser().getName());
-							map.put("tv_comment_time", data.getComment()
-									.getTime());
-							map.put("tv_comment_desc", data.getComment()
-									.getContent());
+							map.put("tv_comment_time", data.getComment().getTime());
+							map.put("tv_comment_desc", data.getComment().getContent());
 							map.put("to_user_id", data.getUser().getId() + "");
 							map.put("replyId", position + "");
-							dataList.add(map);
+							
+							
+							map.put("pos", String.valueOf(pos++));
+							//map.put("replyId", String.valueOf(pos++));
+							
+							//只有在这个地方才真正涉及到  子级评论  回复列表中每一项回复条目  的序列号principal的值
+							map.put("principal", data.getComment().getId()+"");
+							LogUtils.toDebugLog("principal", "principal: "+data.getComment().getId()+"");
+							
+							subCommentDataList.add(map);
 						}
-						/*contentAdapter = new MaiCommentContentAdapter(
-								viewHold.lv_activity_mai_comments, dataList,
-								R.layout.activity_mai_comments_item);//涉及到子级评论的具体列表内容，与之前列表的显示与否无关
-
-						viewHold.lv_activity_mai_comments
-								.setAdapter(contentAdapter);*/
-						contentAdapter = new MaiCommentContentAdapter(
-								viewHold.lv_activity_mai_comments, dataList,
-								R.layout.activity_mai_comments_item);//涉及到子级评论的具体列表内容，与之前列表的显示与否无关
-
-						viewHold.lv_activity_mai_comments
-								.setAdapter(contentAdapter);
+//                        holders.get(position).list = subCommentDataList;
+                        viewHold.list = subCommentDataList;
+                        
+                        
+//						contentAdapter = new MaiCommentContentAdapter(
+//								viewHold.lv_activity_mai_comments, subCommentDataList,
+//								R.layout.activity_mai_comments_item);//涉及到子级评论的具体列表内容，与之前列表的显示与否无关
+//
+//						viewHold.lv_activity_mai_comments.setAdapter(contentAdapter);
 					}
 				}
 
@@ -487,6 +550,8 @@ public class MaiCommentAdapter extends
 		MySubListView lv_activity_mai_comments;// 评论列表
 		@InjectView
 		View line;
+		
+		ArrayList<HashMap<String, String>> list;
 
 	}
 

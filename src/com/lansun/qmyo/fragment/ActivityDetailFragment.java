@@ -60,6 +60,7 @@ import com.lansun.qmyo.domain.CommentList;
 import com.lansun.qmyo.domain.CommentListData;
 import com.lansun.qmyo.domain.CouponsData;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.fragment.comment.MaiCommentListFragmentUpdate;
 import com.lansun.qmyo.utils.AnimUtils;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
@@ -469,27 +470,27 @@ public class ActivityDetailFragment extends BaseFragment {
 		case R.id.yh_detail_header://点击活动优惠详情页的线性布局
 			/**
 			点击上面横栏不产生任何操作 */
-			  if (isOpen) {
-				AnimUtils.startRotateOut(activity, v.iv_open_activity_detail);
-				v.lv_tip_list.setVisibility(View.GONE);
-				isOpen = false;
-			} else {
-				v.lv_tip_list.setVisibility(View.VISIBLE);
-				AnimUtils.startRotateIn(activity, v.iv_open_activity_detail);
-				isOpen = true;
-			}
+//			  if (isOpen) {
+//				AnimUtils.startRotateOut(activity, v.iv_open_activity_detail);
+//				v.lv_tip_list.setVisibility(View.GONE);
+//				isOpen = false;
+//			} else {
+//				v.lv_tip_list.setVisibility(View.VISIBLE);
+//				AnimUtils.startRotateIn(activity, v.iv_open_activity_detail);
+//				isOpen = true;
+//			}
 			break;
 			
 		case R.id.iv_open_activity_detail:
-			if (isOpen) {
-				AnimUtils.startRotateOut(activity, v.iv_open_activity_detail);
-				v.lv_tip_list.setVisibility(View.GONE);
-				isOpen = false;
-			} else {
-				v.lv_tip_list.setVisibility(View.VISIBLE);
-				AnimUtils.startRotateIn(activity, v.iv_open_activity_detail);
-				isOpen = true;
-			}
+//			if (isOpen) {
+//				AnimUtils.startRotateOut(activity, v.iv_open_activity_detail);
+//				v.lv_tip_list.setVisibility(View.GONE);
+//				isOpen = false;
+//			} else {
+//				v.lv_tip_list.setVisibility(View.VISIBLE);
+//				AnimUtils.startRotateIn(activity, v.iv_open_activity_detail);
+//				isOpen = true;
+//			}
 			break;
 			
 		case R.id.iv_activity_shop_detail:
@@ -518,7 +519,8 @@ public class ActivityDetailFragment extends BaseFragment {
 			break;
 		case R.id.iv_activity_detail_report_list://评论列表
 			if (HasComment) {//此活动下 拥有评论
-				fragment = new MaiCommentListFragment();//迈友评论的所有列表
+//				fragment = new MaiCommentListFragment();//迈友评论的所有列表
+				fragment = new MaiCommentListFragmentUpdate();//迈友评论的所有列表
 				args = new Bundle();
 				args.putString("activityId", activityId);
 				args.putString("shopId", shopId);

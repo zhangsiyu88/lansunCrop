@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_top_30"
-        android:src="@drawable/lv_empty" />
+        android:src="@drawable/null_search_card" />
 
     <TextView
         style="@style/text_style_nomal_28"

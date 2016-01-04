@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
@@ -16,7 +19,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.pc.ioc.adapter.LazyAdapter;
+import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectView;
+import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.fragment.SearchBankCardFragment;
+import com.lansun.qmyo.fragment.UserProtocolFragment;
 import com.lansun.qmyo.view.MySubListView;
 import com.lansun.qmyo.R;
 
@@ -45,10 +53,20 @@ public class HelpAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getChildView(int arg0, int arg1, boolean arg2, View arg3,
 			ViewGroup arg4) {
+		
 		View view = LayoutInflater.from(ctx).inflate(R.layout.help_q_a, null);
 		TextView tv_help_q_a = (TextView) view.findViewById(R.id.tv_help_q_a);
-		tv_help_q_a.setText(Html.fromHtml(ctx.getResources().getStringArray(
-				childsId)[arg0]));
+		
+//		if(arg0 == 5 && view.getVisibility()==View.INVISIBLE){
+//			UserProtocolFragment fragment = new UserProtocolFragment();
+//			FragmentEntity fEntity = new FragmentEntity();
+//			fEntity.setFragment(fragment);
+//			EventBus.getDefault().post(fEntity);
+//			return view;
+//		}
+		
+		tv_help_q_a.setText(Html.fromHtml(ctx.getResources().getStringArray(childsId)[arg0]));
+		
 		return view;
 	}
 
@@ -81,6 +99,7 @@ public class HelpAdapter extends BaseExpandableListAdapter {
 				R.dimen.item_h_90));
 		tv_help_title.setPadding(
 				(int) ctx.getResources().getDimension(R.dimen.l_r_35), 0, 0, 0);
+		
 		return tv_help_title;
 	}
 
