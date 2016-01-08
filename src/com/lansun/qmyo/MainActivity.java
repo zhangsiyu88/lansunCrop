@@ -1,6 +1,7 @@
 package com.lansun.qmyo;
 import java.io.IOException;
 
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,6 +26,7 @@ import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.inject.InjectLayer;
 import com.android.pc.ioc.view.PullToRefreshManager;
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.base.BackHandedFragment;
 import com.lansun.qmyo.biz.ServiceAllBiz;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.ActivityDetailFragment;
@@ -33,14 +35,17 @@ import com.lansun.qmyo.fragment.FoundFragment;
 import com.lansun.qmyo.fragment.HomeFragment;
 import com.lansun.qmyo.fragment.HomeFragmentOld;
 import com.lansun.qmyo.fragment.IntroductionPageFragment;
+import com.lansun.qmyo.fragment.MineBankcardFragment;
 import com.lansun.qmyo.fragment.MineFragment;
 import com.lansun.qmyo.fragment.NewCommentFragment;
 import com.lansun.qmyo.fragment.PersonCenterFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
+import com.lansun.qmyo.fragment.ReportFragment;
 import com.lansun.qmyo.fragment.SearchBankCardFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
 import com.lansun.qmyo.fragment.StoreDetailFragment;
 import com.lansun.qmyo.fragment.TestMineActivityFragment;
+import com.lansun.qmyo.port.BackHanderInterface;
 import com.lansun.qmyo.service.AccessTokenService;
 import com.lansun.qmyo.service.LocationService;
 import com.lansun.qmyo.utils.CommitStaticsinfoUtils;
@@ -51,14 +56,18 @@ import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
 @InjectLayer(R.layout.activity_main)
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements BackHanderInterface {
 	private FragmentTransaction fragmentTransaction;
 	public static boolean isForeground = false;
 	private long exitTime = 0;
+	
+	
+	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		
 		
 		
 		
@@ -293,7 +302,23 @@ public class MainActivity extends FragmentActivity {
 			EventBus.getDefault().post(entity);
 			LogUtils.toDebugLog("个人信息页的返回按钮和物理返回键的点击事件", "跳转至我的页面");
 			return;
+		}else if(fragment.getClass().getName().equals(ReportFragment.class.getName())){
+				/*if(mBackHandedFragment == null || !mBackHandedFragment.onBackPressed()){  
+					if(getSupportFragmentManager().getBackStackEntryCount() == 0){  
+						super.onBackPressed();  
+					}else{  
+                getSupportFragmentManager().popBackStack();  
+             } 
+					return;
+				}  */
+				
+				mBackHandedFragment.onBackPressed();
+				return;
+		}else if(fragment.getClass().getName().equals(MineBankcardFragment.class.getName())){
+			mBackHandedFragment.onBackPressed();
+			return;
 		}
+		
 		super.onBackPressed();
 		/*else if(fragment.getClass().getName().equals(getSupportFragmentManager().findFragmentByTag("experience"))){
 			if(GlobalValue.user==null && !GlobalValue.isFirst){//在首页，且还没有拿到体验用户的那张卡，那么需要将物理返回键去除掉，强行要求进行填卡操作者，避免三无状态有机会存在
@@ -379,6 +404,8 @@ public class MainActivity extends FragmentActivity {
 					.equals(ExperienceDialog.class.getName())){//当Fragment为ExperienceDialog时，取消返回键效果
 				return true;
 			}*/
+			
+			
 		}
 		  return super.onKeyDown(keyCode, event);
 	}
@@ -466,6 +493,11 @@ public class MainActivity extends FragmentActivity {
 		private Intent locationService;
 		private Intent accesstokenService;
 		
+		/**
+		 * 当前置于栈顶的Fragment对象
+		 */
+		private BackHandedFragment mBackHandedFragment;
+		
 		public void registerMessageReceiver() {
 			mMessageReceiver = new MessageReceiver();
 			IntentFilter filter = new IntentFilter();
@@ -533,12 +565,9 @@ public class MainActivity extends FragmentActivity {
 		 * @see android.support.v4.app.FragmentActivity#onSaveInstanceState(android.os.Bundle)
 		 */
 		@Override
-		protected void onSaveInstanceState(Bundle outState) {
+		protected void onSaveInstanceState(Bundle outState){
 			super.onSaveInstanceState(outState);
-			
-			
 		}
-		
 		/**
 		 * (non-Javadoc)
 		 * @see android.app.Activity#onRestoreInstanceState(android.os.Bundle)
@@ -546,6 +575,11 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		protected void onRestoreInstanceState(Bundle savedInstanceState) {
 			super.onRestoreInstanceState(savedInstanceState);
+		}
+
+		@Override
+		public void selectFragment(BackHandedFragment selectFragment) {
+			this.mBackHandedFragment = (BackHandedFragment) selectFragment;
 		}
 		
 }

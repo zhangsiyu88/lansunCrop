@@ -139,7 +139,6 @@ public class CommitStaticsinfoUtils {
 	    ZipFile zf = null;
 	    InputStream in = null;
 	    ZipInputStream zin = null;
-	 
 	    try {
 	        zf = new ZipFile(sourceDir);
 	        in = new BufferedInputStream(new FileInputStream(sourceDir));

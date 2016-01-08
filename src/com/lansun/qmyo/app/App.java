@@ -48,12 +48,17 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 import com.nostra13.universalimageloader.utils.StorageUtils;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 
 public class App extends Application {
 	public static final String[] TAGS=new String[]{"shopping","travel","food","car","happy","life","core","investment"};
 	public static App app;
 	public static List<String> search_list_history=new ArrayList<String>();
+	
+	public static IWXAPI api;
+	
 	public static App getInstance() {
 		return app;
 	}
@@ -61,6 +66,8 @@ public class App extends Application {
 	
 	@Override
 	public void onCreate() {
+		
+		api = WXAPIFactory.createWXAPI(this, "wxd930ea5d5a258f4f", false);
 		
 		SpeechUtility.createUtility(getApplicationContext(), SpeechConstant.APPID +"=567209d1"); 
 		

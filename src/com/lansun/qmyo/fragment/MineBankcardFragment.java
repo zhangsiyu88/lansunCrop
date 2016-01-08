@@ -54,6 +54,7 @@ import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.BankCardAdapter;
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.base.BackHandedFragment;
 import com.lansun.qmyo.domain.BankCardData;
 import com.lansun.qmyo.domain.BankCardList;
 import com.lansun.qmyo.event.entity.FragmentEntity;
@@ -82,7 +83,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
-@SuppressLint("InflateParams") public class MineBankcardFragment extends BaseFragment implements FromNetCallBack{
+@SuppressLint("InflateParams") public class MineBankcardFragment extends BackHandedFragment implements FromNetCallBack{
 
 	
 	private boolean mIsFromHome = false;
@@ -1089,6 +1090,10 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 				}
 				
 				if(mIsFromEightPart){//从登录页返回回来，回到我的银行卡页，再按返回键时，重新刷新之前的八大板块页内容
+					Intent intent=new Intent("com.lansun.qmyo.refreshHome");
+					getActivity().sendBroadcast(intent);
+					System.out.println("从八大板块页跳往我的银行卡页，再跳往搜索银行卡页，且添加卡入卡池后，还在我的银行卡页换卡后，需发送广播！");
+					
 					ActivityFragment activityFragment = new ActivityFragment();
 					Bundle args = new Bundle();
 					args.putInt("type", mInitType);//将这个type参数放入到返回回去的八大板块页
@@ -1111,6 +1116,11 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 //					fEntity.setFragment(activityFragment);
 //					EventBus.getDefault().post(fEntity);
 					
+					Intent intent=new Intent("com.lansun.qmyo.refreshHome");
+					getActivity().sendBroadcast(intent);
+					System.out.println("从新品曝光页跳往我的银行卡页，再跳往搜索银行卡页，且添加卡入卡池后，还在我的银行卡页换卡后，需发送广播！");
+					
+					
 					Fragment fragment = new NewBrandFragment();
 					FragmentEntity fEntity = new FragmentEntity();
 					fEntity.setFragment(fragment);
@@ -1119,6 +1129,8 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 				}
 				super.back();//若不做任何操作，那么需要将返回按钮执行正常的返回上一级的操作
 			}
+			
+			
 			
 			if(mIsFromEightPart){//从登录页返回回来，回到我的银行卡页，再按返回键时，重新刷新之前的八大板块页内容
 				ActivityFragment activityFragment = new ActivityFragment();
@@ -1228,5 +1240,11 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 	@Override
 	public void fromNetCallBck(ResponseEntity r) {
 		this.result(r);
+	}
+
+	@Override
+	public boolean onBackPressed() {
+		back();
+		return true;
 	}
 }

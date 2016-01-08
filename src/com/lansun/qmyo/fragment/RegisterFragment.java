@@ -156,7 +156,7 @@ public class RegisterFragment extends BaseFragment{
         v.vp_sercretary_bg_pager.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				return false;
+				return true;
 			}
 		});
 		try {
@@ -711,6 +711,11 @@ public class RegisterFragment extends BaseFragment{
 				App.app.setData("user_avatar",GlobalValue.user.getAvatar());
 				App.app.setData("user_nickname",GlobalValue.user.getNickname());
 				
+				Intent intent_Avatar_NickName = new Intent("com.lansun.qmyo.refreshAvatar_NickName");
+				getActivity().sendBroadcast(intent_Avatar_NickName);
+			    System.out.println("通知MineFragment 换个头像和昵称");
+			    
+				
 				if(isResetPsw){
 					/*MineFragment mineFragment = new MineFragment();*/
 					MainFragment mainFragment = new MainFragment(3);
@@ -755,6 +760,8 @@ public class RegisterFragment extends BaseFragment{
 						}else if ("MineFragment".equals(fragment_name)) {
 							/*fragment=new MineFragment();*/
 							fragment=new MainFragment(3);
+						}else if("GrabRedpackFragment".equals(fragment_name)){
+							fragment=new MainFragment(0);
 						}else if("MineBankcardFragment".equals(fragment_name)){
 							fragment=new MineBankcardFragment();
 							Bundle bundle=new Bundle();

@@ -384,21 +384,16 @@ public class ActivityDetailFragment extends BaseFragment {
 					maiCommentAdapter2.setActivity(this);
 					v.lv_comments_list.setAdapter(maiCommentAdapter2);
 				} else {
-					
-					
 					/**暂时禁掉！！
-					 * 
 					 * 即使没有拿到数据也不要将其显示
 					 * v.ll_activity_detail_none.setVisibility(View.VISIBLE);*/
 					HasComment = false;
 					LogUtils.toDebugLog("total","评论为空");
 					
-					v.ll_activity_detail_none.setVisibility(View.VISIBLE);
-					
+//					//此处涉及到当  评论内容为空  的时候，将此处的布局 不要显示
+//					v.ll_activity_detail_none.setVisibility(View.VISIBLE);
 				}
 
-				
-				
 				break;
 			case 2:
 				if ("true".equals(r.getContentAsString())) {

@@ -206,7 +206,7 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 	
 	private boolean isMove=true;
 	private ProgressDialog dialogpg;
-	private boolean tagOfSearchBankCardFragment = true;
+	private boolean tagOfSearchBankCardFragment = true; //此值铁定为真，那么传到 SwipeListSearchBankcardAdapter 中的 mIsNotChange 铁定为 真
 	private boolean mIsFromRegisterAndHaveNoBankcard = false;
 	private View rootView;
 	
@@ -709,7 +709,8 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 */							//bankcardAdapter.setActivity(SearchBankCardFragment.this);
 							
 							bankcardAdapter = new SwipeListSearchBankcardAdapter(false,activity, dataList,
-									R.layout.activity_bank_card_item_swipe_search,tagOfSearchBankCardFragment,mIsFromRegisterAndHaveNoBankcard);
+									R.layout.activity_bank_card_item_swipe_search, tagOfSearchBankCardFragment, mIsFromRegisterAndHaveNoBankcard);
+							
 							bankcardAdapter.setFragment(SearchBankCardFragment.this);
 							lv_search_bank_card.setAdapter(bankcardAdapter);
 							lv_search_bank_card.setVisibility(View.VISIBLE);

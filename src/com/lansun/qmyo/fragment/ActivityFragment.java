@@ -203,8 +203,7 @@ import com.lansun.qmyo.R;
 				}
 				ActivityDetailFragment fragment = new ActivityDetailFragment();
 				Bundle args = new Bundle();
-				args.putString("activityId",
-						shopDataList.get(position-1).get("activityId").toString());
+				args.putString("activityId",shopDataList.get(position-1).get("activityId").toString());
 				args.putString("shopId", shopDataList.get(position-1).get("shopId")
 						.toString());
 				fragment.setArguments(args);

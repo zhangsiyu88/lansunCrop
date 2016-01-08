@@ -43,6 +43,7 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
+import com.android.pc.ioc.view.GifMovieView;
 import com.android.pc.util.Handler_Inject;
 import com.google.gson.Gson;
 import com.iflytek.cloud.SpeechConstant;
@@ -150,6 +151,13 @@ public class TaskAssignment extends BaseFragment implements TextWatcher{//,OnCli
 				Window window=dialog.getWindow();
 				window.clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
 				window.setContentView(R.layout.task_dialog);
+				
+				GifMovieView loading_gif = (GifMovieView) window.findViewById(R.id.loading_gif);
+				loading_gif.setMovieResource(R.drawable.rockets);
+				
+				
+				/*GifMovieView loading_gif = (GifMovieView) rootView.findViewById(R.id.loading_gif);
+				loading_gif.setMovieResource(R.drawable.rockets);*/
 				
 				window.findViewById(R.id.iknow).setOnClickListener(new OnClickListener() {
 					@Override
@@ -321,9 +329,6 @@ public class TaskAssignment extends BaseFragment implements TextWatcher{//,OnCli
             	mDialog.setListener(mRecognizerDialogListener);
             	//4.显示dialog，接收语音输入
             	mDialog.show();
-            	
-
-            	
           }
 		});
 	}

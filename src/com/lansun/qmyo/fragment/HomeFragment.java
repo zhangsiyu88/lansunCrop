@@ -59,6 +59,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
@@ -1550,6 +1551,12 @@ import com.squareup.okhttp.Response;
 					break;
 				case 21:
 					fragment = new PromoteDetailFragment();
+					bundle.putString("loadUrl", homePhotoList.get(mPosition%homePhotoList.size()).get("photoDataWebViewUrl"));
+					fragment.setArguments(bundle);	
+					break;
+				case 31:
+					//1.1 向服务器发送获取随机码的请求（或者在 webView界面进行请求），顺带上传一个 用户信息
+					fragment = new GrabRedPackFragment();
 					bundle.putString("loadUrl", homePhotoList.get(mPosition%homePhotoList.size()).get("photoDataWebViewUrl"));
 					fragment.setArguments(bundle);	
 					break;

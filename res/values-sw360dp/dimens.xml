@@ -93,6 +93,7 @@
     <dimen name="line_h_125">63dp</dimen>
     <dimen name="l_r_45">23dp</dimen>
     <dimen name="expe_dialog_w">185dp</dimen>
+    <dimen name="grabredpack_dialog_w">200dp</dimen>
     <dimen name="expe_btn_w">90dp</dimen>
     <dimen name="expe_dialog_content_margin_top">224dp</dimen>
     <dimen name="expe_dialog_icon_margin_top">150dp</dimen>

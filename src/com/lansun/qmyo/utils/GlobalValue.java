@@ -12,8 +12,8 @@ public class GlobalValue {
 	public static final String DESCRIPTOR = "com.umeng.share";
 
 	public static Gps gps;
-	public static String IP = "appapi.qmyo.com";
-//	public static String IP = "appapi.qmyo.org";
+//	public static String IP = "appapi.qmyo.com";
+	public static String IP = "appapi.qmyo.org";
 	public static String URL_HOME_AD = "http://" + IP + "/advertisement/poster/";
 	/**
 	 * wx5078ff274c69bc8c a5af88ff8deb95831a8a4a21d5f0aaec
@@ -120,6 +120,11 @@ public class GlobalValue {
 	 */
 	public static final String ACTIVITY_COMPLAIN = "http://" + IP
 			+ "/activity/complain";
+	/**
+	 * 门店投诉
+	 */
+	public static final String SHOP_COMPLAIN = "http://" + IP
+			+ "/shop/complain";
 
 	public static final String URL_AREA_ALL = "http://" + IP + "/area/all";
 
@@ -328,6 +333,10 @@ public class GlobalValue {
 	 * 用户消息
 	 */
 	public static String URL_USER_MESSAGE = "http://" + IP + "/message";
+	/**
+	 * 抢红包随机码网址
+	 */
+	public static String GRAB_RED_PACK = "http://" + IP + "/redpack/key";
 
 	/**
 	 * 用户消息列表

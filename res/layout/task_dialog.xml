@@ -9,10 +9,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:background="@drawable/tv_style_white"
+        
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:orientation="vertical" >
+        android:orientation="vertical" ><!-- android:background="@drawable/tv_style_white"  -->
 
         <TextView
             android:id="@+id/textView1"
@@ -28,13 +28,24 @@
             android:text="2小时内必有回复"
             android:textColor="#AEAEAE" />
 
-        <com.android.pc.ioc.image.RecyclingImageView
+         <com.android.pc.ioc.view.GifMovieView
+            android:id="@+id/loading_gif"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:layout_marginBottom="@dimen/margin_top_35"
+            android:layout_marginTop="@dimen/margin_top_35"/>
+         <!-- android:background="#EBEBEB"
+              	   gif:decode_stream="true" 
+           		   gif:default_animation_time="1000"  -->
+         
+         
+        <!-- <com.android.pc.ioc.image.RecyclingImageView
             android:id="@+id/imageView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_top_35"
             android:layout_marginTop="@dimen/margin_top_35"
-            android:src="@drawable/task_success" />
+            android:src="@drawable/task_success" /> -->
     </LinearLayout>
 <TextView
         android:id="@+id/iknow"

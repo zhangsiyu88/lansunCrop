@@ -458,17 +458,15 @@ public class SwipeLayout extends FrameLayout implements SwipeLayoutInterface{
 		
 	}
 	public View getFrontView(){
-		mFrontView.setOnLongClickListener(new OnLongClickListener() {
-			
+		/*mFrontView.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-				
-				/*open(true,false);*/      // --------->强行将 表层的View 里的 长按展开  删除层  的功能暂时去除掉  by Yeun 12.02
+				open(true,false);      // --------->强行将 表层的View 里的 长按展开  删除层  的功能暂时去除掉  by Yeun 12.02
 				
 				//layoutContent(true);
 				return true;
 			}
-		});
+		});*/
 		
 		return mFrontView;
 	}

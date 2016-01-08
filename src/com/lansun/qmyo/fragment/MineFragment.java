@@ -106,6 +106,8 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 			System.out.println("我的  页面在注册广播 ing");
 			filter = new IntentFilter();
 			filter.addAction("com.lansun.qmyo.refreshTheIcon");
+			filter.addAction("com.lansun.qmyo.refreshAvatar_NickName");
+			
 			getActivity().registerReceiver(broadCastReceiver, filter);
 		}else{
 			//NO-OP
@@ -348,6 +350,8 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 //				}
 //			});
 //			dialog.show(getActivity().getFragmentManager(), "update");
+			
+			
 //			return;
 			
 			break;
@@ -542,6 +546,8 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 							
 						}
 					}
+				}else if(intent.getAction().equals("com.lansun.qmyo.refreshAvatar_NickName")){
+					loadNickAndAvatar();
 				}
 				
 				isFirstReceiveBroadcast=false;

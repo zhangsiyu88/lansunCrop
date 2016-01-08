@@ -16,14 +16,7 @@ public class Shop implements Serializable {
 	private int attention;
 	private int praise;
 
-
-	
-	
-
 	private ArrayList<String> photos;
-	
-	
-	
 	
 
 	private String collection_time;

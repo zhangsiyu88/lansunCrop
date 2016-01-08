@@ -47,7 +47,7 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
  * @author bhxx
  * 
  */
-public class SwipeListMineStoreAdapter extends BaseAdapter {
+public class SwipeStoreListAdapter extends BaseAdapter {
 	
 	
 	private Context mContext;
@@ -62,7 +62,7 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 	private boolean isSlide = true;
 	
 
-	public SwipeListMineStoreAdapter(Context ctx , ArrayList<HashMap<String, String>> dataList){
+	public SwipeStoreListAdapter(Context ctx , ArrayList<HashMap<String, String>> dataList){
 		
 		this.mContext = ctx;
 		this.mDataList = dataList;
@@ -70,7 +70,7 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 		
 	}
 	
-	public SwipeListMineStoreAdapter(Context ctx,
+	public SwipeStoreListAdapter(Context ctx,
 			ArrayList<HashMap<String, String>> dataList, boolean b) {
 		this.isSlide = b;
 		this.mContext = ctx;
@@ -107,17 +107,13 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 			convertView.setTag(viewHold);
 		}
 		SwipeLayout view = (SwipeLayout) convertView;
-		
-		view.getFrontView().setFocusable(false);
-		view.getFrontView().setFocusableInTouchMode(false);
-		
 		view.close(false, false);
-		
 		view.getFrontView().setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				StoreDetailFragment fragment = new StoreDetailFragment();
+//				StoreDetailFragment fragment = new StoreDetailFragment();
+				ActivityDetailFragment fragment = new ActivityDetailFragment();
 				Bundle args = new Bundle();
 				
 				/* 居然连类型都得分开识别，这里的shopId是int类型
@@ -125,6 +121,7 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 				
 				/*args.putString("shopId",mDataList.get(mPosition).get("shop_id"));*/
 				args.putString("shopId",mDataList.get(position).get("shop_id"));
+				args.putString("activityId", mActivityId);
 				fragment.setArguments(args);
 				FragmentEntity event = new FragmentEntity();
 				event.setFragment(fragment);
@@ -238,7 +235,7 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 		public void onOpen(SwipeLayout swipeLayout) {
 //			Utils.showToast(mContext, "onOpen");
 			mUnClosedLayouts.add(swipeLayout);
-			// swipeLayout.close();
+			swipeLayout.close();
 		}
 
 		@Override
@@ -257,7 +254,7 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 //			Utils.showToast(mContext, "onStartOpen");
 			closeAllLayout();
 			mUnClosedLayouts.add(swipeLayout);
-			// swipeLayout.close();
+			swipeLayout.close();
 		}
 
 	};
@@ -327,9 +324,13 @@ public class SwipeListMineStoreAdapter extends BaseAdapter {
 		}
 	}
 	
+	
 	public void download(ImageView view, String url) {
 		ImageLoader.getInstance().displayImage(url, view, this.options);
 	}
 
+	public void setActivityId(String activityId) {
+		this.mActivityId = activityId;
+	}
 
 }

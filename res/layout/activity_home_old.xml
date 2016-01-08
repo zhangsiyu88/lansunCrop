@@ -32,6 +32,7 @@
                 android:divider="@null"
                 android:listSelector="@android:color/transparent"
                 android:scrollbars="none"
+                android:overScrollMode="never"
                 /><!-- style="@style/w_h_full"  -->
          </LinearLayout> 
                 

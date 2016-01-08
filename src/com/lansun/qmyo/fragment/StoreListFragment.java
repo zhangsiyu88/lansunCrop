@@ -50,6 +50,7 @@ import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.swipe.SwipeListMineStoreAdapter;
+import com.lansun.qmyo.utils.swipe.SwipeStoreListAdapter;
 import com.lansun.qmyo.view.ActivityMyListView;
 import com.lansun.qmyo.view.ActivityMyListView.OnRefreshListener;
 import com.lansun.qmyo.view.CustomToast;
@@ -74,7 +75,7 @@ public class StoreListFragment extends BaseFragment {
 	private HashMap<Integer, String> holder_button = new HashMap<Integer, String>();
 	
 //	private StoreAdapter adapter;
-	private SwipeListMineStoreAdapter adapter;
+	private SwipeStoreListAdapter adapter;
 
 	@InjectAll
 	Views v;
@@ -161,7 +162,7 @@ public class StoreListFragment extends BaseFragment {
 	}
 
 	/**
-	 * 门店列表跳转
+	 * 门店列表单项点击的跳转（由Adapter中的FrontView拦截执行，此处不由ListView响应执行）
 	 * 
 	 * @param arg0
 	 * @param arg1
@@ -367,8 +368,8 @@ public class StoreListFragment extends BaseFragment {
 						dataList.add(map);
 					}
 					if (adapter == null) {
-						adapter = new SwipeListMineStoreAdapter(activity, dataList, false);
-						
+						adapter = new SwipeStoreListAdapter(activity, dataList, false);
+						adapter.setActivityId(activityId);
 						try{
 							//lv_stores_content.setAdapter(adapter);//先将adapter和ListView挂上钩
 							lv_stores_content.removeFooterView(emptyView);
@@ -382,6 +383,7 @@ public class StoreListFragment extends BaseFragment {
 						/*adapter = new StoreAdapter(lv_stores_content, dataList,R.layout.activity_store_item);*/
 						
 						adapter.notifyDataSetChanged();
+						adapter.setActivityId(activityId);
 						/*lv_stores_content.setAdapter(adapter);*/
 					
 					}

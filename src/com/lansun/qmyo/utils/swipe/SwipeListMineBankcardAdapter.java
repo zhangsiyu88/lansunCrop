@@ -263,7 +263,10 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 		if (!hasAdd) {
 			viewHold.iv_bank_card_add.setVisibility(View.GONE);
 		}
+		
+		
 		view.setSwipeListener(mSwipeListener);
+		
 		
 		// 弹出详情框
 		viewHold.iv_bank_card_head.setOnClickListener(new OnClickListener() {

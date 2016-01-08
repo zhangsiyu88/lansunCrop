@@ -131,6 +131,8 @@ import com.squareup.okhttp.Response;
 //		private ViewPager vp_sercretary_bg_pager;
 		private NoTouchViewPager vp_sercretary_bg_pager;
 		
+		
+		
 	}
 	private String[] secretaryTitle;
 	private String[] secretaryhint;
@@ -163,7 +165,6 @@ import com.squareup.okhttp.Response;
 				if (isExperience()) {
 					setSecretaryInformation();
 				}else {
-					
 					isToggleDialog(clickOpen);
 				}
 				break;
@@ -198,6 +199,8 @@ import com.squareup.okhttp.Response;
 	
 	private void setSecretaryInformation(){
 		if(!avatarShowedOnce){
+			v.tv_secretary_tip1.setText(GlobalValue.mySecretary.getOwner_name());
+			
 			v.tv_secretary_name.setText(GlobalValue.mySecretary.getName());
 			loadPhoto(GlobalValue.mySecretary.getAvatar(),iv_secretary_head);
 			avatarShowedOnce=!avatarShowedOnce;
@@ -312,10 +315,8 @@ import com.squareup.okhttp.Response;
 					entity.setFragment(fragment);
 					bus.post(entity);
 				}
-
 			}
 		});
-		
 		
 		
 		ll_secretary_setting.setOnClickListener(new OnClickListener() {
@@ -448,10 +449,7 @@ import com.squareup.okhttp.Response;
 		secretaryTitle = getResources().getStringArray(R.array.secretary_title);
 		secretaryhint = getResources().getStringArray(R.array.secretary_hint);
 		v.iv_secretary_icon.setPressed(true);
-		v.tv_secretary_icon.setTextColor(getResources().getColor(
-				R.color.app_green2));
-		
-		
+		v.tv_secretary_icon.setTextColor(getResources().getColor(R.color.app_green2));
 	}
 
 	@Override

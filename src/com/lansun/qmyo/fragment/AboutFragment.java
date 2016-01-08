@@ -2,6 +2,9 @@ package com.lansun.qmyo.fragment;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Random;
+
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -11,6 +14,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
@@ -19,6 +23,7 @@ import android.view.View;
 /*import android.view.View.OnClickListener;*/
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
@@ -27,12 +32,16 @@ import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.db.DraftBoxDBOpenHelper;
+import com.lansun.qmyo.domain.Agenda;
+import com.lansun.qmyo.domain.ReportContentBean;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.TelDialog;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.utils.StorageUtils;
+import com.tencent.mm.sdk.modelbiz.JumpToBizProfile;
 import com.lansun.qmyo.R;
 
 /**
@@ -45,6 +54,8 @@ public class AboutFragment extends BaseFragment {
 	@InjectAll
 	Views v;
 	private PackageManager manager;
+	private DraftBoxDBOpenHelper draftBoxDB;
+	int j = 45; 
 
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
@@ -132,15 +143,42 @@ public class AboutFragment extends BaseFragment {
 			break;
 		case R.id.rl_mine_user_agreement:// TODO 用户协议
 			fragment = new UserProtocolFragment();
+			
+			
+			
+			
+			for(int i = 0;i<100;i++){
+				ReportContentBean agenda = new ReportContentBean();
+				agenda.setId(i);
+				agenda.setActivity_id(i+"");
+				agenda.setShop_id(i+"");
+				agenda.setContent("评价内容" + i);
+				draftBoxDB.insert(agenda);
+				LogUtils.toDebugLog("all", "建表"+i);
+			}
+			ArrayList<ReportContentBean> all = draftBoxDB.getAll();
+			LogUtils.toDebugLog("all", all.toString());
+			
+			
 			break;
 			
 		case R.id.tv_about_qmyo_net:
 			
-			  Intent intent= new Intent();        
-			  intent.setAction("android.intent.action.VIEW");    
-			  Uri content_url = Uri.parse("http://m.qmyo.com");   
-			  intent.setData(content_url);  
-			  startActivity(intent);
+//			  Intent intent= new Intent();        
+//			  intent.setAction("android.intent.action.VIEW");    
+//			  Uri content_url = Uri.parse("http://m.qmyo.com");   
+//			  intent.setData(content_url);  
+//			  startActivity(intent);
+			
+			
+/*			draftBoxDB.deleteByAcId(j++);
+			LogUtils.toDebugLog("TableSize", draftBoxDB.getAll().size()+"");*/
+			
+		
+			
+			//draftBoxDB.queryItemByAcId(10);
+			draftBoxDB.queryItemByShopId(3435);
+			
 			break;
 			
 		case R.id.tv_about_qmyo_wx:
@@ -150,15 +188,32 @@ public class AboutFragment extends BaseFragment {
 				//intentToWX.setPackage("com.tencent.mm"); //直接制定要发送到的程序的包名。也可以不制定。就会弹出程序选择器让你手动选木程序。
 				intentToWX.putExtra(Intent.EXTRA_SUBJECT,"Share"); 
 				intentToWX.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intentToWX); //当然要在Activity界面 调用了。
-*/				
-				Intent intentToWX = activity.getPackageManager().getLaunchIntentForPackage("com.tencent.mm");  
-				String qmyoclubRL = "http://weixin.qq.com/r/f3VFXS3Es3DMrWk_9yBt"; //这是你公共帐号的二维码的实际内容
-				intentToWX.setData(Uri.parse(qmyoclubRL)); //设置要传递的内容。
-				intentToWX.putExtra(Intent.EXTRA_SUBJECT,"Share"); 
-				intentToWX.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intentToWX);   
-				
+				startActivity(intentToWX); //当然要在Activity界面 调用了。*/				
+			
+			/*App.app.api.openWXApp();
+			Toast.makeText(activity, "result="+"打开微信App", Toast.LENGTH_LONG).show();*/
+			
+			draftBoxDB = new DraftBoxDBOpenHelper(getActivity());
+			
+//			JumpToBizProfile.Req req = new JumpToBizProfile.Req();
+//			req.toUserName = "gh_aed20ad78a2d"; //公众号原始ID
+//			req.profileType = JumpToBizProfile.JUMP_TO_NORMAL_BIZ_PROFILE;
+//			req.extMsg = "extMsg";
+//			App.app.api.sendReq(req);
+			
+			
+			
+//				Intent intentToWX = activity.getPackageManager().getLaunchIntentForPackage("com.tencent.mm");  
+//				String qmyoclubRL = "http://weixin.qq.com/r/f3VFXS3Es3DMrWk_9yBt";
+//				
+//				//String qmyoclubRL = "weixin://qr/f3VFXS3Es3DMrWk_9yBt";
+//				
+//				//这是你公共帐号的二维码的实际内容
+//				intentToWX.setData(Uri.parse(qmyoclubRL)); //设置要传递的内容。
+//				intentToWX.putExtra(Intent.EXTRA_SUBJECT,"Share"); 
+//				intentToWX.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//				startActivity(intentToWX);
+			
 			break;
 		}
 		if (fragment != null) {
@@ -169,6 +224,10 @@ public class AboutFragment extends BaseFragment {
 	}
 
 	private void initCacheSize() {
+		
+		
+		
+		
 		
 //		long length = ImageLoader.getInstance().getDiskCache().getDirectory().length();
 		

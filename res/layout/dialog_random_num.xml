@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:alpha="50"><!--  android:paddingBottom="@dimen/margin_top_50"  -->
+
+    <LinearLayout
+        android:paddingTop="10dp"
+        android:paddingBottom="20dp"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:id="@+id/ll_dialog_content"
+        android:layout_width="@dimen/grabredpack_dialog_w"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/tv_style_white"
+        android:gravity="center"
+        android:orientation="vertical" ><!--  android:layout_marginTop="@dimen/expe_dialog_content_margin_top" -->
+
+        <TextView
+            style="@style/text_style_small_27"
+            android:layout_marginTop="@dimen/margin_top_20"
+            android:text="红包口令"
+            android:textColor="@color/text_black_1" 
+            android:textSize="20dp"/>
+        
+        <com.lansun.qmyo.view.RubbleTextView
+            android:id="@+id/tv_random_num"
+            android:background="@color/app_bg"
+            style="@style/text_style_small_27"
+            android:layout_width="200dip"
+            android:layout_height="60dip"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="@dimen/margin_top_20"
+            android:text="960886"
+            android:textColor="@color/command" 
+            android:textSize="50dp"/><!--  android:paddingLeft="5dp"
+            android:paddingRight="5dp" -->
+        
+        <TextView
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:id="@+id/tv_copy_randomnum"
+            style="@style/text_style_small_27"
+            android:layout_marginTop="@dimen/margin_top_20"
+            android:layout_marginBottom="20dp"
+            android:text="复制口令"
+            android:textColor="@color/app_white" 
+            android:background="@drawable/rectangle_four_corner_yellow"/>
+
+    </LinearLayout>
+
+   
+
+</RelativeLayout>

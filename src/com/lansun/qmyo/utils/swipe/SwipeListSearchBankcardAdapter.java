@@ -23,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.android.pc.ioc.event.EventBus;
@@ -375,6 +376,7 @@ public class SwipeListSearchBankcardAdapter extends  BaseAdapter{//LazyAdapter<H
 									/*else{//此时是我的银行卡页中列表的点击事件，那么需要将原始卡替换掉
 										App.app.setData("MainBankcard",cardId);
 									}*/
+									
 									if(mIsFromRegisterAndHaveNoBankcard||App.app.getData("isEmbrassStatus").equals("true")){
 										isEmbarrassingStatue = true;
 									}
@@ -550,7 +552,8 @@ public class SwipeListSearchBankcardAdapter extends  BaseAdapter{//LazyAdapter<H
 			switch (r.getKey()) {
 			case 0://TODO
 				if ("true".equals(r.getContentAsString())) {
-					CustomToast.show(mContext, mContext.getString(R.string.tip),"添加成功");
+					//CustomToast.show(mContext, mContext.getString(R.string.tip),"添加成功");
+					Toast.makeText(mContext, "添加成功", Toast.LENGTH_LONG).show();
 					
 					App.app.setData("isEmbrassStatus", "");//这儿已经表明现在用户将不再是尴尬的异常登录状态了
 					
@@ -593,7 +596,8 @@ public class SwipeListSearchBankcardAdapter extends  BaseAdapter{//LazyAdapter<H
 					EventBus.getDefault().post(event);
 					
 				} else {
-					CustomToast.show(mContext, mContext.getString(R.string.tip),"卡种已重复");
+//					CustomToast.show(mContext, mContext.getString(R.string.tip),"卡种已重复");
+					Toast.makeText(mContext,"您已拥有此卡哦",Toast.LENGTH_LONG).show();
 					
 					//同时需要补救措施！
 					InternetConfig config = new InternetConfig();

@@ -335,7 +335,7 @@ public class SwipeListMineActivityAdapter extends BaseAdapter {
 		public void onOpen(SwipeLayout swipeLayout) {
 //			Utils.showToast(mContext, "onOpen");
 			mUnClosedLayouts.add(swipeLayout);
-			swipeLayout.close();
+			//swipeLayout.close();
 		}
 
 		@Override
@@ -347,7 +347,6 @@ public class SwipeListMineActivityAdapter extends BaseAdapter {
 		@Override
 		public void onStartClose(SwipeLayout swipeLayout) {
 //			Utils.showToast(mContext, "onStartClose");
-			
 		}
 
 		@Override
@@ -355,7 +354,7 @@ public class SwipeListMineActivityAdapter extends BaseAdapter {
 //			Utils.showToast(mContext, "onStartOpen");
 			closeAllLayout();
 			mUnClosedLayouts.add(swipeLayout);
-			swipeLayout.close();
+			//swipeLayout.close();
 		}
 
 	};

@@ -30,6 +30,7 @@
     <color name="pink_pressed">#ec407a</color>
     <color name="green">#9DC14F</color>
     <color name="green_pressed">#909DC14F</color>
+    <color name="command">#bc2014</color>
     
     <color name="text_gray2">#AFAFAF</color>
     <color name="text_gray3">#898989</color>

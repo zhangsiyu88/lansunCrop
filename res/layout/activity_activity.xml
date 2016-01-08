@@ -92,6 +92,7 @@
         android:listSelector="@android:color/transparent"
         android:scrollbarFadeDuration="1000"
         android:scrollbars="vertical" 
+        android:overScrollMode="never"
         />
     
 

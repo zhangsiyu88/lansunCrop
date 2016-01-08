@@ -11,11 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
+import com.android.pc.ioc.inject.InjectListener;
+import com.android.pc.ioc.inject.InjectMethod;
 import com.android.pc.ioc.internet.FastHttp;
 import com.android.pc.ioc.internet.FastHttpHander;
 import com.android.pc.ioc.internet.InternetConfig;
@@ -23,6 +26,8 @@ import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.base.BackHandedFragment;
+import com.lansun.qmyo.port.BackHanderInterface;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.R;
@@ -33,8 +38,10 @@ import com.lansun.qmyo.R;
  * @author bhxx
  * 
  */
-public class ReportFragment extends BaseFragment {
+public class ReportFragment extends BackHandedFragment {
 
+	
+	
 	@InjectAll
 	Views v;
 	private String shopId;
@@ -48,6 +55,8 @@ public class ReportFragment extends BaseFragment {
 		private TextView tv_activity_title,textView1;
 		private EditText et_activity_report_content;
 	}
+	
+	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,8 +64,14 @@ public class ReportFragment extends BaseFragment {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_report, null);
 		Handler_Inject.injectFragment(this, rootView);
+		/*activity.onKeyDown(keyCode, event){
+			
+		}*/
+		
 		return rootView;
 	}
+	
+	
 
 	@InjectInit
 	private void init() {
@@ -67,16 +82,23 @@ public class ReportFragment extends BaseFragment {
 			activityId = arguments.getString("activity_id");
 			type = arguments.getInt("type");
 		}
+		
 
 		int titileRes = R.string.report_activity;
 		switch (type) {
 		case 0:
 			titileRes = R.string.report_activity;
 			v.textView1.setText(R.string.report_content);
+			if(!TextUtils.isEmpty(App.app.getData("_activity_report"))){
+				v.et_activity_report_content.setText(App.app.getData("_activity_report"));
+			}
 			break;
 		case 1:
 			titileRes = R.string.report_store;
 			v.textView1.setText(R.string.report_store_content);
+			if(!TextUtils.isEmpty(App.app.getData("_shop_report"))){
+				v.et_activity_report_content.setText(App.app.getData("_shop_report"));
+			}
 			break;
 
 		}
@@ -104,7 +126,8 @@ public class ReportFragment extends BaseFragment {
 			LinkedHashMap<String, String> params = new LinkedHashMap<>();
 			
 			
-			String shopComplainUrl = "http://appapi.qmyo.org/shop/complain";
+			String shopComplainUrl = GlobalValue.SHOP_COMPLAIN;
+			
 			String activityComplainUrl = GlobalValue.ACTIVITY_COMPLAIN;
 			 String complainUrl = "";
 			
@@ -134,11 +157,43 @@ public class ReportFragment extends BaseFragment {
 				if ("true".equals(r.getContentAsString())) {
 					CustomToast.show(activity, R.string.tip,
 							R.string.report_success);
+					v.et_activity_report_content.setText("");
 					back();
 				}
 				break;
 			}
 		}
 
+	}
+	
+	@Override
+	@InjectMethod(@InjectListener(ids = 2131361895, listeners = OnClick.class))
+	protected void back() {
+		if(!TextUtils.isEmpty(v.et_activity_report_content.getText().toString())){
+			Toast.makeText(activity, "内容存至草稿箱", Toast.LENGTH_LONG).show();
+			if (!TextUtils.isEmpty(activityId)) {//活动举报
+				App.app.setData("_activity_report", v.et_activity_report_content.getText().toString());
+			}else{//投诉门店
+				App.app.setData("_shop_report", v.et_activity_report_content.getText().toString());
+			}
+		}else{
+			if(type==0){//举报活动
+				App.app.setData("_activity_report","");
+			}else if(type==1){//投诉门店
+				App.app.setData("_shop_report", "");
+			}
+		}
+		super.back();
+	}
+
+
+
+	/**
+	 * 执行物理返回键的拦截操作,消费掉此次的物理返回事件
+	 */
+	@Override
+	public boolean onBackPressed(){
+		back();
+		return true;
 	}
 }
