@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -36,6 +37,8 @@ import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
 import com.android.pc.util.Handler_Time;
 import com.google.gson.Gson;
+import com.lansun.qmyo.GrabRedPackActivity;
+import com.lansun.qmyo.MainActivity;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.MessageAdapter;
 import com.lansun.qmyo.app.App;
@@ -213,6 +216,30 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 		}*/
 		super.onResume();
 	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if(requestCode ==Activity.RESULT_FIRST_USER){
+			LogUtils.toDebugLog("start", "requestCode= "+requestCode);
+			if(resultCode == 1){
+				LogUtils.toDebugLog("start", "resultCode= "+resultCode);
+				LogUtils.toDebugLog("start", "data.getExtras().getString= "+ data.getExtras().getString("back"));
+				if(data.getExtras().getString("back").equals("yes")){
+					LogUtils.toDebugLog("start", "data.getExtras().getString= "+ data.getExtras().getString("back"));
+					Bundle bundle = new Bundle();
+					bundle.putString("fragment_name","GrabRedpackFragment");
+					RegisterFragment fragment = new RegisterFragment();
+					FragmentEntity fEntity = new FragmentEntity();
+					fragment.setArguments(bundle);
+					fEntity.setFragment(fragment);
+					EventBus.getDefault().post(fEntity);
+				}
+			}
+		}
+	}
+	
+	
 	@Override
 	public void onPause() {
 		/*v.iv_mine_icon.setPressed(false);
@@ -326,7 +353,18 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 
 			break;
 		case R.id.rl_mine_about:
-			fragment = new AboutFragment();
+//			fragment = new AboutFragment();
+			
+			
+			Intent intentToGrab = new Intent(activity,GrabRedPackActivity.class);
+			Bundle bundleToGrab = new Bundle();
+			bundleToGrab.putString("loadUrl", "http://act.qmyo.com/redpack/1");
+			intentToGrab.putExtras(bundleToGrab);
+//			activity.startActivity(intentToGrab);	
+			this.startActivityForResult(intentToGrab, Activity.RESULT_FIRST_USER);
+			
+			return;
+			
 //			fragment = new PromoteDetailFragment();
 //			供测试使用
 //			App.app.setData("access_token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIx" +
@@ -354,7 +392,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 			
 //			return;
 			
-			break;
+			//break;
 		case R.id.rl_mine_shared://分享APP
 			fragment = new SharedFragment();
 			//activity.sendBroadcast(new Intent("com.lansun.qmyo.ChangeTheLGPStatus"));
@@ -612,4 +650,6 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 		}
 		//refreshCurrentList(GlobalValue.URL_USER_MESSAGE, null, 0, null);//去刷新消息
 	}
+	
+
 }

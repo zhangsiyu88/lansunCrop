@@ -98,18 +98,18 @@ public class TaskAssignment extends BaseFragment implements TextWatcher{//,OnCli
 				/**
 				 * 模糊化背景
 				 */
-				Blurry.with(getActivity())
+				/*Blurry.with(getActivity())
 				.radius(25)
 				.sampling(2)
 				.async()
 				.animate(500)
-				.onto((ViewGroup)rootView);
+				.onto((ViewGroup)rootView);*/
 				
 				//dialog消失时，需要恢复背景页面的效果
 				dialog.setOnDismissListener(new OnDismissListener() {
 					@Override
 					public void onDismiss(DialogInterface arg0) {
-						Blurry.deleteNoAnimation((ViewGroup) rootView);
+						/*Blurry.deleteNoAnimation((ViewGroup) rootView);*/
 						try{
 							FragmentEntity entity=new FragmentEntity();
 							/*Fragment f=new SecretaryFragment(); */

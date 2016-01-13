@@ -25,6 +25,7 @@ import com.lansun.qmyo.fragment.BaseFragment;
 import com.lansun.qmyo.fragment.FoundFragment;
 import com.lansun.qmyo.fragment.HomeFragment;
 import com.lansun.qmyo.fragment.MineFragment;
+import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.gooview.GooViewListener;
@@ -85,7 +86,6 @@ public class MainFragment extends Fragment {
 				activity.sendBroadcast(new Intent("com.lansun.qmyo.showFirstCommitSecretaryAskGuide"));
 				System.out.println("handlerde方法中，MainFragment  发送    私人秘书信息页在第一次提问成功后弹引导页的广播了");
 				break;
-			
 			}
 		}
 
@@ -144,7 +144,6 @@ public class MainFragment extends Fragment {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				
 				/**
 				 * 此处第一步将db文件写入到内存缓冲区处
 				 */
@@ -162,8 +161,6 @@ public class MainFragment extends Fragment {
 			}
 		}).start();
 		
-		
-		
 		if(savedInstanceState!= null){
 			//vp_mainfrag = savedInstanceState.getParcelable("vp_mainfrag");
 			/*
@@ -173,10 +170,6 @@ public class MainFragment extends Fragment {
 				manager = savedInstanceState.getParcelable("manager");
 				transaction = savedInstanceState.getParcelable("transaction");*/
 		}
-		
-		
-		
-		
 		manager=getChildFragmentManager();
 		broadCastReceiver = new MainFragmentBroadCastReceiver();
 		System.out.println("MainFragment中注册广播 ing");
@@ -296,9 +289,6 @@ public class MainFragment extends Fragment {
 //			//为这个绿色小点设置触摸监听,为了使RedCircleButton被触摸时进行属于自己的动画表示
 //			point.setOnTouchListener(mGooListener);
 //		}
-		
-		
-		
 		}
 	
 	/**
@@ -423,12 +413,10 @@ public class MainFragment extends Fragment {
 
 	
 	class MyFragAdapter extends FragmentPagerAdapter{
-
+		
 		public MyFragAdapter(FragmentManager fm) {
 			super(fm);
 		}
-		
-		
 	/*	@SuppressWarnings("deprecation")
 		@Override
 		public Object instantiateItem(View container, int position) {
@@ -437,8 +425,6 @@ public class MainFragment extends Fragment {
 			return fragList.get(position);
 			//return super.instantiateItem(container, position);
 		}*/
-		
-		
 		@Override
 		public Fragment getItem(int position) {
 			return fragList.get(position);
@@ -447,7 +433,6 @@ public class MainFragment extends Fragment {
 		public int getCount() {
 			return fragList.size();
 		}
-		
 //		@Override
 //		public void destroyItem(ViewGroup container, int position, Object object) {
 //			super.destroyItem(container, position, object);
@@ -460,19 +445,14 @@ public class MainFragment extends Fragment {
 		public MyFragStatusAdapter(FragmentManager fm) {
 			super(fm);
 		}
-		
-		
-
 		@Override
 		public Fragment getItem(int position) {
 			return fragList.get(position);
 		}
-
 		@Override
 		public int getCount() {
 			return fragList.size();
 		}
-		
 		@Override
 		public void destroyItem(ViewGroup container, int position, Object object) {
 			super.destroyItem(container, position, fragList.get(position));
@@ -559,9 +539,7 @@ public class MainFragment extends Fragment {
 
 		@Override
 		public void onPageScrollStateChanged(int state) {
-			
 		}
-		
 	}
 	
 class MainFragmentBroadCastReceiver extends BroadcastReceiver{
@@ -690,10 +668,7 @@ class MainFragmentBroadCastReceiver extends BroadcastReceiver{
 		public void onDestroy() {
 			getActivity().unregisterReceiver(broadCastReceiver);
 			super.onDestroy();
-			
 		}
-		
-		
 		/**
 		 * 存储当前控件被清除前那一瞬希望保留的内容
 		 * @see android.support.v4.app.FragmentActivity#onSaveInstanceState(android.os.Bundle)
@@ -711,9 +686,5 @@ class MainFragmentBroadCastReceiver extends BroadcastReceiver{
 			outState.putParcelable("fragList", (Parcelable)fragList);
 			outState.putParcelable("manager", (Parcelable)manager);
 			outState.putParcelable("transaction", (Parcelable)transaction);*/
-			
-			
 		}
-		
-		
 }

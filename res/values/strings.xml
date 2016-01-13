@@ -513,6 +513,6 @@
      <string name="login_to_comment">总裁大大,请先登录再发表高见哟</string>
      <string name="login_to_getmessage">总裁大大,登录才可接收消息哟</string>
      <string name="login_to_enjoysecretaryyourself">总裁大大,体验专属私人秘书服务需要登录的哟</string>
-     <string name="pump">请您在收到回复后再进行追问...</string>
+     <string name="pump">您可以继续追问哦</string>
 
 </resources>

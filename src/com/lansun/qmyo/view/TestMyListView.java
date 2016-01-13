@@ -512,13 +512,17 @@ public class TestMyListView extends ListView  {//implements OnScrollListener
 		/*View itemAtPosition = (View) getItemAtPosition(0);
 		itemAtPosition.getLocationOnScreen(location);*/
 		
-		firstItem = getChildAt(0);
-		firstItem.getLocationOnScreen(location);
-		
-		// 获取secondHeader的Y轴
-		int firstItemLocY = location[1];
-		//LogUtils.toDebugLog("location","firstItemLocY:"+ location[1]);
-		return firstItemLocY >= listViewLocY;
+		if(getChildAt(0)!= null){
+			firstItem = getChildAt(0);
+			firstItem.getLocationOnScreen(location);
+			
+			// 获取secondHeader的Y轴
+			int firstItemLocY = location[1];
+			//LogUtils.toDebugLog("location","firstItemLocY:"+ location[1]);
+			return firstItemLocY >= listViewLocY;
+		}else{
+			return false;//当第一个条目没有找到时，不对滑动的操作响应
+		}
 	}
 	
 	

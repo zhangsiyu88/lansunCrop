@@ -27,6 +27,7 @@ import com.lansun.qmyo.R;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.ActivityDetailFragment;
+import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.swipe.SwipeLayout.SwipeListener;
 import com.lansun.qmyo.view.CustomToast;
@@ -300,6 +301,8 @@ public class SwipeListMineActivityAdapter extends BaseAdapter {
 
 					@Override
 					public void onSuccess(ResponseInfo<String> arg0) {
+						LogUtils.toDebugLog("result", "result "+ arg0.result.toString());
+						
 						if ("true".equals(arg0.result.toString())) {
 							
 								mList.remove(deletePosition);
@@ -322,7 +325,7 @@ public class SwipeListMineActivityAdapter extends BaseAdapter {
 				
 				//TODO  注意下面拼接的url中的接口域名记得替换
 				httpUtils.send(HttpMethod.DELETE, 
-						"http://appapi.qmyo.com/activity/"+mList
+						GlobalValue.URL_QX_ACTIVITY + mList
 						.get(p).get("activityId").toString()+"?shop_id="+mList.get(p).get("shopId").toString(),
 						requestParams,requestCallBack );
 			}

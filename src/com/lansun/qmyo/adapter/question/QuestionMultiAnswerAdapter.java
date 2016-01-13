@@ -16,11 +16,13 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -60,6 +62,11 @@ public class QuestionMultiAnswerAdapter extends Adapter<QuestionMultiAnswerAdapt
 		if(type == 2){
 			return TYPE_2;
 		}
+		if(type == 3){
+			return TYPE_3;
+		}
+		
+		
 		return super.getItemViewType(position);
 	}
 	/**
@@ -82,13 +89,30 @@ public class QuestionMultiAnswerAdapter extends Adapter<QuestionMultiAnswerAdapt
 		    case  TYPE_1: 
 		    	holder.tv_user_question.setText(mArrayQAMetaData.get(position).getContent());
 		    	holder.tv_secretary_answer.setText(mArrayQAMetaData.get(position).getAnswer());
+		    	
+		    	holder.tv_conversation_time.setVisibility(View.INVISIBLE);
+		    	
+		    	if(!TextUtils.isEmpty(mArrayQAMetaData.get(position).getTime())){
+		    		holder.tv_conversation_time.setVisibility(View.VISIBLE);
+		    		holder.tv_conversation_time.setText(mArrayQAMetaData.get(position).getTime());
+		    	}
 		    	break;
 		    case  TYPE_2: 
 		    	holder.tv_secretary_answer.setText(mArrayQAMetaData.get(position).getAnswer());
 		    	break;
+		    case  TYPE_3: 
+		    	holder.tv_conversation_title.setVisibility(View.VISIBLE);
+		    	holder.tv_conversation_title.setText(mArrayQAMetaData.get(position).getContent());
+		    	
+		    	holder.tv_conversation_time.setVisibility(View.GONE);
+		    	holder.tv_secretary_answer.setVisibility(View.GONE);
+		    	holder.tv_user_question.setVisibility(View.GONE);
+		    	holder.iv_secretary_head.setVisibility(View.GONE);
+		    	holder.iv_user_head.setVisibility(View.GONE);
+		    	
+		    	holder.ll_secretary_head.setVisibility(View.GONE);
+		    	break;
 	    }
-		
-		
 	}
 	
 	
@@ -142,6 +166,7 @@ public class QuestionMultiAnswerAdapter extends Adapter<QuestionMultiAnswerAdapt
 			}
 		});
 	}
+	
 	@Override
 	public MyViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
 		LayoutInflater inflater=LayoutInflater.from(viewGroup.getContext());
@@ -155,19 +180,27 @@ public class QuestionMultiAnswerAdapter extends Adapter<QuestionMultiAnswerAdapt
 			View view=inflater.inflate(R.layout.my_secretary_ask_multianswer_item, viewGroup,false);
 			holder = new MyViewHolder(view, viewType);
 		}
+		if(viewType == TYPE_3){//活动的标题
+			View view=inflater.inflate(R.layout.my_secretary_ask_multianswer_item, viewGroup,false);
+			holder = new MyViewHolder(view, viewType);
+		}
 		return holder;
 	}
 	
 	
 	public class MyViewHolder extends ViewHolder{
 		private CircularImage iv_secretary_head,iv_user_head;
-		private TextView tv_secretary_answer,tv_user_question;
+		private TextView tv_secretary_answer,tv_user_question,tv_conversation_time,tv_conversation_title;
+		private LinearLayout ll_secretary_head;
 		public MyViewHolder(View itemView,int viewtype) {
 			super(itemView);
+			    ll_secretary_head=(LinearLayout)itemView.findViewById(R.id.ll_secretary_head);
 				iv_user_head=(CircularImage)itemView.findViewById(R.id.iv_user_head);
 				tv_user_question=(TextView)itemView.findViewById(R.id.tv_user_question);
 				iv_secretary_head=(CircularImage)itemView.findViewById(R.id.iv_secretary_head);
 				tv_secretary_answer=(TextView)itemView.findViewById(R.id.tv_secretary_answer);
+				tv_conversation_time=(TextView)itemView.findViewById(R.id.tv_conversation_time);
+				tv_conversation_title=(TextView)itemView.findViewById(R.id.tv_conversation_title);
 		}
 	}
 	

@@ -197,9 +197,6 @@
 	                android:text="@string/login"
 	                android:textColor="@color/app_white" 
 	                android:focusable="true"/><!-- 让其获取焦点 -->
-	             
-	                
-	                
 	
 	            <!-- 返回上一层按钮 -->
 	            <com.android.pc.ioc.image.RecyclingImageView

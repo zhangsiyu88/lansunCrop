@@ -3,20 +3,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
-//import android.support.v4.widget.SwipeRefreshLayout;
-//import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-//import android.support.v4.app.Fragment;
-//import android.support.v7.widget.RecyclerView;
-//import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectInit;
@@ -26,8 +23,6 @@ import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.QuestionListAdapter;
 import com.lansun.qmyo.adapter.QuestionListAdapter.OnItemClickCallBack;
-//import com.lansun.qmyo.adapter.question.QuestionAdapter;
-//import com.lansun.qmyo.adapter.question.QuestionAdapter.OnItemClickCallBack;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.QuestionDetailItem;
 import com.lansun.qmyo.domain.SecretaryQuestions;
@@ -35,14 +30,24 @@ import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
+import com.lansun.qmyo.view.ActivityMyListView;
+import com.lansun.qmyo.view.ActivityMyListView.OnRefreshListener;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExpandTabView;
 import com.lansun.qmyo.view.TestMyListView;
-import com.lansun.qmyo.view.TestMyListView.OnRefreshListener;
 import com.lansun.qmyo.view.ViewRight;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+//import android.support.v4.widget.SwipeRefreshLayout;
+//import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+//import android.support.v4.app.Fragment;
+//import android.support.v7.widget.RecyclerView;
+//import android.support.v7.widget.RecyclerView.OnScrollListener;
+//import com.lansun.qmyo.adapter.question.QuestionAdapter;
+//import com.lansun.qmyo.adapter.question.QuestionAdapter.OnItemClickCallBack;
+/*import com.lansun.qmyo.view.TestMyListView;
+import com.lansun.qmyo.view.TestMyListView.OnRefreshListener;*/
 
 /**
  * @author Yeun.zhang
@@ -51,12 +56,14 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 	/*private RecyclerView lv_question_recycle;
 	 private QuestionAdapter question_adapter; 不使用原先的RecycleView*/
 	
-	private TestMyListView lv_question_recycle;
+	private ActivityMyListView lv_question_recycle;
+	
 	private QuestionListAdapter question_adapter;
 	private LinearLayoutManager manager;
 	private List<QuestionDetailItem> lists;
 	private SecretaryQuestions list;
 	private int times;
+	private boolean isRefresh;
 	//private SwipeRefreshLayout swiperefresh;
 	@InjectAll
 	Views v;
@@ -72,34 +79,55 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 			endProgress();
 			switch (msg.what) {
 			case 0:
-				
-//				setEmptyView(1);
-//				lv_question_recycle.setVisibility(View.VISIBLE);
 				question_adapter.notifyDataSetChanged();
+				LogUtils.toDebugLog("clear", "成功执行case 0 的操作");
 				lv_question_recycle.onLoadMoreFished();//要让下次能够继续监听到话到末尾时，能够继续加载下一页
-				
-				break;
-			case 1:
 				break;
 			case 5://页面一加载进来，lv_question_recycle要显示出来
-				
-				/*if(lists.size()!=0&&question_adapter!=null){
+				if(lists != null){
+					LogUtils.toDebugLog("clear", "ists.clear() 之前");
 					lists.clear();
 					question_adapter.notifyDataSetChanged();
-				}*/
-				
+					LogUtils.toDebugLog("clear", "ists.clear() 之后");
+				}
 				lv_question_recycle.setVisibility(View.VISIBLE);
 				lv_question_recycle.onRefreshFinshed(true);
 				lv_question_recycle.onLoadMoreFished();
+				//LogUtils.toDebugLog("clear", "handle.sendMessage() ,case 5 完成后，再往下走");
+				LogUtils.toDebugLog("clear", "list.getData().size()==0?  "+ list.getData().size() );
 				
+				if (list.getData().size()==0){//获取到的列表的值为 0 ，显示空图提示
+					handleOK.sendEmptyMessage(10);
+				}else{
+					/*lists.clear();
+					handleOK.sendEmptyMessage(20);*/
+					for (QuestionDetailItem item:list.getData()){
+						lists.add(item);
+					}
+					//handleOK.sendEmptyMessage(0);
+					question_adapter.notifyDataSetChanged();
+					lv_question_recycle.onLoadMoreFished();//要让下次能够继续监听到话到末尾时，能够继续加载下一页
+					
+					if(list.getData().size()<10){
+						if(first_enter == 0){//首次进来，并且数据数目少于10条
+							times++;
+							handleOK.sendEmptyMessage(6);
+							return;
+						}
+					}else{
+						//NO-OP
+					}
+				}
+				first_enter = Integer.MAX_VALUE;
 				break;
 			case 6:
-				
+				//LogUtils.toDebugLog("tail", "已经将列表的尾部去掉了");
 				lv_question_recycle.setVisibility(View.VISIBLE);
 				lv_question_recycle.onLoadMoreOverFished();
 				break;
 			case 10:
 				setEmptyView(0);//lv_question_recycle整个消失掉
+				//LogUtils.toDebugLog("clear", "成功执行case !!! 10  !!!的操作");
 				break;
 			case 20:
 				if(question_adapter!=null){
@@ -113,14 +141,13 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 	private LinearLayout empty_liner;
 	protected int lastItem;
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_mine_secretary_list, container,false);
 		initView(rootView);
 		Handler_Inject.injectFragment(this, rootView);
 		
-		lv_question_recycle.setNoHeader(true);
+//		lv_question_recycle.setNoHeader(true);
 		lv_question_recycle.setVisibility(View.INVISIBLE);
 		
 		//setListener();
@@ -129,14 +156,13 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 			@Override
 			public void onRefreshing() {
 				
-				lists.clear();//清除之前展示的list
 				first_enter = 0;//将第一次展示的标示重新设置为0
 				
+				/*isRefresh = true;*/
 				startSearch(refreshUrl+"type="+currentType);
 				LogUtils.toDebugLog("mysecretary", refreshUrl+"type="+currentType);
 				
 				//lv_question_recycle.onRefreshFinshed(true);
-			
 				
 			}
 			
@@ -217,7 +243,7 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 		try{
 			OkHttp.asyncGet(url, "Authorization", "Bearer "+App.app.getData("access_token"), null, new Callback() {
 				@Override
-				public void onResponse(Response response) throws IOException {
+				public void onResponse(Response response) throws IOException{
 					if (response.isSuccessful()) {
 						//handleOK.sendEmptyMessage(5);
 						
@@ -268,13 +294,13 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 		manager=new LinearLayoutManager(getActivity());
 		lv_question_recycle.setLayoutManager(manager);*/
 		
-		lv_question_recycle=(TestMyListView)rootView.findViewById(R.id.lv_secretary_list);
+		lv_question_recycle=(ActivityMyListView)rootView.findViewById(R.id.lv_secretary_list);
 		
 		//注意下面的数据源是 lists（末尾多个s）
 		question_adapter=new QuestionListAdapter(activity,lists,MineSecretaryListFragment.this);
 		lv_question_recycle.setAdapter(question_adapter);
 		
-		rootView.findViewById(R.id.look_help).setOnClickListener(new OnClickListener() {
+		rootView.findViewById(R.id.look_help).setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				FragmentEntity entity=new FragmentEntity();
@@ -320,15 +346,21 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 			public void getValue(String distance, String showText, int position) {
 				
 				lv_question_recycle.setVisibility(View.INVISIBLE);
-				if (!currentType.equals(types[position])) {
-					lists.clear();
-				}
 				
+				if (!currentType.equals(types[position])) {//当前的类型不等于  手 点击下去的位置上的值
+					lists.clear();
+					
+					question_adapter.notifyDataSetChanged();
+				
+				}
 				//主动刷新页面数据
 				currentType = types[position];
-				startSearch(refreshUrl+"type="+currentType);
-				times = 0;
 				first_enter = 0;
+				times = 0;
+				
+				//底层的空白提示不可见
+				empty_liner.setVisibility(View.INVISIBLE);
+				startSearch(refreshUrl+"type="+currentType);
 				onRefresh(viewRight, showText);
 			}
 		});
@@ -352,32 +384,11 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 				public void onResponse(Response response) throws IOException {
 					if (response.isSuccessful()) {
 						
-						handleOK.sendEmptyMessage(5);
-						
-						String json=response.body().string();
-						Gson gson=new Gson();
+						String json = response.body().string();
+						Gson gson = new Gson();
 						list = gson.fromJson(json, SecretaryQuestions.class);
 						
-						if (list.getData().size()==0) {//获取到的列表的值为 0 ，显示空图提示
-							handleOK.sendEmptyMessage(10);
-						}else {
-							if(list.getData().size()<10){
-								if(first_enter == 0){//首次进来，并且数据数目少于10条
-									times++;
-									handleOK.sendEmptyMessage(6);
-								}
-							}else{
-								//NO-OP
-							}
-							lists.clear();
-							handleOK.sendEmptyMessage(20);
-							
-							for (QuestionDetailItem item:list.getData()) {
-								lists.add(item);
-							}
-							handleOK.sendEmptyMessage(0);
-						}
-						first_enter = Integer.MAX_VALUE;
+						handleOK.sendEmptyMessage(5);//adpater.notify...
 
 					}
 				}

@@ -111,28 +111,25 @@ public class MineStoreFragment extends BaseFragment {
 		lv_mine_store.setOnTouchListener(touchListener);*/
 		
 		lv_mine_store.setOnRefreshListener(new OnRefreshListener() {
-			
 
 			@Override
 			public void onRefreshing() {
 				if (list != null) {
 				LinkedHashMap<String, String> refreshParams = new LinkedHashMap<String, String>();
 				refreshParams.put("underway", currentType);
-				refreshCurrentList(refreshUrl, refreshParams, refreshKey, lv_mine_store);
 				times = 0;
+				first_enter = 0;
 				lv_mine_store.onLoadMoreFished();
-//				PullToRefreshManager.getInstance().footerEnable();
-				
+				refreshCurrentList(refreshUrl, refreshParams, refreshKey, lv_mine_store);
 				}
 			}
 
-			
 			@Override
 			public void onLoadingMore() {
 				if (list != null) {
 					//其实这才是判断的真实依据，由于账号异常所以会将判断标准一直
 					if (list.getNext_page_url()== "null"||
-							TextUtils.isEmpty(list.getNext_page_url())) {
+						TextUtils.isEmpty(list.getNext_page_url())) {
 						
 						Log.i("第三次刷新","第二次拿到的list中的next_page_url的值为null");
 						
@@ -142,9 +139,7 @@ public class MineStoreFragment extends BaseFragment {
 							lv_mine_store.onLoadMoreOverFished();
 						}else{
 							lv_mine_store.onLoadMoreOverFished();
-							
 						}
-						
 //						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 //						PullToRefreshManager.getInstance().footerUnable();
 //						PullToRefreshManager.getInstance().headerUnable();
@@ -346,11 +341,6 @@ public class MineStoreFragment extends BaseFragment {
 					if(dataList.size()==0){//删除后数据列表为零
 						  v.rl_no_postdelay_store.setVisibility(View.VISIBLE);
 					}
-					 
-//					PullToRefreshManager.getInstance().footerEnable();
-					/*PullToRefreshManager.getInstance().headerEnable();
-					PullToRefreshManager.getInstance().onHeaderRefreshComplete();*/
-//					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 					this.first_enter = Integer.MAX_VALUE;
 					
 					
@@ -404,18 +394,14 @@ public class MineStoreFragment extends BaseFragment {
 //					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				}
 				break;
-				
 			case 1:
 				if ("true".equals(r.getContentAsString())) {
 					dataList.remove(deletePosition);
 					adapter.notifyDataSetChanged();
-					/*CustomToast.show(activity, getString(R.string.tip),
-							getString(R.string.delete_success));*/
+					/*CustomToast.show(activity, getString(R.string.tip),getString(R.string.delete_success));*/
 					Utils.showToast(activity, "删除成功");
-					
-				} else {
-					CustomToast.show(activity, getString(R.string.tip),
-							getString(R.string.delete_faild));
+				} else{
+					CustomToast.show(activity, getString(R.string.tip),getString(R.string.delete_faild));
 				}
 				break;
 			}

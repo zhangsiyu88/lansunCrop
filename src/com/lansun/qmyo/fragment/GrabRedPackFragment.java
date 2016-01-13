@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
@@ -38,11 +39,14 @@ import com.google.gson.Gson;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.ClickGoUrl;
 import com.lansun.qmyo.domain.HomePromoteData;
+import com.lansun.qmyo.domain.RedPackInfo;
+import com.lansun.qmyo.domain.ShareRedPackInfo;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExperienceDialog;
+import com.lansun.qmyo.view.GrabRedPackSharedDialog;
 import com.lansun.qmyo.view.ObservableWebView;
 import com.lansun.qmyo.view.RandomNumDialog;
 import com.lansun.qmyo.view.RandomNumDialog.OnConfirmListener;
@@ -50,6 +54,7 @@ import com.lansun.qmyo.view.SharedDialog;
 import com.lansun.qmyo.view.ObservableWebView.OnScrollChangedCallback;
 import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
+import com.lansun.qmyo.R.id;
 
 /**
  *
@@ -57,7 +62,7 @@ import com.lansun.qmyo.R;
  * @author Yeun
  * 
  */
-public class GrabRedPackFragment extends BaseFragment {
+public class GrabRedPackFragment extends BaseFragment implements OnClickListener {
 
 	@InjectAll
 	Views v;
@@ -66,12 +71,12 @@ public class GrabRedPackFragment extends BaseFragment {
 	class Views {
 		private ObservableWebView webView;
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
-		private View ll_promote_detail_title;
+		private View ll_promote_detail_title,iv_activity_back,iv_activity_shared;
+		
 	}
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
-		
 		super.onCreate(savedInstanceState);
 	}
 	
@@ -80,28 +85,34 @@ public class GrabRedPackFragment extends BaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
-		View rootView = inflater.inflate(R.layout.activity_grab_red_pack_detail,
-				null, false);
+		rootView = inflater.inflate(R.layout.activity_grab_red_pack_detail,null, false);
 		Bundle arguments = getArguments();
 		if (arguments != null) {
 			promote = (HomePromoteData) arguments.getSerializable("promote");
 			loadUrl = (String)arguments.get("loadUrl");
 			LogUtils.toDebugLog("loadUrl", loadUrl);
 		}
-		
 		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
 
+	@SuppressWarnings("deprecation")
 	@InjectInit
 	private void init() {
 		WebSettings settings = v.webView.getSettings();
 		settings.setJavaScriptEnabled(true);
-		v.webView.getSettings().setRenderPriority(RenderPriority.HIGH);
-		v.webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-
-	   /*v.webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);*/
 		
+		v.webView.getSettings().setRenderPriority(RenderPriority.HIGH);
+		
+		v.webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+		//v.webView.setHorizontalScrollBarEnabled(false);//水平不显示
+		v.webView.setVerticalScrollBarEnabled(false); //垂直不显示
+		//v.webView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);//滚动条在WebView内侧显示
+		//v.webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);//滚动条在WebView外侧显示
+		
+		
+		/* v.webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);*/
+		/*v.webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);*/
 		v.webView.setOnKeyListener(new OnKeyListener( ){
 			@Override
 			public boolean onKey(View view, int keyCode, KeyEvent event) {
@@ -116,18 +127,21 @@ public class GrabRedPackFragment extends BaseFragment {
 			}
 		});
 
-		v.webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+		
+		v.webView.setOnScrollChangedCallback(onScrollChangedCallback);
+		v.webView.loadUrl(loadUrl);
+		
 		v.webView.setWebViewClient(new WebViewClient() {
 
 			@Override
 			public void onPageFinished(WebView view, String url) {
-				try {
-					Thread.sleep(1500);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				endProgress();
+//				try {
+//					Thread.sleep(1500);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
 				super.onPageFinished(view, url);
+				endProgress();
 			}
 
 			@Override
@@ -154,17 +168,21 @@ public class GrabRedPackFragment extends BaseFragment {
 			}
 		});
 		
-		v.webView.setOnScrollChangedCallback(onScrollChangedCallback);
-		v.webView.loadUrl(loadUrl);
+		
+		
+		v.iv_activity_shared.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				
+				InternetConfig config = new InternetConfig();
+				config.setKey(2);
+				FastHttpHander.ajaxGet(GlobalValue.GRAB_RED_PACK_SHARE_CONTENT, null, config, GrabRedPackFragment.this);
+				
+				
+			}
+		});
 		
 //		v.webView.loadUrl("http://act.qmyo.com/redpack/1");
-	
-		/**
-		 * 在webView上展示出网址的内容
-		 */
-		/*if (!TextUtils.isEmpty(promote.getUrl())) {
-			v.webView.loadUrl(promote.getUrl());
-		}*/
 	}
 
 	OnScrollChangedCallback onScrollChangedCallback = new OnScrollChangedCallback() {
@@ -179,12 +197,8 @@ public class GrabRedPackFragment extends BaseFragment {
 	};
 	private boolean my_attention;
 	private String loadUrl;
+	private View rootView;
 
-	private void click(View view) {
-		switch (view.getId()) {
-		
-		}
-	}
 
 	@InjectHttp
 	private void result(ResponseEntity r) {
@@ -194,29 +208,62 @@ public class GrabRedPackFragment extends BaseFragment {
 				String result = r.getContentAsString();
 				//1.1 返回的是随机串-->可以去领红包
 				
-				
-				//1.2 返回的不正确-->提示红包已被邻过
-				
-				LogUtils.toDebugLog("返回数字", "返回数字"+result);
-				
-				if(result.contains("false")){
-					Toast.makeText(activity, "小子，不要贪心~~", Toast.LENGTH_LONG).show();
-				}else{
-					
-					RandomNumDialog dialog = new RandomNumDialog(activity,result);//这么个体验的对话框，需要单独在其内部设置点击响应事件
-					//进来首先就弹出对话框
-					dialog.setOnConfirmListener(new OnConfirmListener(){
-						@Override
-						public void confirm() {
-							
-						}
-					});
-					dialog.show(getFragmentManager(), "grabredpack");
+				//对result进行解析
+				Gson grabJson = new Gson();
+				RedPackInfo redPackInfo = grabJson.fromJson(result, RedPackInfo.class);
+				int statueTag = redPackInfo.getData();
+				LogUtils.toDebugLog("result", "result: "+ statueTag);
+				switch(statueTag){
+				   /* case -2://已领完
+				    	Toast.makeText(activity, "大大您来迟了，请等待下一大波红包到来~~", Toast.LENGTH_LONG).show();
 					break;
-					
+				    case -1://未开始
+				    	Toast.makeText(activity, "大大您来早了，活动还未开始呢~~", Toast.LENGTH_LONG).show();
+					break;
+				    case 0://已领过
+				    	Toast.makeText(activity, "大大您忘啦，您刚刚领过了~~", Toast.LENGTH_LONG).show();
+					break;*/
+				   default://正常返回数据
+					   RandomNumDialog dialog = new RandomNumDialog(activity,String.valueOf(statueTag));//这么个体验的对话框，需要单独在其内部设置点击响应事件
+					   dialog.show(getFragmentManager(), "grabredpack");
+					break;
 				}
+				break;
 				
+			case 2:
+				result = r.getContentAsString();
+				Gson shareJson = new Gson();
+				ShareRedPackInfo shareRedPackInfo = shareJson.fromJson(result, ShareRedPackInfo.class);
+				LogUtils.toDebugLog("", r.getContentAsString());
+					
+				String title = shareRedPackInfo.getRedpack_title();
+				String content = shareRedPackInfo.getRedpack_sub();
+				String imageUrl = "http://act.qmyo.com/images/redpack/pre-redpack.jpg";
+				String currentActivityUrl = shareRedPackInfo.getShare_url();
 				
+				new GrabRedPackSharedDialog().showPopwindow(rootView, getActivity(), 
+						title , 
+						content ,
+						"",
+						currentActivityUrl);
+				LogUtils.toDebugLog("Grab", "执行到分享这一步");
+				
+				break;
+				//1.2 返回的不正确-->提示红包已被邻过
+//				LogUtils.toDebugLog("返回数字", "返回数字"+result);
+//				if(result.contains("false")){
+//					Toast.makeText(activity, "小子，不要贪心~~", Toast.LENGTH_LONG).show();
+//				}else{
+//					result = result.substring(result.indexOf(":")+2, result.length()-2);
+//					RandomNumDialog dialog = new RandomNumDialog(activity,result);//这么个体验的对话框，需要单独在其内部设置点击响应事件
+//					//进来首先就弹出对话框
+//					dialog.setOnConfirmListener(new OnConfirmListener(){
+//						@Override
+//						public void confirm() { }
+//					});
+//					dialog.show(getFragmentManager(), "grabredpack");
+//					break;
+//				}
 				
 			}
 		}
@@ -243,6 +290,7 @@ public class GrabRedPackFragment extends BaseFragment {
 		LogUtils.toDebugLog("webviewUrl", urlTailStr);
 		Gson gson = new Gson();
 		ClickGoUrl goUrlData = gson.fromJson(urlTailStr, ClickGoUrl.class);
+		
 		String activity_id = String.valueOf(goUrlData.getActivity_id());
 		String shop_id = String.valueOf(goUrlData.getShop_id());
 		int tag = goUrlData.getTag();
@@ -260,13 +308,11 @@ public class GrabRedPackFragment extends BaseFragment {
 			FragmentEntity fEntity = new FragmentEntity();
 			fEntity.setFragment(activtiFragment);
 			EventBus.getDefault().post(fEntity);
-		}else{
+		}else if(tag==30){//------------------------------------>进行抢红包的点击事件
 			/*
 			 *  "lansunqmyo://maijieclient/?{'tag':30,'type':'redpack'}"
 			 *   打开红包的随机码的页面
 			 */
-			
-			
 			if(isExperience()==true){
 				Toast.makeText(activity, "请登陆注册后,再抢红包大奖", Toast.LENGTH_LONG).show();
 				
@@ -279,7 +325,6 @@ public class GrabRedPackFragment extends BaseFragment {
 				EventBus.getDefault().post(fEntity);
 				
 			}else{
-				
 				//1.抢红包网址
 					/*http://appapi.qmyo.org/redpack/key*/				
 				//2.获取随机码
@@ -290,17 +335,36 @@ public class GrabRedPackFragment extends BaseFragment {
 				head.put("Authorization", "Bearer " + App.app.getData("access_token"));
 				config.setHead(head);
 				
-				FastHttpHander.ajaxGet("http://appapi.qmyo.org/redpack/key", null, config, this);
+				FastHttpHander.ajaxGet(GlobalValue.GRAB_RED_PACK, null, config, this);
 				/*FastHttpHander.ajaxGet(GlobalValue.GRAB_RED_PACK, null, config, this);*/
-				
-				
-				
-				
 			}
+		}else if(tag == 40){ //----------------------------------------->进行分享活动预告页面的点击事件
+			   //获取分享内容的网址
+				InternetConfig config = new InternetConfig();
+				config.setKey(2);
+				FastHttpHander.ajaxGet(GlobalValue.GRAB_RED_PACK_SHARE_CONTENT, null, config, GrabRedPackFragment.this);
+			
 		}
+	}
+	@Override
+	public void onClick(View v) {
+		switch(v.getId()){
 		
-		
-       
-		
+		case R.id.iv_activity_shared:
+			
+			String title = "biaoti";
+			String content = "neirong";
+			String imageUrl = "";
+			String currentActivityUrl ="http://www.baidu.com";
+			
+			LogUtils.toDebugLog("popup", "弹出分享按钮");
+			
+			new SharedDialog().showPopwindow(rootView, getActivity(), 
+					title , 
+					content ,
+					imageUrl,
+					currentActivityUrl);
+			break;
+		}
 	}
 }

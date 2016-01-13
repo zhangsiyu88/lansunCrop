@@ -181,9 +181,7 @@ public class ActivityMyListView extends ListView  {//implements OnScrollListener
 	}
 	private void initFooter() {
 		footer = View.inflate(getContext(), R.layout.refresh_test_footer, null);
-		
 		ViewUtils.inject(this, footer);
-		
 		footer.measure(0, 0);
 		footerHeight = footer.getMeasuredHeight();
 		/*footer.setPadding(0, -footerHeight, 0, 0);*/
@@ -232,7 +230,9 @@ public class ActivityMyListView extends ListView  {//implements OnScrollListener
 //				}
 //			
 			if(CURRENT_STATE==REFRESHING){
-				break;
+				LogUtils.toDebugLog("touchDis", "正在刷新中，响应点击操作");
+				//break;
+				return true;
 				//return true;
 			}
 //			if(CURRENT_STATE==RELEASE_REFRESH){
@@ -271,6 +271,7 @@ public class ActivityMyListView extends ListView  {//implements OnScrollListener
 			if (CURRENT_STATE == REFRESHING) {
 				// 正在刷新时，不能再处理刷新动作
 				//return true;
+				LogUtils.toDebugLog("touchDis", "正在刷新中，响应滑动操作");
 				break;
 			}
 
@@ -352,6 +353,12 @@ public class ActivityMyListView extends ListView  {//implements OnScrollListener
 			} else if (CURRENT_STATE == PULLDOWN_REFRESH) {
 				header.setPadding(0, -headerHeight, 0, 0);// 隐藏头布局
 				
+			}else if (CURRENT_STATE == REFRESHING) {
+				// 正在刷新时，不能再处理刷新动作
+				//return true;
+				LogUtils.toDebugLog("touchDis", "正在刷新中，响应手指抬起操作");
+				return true;
+				//break;
 			}
 //			else if (CURRENT_STATE == RELEASE_LOADING) {
 //				CURRENT_STATE = LOADING;
@@ -446,9 +453,6 @@ public class ActivityMyListView extends ListView  {//implements OnScrollListener
 			pb_loading.setVisibility(View.VISIBLE);
 			tv_loadingmore.setText("加载更多中");
 			break;
-
-			
-			
 		default:
 			break;
 		}

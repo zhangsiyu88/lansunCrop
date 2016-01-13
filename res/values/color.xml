@@ -3,6 +3,7 @@
 
     <color name="translate_gray">#EBEBEB</color>
     <color name="app_black">#000000</color>
+    <color name="app_black_80">#aa000000</color>
     <color name="app_white">#FFFFFF</color>
     <color name="app_bg">#ebebeb</color>
     <color name="app_blue">#A6D1D1</color>

@@ -2,6 +2,7 @@ package com.lansun.qmyo;
 import java.io.IOException;
 
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -58,19 +59,16 @@ import com.lansun.qmyo.view.CustomToast;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
+
+
 @InjectLayer(R.layout.activity_main)
 public class MainActivity extends FragmentActivity implements BackHanderInterface {
 	private FragmentTransaction fragmentTransaction;
 	public static boolean isForeground = false;
 	private long exitTime = 0;
 	
-	
-	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		
-		
-		
 		if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
 			finish();
 			return;
@@ -122,7 +120,6 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		}else{
 			System.out.println("android.permission.ACCESS_FINE_LOCATION已经打开！"+checkCallingOrSelfPermission);
 		}
-		
 		super.onCreate(savedInstanceState);
 	}
 	
@@ -220,11 +217,8 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 
 	public  void startFragmentAdd(Fragment fragment) {
 		FragmentManager fragmentManager = getSupportFragmentManager();
-		fragmentTransaction = fragmentManager
-				.beginTransaction();
-		Fragment to_fragment = fragmentManager.findFragmentByTag(fragment
-				.getClass().getName());
-		
+		fragmentTransaction = fragmentManager.beginTransaction();
+		Fragment to_fragment = fragmentManager.findFragmentByTag(fragment.getClass().getName());
 		
 		
 	// fragmentTransaction.setCustomAnimations(R.anim.left_in,R.anim.left_out, R.anim.right_in, R.anim.right_out);
@@ -247,7 +241,6 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 						fragmentManager.popBackStack(entry.getName(), 1);
 					}
 				}
-				
 			}
 		}
 		fragmentTransaction.addToBackStack(fragment.getClass().getName());
@@ -257,8 +250,7 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		 * 在此地方启动了一个服务来获取8大板块的导航
 		 * 考虑在点击进入8大板块的里面进行判断然后终止服务
 		 */
-		/*fragmentTransaction.replace(R.id.content_frame, fragment,
-				fragment.getClass().getName()).commitAllowingStateLoss();*/
+		/*fragmentTransaction.replace(R.id.content_frame, fragment,fragment.getClass().getName()).commitAllowingStateLoss();*/
 	}
 
 	
@@ -582,4 +574,21 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 			this.mBackHandedFragment = (BackHandedFragment) selectFragment;
 		}
 		
+		@Override
+		public void onActivityResult(int requestCode, int resultCode, Intent data) {
+			super.onActivityResult(requestCode, resultCode, data);
+			if(requestCode ==Activity.RESULT_FIRST_USER){
+				if(resultCode == 1){
+					if(data.getExtras().getString("back").equals("yes")){
+						Bundle bundle = new Bundle();
+						bundle.putString("fragment_name","GrabRedpackFragment");
+						RegisterFragment fragment = new RegisterFragment();
+						FragmentEntity fEntity = new FragmentEntity();
+						fragment.setArguments(bundle);
+						fEntity.setFragment(fragment);
+						EventBus.getDefault().post(fEntity);
+					}
+				}
+			}
+		}
 }

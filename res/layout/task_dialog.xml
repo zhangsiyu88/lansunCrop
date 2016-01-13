@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:gravity="center_horizontal"
-    android:orientation="vertical" >
+    android:background="@color/transparent"
+    android:orientation="vertical" 
+    android:paddingBottom="20dp">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:orientation="vertical" ><!-- android:background="@drawable/tv_style_white"  -->
+        android:background="@drawable/rectangle_white_corner"
+        android:paddingTop="-5dp"
+        android:paddingBottom="20dp"
+        android:orientation="vertical" ><!--   -->
 
         <TextView
             android:id="@+id/textView1"
@@ -28,12 +30,24 @@
             android:text="2小时内必有回复"
             android:textColor="#AEAEAE" />
 
-         <com.android.pc.ioc.view.GifMovieView
-            android:id="@+id/loading_gif"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" 
-            android:layout_marginBottom="@dimen/margin_top_35"
-            android:layout_marginTop="@dimen/margin_top_35"/>
+        
+        <RelativeLayout 
+            style="@style/w_wrap_h_wrap">
+            
+           <ImageView 
+              android:background="@drawable/task_success_new"
+              style="@style/w_wrap_h_wrap"/> 
+            <com.android.pc.ioc.view.GifMovieView
+	            android:layout_centerHorizontal="true"
+	            android:layout_marginTop="20dp"
+	            android:id="@+id/loading_gif"
+	            android:layout_width="155dp"
+	            android:layout_height="155dp" 
+	            android:layout_marginBottom="@dimen/margin_top_35"
+            /><!--   android:layout_marginTop="@dimen/margin_top_35" -->
+            
+        </RelativeLayout>
+         
          <!-- android:background="#EBEBEB"
               	   gif:decode_stream="true" 
            		   gif:default_animation_time="1000"  -->

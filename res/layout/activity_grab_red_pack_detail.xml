@@ -30,8 +30,24 @@
                 android:layout_gravity="center"
                 android:background="@drawable/arrow_l" />
         </LinearLayout>
+        <LinearLayout
+            android:visibility="gone"
+            
+            android:id="@+id/iv_activity_shared"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@id/ll_activity_collection"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:background="@drawable/circle_background_gray_1"
+            android:gravity="center" >
 
-       
+            <com.android.pc.ioc.image.RecyclingImageView
+                style="@style/w_wrap_h_wrap"
+                android:layout_gravity="center"
+                android:background="@drawable/shared" />
+        </LinearLayout>
     </RelativeLayout>
 
 </RelativeLayout>

@@ -36,6 +36,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewParent;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
@@ -53,6 +54,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView.ScaleType;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -73,6 +75,7 @@ import com.android.pc.ioc.internet.FastHttp;
 import com.android.pc.ioc.internet.FastHttpHander;
 import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
+import com.android.pc.ioc.view.GifMovieView;
 import com.android.pc.ioc.view.PullToRefreshManager;
 import com.android.pc.ioc.view.PullToRefreshView;
 import com.android.pc.ioc.view.listener.OnClick;
@@ -83,6 +86,8 @@ import com.android.pc.util.Handler_Json;
 import com.google.gson.Gson;
 import com.jfeinstein.jazzyviewpager.JazzyViewPager;
 import com.jfeinstein.jazzyviewpager.JazzyViewPager.TransitionEffect;
+import com.lansun.qmyo.GrabRedPackActivity;
+import com.lansun.qmyo.MainActivity;
 import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.HomeListAdapter;
@@ -168,8 +173,7 @@ import com.squareup.okhttp.Response;
 
 	class Views {
 		@InjectBinder(method = "click", listeners = OnClick.class)
-		private RelativeLayout fl_home_top_menu, rl_top_r_top_menu, rl_bg,
-		rl_top_bg;
+		private RelativeLayout fl_home_top_menu, rl_top_r_top_menu, rl_bg,rl_top_bg;
 		@InjectBinder(method = "click", listeners = OnClick.class)
 		private View bottom_secretary, bottom_found, bottom_mine,
 		iv_home_location, iv_top_location, ll_search;
@@ -1421,6 +1425,7 @@ import com.squareup.okhttp.Response;
 	//页面图片的点击事件
 	class MyOnClickListener implements OnClickListener{
 		public int mPosition ;
+		private Bundle bundleToGrab;
 		public MyOnClickListener(int position){
 			this.mPosition = position;
 		}
@@ -1559,8 +1564,12 @@ import com.squareup.okhttp.Response;
 					fragment = new GrabRedPackFragment();
 					bundle.putString("loadUrl", homePhotoList.get(mPosition%homePhotoList.size()).get("photoDataWebViewUrl"));
 					fragment.setArguments(bundle);	
+//					Intent intentToGrab = new Intent(activity,GrabRedPackActivity.class);
+//					bundleToGrab = new Bundle();
+//					bundleToGrab.putString("loadUrl", homePhotoList.get(mPosition%homePhotoList.size()).get("photoDataWebViewUrl"));
+//					intentToGrab.putExtras(bundleToGrab);
+//					activity.startActivity(intentToGrab);
 					break;
-					
 				default:
 					break;
 				}
@@ -1571,7 +1580,6 @@ import com.squareup.okhttp.Response;
 		}
 	}
 	
-	
 	@Override
 	public void onDestroy() {
 		getActivity().unregisterReceiver(broadCastReceiver);
@@ -1579,8 +1587,6 @@ import com.squareup.okhttp.Response;
 	}
 	
 	 class HomeRefreshBroadCastReceiver extends BroadcastReceiver{
-
-		
 
 		@Override
 		public void onReceive(Context ctx, Intent intent) {
@@ -1634,5 +1640,63 @@ import com.squareup.okhttp.Response;
 			
 		}
 	 }
+	 
+	 @Override
+	protected void setProgress(View view) {
+		 if (progress != null) {
+				return;
+			}
+			loadView = view;
+			LayoutParams lp = view.getLayoutParams();
+			ViewParent parent = view.getParent();
+			FrameLayout container = new FrameLayout(activity);
+			ViewGroup group = (ViewGroup) parent;
+			int index = group.indexOfChild(view);
+			group.removeView(view);
+			group.addView(container, index, lp);
+			container.addView(view);
+			if (inflater != null) {
+				progress = inflater.inflate(R.layout.fragment_progress, null);
+				progress_container = (LinearLayout) progress
+						.findViewById(R.id.progress_container);
+
+				progress_text = (TextView) progress.findViewById(R.id.progress_text);//动态猫头鹰底部显示：内容正在加载中
+				progress_container.setOnClickListener(new OnClickListener() {
+
+					private int justOneTimes;
+
+					@Override
+					public void onClick(View arg0) {
+						try{
+							//执行两个网络访问各一次
+							
+							if(justOneTimes==0){
+								//1.1顶部广告的内容
+								InternetConfig config = new InternetConfig();
+								config.setKey(0);
+								FastHttpHander.ajaxGet(GlobalValue.URL_HOME_AD + 310000, config, HomeFragment.this);//已去访问头部的数据
+								
+								//1.2 拿到首页底部列表的内容
+								refreshCurrentList(refreshUrl, refreshParams, refreshKey,loadView);
+								justOneTimes++;
+							}
+							
+						}catch(Exception e){
+							App.app.startActivity(new Intent(App.app,MainActivity.class));
+						}
+						
+					}
+				});
+				GifMovieView loading_gif = (GifMovieView) progress.findViewById(R.id.loading_gif);
+				loading_gif.setMovieResource(R.drawable.loading);
+				container.addView(progress);
+				progress_container.setTag(view);
+				view.setVisibility(View.GONE);
+			}
+			group.invalidate();
+		 
+		 
+		//super.setProgress(view);
+	}
 
 }

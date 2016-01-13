@@ -102,7 +102,6 @@ public class TestMineActivityFragment extends BaseFragment {
 	 * 
 	 * @param type
 	 */
-
 	@InjectInit
 	private void init() {
 		refreshParams = new LinkedHashMap<String, String>();
@@ -123,9 +122,10 @@ public class TestMineActivityFragment extends BaseFragment {
 				if (list != null) {
 					refreshParams.put("underway", underway);
 					isPullChanged = false;
+					times = 0;
+					first_enter = 0;
 					//再次刷新
 					refreshCurrentList(refreshUrl, refreshParams, 0,lv_mine_activity);
-					times = 0;
 				}
 			}
 
@@ -143,7 +143,6 @@ public class TestMineActivityFragment extends BaseFragment {
 						}else{
 							lv_mine_activity.onLoadMoreOverFished();
 						}
-						
 					} else {
 						refreshParams.put("underway", underway);
 						refreshCurrentList(list.getNext_page_url(), refreshParams,0, lv_mine_activity);
@@ -155,16 +154,8 @@ public class TestMineActivityFragment extends BaseFragment {
 		});
 	}
 	
-
-	
-	
-	
-	
-	
 	private ArrayList<HashMap<String, Object>> dataList = new ArrayList<HashMap<String, Object>>();
-
 	private SearchAdapter adapter;
-
 	private ActivityList list;
 	private SwipeListMineActivityAdapter swipeListAdapter;
 

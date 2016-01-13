@@ -5,7 +5,14 @@ public class QAMetaData {
 	public String content;
 	public String answer;
 	public int type;
+	public String time;
 	
+	public String getTime() {
+		return time;
+	}
+	public void setTime(String time) {
+		this.time = time;
+	}
 	public String getContent() {
 		return content;
 	}

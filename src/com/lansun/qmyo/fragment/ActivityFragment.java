@@ -345,6 +345,7 @@ import com.lansun.qmyo.R;
 						refreshParams.put("position",position_bussnessAfterEncode);*/
 						
 						refreshParams.put("service", HODLER_TYPE);
+						refreshParams.put("type", type);
 						
 						//缺少一个智能筛选的参数
 						refreshParams.put("intelligent", intelligentStr);

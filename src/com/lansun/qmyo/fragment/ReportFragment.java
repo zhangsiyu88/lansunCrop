@@ -102,7 +102,6 @@ public class ReportFragment extends BackHandedFragment {
 			break;
 
 		}
-
 		initTitle(v.tv_activity_title, titileRes, null, 0);
 		v.fl_comments_right_iv.setVisibility(View.GONE);
 
@@ -120,14 +119,12 @@ public class ReportFragment extends BackHandedFragment {
 			InternetConfig config = new InternetConfig();
 			config.setKey(0);
 			HashMap<String, Object> head = new HashMap<>();
-			head.put("Authorization",
-					"Bearer " + App.app.getData("access_token"));
+			head.put("Authorization","Bearer " + App.app.getData("access_token"));
 			config.setHead(head);
 			LinkedHashMap<String, String> params = new LinkedHashMap<>();
 			
 			
 			String shopComplainUrl = GlobalValue.SHOP_COMPLAIN;
-			
 			String activityComplainUrl = GlobalValue.ACTIVITY_COMPLAIN;
 			 String complainUrl = "";
 			

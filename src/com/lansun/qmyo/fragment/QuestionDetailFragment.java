@@ -69,8 +69,10 @@ import com.squareup.okhttp.Response;
  * 
  */
 public class QuestionDetailFragment extends BaseFragment implements RequestCallBack,OnFocusChangeListener{
-	@InjectView(down = true, pull = false)
-	private RecyclerView my_secretary_question_recycle;
+	
+	
+	@InjectView
+	private RecyclerView my_secretary_question_recycle;//(down = true, pull = false)
 	@InjectAll
 	Views v;
 	private String question_id;
@@ -93,6 +95,7 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		private View fl_comments_right_iv, tv_activity_shared;
 		private TextView tv_activity_title;
 		private EditText et_secretary_question;
+		private TextView tv_conversation_type;
 	}
 	private Handler handleOk=new Handler(){
 		public void handleMessage(android.os.Message msg) {
@@ -105,9 +108,16 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 					my_secretary_question_recycle.setAdapter(adapter);
 					my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);//刷新后强制滑动至消息列表上的最后一个位置
 					v.et_secretary_question.setOnFocusChangeListener(QuestionDetailFragment.this);
+					
 				}else if(type == NEW_VER){
 					String type=switchType(currentType);
-					v.tv_activity_title.setText(GlobalValue.mySecretary.getName()+"["+type+"]");
+					//v.tv_activity_title.setText(GlobalValue.mySecretary.getName()+"["+type+"]");
+					v.tv_activity_title.setText(GlobalValue.mySecretary.getName());
+					
+					/* 此处无需再次将其展示，已经将标题放入列表的头部
+					 * v.tv_conversation_type.setVisibility(View.VISIBLE);
+					v.tv_conversation_type.setText(type);*/
+					
 					my_secretary_question_recycle.setAdapter(newAdapter);
 					my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);//刷新后强制滑动至消息列表上的最后一个位置
 					v.et_secretary_question.setOnFocusChangeListener(QuestionDetailFragment.this);
@@ -153,37 +163,6 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 				}
 				
 				
-				
-//			暂时关闭
-//				
-//				/*v.et_secretary_question.setText("");
-//				QuestionAnswerDetail detail = new QuestionAnswerDetail();
-//				detail.setContent(question);
-//				list.getItems().add(list.getItems().size(), detail);
-//				adapter.notifyDataSetChanged();
-//				my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);*/
-//				
-//				
-//				
-//				
-//				v.et_secretary_question.setText("");
-////				QuestionAnswerDetailNew detail=new QuestionAnswerDetailNew();
-////				detail.setContent(question);
-//				
-//				QAMetaData qaMetaData = new QAMetaData();
-//				SimpleDateFormat format=new SimpleDateFormat("HH");
-//				final int hour=Integer.valueOf(format.format(new Date(System.currentTimeMillis())));
-//				if((hour>=9) && (hour<18)){
-//					qaMetaData.setAnswer("收到啦，给我点点时间来处理~爱你哟~我们的工作时间：周一至周五工作日9:00-18:00（周末及法定节假日休息），小秘书将逐步实现7*24无休服务。");
-//				}
-//				else if(((hour>=0) && (hour<9))||((hour>=18)&&(hour<=24))){
-//					qaMetaData.setAnswer("收到您的留言喽~但但但...人家现在正休息，为了养足精神更好为您服务哦~小秘书开工后立即处理（周一至周五工作日9:00-18:00），谢谢体谅哟~小秘书将逐步实现7*24无休服务。");
-//				}
-//				qaMetaData.setContent(question);
-//				processList.add(qaMetaData);
-//				
-//				newAdapter.notifyDataSetChanged();
-//				my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);
 				break;
 			case 2:
 				CustomToast.show(activity, R.string.tip,"提交失败");
@@ -215,15 +194,18 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_secretary_question_detail,container,false);
 		Handler_Inject.injectFragment(this, rootView);
+		v.tv_activity_title.setText("");
 		
 		initView(rootView);
 		getNewAnswer(refreshUrl);
 		return rootView;
 	}
 	private void initView(View view) {
+		
 		my_secretary_question_recycle=(RecyclerView)view.findViewById(R.id.lv_mine_secretary_quetions_detail);
 		LinearLayoutManager manager=new LinearLayoutManager(getActivity());
 		my_secretary_question_recycle.setLayoutManager(manager);
+		
 		btn_secretary_question_commit=(TextView)view.findViewById(R.id.btn_secretary_question_commit);
 		btn_secretary_question_commit.setOnClickListener(new OnClickListener(){
 			@Override
@@ -288,18 +270,19 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	@InjectInit
 	private void init() {
 		v.fl_comments_right_iv.setVisibility(View.GONE);
-		v.iv_activity_back.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				FragmentEntity entity=new FragmentEntity();
-				/*Fragment fragment=new MineSecretaryFragment();*/				
-				Fragment fragment=new MineSecretaryListFragment();
-				entity.setFragment(fragment);
-				EventBus.getDefault().post(entity);
-			}
-		});
+		
+//		back键不做点击响应
+//		v.iv_activity_back.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				FragmentEntity entity=new FragmentEntity();
+//				/*Fragment fragment=new MineSecretaryFragment();*/				
+//				Fragment fragment=new MineSecretaryListFragment();
+//				entity.setFragment(fragment);
+//				EventBus.getDefault().post(entity);
+//			}
+//		});
 	}
-
 
 	/**
 	 * 追加提问
@@ -307,8 +290,7 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	private void commit() {
 		if (TextUtils.isEmpty(v.et_secretary_question.getText().toString()
 				.trim())) {
-			CustomToast.show(activity, R.string.tip,
-					R.string.please_enter_content);
+			CustomToast.show(activity, R.string.tip,R.string.please_enter_content);
 			return;
 		}
 		pd = new ProgressDialog(activity);
@@ -320,27 +302,35 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		biz.sendQuestion(question, currentType, question_id+"", this);
 	}
 	private String switchType(String type) {
+		if(activity==null){
+			return "";
+		}
 		switch (type) {
 		case "travel":
-			return getResources().getString(R.string.travel_holiday);
+			return "旅行度假";
+//			return getResources().getString(R.string.travel_holiday);
 		case "shopping":
-			return getResources().getString(R.string.new_shopping);
+			return "新品购物";
+//			return getResources().getString(R.string.new_shopping);
 		case "party":
-			return getResources().getString(R.string.shengyan_part);
+			return "盛宴派对";
+//			return getResources().getString(R.string.shengyan_part);
 		case "life":
-			return getResources().getString(R.string.life_quality);
+			return "高质生活";
+//			return getResources().getString(R.string.life_quality);
 		case "student":
-			return getResources().getString(R.string.studybroad);
+			return "留学服务";
+//			return getResources().getString(R.string.studybroad);
 		case "investment":
-			return getResources().getString(R.string.investment);
+			return "投资理财";
+//			return getResources().getString(R.string.investment);
 		case "card":
-			return getResources().getString(R.string.handlecard);
+			return "办卡推荐";
+//			return getResources().getString(R.string.handlecard);
 		}
 		return "";
 	}
 
-	
-	
 	/**
 	 * 下面的网络访问成功和失败的回调函数具体实现，是由AddQuestionBiz中进行问题提交时完成的引起的
 	 */
@@ -364,29 +354,22 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	}
 	
 	
-	
-	
 	class MessageReplayBraodCast extends BroadcastReceiver{
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if ("com.lansun.qmyo.fragment.questionDetailFragment".equals(intent.getAction())) {
-
+				
 			}
 		}
 	}
 	@Override
 	public void onFocusChange(View v, boolean hasFocus) {
 		Log.e("focus", hasFocus+"");
-		
-		
 		if(type == HISTORY_VER){
 			my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);
 		}else if(type == NEW_VER){
 			my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);
 		}
-		
-		
-		
 	}
 	
 	/**
@@ -409,9 +392,19 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		//1.根据服务器发挥的标准数据，并且gson解析完成转换后的数据集，来提取数据
 		ArrayList<QAMetaData> arrayDataSource = new ArrayList<QAMetaData>();
 		
+		
+		//首先要给整个问答列表添加上一个标题的头，例如“旅游度假”
+		QAMetaData titleQAMetaData = new QAMetaData();
+		titleQAMetaData.setContent("  "+switchType(list.getType())+"  ");
+		titleQAMetaData.setType(3);
+		arrayDataSource.add(titleQAMetaData);
+		
+		
 		String questionType = list.getType();
 		//1.1主问题的提问数据
 		String mainContent = list.getContent();//拿到第一次提问的内容
+		String askTime = list.getTime();//拿到第一次提问的事件
+		
 		QAMetaData qaMetaData = new QAMetaData();
 		
 		//1.2主答复为不为空时，才进行answer的解析
@@ -420,6 +413,8 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 			int i = 0;
 			for(SubAnswer simpleAnswer:answer){
 				qaMetaData = new QAMetaData();
+				
+				qaMetaData.setTime(askTime);
 				qaMetaData.setAnswer(simpleAnswer.getSimpleAnswer());
 				qaMetaData.setContent(mainContent);
 				if(i==0){
@@ -436,6 +431,9 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 			QAMetaData qaMetaDataSpareWheel = new QAMetaData();
 			qaMetaDataSpareWheel.setContent(mainContent);
 			qaMetaDataSpareWheel.setType(1);//标准一问一答的操作
+			
+			qaMetaDataSpareWheel.setTime(askTime);
+			
 //			qaMetaDataSpareWheel.setAnswer("大哥，终于等到你提问了");
 			qaMetaDataSpareWheel.setAnswer("小秘书已经收到您的留言喽，立即开启暴风处理模式~2小时内必定有回复！为保证答复质量，如需更多处理时间，" +
 					"小秘书也将第一时间告知~全心全意为您哟~我们的服务时间：周一至周五工作日9:00-18:00（周末及法定节假日休息），小秘书将逐步实现7*24无休服务。");
@@ -448,6 +446,7 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		for(QuestionAnswerDetailNew qADetailNew : items){//循环每个追问的对象
 			int j = 0;
 			String content = qADetailNew.getContent();
+			String sub_askTime = qADetailNew.getTime();
 			
 			//2.1 item的子集回答存在
 			if(qADetailNew.getAnswer()!=null&& qADetailNew.getAnswer().size()!=0){
@@ -455,6 +454,7 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		
 			for(SubAnswer sAnswer :sAnswerList){
 				qaMetaData = new QAMetaData();
+				qaMetaData.setTime(sub_askTime);
 				qaMetaData.setAnswer(sAnswer.getSimpleAnswer());
 				qaMetaData.setContent(content);
 				if(j==0){
@@ -472,6 +472,8 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 				QAMetaData qaMetaDataPump = new QAMetaData();
 				qaMetaDataPump.setContent(content);
 				qaMetaDataPump.setType(1);
+				
+				qaMetaDataPump.setTime(sub_askTime);
 				
 				String time = qADetailNew.getTime();
 				LogUtils.toDebugLog("time",qADetailNew.getTime());

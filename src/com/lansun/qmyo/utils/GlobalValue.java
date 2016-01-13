@@ -79,6 +79,10 @@ public class GlobalValue {
 	 */
 	public static String URL_GET_ACCESS_TOKEN = "http://" + IP + "/token/";
 	/**
+	 * 取消活动收藏
+	 */
+	public static String URL_QX_ACTIVITY = "http://" + IP + "/activity/";
+	/**
 	 * 全部活动
 	 */
 	public static String URL_ALL_ACTIVITY = "http://" + IP + "/activity/all?";
@@ -337,6 +341,10 @@ public class GlobalValue {
 	 * 抢红包随机码网址
 	 */
 	public static String GRAB_RED_PACK = "http://" + IP + "/redpack/key";
+	/**
+	 * 分享抢红包网址
+	 */
+	public static String GRAB_RED_PACK_SHARE_CONTENT = "http://" + IP + "/redpack/share";
 
 	/**
 	 * 用户消息列表

@@ -258,9 +258,7 @@ public class StoreDetailFragment extends BaseFragment {
 				refreshCurrentList(refreshUrl, null, 0, v.sc_store_detail);
 			}
 		});
-
 		v.tv_report_content.setText(getString(R.string.store_report));//门店不靠谱，我要投诉！
-		
 	}
 
 	@InjectHttp
@@ -277,7 +275,6 @@ public class StoreDetailFragment extends BaseFragment {
 				v.tv_store_shop_name.setText(shop.getName());
 				
 				
-				
 				shopTelephone = shop.getTelephone();
 				/*v.tv_store_details_telephone.setText(Html.fromHtml(String
 						.format(getString(R.string.telephone),
@@ -289,8 +286,6 @@ public class StoreDetailFragment extends BaseFragment {
 					v.tv_store_details_telephone.setText(Html.fromHtml(String
 							.format(getString(R.string.telephone), shopTelephone)));
 				}
-				
-				
 				
 				v.tv_store_details_address.setText(Html.fromHtml(String.format(
 						getString(R.string.tele_address), shop.getAddress())));
@@ -383,7 +378,7 @@ public class StoreDetailFragment extends BaseFragment {
 					//少了一个对活动的描述内容   map.put("", data.getContent());
 					dataList.add(map);
 				}
-				if(shopActivity.getData().size()==1){
+				if(shopActivity.getData().size()<=1){
 					v.ll_blank_gray.setVisibility(View.VISIBLE);
 				}
 				//dataList中存储了分店的信息
