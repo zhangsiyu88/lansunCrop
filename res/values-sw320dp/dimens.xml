@@ -93,7 +93,7 @@
     <dimen name="line_h_125">63dp</dimen>
     <dimen name="l_r_45">23dp</dimen>
     <dimen name="expe_dialog_w">185dp</dimen>
-    <dimen name="grabredpack_dialog_w">200dp</dimen>
+    <dimen name="grabredpack_dialog_w">340dp</dimen>
     <dimen name="expe_btn_w">90dp</dimen>
     <dimen name="expe_dialog_content_margin_top">224dp</dimen>
     <dimen name="expe_dialog_icon_margin_top">150dp</dimen>
@@ -173,6 +173,7 @@
     <dimen name="qr_code_w_460">230dp</dimen>
     <dimen name="qr_code_h_460">230dp</dimen>
     <dimen name="margin_top_120">60dp</dimen>
+    <dimen name="margin_top_150">75dp</dimen>
     <dimen name="mine_v16_w">135dp</dimen>
     <dimen name="mine_v16_h">68dp</dimen>
     <dimen name="images_count_w">35dp</dimen>

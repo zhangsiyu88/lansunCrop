@@ -75,26 +75,22 @@ public class CloudView extends SurfaceView implements SurfaceHolder.Callback,
 		thread = new Thread(this);
 		thread.start();
 	}
-
-	
 	
 	public void initBitmap() {
-		BitmapFactory.Options options = new BitmapFactory.Options();
-		DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
-		options.inTargetDensity = displayMetrics.densityDpi;
-		options.inDensity = 96;
-		options.inScaled = true;
-		//getBitmapDensity()用于设置图片将要被显示的密度。
-		//options.inDensity = getBitmapDensity();
-		
-		options.inDensity = TypedValue.DENSITY_NONE;
-		options.inTargetDensity = TypedValue.DENSITY_NONE ;
+//		BitmapFactory.Options options = new BitmapFactory.Options();
+//		DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+//		options.inTargetDensity = displayMetrics.densityDpi;
+//		options.inDensity = 96;
+//		options.inScaled = true;
+//		//getBitmapDensity()用于设置图片将要被显示的密度。
+//		//options.inDensity = getBitmapDensity();
+//		
+//		options.inDensity = TypedValue.DENSITY_NONE;
+//		options.inTargetDensity = TypedValue.DENSITY_NONE ;
 		background = BitmapFactory.decodeResource(getResources(),
-				R.drawable.listbg,options);
-		
+				R.drawable.cloud_1);
 		background2 = BitmapFactory.decodeResource(getResources(),
-				R.drawable.cloud_2,options);
-		
+				R.drawable.cloud_2);
 		scalex = screen_width / background.getWidth();
 		scaley = screen_height / background.getHeight();
 		bg_y = screen_height;
@@ -119,15 +115,13 @@ public class CloudView extends SurfaceView implements SurfaceHolder.Callback,
 		try {
 			canvas = sfh.lockCanvas();
 			if (canvas != null) {
-				//canvas.drawColor(Color.WHITE); // 绘制背景色
+				canvas.drawColor(Color.WHITE); // 绘制背景色
 				canvas.save();
 				
 				// 计算背景图片与屏幕的比例
 				canvas.scale(scalex, scaley, 0, 0);
-				
 				canvas.drawBitmap(background, 0, bg_y, paint); // 绘制背景图
 				canvas.drawBitmap(background2, 0, bg_y2, paint); // 绘制背景图
-
 			}
 		} catch (Exception err) {
 			err.printStackTrace();

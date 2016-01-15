@@ -2,6 +2,8 @@ package com.lansun.qmyo.utils;
 
 import java.util.List;
 
+import android.widget.PopupWindow;
+
 import com.android.pc.util.Gps;
 import com.lansun.qmyo.domain.MySecretary;
 import com.lansun.qmyo.domain.Secretary;
@@ -12,8 +14,8 @@ public class GlobalValue {
 	public static final String DESCRIPTOR = "com.umeng.share";
 
 	public static Gps gps;
-//	public static String IP = "appapi.qmyo.com";
-	public static String IP = "appapi.qmyo.org";
+	public static String IP = "appapi.qmyo.com";
+//	public static String IP = "appapi.qmyo.org";
 	public static String URL_HOME_AD = "http://" + IP + "/advertisement/poster/";
 	/**
 	 * wx5078ff274c69bc8c a5af88ff8deb95831a8a4a21d5f0aaec
@@ -375,4 +377,5 @@ public class GlobalValue {
 	
 
 	public static  boolean  commitedStatisticsInfo_Login = false;
+
 }

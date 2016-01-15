@@ -7,23 +7,20 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.android.pc.ioc.image.RecyclingImageView;
-import com.ns.mutiphotochoser.adapter.ImageGridAdapter.ViewHolder;
 import com.lansun.qmyo.R;
+import com.lansun.qmyo.fragment.ActivityDetailFragment;
+import com.lansun.qmyo.fragment.ActivityDetailFragment.onClosePopupWindow;
 import com.lansun.qmyo.utils.LogUtils;
 
 /**
@@ -31,7 +28,7 @@ import com.lansun.qmyo.utils.LogUtils;
  * 
  */
 
-public class ExpandTabView extends LinearLayout implements OnDismissListener {
+public class ExpandTabView extends LinearLayout implements OnDismissListener ,onClosePopupWindow{
 
 	private TextView selectedButton;
 	private ArrayList<RelativeLayout> mViewArray = new ArrayList<RelativeLayout>();
@@ -42,7 +39,16 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 	private int displayWidth;
 	private int displayHeight;
 	private PopupWindow popupWindow;
+	public PopupWindow getPopupWindow() {
+		return popupWindow;
+	}
+	public void setPopupWindow(PopupWindow popupWindow) {
+		this.popupWindow = popupWindow;
+	}
+
 	private int selectPosition;
+	
+	
 
 	public ExpandTabView(Context context) {
 		super(context);
@@ -169,10 +175,11 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 						iv_expand_more.setImageResource(R.drawable.arrow_up);
 						isShow = true;
 					}
-					startAnimation();
+					//startAnimation();  //---------------->??
 					selectedButton = tv_expand_name;
 					selectPosition = (Integer) selectedButton.getTag();
-					startAnimation();
+					startAnimation();//--------------------->??
+					
 					if (mOnButtonClickListener != null && isShow) {               //展开状态时，且监听器监听
 						mOnButtonClickListener.onClick(selectPosition);
 					}
@@ -201,16 +208,15 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 		if (popupWindow == null) {
 			//这里的PopupView是基于mViewArray.get(selectPosition)的RelativeLayout获取的
 			popupWindow = new PopupWindow(mViewArray.get(selectPosition),displayWidth, displayHeight, false);
+			
 			/*popupWindow = new PopupWindow(mViewArray.get(selectPosition),displayWidth, 50, false);  */                      // --->by Yeun 11.13          
-			
-			
-			
+		
 			ColorDrawable dw = new ColorDrawable(Color.argb(00, 255, 255, 255)); 										//--->by Yeun 11.13
 			popupWindow.setBackgroundDrawable(dw); 
 			//popupWindow.update();
 			
 			/*popupWindow.setAnimationStyle(R.style.PopupWindowAnimation);*/
-			popupWindow.setAnimationStyle(R.style.popwindow_anim_style);//更换一个新的popupWindow的动画展示方式                                                            
+			popupWindow.setAnimationStyle(R.style.popwindow_anim_style);//更换一个新的popupWindow的动画展示方式             
 			popupWindow.setFocusable(false);
 			popupWindow.setOutsideTouchable(true);
 		}
@@ -241,7 +247,23 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 		if (popupWindow.getContentView() != mViewArray.get(position)) {
 			popupWindow.setContentView(mViewArray.get(position));
 		}
-		popupWindow.showAsDropDown(this, 0, 0);
+		
+		if(isShowDropDown){//isShowDropDown该参数从ActivityDetailFragment中传入过来的标签
+			popupWindow.showAsDropDown(this, 0, 0);
+			LogUtils.toDebugLog("close", "popupWindow开始showAsDropDown展示");
+		}else{
+			
+			//--RepairPart------------下面的操作是 ： 将筛选栏的标签全部置回为 未点击前的状态-----------------
+			for (int i = 0; i < mToggleButton.size(); i++) {
+				mToggleButton.get(i).setTextColor(mContext.getResources().getColor(R.color.text_gray1));
+				ivs.get(i).setImageResource(R.drawable.arrow_down);
+			}
+			if (selectedButton != null) {
+				isShow = false;
+			}
+			//----------------------------------------------------------------------------
+			LogUtils.toDebugLog("close", "popupWindow原本想showAsDropDown展示，但此时由于在详情页故不允许展示");
+		}
 	}
 
 	public boolean onPressBack() {
@@ -258,6 +280,10 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 			}
 			return true;
 		} else {
+			if(popupWindow != null){
+				//不管popupWindow有没有关闭后，都需要将popupWindow关闭掉
+				popupWindow.dismiss();
+			}
 			return false;
 		}
 
@@ -300,7 +326,7 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 	
 	
 	private OnButtonClickListener mOnButtonClickListener;
-
+	private boolean isShowDropDown = true;
 	/**
 	 * 设置tabitem的点击监听事件
 	 */
@@ -315,4 +341,26 @@ public class ExpandTabView extends LinearLayout implements OnDismissListener {
 		public void onClick(int selectPosition);
 	}
 
+	
+	
+	@Override
+	public void onClose() {
+		if(popupWindow!=null){
+			LogUtils.toDebugLog("close", "onClose()方法 ： 试图在活动详情页关闭掉popupwindow");
+			popupWindow.dismiss();
+		}
+	}
+
+	@Override
+	public void sendShowSign(boolean isShowDropDown) {
+		this.isShowDropDown  = isShowDropDown;
+	}
+	
+	
+
+	
+
+	
+	
+	
 }

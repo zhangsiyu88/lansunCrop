@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.pc.ioc.event.EventBus;
@@ -48,6 +49,7 @@ import com.lansun.qmyo.domain.MySecretary;
 import com.lansun.qmyo.domain.information.InformationCount;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryDetailsBaseFragment.SecretaryDetailsFragmentBroadCastReceiver;
+import com.lansun.qmyo.listener.ElasticTouchListener;
 import com.lansun.qmyo.listener.RequestCallBack;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.override.CircleImageView;
@@ -98,6 +100,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 	private IntentFilter filter;
 	public boolean isFirstReceiveBroadcast = true;
 	private View rootView; 
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -158,6 +161,8 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 		rootView = inflater.inflate(R.layout.activity_mine,container,false);
 		
 		Handler_Inject.injectFragment(this, rootView);//此方法一旦被调用，由于随即调用了init()方法，所以看到log显示init()方法优于onCreatView()方法，实则不然
+		View ll_pop = rootView.findViewById(R.id.ll_pop);
+		ll_pop.setOnTouchListener(new ElasticTouchListener());
 		
 		v.iv_mine_icon.setPressed(true);
 		
@@ -353,8 +358,8 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 
 			break;
 		case R.id.rl_mine_about:
-//			fragment = new AboutFragment();
-			
+			/*fragment = new AboutFragment();
+			break;*/
 			
 			Intent intentToGrab = new Intent(activity,GrabRedPackActivity.class);
 			Bundle bundleToGrab = new Bundle();
@@ -362,7 +367,6 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 			intentToGrab.putExtras(bundleToGrab);
 //			activity.startActivity(intentToGrab);	
 			this.startActivityForResult(intentToGrab, Activity.RESULT_FIRST_USER);
-			
 			return;
 			
 //			fragment = new PromoteDetailFragment();
@@ -392,7 +396,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 			
 //			return;
 			
-			//break;
+			
 		case R.id.rl_mine_shared://分享APP
 			fragment = new SharedFragment();
 			//activity.sendBroadcast(new Intent("com.lansun.qmyo.ChangeTheLGPStatus"));

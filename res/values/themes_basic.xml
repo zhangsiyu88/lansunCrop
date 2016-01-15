@@ -110,6 +110,11 @@
         <item name="android:textColor">#939393</item>
         <item name="android:lineSpacingExtra">8px</item>
     </style>
+    <style name="text_style_big_28" parent="w_wrap_h_wrap">
+        <item name="android:textSize">@dimen/text_size_28</item>
+        <item name="android:textColor">#939393</item>
+        <item name="android:lineSpacingExtra">8px</item>
+    </style>
 
     <style name="text_style_big_33" parent="w_wrap_h_wrap">
         <item name="android:textSize">@dimen/text_size_33</item>

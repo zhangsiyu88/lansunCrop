@@ -125,6 +125,12 @@
     <string name="nickname_tip">好名字可以让你的朋友更容易记住你。</string>
     <string name="edit_nick_name">更改昵称</string>
     <string name="commit">提交</string>
+    <string name="command_content_6">相互分享机会更多哦~</string>
+    <string name="command_content_5">赶紧告诉好友一起来抢</string>
+    <string name="command_content_4">分享微信好友群组，好友继续领</string>
+    <string name="command_content_3">记得也将这份好运分享给好友哟~</string>
+    <string name="command_content_1">赶紧去迈界微信服务号输入口令兑换吧！</string>
+    <string name="command_content_2">公众号搜索“<Data><![CDATA[<font color="#DB1F1F">%1$s</font>]]></Data>”或“<Data><![CDATA[<font color="#DB1F1F">%2$s</font>]]></Data>”</string>
     <string name="reset_pwd">重置登录密码</string>
     <string name="new_pwd">新密码 ：</string>
     <string name="re_new_pwd">确认新密码 ：</string>

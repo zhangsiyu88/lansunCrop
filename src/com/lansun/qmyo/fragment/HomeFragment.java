@@ -113,6 +113,7 @@ import com.lansun.qmyo.utils.FixedSpeedScroller;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.swipe.EightPartActivityAdapter;
+import com.lansun.qmyo.view.CloudView;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExperienceDialog;
 import com.lansun.qmyo.view.LoginDialog;
@@ -204,25 +205,21 @@ import com.squareup.okhttp.Response;
 	public void onResume() {
 		
 		//v.rl_top_r_top_menu.setVisibility(View.GONE);
-		
 		justComeBackFromHome = true;
 		
 		if(searchView!=null){
 			justComeBackFromHome = true;
 			//currY = getLocation(searchView);
-			if (hiddenY > currY + 66) {
+			if (hiddenY > currY + 66){
 				//AnimUtils.startTopInAnim(activity, v.fl_home_top_menu);
 				//v.fl_home_top_menu.setVisibility(View.VISIBLE);
 			} else {
-				
 				//startTopOutAnim(activity, v.fl_home_top_menu);
 				//v.fl_home_top_menu.setVisibility(View.GONE);
 				LogUtils.toDebugLog("回到后台测试", "重新进入首页界面");
-				
 				//v.fl_home_top_menu.setVisibility(View.GONE);
 			}
 		}
-	
 		//v.fl_home_top_menu.setVisibility(View.GONE);
 		
 		v.iv_home_icon.setPressed(true);//底部的首页定位button
@@ -354,7 +351,7 @@ import com.squareup.okhttp.Response;
 		
 		/*head =  rootView.findViewById(R.id.head_banner);*/
 		Handler_Inject.injectFragment(this, rootView);//当前的fragment里面使用 自动去注入组件
-
+		
 		
 		
 		lv_home_list.setOnItemClickListener(new OnItemClickListener() {
@@ -383,12 +380,10 @@ import com.squareup.okhttp.Response;
 		lv_home_list.setNoHeader(true);
 		lv_home_list.onLoadMoreOverFished();
 		lv_home_list.setOnRefreshListener(new OnRefreshListener() {
-			
 			@Override
 			public void onRefreshing() {
 				
 			}
-			
 			@Override
 			public void onLoadingMore() {
 				if (list != null) {
@@ -397,7 +392,6 @@ import com.squareup.okhttp.Response;
 //						PullToRefreshManager.getInstance().footerUnable();
 						CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
 						lv_home_list.onLoadMoreOverFished();
-
 					} else {
 						refreshParams = new LinkedHashMap<>();
 						if (isChina) {//如果是国内活动，需要进行刷新操作
@@ -417,7 +411,6 @@ import com.squareup.okhttp.Response;
 					refreshParams.put("intelligent", "home");
 					refreshCurrentList(refreshUrl, refreshParams,1, lv_home_list);
 					PullToRefreshManager.getInstance().onFooterRefreshComplete();*/
-
 				}
 			}
 		});
@@ -449,6 +442,7 @@ import com.squareup.okhttp.Response;
 				}
 			});
 			dialog.show(getActivity().getFragmentManager(), "experience");
+//			dialog.show(getActivity().getSupportFragmentManager(), "experience");
 		}
 	}
 	

@@ -99,7 +99,7 @@ public class QuestionAdapter extends Adapter<QuestionAdapter.MyViewHolder> {
 		}else if ("card".equals(type)) {
 			type="办卡推荐";
 		}
-		holder.tv_type.setText(type);
+		holder.tv_type.setText(" "+type+" ");
 		//获得返回时间
 		String get_time=list.get(position).getTime();
 		//截取返回日期

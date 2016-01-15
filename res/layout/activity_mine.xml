@@ -6,14 +6,15 @@
     android:id="@+id/rl_mine_root"
     xmlns:app="http://schemas.android.com/apk/res/com.lansun.qmyo">
 
-    <ScrollView
+    <!-- <ScrollView
         android:id="@+id/sc_mine"
         style="@style/w_h_full"
-        android:scrollbars="none" >
+        android:scrollbars="none" > -->
 
         <LinearLayout
+            android:id="@+id/ll_pop"
             style="@style/w_h_full"
-            android:orientation="vertical" >
+            android:orientation="vertical" ><!-- style="@style/w_h_full" -->
 
             <FrameLayout style="@style/w_full_h_wrap" >
 
@@ -245,6 +246,8 @@
             </LinearLayout>
 
             <View
+                android:visibility="gone"
+                
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_alignParentBottom="true"
@@ -354,7 +357,7 @@
                 </RelativeLayout>
             </LinearLayout>
         </LinearLayout>
-    </ScrollView>
+   <!--  </ScrollView> -->
 
    <include layout="@layout/bottom_menu" 
        android:visibility="gone"/>

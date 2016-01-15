@@ -198,6 +198,7 @@ public class UpdateAppVersionDialog extends BlurDialogFragment {
 			Bundle savedInstanceState) {
 		getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+		getDialog().getWindow().setDimAmount((float) 0.8);
 		getDialog().setOnKeyListener(new OnKeyListener(){
 			
            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event){

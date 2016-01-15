@@ -1,16 +1,10 @@
 package com.lansun.qmyo.fragment;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +18,6 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import com.android.pc.ioc.event.EventBus;
-import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
@@ -36,6 +29,7 @@ import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.google.gson.Gson;
+import com.lansun.qmyo.R;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.ClickGoUrl;
 import com.lansun.qmyo.domain.HomePromoteData;
@@ -44,17 +38,12 @@ import com.lansun.qmyo.domain.ShareRedPackInfo;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
-import com.lansun.qmyo.view.CustomToast;
-import com.lansun.qmyo.view.ExperienceDialog;
+import com.lansun.qmyo.view.GrabRedPackOverDialog;
 import com.lansun.qmyo.view.GrabRedPackSharedDialog;
 import com.lansun.qmyo.view.ObservableWebView;
-import com.lansun.qmyo.view.RandomNumDialog;
-import com.lansun.qmyo.view.RandomNumDialog.OnConfirmListener;
-import com.lansun.qmyo.view.SharedDialog;
 import com.lansun.qmyo.view.ObservableWebView.OnScrollChangedCallback;
-import com.lansun.qmyo.MainFragment;
-import com.lansun.qmyo.R;
-import com.lansun.qmyo.R.id;
+import com.lansun.qmyo.view.RandomNumDialog;
+import com.lansun.qmyo.view.SharedDialog;
 
 /**
  *
@@ -103,7 +92,9 @@ public class GrabRedPackFragment extends BaseFragment implements OnClickListener
 		settings.setJavaScriptEnabled(true);
 		
 		v.webView.getSettings().setRenderPriority(RenderPriority.HIGH);
-		
+		/*v.webView.getSettings().setSupportZoom(true);
+		v.webView.getSettings().setBuiltInZoomControls(true);
+		v.webView.scrollTo(0, 20);*/
 		v.webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 		//v.webView.setHorizontalScrollBarEnabled(false);//水平不显示
 		v.webView.setVerticalScrollBarEnabled(false); //垂直不显示
@@ -214,15 +205,21 @@ public class GrabRedPackFragment extends BaseFragment implements OnClickListener
 				int statueTag = redPackInfo.getData();
 				LogUtils.toDebugLog("result", "result: "+ statueTag);
 				switch(statueTag){
-				   /* case -2://已领完
-				    	Toast.makeText(activity, "大大您来迟了，请等待下一大波红包到来~~", Toast.LENGTH_LONG).show();
+				    case -2://已领完
+				    	//Toast.makeText(activity, "大大您来迟了，请等待下一大波红包到来~~", Toast.LENGTH_LONG).show();
+				    	GrabRedPackOverDialog overDialog = new GrabRedPackOverDialog(activity,this,v.webView);//这么个体验的对话框，需要单独在其内部设置点击响应事件
+				    	overDialog.show(getFragmentManager(), "grabredpackisover");
 					break;
 				    case -1://未开始
-				    	Toast.makeText(activity, "大大您来早了，活动还未开始呢~~", Toast.LENGTH_LONG).show();
+//				    	Toast.makeText(activity, "大大您来早了，活动还未开始呢~~", Toast.LENGTH_LONG).show();
+				    	GrabRedPackOverDialog overDialog1 = new GrabRedPackOverDialog(activity,this,v.webView);//这么个体验的对话框，需要单独在其内部设置点击响应事件
+				    	overDialog1.show(getFragmentManager(), "grabredpackisover");
 					break;
 				    case 0://已领过
-				    	Toast.makeText(activity, "大大您忘啦，您刚刚领过了~~", Toast.LENGTH_LONG).show();
-					break;*/
+//				    	Toast.makeText(activity, "大大您忘啦，您刚刚领过了~~", Toast.LENGTH_LONG).show();
+				    	GrabRedPackOverDialog overDialog2 = new GrabRedPackOverDialog(activity,this,v.webView);//这么个体验的对话框，需要单独在其内部设置点击响应事件
+				    	overDialog2.show(getFragmentManager(), "grabredpackisover");
+					break;
 				   default://正常返回数据
 					   RandomNumDialog dialog = new RandomNumDialog(activity,String.valueOf(statueTag));//这么个体验的对话框，需要单独在其内部设置点击响应事件
 					   dialog.show(getFragmentManager(), "grabredpack");
@@ -238,7 +235,7 @@ public class GrabRedPackFragment extends BaseFragment implements OnClickListener
 					
 				String title = shareRedPackInfo.getRedpack_title();
 				String content = shareRedPackInfo.getRedpack_sub();
-				String imageUrl = "http://act.qmyo.com/images/redpack/pre-redpack.jpg";
+//				String imageUrl = "http://act.qmyo.com/images/redpack/pre-redpack.jpg";
 				String currentActivityUrl = shareRedPackInfo.getShare_url();
 				
 				new GrabRedPackSharedDialog().showPopwindow(rootView, getActivity(), 
@@ -359,7 +356,7 @@ public class GrabRedPackFragment extends BaseFragment implements OnClickListener
 			
 			LogUtils.toDebugLog("popup", "弹出分享按钮");
 			
-			new SharedDialog().showPopwindow(rootView, getActivity(), 
+			new GrabRedPackSharedDialog().showPopwindow(rootView, getActivity(), 
 					title , 
 					content ,
 					imageUrl,

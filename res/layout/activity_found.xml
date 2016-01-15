@@ -4,15 +4,17 @@
     android:layout_height="match_parent"
     android:background="@color/app_bg" >
 
-    <ScrollView
+ <!--    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="none" >
+        android:scrollbars="none" > -->
 
         <LinearLayout
+            android:id="@+id/ll_pop"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:layout_height="match_parent"
+            android:background="@color/app_bg"
+            android:orientation="vertical" ><!-- android:layout_height="wrap_content" -->
 
             <FrameLayout
                 android:id="@+id/fl_found_bg"
@@ -188,7 +190,7 @@
                 </RelativeLayout>
             </LinearLayout>
         </LinearLayout>
-    </ScrollView>
+   <!--  </ScrollView> -->
 
     <include layout="@layout/bottom_menu" 
         android:visibility="gone"/> 

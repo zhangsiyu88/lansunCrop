@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.RelativeLayout;
 
 import android.widget.TextView;
@@ -67,7 +68,7 @@ import com.lansun.qmyo.R;
  * @author bhxx
  * 
  */
-public class StoreListFragment extends BaseFragment {
+public class StoreListFragment extends BaseFragment {//implements OnItemClickListener
 
 	private ViewLeft viewLeft;
 	private ViewRight viewRight;
@@ -125,6 +126,7 @@ public class StoreListFragment extends BaseFragment {
 		activity_search_empty_storelist = (RelativeLayout) rootView.findViewById(R.id.activity_search_empty_storelist);
 		Handler_Inject.injectFragment(this, rootView);
 		
+//		lv_stores_content.setOnItemClickListener(this);
 		lv_stores_content.setNoHeader(true);
 		lv_stores_content.setOnRefreshListener(new OnRefreshListener() {
 			
@@ -182,6 +184,9 @@ public class StoreListFragment extends BaseFragment {
 		EventBus.getDefault().post(event);
 	}
 
+	
+	
+	
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.activity_search_empty_storelist1, null);
@@ -364,6 +369,8 @@ public class StoreListFragment extends BaseFragment {
 						map.put("tv_store_item_num", s.getAttention() + "");
 						map.put("tv_store_item_distance", s.getDistance());
 						map.put("rb_store_item", s.getEvaluate() + "");
+						map.put("tv_store_item_address", s.getAddress() + "");
+						
 						Log.i("每个塞进来的map值为：",map.toString());
 						dataList.add(map);
 					}
@@ -549,6 +556,19 @@ public class StoreListFragment extends BaseFragment {
 //		PullToRefreshManager.getInstance().footerEnable();
 		super.onDestroy();
 	}
+
+	/*@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		StoreDetailFragment fragment = new StoreDetailFragment();
+		Bundle args = new Bundle();
+		String shop_id = dataList.get(position).get("shop_id");
+		args.putString("shopId", shop_id);
+		fragment.setArguments(args);
+		FragmentEntity event = new FragmentEntity();
+		event.setFragment(fragment);
+		EventBus.getDefault().post(event);
+	}*/
 	
 	
 }

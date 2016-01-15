@@ -51,6 +51,7 @@ import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.swipe.SwipeLayout.SwipeListener;
+import com.lansun.qmyo.view.BankcardListView;
 import com.lansun.qmyo.view.CustomToast;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
@@ -99,6 +100,7 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 			.cacheOnDisk(true).considerExifParams(true)
 			.displayer(new RoundedBitmapDisplayer(10)).build();//.displayer(new FadeInBitmapDisplayer(300))
 	private Fragment mFragment;
+	private BankcardListView mListView;
 	
 
 	public void setHasAdd(boolean b) {
@@ -126,6 +128,16 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 		Handler_Inject.injectFragment(SwipeListMineBankcardAdapter.this, null);
 	}
 	
+	public SwipeListMineBankcardAdapter(Activity activity,
+			ArrayList<HashMap<String, String>> dataList,
+			BankcardListView lv_bankcard) {
+		super();
+		this.mContext = activity;
+		this.mList = dataList;
+		this.mListView = lv_bankcard;
+		mInflater = LayoutInflater.from(activity);
+		Handler_Inject.injectFragment(SwipeListMineBankcardAdapter.this, null);
+	}
 	
 	public SwipeListMineBankcardAdapter(ListView listView,
 			ArrayList<HashMap<String, String>> dataList, int layout_id) {
@@ -163,6 +175,8 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 
 	
 	
+
+
 	@Override
 	public int getCount() {
 		return mList.size();
@@ -188,7 +202,6 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 		final String desc = data.get("tv_bank_card_desc");
 		final String cardId = data.get("id");
 		mPosition = position;
-		
 		ViewHolder viewHold;
 		if (convertView != null) {
 			viewHold = (ViewHolder) convertView.getTag();
@@ -201,7 +214,7 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 		}
 		final SwipeLayout view = (SwipeLayout) convertView;
 		Handler_Inject.injectFragment(this, convertView);
-		
+//		mListView.setEnabled(false);
 		view.getFrontView().setFocusable(false);
 		view.getFrontView().setFocusableInTouchMode(false);
 		
@@ -222,6 +235,7 @@ public class SwipeListMineBankcardAdapter extends  BaseAdapter{//LazyAdapter<Has
 					@Override
 					public void onPositiveButtonClick(
 							DialogInterface dialog, int which) {
+						
 						
 						bankCardId = map.get("id");
 						InternetConfig config = new InternetConfig();

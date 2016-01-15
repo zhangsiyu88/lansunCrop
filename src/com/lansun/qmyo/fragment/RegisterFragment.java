@@ -146,10 +146,8 @@ public class RegisterFragment extends BaseFragment{
 		Handler_Inject.injectFragment(this, rootView);
 
 		activity.getWindow().setSoftInputMode(
-				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
+				  WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
 				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-		
-		
 		
 		adapter = new SecretaryBgPagerAdapter();
 		v.vp_sercretary_bg_pager.setAdapter(adapter);
@@ -285,7 +283,7 @@ public class RegisterFragment extends BaseFragment{
 				bundle.putBoolean("IsNew", true);
 				bundle.putInt("type", R.string.new_exposure);
 			}
-			bundle.putBoolean("isFromRigisterFragToMyBankcardFrag", true);
+			//bundle.putBoolean("isFromRigisterFragToMyBankcardFrag", true);
 
 			fragment.setArguments(bundle);
 			FragmentEntity entity = new FragmentEntity();

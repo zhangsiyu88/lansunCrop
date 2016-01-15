@@ -101,7 +101,8 @@
         style="@style/w_h_full"
         android:cacheColorHint="#00000000"
         android:divider="@null"
-        android:scrollbars="none" />
+        android:scrollbars="none" 
+        android:overScrollMode="never"/>
 	<TextView 
 	    android:visibility="gone"
 	    android:id="@+id/no_data"

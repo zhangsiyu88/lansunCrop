@@ -58,69 +58,82 @@
                 android:text="默默地说，其实小迈我也不知道，嚯嚯嚯嚯"
                 android:textColor="#AFAFAF" />
 
-            <TextView
+            
+            
+            <RelativeLayout 
+                style="@style/w_match_h_wrap"
+                android:orientation="horizontal"
+                android:layout_toRightOf="@+id/iv_search_activity_head"
+                android:layout_alignBottom="@id/iv_search_activity_head"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="@dimen/l_r_35"
+                
+                ><!-- android:layout_marginTop="@dimen/t_10" -->
+                
+               <TextView
                 android:id="@+id/tv_search_tag"
                 style="@style/text_style_small_22"
-                
-                android:layout_marginLeft="@dimen/l_r_35"
-                android:layout_marginTop="@dimen/t_10"
-                android:layout_toRightOf="@+id/iv_search_activity_head"
                 android:background="@drawable/label"
                 android:gravity="center"
                 android:paddingBottom="@dimen/label_p_b"
                 android:paddingLeft="@dimen/label_p_l"
                 android:paddingRight="@dimen/label_p_r"
                 android:paddingTop="@dimen/label_p_t" 
-                android:layout_alignBottom="@id/iv_search_activity_head"/>
-            <!--android:layout_below="@id/tv_search_activity_desc"  -->
+                />
+            <!--android:layout_below="@id/tv_search_activity_desc"   android:layout_marginLeft="@dimen/l_r_35"
+                android:layout_marginTop="@dimen/t_10"-->
 
             <!-- 五个标签的样式 -->
             <LinearLayout
                 android:id="@+id/ll_search_points"
-                style="@style/w_full_h_wrap"
-                android:layout_marginTop="@dimen/t_10"
+                style="@style/w_wrap_h_wrap"
+               
                 android:layout_toRightOf="@id/tv_search_tag"
                 android:orientation="horizontal" 
-                android:layout_alignBottom="@id/iv_search_activity_head">
-                <!-- android:layout_below="@id/tv_search_activity_desc" -->
-
- 				
+                android:layout_centerVertical="true"
+                >
+                <!--  android:layout_marginTop="@dimen/t_10"  
+                      android:layout_below="@id/tv_search_activity_desc"  
+                      android:layout_alignBottom="@id/iv_search_activity_head" -->
 
                 <com.android.pc.ioc.image.RecyclingImageView
                     android:id="@+id/iv_search_activity_point"
                     style="@style/w_wrap_h_wrap"
                     android:layout_marginLeft="@dimen/l_r_8"
                     android:src="@drawable/point"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    /><!--android:visibility="gone"   -->
 
                 <com.android.pc.ioc.image.RecyclingImageView
                     android:id="@+id/iv_search_activity_coupon"
                     style="@style/w_wrap_h_wrap"
                     android:layout_marginLeft="@dimen/l_r_8"
                     android:src="@drawable/coupon"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    />
 
                 <com.android.pc.ioc.image.RecyclingImageView
                     android:id="@+id/iv_search_activity_staging"
                     style="@style/w_wrap_h_wrap"
                     android:layout_marginLeft="@dimen/l_r_8"
                     android:src="@drawable/staging"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                     />
 
                 <com.android.pc.ioc.image.RecyclingImageView
                     android:id="@+id/iv_search_activity_new"
                     style="@style/w_wrap_h_wrap"
                     android:layout_marginLeft="@dimen/l_r_8"
                     android:src="@drawable/new1"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                     />
                 
                 <com.android.pc.ioc.image.RecyclingImageView
                     android:id="@+id/iv_search_activity_discount"
                     style="@style/w_wrap_h_wrap"
                     android:layout_marginLeft="@dimen/l_r_8"
                     android:src="@drawable/discount"
-                    android:visibility="gone"
-                     />
+                    android:visibility="gone"/>
                
             </LinearLayout>
 
@@ -129,12 +142,15 @@
                 style="@style/text_style_small_26"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_below="@id/tv_search_activity_desc"
                 android:layout_marginRight="@dimen/l_r_35"
-                android:layout_marginTop="@dimen/t_10"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
                 android:ellipsize="end"
-                android:maxLines="1" />
+                android:maxLines="1"
+                /><!-- android:layout_alignParentRight="true"
+                android:layout_below="@id/tv_search_activity_desc"  android:layout_marginTop="@dimen/t_10"-->
+            </RelativeLayout>
+           
         </RelativeLayout>
 
         <View

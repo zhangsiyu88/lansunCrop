@@ -38,6 +38,7 @@ import com.lansun.qmyo.fragment.HomeFragmentOld;
 import com.lansun.qmyo.fragment.IntroductionPageFragment;
 import com.lansun.qmyo.fragment.MineBankcardFragment;
 import com.lansun.qmyo.fragment.MineFragment;
+import com.lansun.qmyo.fragment.MineSecretaryFragment;
 import com.lansun.qmyo.fragment.NewCommentFragment;
 import com.lansun.qmyo.fragment.PersonCenterFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
@@ -210,7 +211,7 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		startService(locationService);
 		
 		startFragmentAdd(new MainFragment());
-		//startFragmentAdd(new NewCommentFragment());
+//		startFragmentAdd(new MineSecretaryFragment());
 	}
 	
 	

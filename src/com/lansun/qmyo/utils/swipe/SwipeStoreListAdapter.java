@@ -102,7 +102,7 @@ public class SwipeStoreListAdapter extends BaseAdapter {
 		if (convertView != null) {
 			viewHold = (ViewHolder) convertView.getTag();
 		}else {
-			convertView = (SwipeLayout) mInflater.inflate(R.layout.activity_store_item_swipe, null);
+			convertView = (SwipeLayout) mInflater.inflate(R.layout.activity_store_item_list, null);
 			viewHold = ViewHolder.fromValues(convertView);
 			convertView.setTag(viewHold);
 		}
@@ -115,7 +115,6 @@ public class SwipeStoreListAdapter extends BaseAdapter {
 //				StoreDetailFragment fragment = new StoreDetailFragment();
 				ActivityDetailFragment fragment = new ActivityDetailFragment();
 				Bundle args = new Bundle();
-				
 				/* 居然连类型都得分开识别，这里的shopId是int类型
 				 * args.putInt("shopId",Integer.parseInt(dataList.get(position).get("shop_id")));*/
 				
@@ -126,7 +125,6 @@ public class SwipeStoreListAdapter extends BaseAdapter {
 				FragmentEntity event = new FragmentEntity();
 				event.setFragment(fragment);
 				EventBus.getDefault().post(event);
-				
 			}
 		});
 
@@ -149,12 +147,14 @@ public class SwipeStoreListAdapter extends BaseAdapter {
 		
 		String name = data.get("tv_store_item_name");
 		String num = data.get("tv_store_item_num");
+		String address = data.get("tv_store_item_address");
 		String distance = data.get("tv_store_item_distance");
 		
 		String rb = mDataList.get(position).get("rb_store_item");
 		Integer rbInt = Integer.valueOf(rb);
 		rbInt = rbInt*2;
 		
+		viewHold.tv_store_item_address.setText(address);
 		viewHold.tv_store_item_name.setText(name);
 		viewHold.tv_store_item_num.setText(num);
 		viewHold.tv_store_item_distance.setText(distance);
@@ -281,7 +281,7 @@ public class SwipeStoreListAdapter extends BaseAdapter {
 	public static class ViewHolder {
 		
 		private RecyclingImageView iv_store_iem_gz;//, iv_shop_lv
-		private TextView tv_store_item_name,   tv_store_item_num,  tv_store_item_distance;
+		private TextView tv_store_item_name,   tv_store_item_num,  tv_store_item_distance,tv_store_item_address;
 		private RatingBar rb_store_item;
 		private View line, rl_store_item_gz;
 		
@@ -296,6 +296,7 @@ public class SwipeStoreListAdapter extends BaseAdapter {
 				RatingBar rb_store_item,
 				TextView tv_store_item_name, TextView tv_store_item_num,
 				TextView tv_store_item_distance,
+				TextView tv_store_item_address,
 				View line){//RecyclingImageView iv_shop_lv, 
 			
 					super();
@@ -305,6 +306,7 @@ public class SwipeStoreListAdapter extends BaseAdapter {
 					//this.iv_shop_lv = iv_shop_lv;
 					this.rb_store_item = rb_store_item;
 					this.tv_store_item_name = tv_store_item_name;
+					this.tv_store_item_address = tv_store_item_address;
 					this.tv_store_item_num = tv_store_item_num;
 					this.tv_store_item_distance = tv_store_item_distance;
 					this.line = line;
@@ -320,6 +322,7 @@ public class SwipeStoreListAdapter extends BaseAdapter {
 				(TextView) view.findViewById(R.id.tv_store_item_name),
 				(TextView) view.findViewById(R.id.tv_store_item_num),
 				(TextView) view.findViewById(R.id.tv_store_item_distance),
+				(TextView) view.findViewById(R.id.tv_store_item_address),
 				(View)view.findViewById(R.id.line));
 		}
 	}

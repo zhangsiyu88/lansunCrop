@@ -74,17 +74,18 @@
         android:divider="@null"
         android:listSelector="@android:color/transparent"
         android:scrollbars="none"
-        android:background="@color/app_bg" />
+        android:background="@color/app_bg"
+        android:overScrollMode="never" />
 	
      <RelativeLayout 
-         android:id="@+id/rl_no_postdelay_activity"
+          android:id="@+id/rl_no_postdelay_activity"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
           android:background="@color/app_bg"
           android:visibility="gone"
           >
          <LinearLayout 
-             android:layout_width="wrap_content"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
@@ -93,13 +94,13 @@
 		        <ImageView 
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
-		            android:src="@drawable/lv_empty"/>
+		            android:src="@drawable/lv_empty_collection"/>
 		        <TextView 
 		            android:layout_marginTop="10dp"
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
-		            android:textColor="@color/app_grey6"
-		            android:text="暂无此类型的收藏活动"/>
+		            android:textColor="@color/line_bg"
+		            android:text="您还没有收藏过活动哦"/>
 		        
          </LinearLayout>
     </RelativeLayout>

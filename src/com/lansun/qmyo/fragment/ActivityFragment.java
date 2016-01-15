@@ -73,6 +73,7 @@ import com.lansun.qmyo.domain.position.Position;
 import com.lansun.qmyo.domain.screening.DataScrolling;
 import com.lansun.qmyo.domain.screening.Type;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.fragment.ActivityDetailFragment.onClosePopupWindow;
 
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
@@ -126,7 +127,6 @@ import com.lansun.qmyo.R;
 	
 	@InjectView
 	private ActivityMyListView lv_activity_list;
-	
 
 	/**
 	 * 是否为新品曝光
@@ -195,22 +195,19 @@ import com.lansun.qmyo.R;
 		lv_activity_list.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position,
-					long arg3) {
+			public void onItemClick(AdapterView<?> parent, View view, int position,long arg3) {
 				
 				if(position-1 >= shopDataList.size()||position-1<0){
 					return;
 				}
-				ActivityDetailFragment fragment = new ActivityDetailFragment();
+				ActivityDetailFragment fragment = new ActivityDetailFragment(v.expandtab_view);
 				Bundle args = new Bundle();
 				args.putString("activityId",shopDataList.get(position-1).get("activityId").toString());
-				args.putString("shopId", shopDataList.get(position-1).get("shopId")
-						.toString());
+				args.putString("shopId", shopDataList.get(position-1).get("shopId").toString());
 				fragment.setArguments(args);
 				FragmentEntity event = new FragmentEntity();
 				event.setFragment(fragment);
 				EventBus.getDefault().post(event);
-				
 //				/*
 //				 * 对触摸事件的操作监听
 //				 */
@@ -277,10 +274,12 @@ import com.lansun.qmyo.R;
 						refreshParams.put("query", "");
 						isDownChange = true;//下拉更新的标志
 						
+						first_enter = 0;
 						//此时的下拉应该是在上一次的距离上进行的刷新操作
 						refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_activity_list);
 						
 						lv_activity_list.removeFooterView(emptyView);//不能忘了去除底部的emptyView
+						
 						
 						/*lv_activity_list.invalidate();*/
 				}else{
@@ -359,8 +358,6 @@ import com.lansun.qmyo.R;
 						String page = next_page_url.substring(lastIndexOfEqualCode+1, next_page_url.length());
 						LogUtils.toDebugLog("page", "page的页数为：  "+ page);
 						refreshParams.put("page", page);
-						
-						
 						/*
 						 * 为防止用户多次滑动至底端，重复提交加载下一页操作的情况出现，在此添加制动阀
 						 * 仅当当前页数currentPage和即将作为请求参数传至服务器端的page不相同时，即前往服务器提交请求
@@ -422,12 +419,15 @@ import com.lansun.qmyo.R;
 	private void init() {
 		//		secretaryTitle = getResources().getStringArray(R.array.secretary_title);
 		//		secretaryhint = getResources().getStringArray(R.array.secretary_hint);
-		int type = getArguments().getInt("type");
-		
+		int type = 0;
+		if(getArguments()!=null){
+			type = getArguments().getInt("type");
+			mIsHasChangeTheBankcardInMineBankcardPage = getArguments().getBoolean("isHasChangeTheBankcardInMineBankcardPage");
+		}
 		LogUtils.toDebugLog("type", "从首页传过来的type的值为： "+type );
 		
+		
 		initType = type;
-		mIsHasChangeTheBankcardInMineBankcardPage = getArguments().getBoolean("isHasChangeTheBankcardInMineBankcardPage");
 		if (type != 0) {
 			switch (type) {
 			case R.string.shopping_carnival:
@@ -471,11 +471,11 @@ import com.lansun.qmyo.R;
 				HODLER_TYPE = "800000";
 				break;
 			}
-			initData();//---------------------功能：
+			initData();//---------------------功能：初始化顶部筛选栏 和 底部的数据列表
 			/*spyJustFirstClick = true;*/
 			justFirstClick = false;
 
-			v.tv_activity_title.setText(type);//此setText的方法是 int resid 
+			v.tv_activity_title.setText(type);//此setText的方法是 int resid   //往往这一步上面的initData()都还没有顺利完成，导致下面完全无法走到
 		} else {
 			v.tv_activity_title.setText("未知");
 		}
@@ -530,8 +530,6 @@ import com.lansun.qmyo.R;
 						public void onNegativeButtonClick(
 								DialogInterface dialog, int which) {
 							dialog.dismiss();
-							
-							
 						}
 					});
 			}
@@ -596,10 +594,10 @@ import com.lansun.qmyo.R;
 		//loadActivityList();//-->加载活动的列表
 		
 		
-		viewLeft = new ViewLeft(activity);
-		viewLeft2 = new ViewLeft(activity);
+		viewLeft   = new ViewLeft(activity);
+		viewLeft2  = new ViewLeft(activity);
 		viewMiddle = new ViewMiddle(activity);
-		viewRight = new ViewRight(activity);
+		viewRight  = new ViewRight(activity);
 		
 		Log.e("HODLER_TYPE", HODLER_TYPE);
 		
@@ -699,7 +697,8 @@ import com.lansun.qmyo.R;
 		config2.setKey(2);
 		FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_HOLDER_INTELLIGENT,config2, this);
 		
-		if ("700000".equals(HODLER_TYPE)||"800000".equals(HODLER_TYPE)) {
+//		if ("700000".equals(HODLER_TYPE)||"800000".equals(HODLER_TYPE)) {
+		if ("800000".equals(HODLER_TYPE)) {//放开 积分板块的 智能筛选
 
 		}else {
 //			InternetConfig config = new InternetConfig();
@@ -855,11 +854,14 @@ import com.lansun.qmyo.R;
 		//lv_activity_list.addFooterView(emptyView);
 
 		initListener();//-->给上面四个TextView每个设置上选择的监听
+		
 		if(isShowFromInitData){//设计isShowFromInitData标签的原因是： 只有第一次进来时，才会有container的监听，在container没有消失的前提下，都只会走initData()方法间接地操作loadActivityList()
 			//而筛选栏是直接的进行loadActivityList()的操作，那么在一进入页面就断网的环境下，是没有机会点击筛选栏的，自然也无法 弹出那个customDialogProgress
 			isShowDialog = false;
 		}
+		
 		loadActivityList();//-->加载活动的列表
+		
 		isShowDialog = true;
 	}
 
@@ -912,14 +914,14 @@ import com.lansun.qmyo.R;
 		viewLeft.setOnSelectListener(new ViewLeft.OnSelectListener() {
 			@Override
 			public void getValue(String showText, int parentId, int position) {
+				
 				if (AllService.getData().get(parentId).getItems() == null) {
 					onRefresh(viewLeft, showText);
 					HODLER_TYPE = AllService.getData().get(parentId).getKey()
 							+ "";
 				} else if (AllService.getData().get(parentId).getItems()
 						.get(position) != null) {
-					HODLER_TYPE = AllService.getData().get(parentId).getItems()
-							.get(position).getKey();
+					HODLER_TYPE = AllService.getData().get(parentId).getItems().get(position).getKey();
 				}
 				
 				
@@ -1021,6 +1023,7 @@ import com.lansun.qmyo.R;
 
 		this.first_enter =0;//保证了每次新的关键字搜索时都拥有 是否为第一次加载的 判断标签
 		this.times = 0;
+		lv_activity_list.setNoHeader(false);
 		
 		if (isShowDialog){
 			if(cPd == null ){
@@ -1202,15 +1205,33 @@ import com.lansun.qmyo.R;
 						sxGroup.add(d.getName());
 						iconGroup.add(d.getKey());
 					}
-				}*/  							//--->暂时将积分兑换再放出来           
-				for (DataScrolling d : sxData) {
-					sxGroup.add(d.getName());
-					iconGroup.add(d.getKey());
+				}*/  							//--->暂时将积分兑换再放出来        
+				
+				//在积分板块，需要将筛选类型下的四个条目改为 三个，暂时不开放新品礼遇一块
+				if(initType != R.string.integral){
+					LogUtils.toDebugLog("execute", "执行的是 非积分板块");
+					for (DataScrolling d : sxData) {
+						sxGroup.add(d.getName());
+						iconGroup.add(d.getKey());
+					}
+					holder_button.put(3, name);
+					viewRight.setICons(iconGroup);
+					viewRight.setItems(sxGroup);
+					mViewArray.put(3, viewRight);
+				}else{
+					for (DataScrolling d : sxData) {
+						if(d.getName().equals("新品礼遇")){
+							LogUtils.toDebugLog("execute", "执行的是 积分板块");
+						}else{
+							sxGroup.add(d.getName());
+							iconGroup.add(d.getKey());
+						}
+					}
+					holder_button.put(3, name);
+					viewRight.setICons(iconGroup);
+					viewRight.setItems(sxGroup);
+					mViewArray.put(3, viewRight);
 				}
-				holder_button.put(3, name);
-				viewRight.setICons(iconGroup);
-				viewRight.setItems(sxGroup);
-				mViewArray.put(3, viewRight);
 
 //				
 //				sxintelligent = Handler_Json.JsonToBean(Intelligent.class,r.getContentAsString());
@@ -1315,6 +1336,7 @@ import com.lansun.qmyo.R;
 								if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司
 									lv_activity_list.addFooterView(emptyView);
 									lv_activity_list.onLoadMoreOverFished();
+									lv_activity_list.setNoHeader(true);
 						          }else{
 						            //DO-OP
 						          }
@@ -1338,6 +1360,7 @@ import com.lansun.qmyo.R;
 								if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司
 									lv_activity_list.addFooterView(emptyView);
 									lv_activity_list.onLoadMoreOverFished();
+									lv_activity_list.setNoHeader(true);
 						          }else{
 						            //DO-OP
 						          }
@@ -1350,14 +1373,10 @@ import com.lansun.qmyo.R;
 						}
 					}
 					this.first_enter = Integer.MAX_VALUE;
-					
-//					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-//					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 
 				} else {//因为上拉前去获取到的数据为null，此时需要将之前的值保留住并展示
 					//lv_activity_list.setAdapter(null);
 					endProgress();
-					
 					/*
 					 //activityAdapter之前的进行过notifyDataSetChanged，，此时再进行notify是没有数据变化的
 					   activityAdapter.notifyDataSetChanged();
@@ -1369,6 +1388,7 @@ import com.lansun.qmyo.R;
 					lv_activity_list.addFooterView(emptyView);
 					lv_activity_list.onLoadMoreOverFished();
 					lv_activity_list.setAdapter(activityAdapter);
+					lv_activity_list.setNoHeader(true);
 					
 //					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
 //					PullToRefreshManager.getInstance().onFooterRefreshComplete();
@@ -1376,11 +1396,12 @@ import com.lansun.qmyo.R;
 				}
 				//endProgress();
 				break;
-
 			}
+			
 			if (r.getKey() < 4) {
 				progress_text.setText("正在搜索幸运中");
-				if (HODLER_TYPE=="700000"||HODLER_TYPE=="800000") {
+//				if (HODLER_TYPE=="700000"||HODLER_TYPE=="800000") {
+			    if (HODLER_TYPE=="800000") {//// 放开 积分板块的 智能筛选
 					if (holder_button.size() == 3) {
 						v.expandtab_view.setValue(holder_button, mViewArray);
 					}
@@ -1390,8 +1411,6 @@ import com.lansun.qmyo.R;
 					}
 				}
 			}//r.getKey() < 4 的if
-
-
 		} else {	//如果服务器没有返回需要值回来 ---->网络未连接上外部网络//TODO
 			
 			LogUtils.toDebugLog("debug", r.toString());
@@ -1440,7 +1459,6 @@ import com.lansun.qmyo.R;
 					}
 				}
 		}
-		
 		if (pd!=null) {
 			pd.dismiss();
 		}
@@ -1457,12 +1475,10 @@ import com.lansun.qmyo.R;
 		AllService = Handler_Json.JsonToBean(Service.class,json);
 		name = AllService.getName();
 		//Log.e("name===", name);
-		if (name == null) {
-			
+		if (name == null){
 			/*当AllService并不完整时，即之前存在本地的json不完整，需要重新去网络上获取到，
 			    而不是弹出空指针异常，导致下面的代码无法执行下去，
-			    出现顶部标题丢失，并且走不到列表请求数据的那一步
-			*/
+			    出现顶部标题丢失，并且走不到列表请求数据的那一步*/
 			if(AllService.getData()==null){
 				getServerBanner();//重新去获取点击按钮对应的八大板块筛选栏就服务部分的内容
 				return;  //结束下面的执行代码
@@ -1474,7 +1490,7 @@ import com.lansun.qmyo.R;
 		for (int j = 0; j < AllService.getData().size(); j++) {
 			LinkedList<String> chind = new LinkedList<String>();
 			
-			if(AllService.getData().get(j)==null){
+			if(AllService.getData().get(j)==null){//列表中间有任意一项为空，必须重新去获取筛选栏中整个“所有”下的列表内容
 				getServerBanner();//重新去获取点击按钮对应的八大板块筛选栏就服务部分的内容
 				return;  //结束下面的执行代码
 			}
@@ -1492,9 +1508,9 @@ import com.lansun.qmyo.R;
 		viewLeft.setGroups(allGroup);
 		viewLeft.setChildren(allChild);
 		mViewArray.put(0, viewLeft);
-		if (holder_button.size() == 3) {
+		/*if (holder_button.size() == 3) {
 			v.expandtab_view.setValue(holder_button, mViewArray);
-		}
+		}*/
 	}
 	
 	private RelativeLayout setNetworkView() {

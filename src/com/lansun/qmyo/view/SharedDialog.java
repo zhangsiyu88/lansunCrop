@@ -9,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Interpolator;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
@@ -103,9 +104,9 @@ public class SharedDialog implements OnClickListener {
 		WindowManager.LayoutParams params = activity.getWindow()
 				.getAttributes();
 		params.alpha = 0.7f;
+		params.dimAmount = (float) 1.0;
 		window.setOutsideTouchable(false);
 		window.update();
-
 		activity.getWindow().setAttributes(params);
 
 		// 设置popWindow弹出窗体可点击，这句话必须添加，并且是true
@@ -125,6 +126,7 @@ public class SharedDialog implements OnClickListener {
 			public void onDismiss() {
 				WindowManager.LayoutParams params = activity.getWindow().getAttributes();
 				params.alpha = 1f;
+				params.dimAmount = (float) 0.5;
 				activity.getWindow().setAttributes(params);
 			}
 		});
@@ -134,7 +136,8 @@ public class SharedDialog implements OnClickListener {
 	
 	
 	
-	@SuppressLint("HandlerLeak") public void showPopwindow(View v, final Activity activity, String title,
+	@SuppressLint("HandlerLeak") 
+	public void showPopwindow(View v, final Activity activity, String title,
 			String content, String imageUrl, String currentActivityUrl) {
 		this.activity = activity;
 		DisplayMetrics dm = new DisplayMetrics(); 
@@ -175,21 +178,22 @@ public class SharedDialog implements OnClickListener {
 
 		window = new PopupWindow(view, WindowManager.LayoutParams.MATCH_PARENT,
 				WindowManager.LayoutParams.WRAP_CONTENT);
-		WindowManager.LayoutParams params = activity.getWindow()
-				.getAttributes();
-		params.alpha = 0.7f;
-		window.setOutsideTouchable(false);
-		window.update();
-
+		
+		
+		WindowManager.LayoutParams params = activity.getWindow().getAttributes();
+		params.alpha = 0.2f;
 		activity.getWindow().setAttributes(params);
 
+		window.setOutsideTouchable(false);
+		window.update();
 		// 设置popWindow弹出窗体可点击，这句话必须添加，并且是true
 		window.setFocusable(true);
 
 		window.setAnimationStyle(R.style.mypopwindow_anim_style);
 		// 实例化一个ColorDrawable颜色为半透明
-		ColorDrawable dw = new ColorDrawable(0xb0000000);
-		window.setBackgroundDrawable(dw);
+		/*ColorDrawable dw = new ColorDrawable(Color.BLACK);
+		window.setBackgroundDrawable(dw);*/
+		
 
 		// 在底部显示
 		window.showAtLocation(v, Gravity.BOTTOM, 0, 0);

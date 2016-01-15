@@ -241,6 +241,7 @@ public class NewBrandFragment extends BaseFragment{
 //								lv_activity_list.onLoadMoreOverFished();
 								
 								if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司
+									lv_activity_list.setNoHeader(true);
 									lv_activity_list.onLoadMoreOverFished();
 									lv_activity_list.addFooterView(emptyView);
 									//CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
@@ -275,6 +276,7 @@ public class NewBrandFragment extends BaseFragment{
 //								lv_activity_list.onLoadMoreOverFished();
 								
 								if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司
+									lv_activity_list.setNoHeader(true);
 									lv_activity_list.onLoadMoreOverFished();
 									lv_activity_list.addFooterView(emptyView);
 									CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
@@ -300,14 +302,12 @@ public class NewBrandFragment extends BaseFragment{
 						/*activityAdapter.notifyDataSetChanged();*/
 					}
 					first_enter = Integer.MAX_VALUE;
-					
-//					PullToRefreshManager.getInstance().headerEnable();
-//					PullToRefreshManager.getInstance().footerEnable();
-//					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-//					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 
 				} else {//因为上拉前去获取到的数据为null，此时需要将之前的值保留住并展示
 					lv_activity_list.setAdapter(null);
+					
+					lv_activity_list.setNoHeader(true);
+					
 					if(activityAdapter!= null){
 						activityAdapter.notifyDataSetChanged();
 					}
@@ -317,8 +317,6 @@ public class NewBrandFragment extends BaseFragment{
 						isRemove=false;
 					}
 					lv_activity_list.onLoadMoreOverFished();
-//					PullToRefreshManager.getInstance().onHeaderRefreshComplete();
-//					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				}
 				break;
 			case 2:
@@ -558,7 +556,13 @@ public class NewBrandFragment extends BaseFragment{
 				if(position-1 >= shopDataList.size()||position-1<0){
 					return;
 				}
-				ActivityDetailFragment fragment = new ActivityDetailFragment();
+				
+				v.expandtab_view.onPressBack();//将筛选栏关闭掉
+				LogUtils.toDebugLog("close", "关闭ExpandTabView");
+				
+				/*ActivityDetailFragment fragment = new ActivityDetailFragment();*/
+				
+				ActivityDetailFragment fragment = new ActivityDetailFragment(v.expandtab_view);
 				Bundle args = new Bundle();
 				args.putString("activityId",
 						shopDataList.get(position-1).get("activityId").toString());
@@ -579,6 +583,7 @@ public class NewBrandFragment extends BaseFragment{
 				isShowDialog=false;
 				if (activityList != null) {
 					isDownChange = true;//下拉更新的标志
+					first_enter = 0;
 					startSearchData(GlobalValue.URL_ALL_ACTIVITY,App.app.getData("select_cityCode"),HODLER_TYPE,position_bussness,intelligentStr,GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
 					lv_activity_list.removeFooterView(emptyView);//不能忘了去除底部的emptyView
 				}else{
@@ -903,6 +908,7 @@ public class NewBrandFragment extends BaseFragment{
 		
 		this.first_enter =0;//保证了每次新的关键字搜索时都拥有 是否为第一次加载的 判断标签
 		this.times  = 0;
+		lv_activity_list.setNoHeader(false);
 		
 		if (isShowDialog){
 			if(cPd == null ){
@@ -952,7 +958,6 @@ public class NewBrandFragment extends BaseFragment{
 					String json=response.body().string();
 					activityList=gson.fromJson(json, ActivityList.class);
 					handleOk.sendEmptyMessage(1);
-					
 				}
 			}
 			@Override
@@ -1022,8 +1027,7 @@ public class NewBrandFragment extends BaseFragment{
 	 * @param position
 	 * @param arg3
 	 */
-	private void itemClick(AdapterView<?> arg0, View arg1, int position,
-			long arg3) {
+	/**private void itemClick(AdapterView<?> arg0, View arg1, int position,long arg3) {
 		if (shopDataList.size() > 0) {
 			HashMap<String, Object> item = shopDataList.get(position);
 			String activityId = item.get("activityId").toString();
@@ -1038,7 +1042,7 @@ public class NewBrandFragment extends BaseFragment{
 			event.setFragment(fragment);
 			bus.post(event);
 		}
-	}
+	}*/
 	
 	/**
 	 * 获得8大板块的头部导航

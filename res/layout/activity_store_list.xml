@@ -32,6 +32,7 @@
                 android:background="@color/line_bg" />
 
             <com.lansun.qmyo.view.ActivityMyListView
+                android:layout_marginTop="8dp"
                 android:id="@+id/lv_stores_content"
                 style="@style/w_h_full"
                 android:cacheColorHint="#00000000"

@@ -2,9 +2,9 @@ package com.lansun.qmyo.view;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
@@ -18,9 +18,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectAll;
@@ -33,13 +34,12 @@ import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
-import com.lansun.qmyo.adapter.BankCardAdapter;
+import com.lansun.qmyo.R;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.BankCardData;
 import com.lansun.qmyo.domain.Secret;
 import com.lansun.qmyo.domain.Token;
 import com.lansun.qmyo.event.entity.FragmentEntity;
-import com.lansun.qmyo.fragment.HomeFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
@@ -47,8 +47,6 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
-import com.lansun.qmyo.MainFragment;
-import com.lansun.qmyo.R;
 
 import fr.tvbarthel.lib.blurdialogfragment.BlurDialogFragment;
 
@@ -59,7 +57,7 @@ import fr.tvbarthel.lib.blurdialogfragment.BlurDialogFragment;
  * 
  */
 @SuppressLint("ValidFragment")
-public class ExperienceDialog extends BlurDialogFragment {
+public class ExperienceDialog extends BlurDialogFragment {//BlurDialogFragment
 
 	private DisplayImageOptions options = new DisplayImageOptions.Builder()
 	.cacheInMemory(true).cacheOnDisk(true).considerExifParams(true)
@@ -128,7 +126,10 @@ public class ExperienceDialog extends BlurDialogFragment {
 			Bundle savedInstanceState) {
 		getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getDialog().getWindow().setBackgroundDrawable(
-				new ColorDrawable(Color.TRANSPARENT)); 
+				new ColorDrawable(Color.TRANSPARENT));
+		
+		getDialog().getWindow().setDimAmount((float) 0.8);
+		
 		getDialog().setOnKeyListener(new OnKeyListener() {
 			
 			@Override

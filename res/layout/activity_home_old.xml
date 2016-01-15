@@ -94,6 +94,12 @@
                         android:visibility="gone" />
                 </RelativeLayout>
             </RelativeLayout>
+            
+            
+             <com.stylingandroid.snowfall.SnowView
+				    android:layout_width="match_parent"
+				    android:layout_height="match_parent"
+				    />
         </FrameLayout>
 
         <!-- 底部的四个按钮 -->

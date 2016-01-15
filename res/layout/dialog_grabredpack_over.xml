@@ -20,22 +20,14 @@
 
         <TextView
             style="@style/text_style_small_27"
-            
-            android:text="红包口令"
+            android:text="口令已领完"
             android:textColor="@color/text_grey_10" 
             android:textSize="16dp"/><!--  android:layout_marginTop="@dimen/margin_top_20"-->
         
         <TextView
             style="@style/text_style_small_27"
             android:layout_marginTop="@dimen/margin_top_20"
-            android:text="@string/command_content_1"
-            android:textColor="@color/text_black_2" 
-            android:textSize="16dp"/>
-        <TextView
-            android:id="@+id/tv_command_content_2"
-            style="@style/text_style_small_27"
-            android:layout_marginTop="@dimen/margin_top_6"
-            android:text="@string/command_content_2"
+            android:text="就慢了那么一丢丢~"
             android:textColor="@color/text_black_2" 
             android:textSize="16dp"/>
         
@@ -44,17 +36,33 @@
             android:background="@color/app_bg"
             style="@style/text_style_small_27"
             android:layout_width="320dip"
-            android:layout_height="85dip"
+            android:layout_height="60dip"
             android:gravity="center"
             android:layout_marginTop="@dimen/margin_top_35"
-            android:text="960886"
+            android:text="下次派发时间再接再厉哟"
             android:textColor="@color/command_new" 
-            android:textSize="55dp"
-            android:textScaleX="1.2"
+            android:textSize="22dp"
             /><!--  android:paddingLeft="5dp"
             android:paddingRight="5dp"   
             android:typeface="sans"  android:layout_marginBottom="@dimen/margin_top_20"-->
-        
+        <TextView
+		    android:layout_centerHorizontal="true"
+		    android:id="@+id/tv_command_content_3"
+		    android:layout_below="@id/ll_dialog_content"
+            style="@style/text_style_small_27"
+            android:layout_marginTop="@dimen/margin_top_10"
+            android:text="@string/command_content_5"
+            android:textColor="@color/text_gray1" 
+            android:textSize="16dp"/>
+		
+		<TextView
+		    android:layout_centerHorizontal="true"
+		    android:layout_below="@id/tv_command_content_3"
+            style="@style/text_style_small_27"
+            android:layout_marginTop="@dimen/margin_top_10"
+            android:text="@string/command_content_6"
+            android:textColor="@color/text_gray1" 
+            android:textSize="16dp"/>
         <TextView
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
@@ -64,29 +72,12 @@
             style="@style/text_style_big_37"
             android:layout_marginTop="@dimen/margin_top_35"
             android:textSize="18dp"
-            android:text="  复制口令  "
+            android:text="  查看时刻表 "
             android:textColor="@color/app_white" 
             android:background="@drawable/rectangle_four_corner_yellow"/><!--android:layout_marginBottom="20dp"  -->
     </LinearLayout>
 
-		<TextView
-		    android:layout_centerHorizontal="true"
-		    android:id="@+id/tv_command_content_3"
-		    android:layout_below="@id/ll_dialog_content"
-            style="@style/text_style_small_27"
-            android:layout_marginTop="@dimen/margin_top_150"
-            android:text="@string/command_content_3"
-            android:textColor="@color/app_white" 
-            android:textSize="16dp"/>
 		
-		<TextView
-		    android:layout_centerHorizontal="true"
-		    android:layout_below="@id/tv_command_content_3"
-            style="@style/text_style_small_27"
-            android:layout_marginTop="@dimen/margin_top_10"
-            android:text="@string/command_content_4"
-            android:textColor="@color/command_content_4" 
-            android:textSize="16dp"/>
    
 
 </RelativeLayout>

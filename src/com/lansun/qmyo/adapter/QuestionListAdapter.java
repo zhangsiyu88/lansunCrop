@@ -127,7 +127,7 @@ public class QuestionListAdapter extends BaseAdapter {
 				holder.tv_title.setText(GlobalValue.mySecretary.getName());
 				type=mList.get(position).getType();
 				if ("travel".equals(type)) {
-					type="旅游度假";
+					type="旅行度假";
 				}else if ("shopping".equals(type)) {
 					type="新品购物";
 				}else if ("party".equals(type)) {

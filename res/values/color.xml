@@ -3,7 +3,7 @@
 
     <color name="translate_gray">#EBEBEB</color>
     <color name="app_black">#000000</color>
-    <color name="app_black_80">#aa000000</color>
+    <color name="app_black_80">#c8000000</color>
     <color name="app_white">#FFFFFF</color>
     <color name="app_bg">#ebebeb</color>
     <color name="app_blue">#A6D1D1</color>
@@ -32,12 +32,15 @@
     <color name="green">#9DC14F</color>
     <color name="green_pressed">#909DC14F</color>
     <color name="command">#bc2014</color>
+    <color name="command_new">#db1f1f</color>
+    <color name="command_content_4">#F8C653</color>
     
     <color name="text_gray2">#AFAFAF</color>
     <color name="text_gray3">#898989</color>
     <color name="text_gray4">#939393</color>
     
     <color name="update_text_tittle_green">#9DC14F</color>
+    <color name="text_grey_10">#9fa0a0</color>
     <color name="text_black_1">#212121</color>
     <color name="text_black_2">#545454</color>
     <color name="images_counts">#75000000</color>

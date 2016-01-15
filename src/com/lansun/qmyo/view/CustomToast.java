@@ -56,8 +56,7 @@ public class CustomToast {
 	}
 
 	public static void show(Context context, int titleId, int contentId) {
-		View layout = LayoutInflater.from(context).inflate(
-				R.layout.custom_toast, null);
+		View layout = LayoutInflater.from(context).inflate(R.layout.custom_toast, null);
 		TextView tv_title = (TextView) layout.findViewById(R.id.tv_title);
 		TextView tv_content = (TextView) layout.findViewById(R.id.tv_content);
 		tv_title.setText(titleId);

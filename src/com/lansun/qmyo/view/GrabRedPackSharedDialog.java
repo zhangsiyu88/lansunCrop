@@ -105,16 +105,17 @@ public class GrabRedPackSharedDialog implements OnClickListener {
 		params.alpha = 0.7f;
 		window.setOutsideTouchable(false);
 		window.update();
-
+		activity.getWindow().setDimAmount((float) 0.8);
 		activity.getWindow().setAttributes(params);
 
 		// 设置popWindow弹出窗体可点击，这句话必须添加，并且是true
 		window.setFocusable(true);
 
 		window.setAnimationStyle(R.style.mypopwindow_anim_style);
+		
 		// 实例化一个ColorDrawable颜色为半透明
-		ColorDrawable dw = new ColorDrawable(0xb0000000);
-		window.setBackgroundDrawable(dw);
+		/*ColorDrawable dw = new ColorDrawable(0xb0000000);
+		window.setBackgroundDrawable(dw);*/
 
 		// 在底部显示
 		window.showAtLocation(v, Gravity.BOTTOM, 0, 0);
@@ -177,12 +178,11 @@ public class GrabRedPackSharedDialog implements OnClickListener {
 				WindowManager.LayoutParams.WRAP_CONTENT);
 		WindowManager.LayoutParams params = activity.getWindow()
 				.getAttributes();
-		params.alpha = 0.7f;
-		window.setOutsideTouchable(false);
-		window.update();
-
+		params.alpha = 0.2f;
 		activity.getWindow().setAttributes(params);
 
+		window.setOutsideTouchable(false);
+		window.update();
 		// 设置popWindow弹出窗体可点击，这句话必须添加，并且是true
 		window.setFocusable(true);
 
@@ -370,7 +370,7 @@ public class GrabRedPackSharedDialog implements OnClickListener {
 	    
 	    //String newTencentShareContent = "#迈界惊喜好活动#我发现了一个超赞的活动,就在【"+title+"】,"+content+", 戳我戳我-->"+currentActivityUrl;
 	    
-	    String newTencentShareContent = title+","+content;
+	    String newTencentShareContent = "#迈界猴年派红包#"+title+","+content+" 戳我戳我-->"+currentActivityUrl;
 	    tencentWbShareContent.setShareContent(newTencentShareContent);
 	    
 	    if (!TextUtils.isEmpty(imageUrl)){
@@ -391,7 +391,7 @@ public class GrabRedPackSharedDialog implements OnClickListener {
 	    
 	    //String newSinaShareContent = "#迈界惊喜好活动#我发现了一个超赞的活动,就在【"+title+"】,"+content+", 戳我戳我-->"+currentActivityUrl;
 	    
-	    String newSinaShareContent = title+","+content;
+	    String newSinaShareContent = "#迈界猴年派红包#"+title+","+content+" 戳我戳我-->"+currentActivityUrl;
 	    /*sinaShareContent.setShareContent(content+"."+currentActivityUrl);//-->test*/	
 	    sinaShareContent.setShareContent(newSinaShareContent);
     

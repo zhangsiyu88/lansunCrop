@@ -35,7 +35,6 @@ public class SecretaryDetailsBaseFragment extends BaseFragment {
 			filter.addAction("com.lansun.qmyo.refreshMySecretary");
 			getActivity().registerReceiver(broadCastReceiver, filter);
 		}
-		
 	}
 	
 	public class SecretaryDetailsFragmentBroadCastReceiver extends BroadcastReceiver{
@@ -62,6 +61,7 @@ public class SecretaryDetailsBaseFragment extends BaseFragment {
 		.async()
 		.animate(500)
 		.onto((ViewGroup) rootView);
+		dialog.getWindow().setDimAmount((float) 0.8);
 		
 		//dialog消失时，需要恢复背景页面的效果
 		dialog.setOnDismissListener(new OnDismissListener() {
@@ -70,14 +70,12 @@ public class SecretaryDetailsBaseFragment extends BaseFragment {
 				Blurry.delete((ViewGroup) rootView);
 			}
 		});
-		
 	}
 	
 	@Override
 	public void onDestroy() {
 		getActivity().unregisterReceiver(broadCastReceiver);
 		super.onDestroy();
-		
 	}
 	
 	public  interface  ExecutInitData { 

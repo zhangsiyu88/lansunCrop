@@ -4,22 +4,16 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
-import android.R.integer;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,22 +23,17 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.amap.api.mapcore2d.an;
-import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
-import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectInit;
-import com.android.pc.ioc.inject.InjectPullRefresh;
 import com.android.pc.ioc.inject.InjectView;
-import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.google.gson.Gson;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.question.QuestionAnswerAdapter;
-import com.lansun.qmyo.adapter.question.QuestionMultiAnswerAdapter;
+import com.lansun.qmyo.adapter.question.QuestionMultiAnswerListViewAdapter;
 import com.lansun.qmyo.biz.AddQuestionBiz;
 import com.lansun.qmyo.domain.QAMetaData;
 import com.lansun.qmyo.domain.QuestionAnswerDetail;
@@ -52,7 +41,6 @@ import com.lansun.qmyo.domain.QuestionAnswerDetailNew;
 import com.lansun.qmyo.domain.QuestionDetail;
 import com.lansun.qmyo.domain.QuestionDetailNew;
 import com.lansun.qmyo.domain.SubAnswer;
-import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.listener.RequestCallBack;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
@@ -68,17 +56,20 @@ import com.squareup.okhttp.Response;
  * @author bhxx
  * 
  */
+@SuppressLint("SimpleDateFormat") 
 public class QuestionDetailFragment extends BaseFragment implements RequestCallBack,OnFocusChangeListener{
 	
 	
 	@InjectView
-	private RecyclerView my_secretary_question_recycle;//(down = true, pull = false)
+	private ListView my_secretary_question_recycle;
+	//private RecyclerView my_secretary_question_recycle;//(down = true, pull = false)
 	@InjectAll
 	Views v;
 	private String question_id;
 	private QuestionDetail list;
 	private QuestionDetailNew newList;
-	private QuestionMultiAnswerAdapter newAdapter;
+//	private QuestionMultiAnswerAdapter newAdapter;
+	private QuestionMultiAnswerListViewAdapter newAdapter;
 	private ArrayList<QAMetaData> processList;
 	private int HISTORY_VER = 0;
 	private int NEW_VER = 1;
@@ -92,7 +83,7 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	private TextView btn_secretary_question_commit;
 	class Views {
 		private ImageView iv_activity_back;
-		private View fl_comments_right_iv, tv_activity_shared;
+		private View fl_comments_right_iv, tv_activity_shared,ll_mai_comment_reply;
 		private TextView tv_activity_title;
 		private EditText et_secretary_question;
 		private TextView tv_conversation_type;
@@ -105,8 +96,9 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 				if(type == HISTORY_VER){
 					String type=switchType(list.getType());
 					v.tv_activity_title.setText(GlobalValue.mySecretary.getName()+"["+type+"]");
-					my_secretary_question_recycle.setAdapter(adapter);
-					my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);//刷新后强制滑动至消息列表上的最后一个位置
+//					my_secretary_question_recycle.setAdapter(adapter);
+//					my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);//刷新后强制滑动至消息列表上的最后一个位置
+					my_secretary_question_recycle.smoothScrollToPosition(adapter.getItemCount()-1);//刷新后强制滑动至消息列表上的最后一个位置
 					v.et_secretary_question.setOnFocusChangeListener(QuestionDetailFragment.this);
 					
 				}else if(type == NEW_VER){
@@ -119,7 +111,9 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 					v.tv_conversation_type.setText(type);*/
 					
 					my_secretary_question_recycle.setAdapter(newAdapter);
-					my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);//刷新后强制滑动至消息列表上的最后一个位置
+//					my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);//刷新后强制滑动至消息列表上的最后一个位置
+					my_secretary_question_recycle.smoothScrollToPosition(newAdapter.getCount()-1);//刷新后强制滑动至消息列表上的最后一个位置
+					my_secretary_question_recycle.setSelection(newAdapter.getCount()-1);
 					v.et_secretary_question.setOnFocusChangeListener(QuestionDetailFragment.this);
 				}
 				
@@ -144,10 +138,14 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 					detail.setContent(question);
 					list.getItems().add(list.getItems().size(), detail);
 					adapter.notifyDataSetChanged();
-					my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);
+//					my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);
+					my_secretary_question_recycle.smoothScrollToPosition(adapter.getItemCount()-1);
 				}else if(type == NEW_VER){
 					v.et_secretary_question.setText("");
 					QAMetaData qaMetaData = new QAMetaData();
+					SimpleDateFormat formatAll=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					String time = formatAll.format(new Date(System.currentTimeMillis()));
+					qaMetaData.setTime(time);
 					SimpleDateFormat format=new SimpleDateFormat("HH");
 					final int hour=Integer.valueOf(format.format(new Date(System.currentTimeMillis())));
 					if((hour>=9) && (hour<18)){
@@ -159,9 +157,9 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 					qaMetaData.setContent(question);
 					processList.add(qaMetaData);
 					newAdapter.notifyDataSetChanged();
-					my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);
+//					my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);
+					my_secretary_question_recycle.smoothScrollToPosition(newAdapter.getCount()-1);
 				}
-				
 				
 				break;
 			case 2:
@@ -182,11 +180,10 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		super.onCreate(savedInstanceState);
 		if (getArguments()!=null) {
 			question_id=getArguments().getString("question_id");
-			
 			Log.d("question_id", "question_id"+question_id);
-			
 			refreshUrl = GlobalValue.URL_SECRETARY_QUESTION_DETAIL + question_id;
 		}
+//		 activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);//|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -194,6 +191,7 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_secretary_question_detail,container,false);
 		Handler_Inject.injectFragment(this, rootView);
+		
 		v.tv_activity_title.setText("");
 		
 		initView(rootView);
@@ -202,9 +200,10 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	}
 	private void initView(View view) {
 		
-		my_secretary_question_recycle=(RecyclerView)view.findViewById(R.id.lv_mine_secretary_quetions_detail);
+//		my_secretary_question_recycle=(RecyclerView)view.findViewById(R.id.lv_mine_secretary_quetions_detail);
+		my_secretary_question_recycle=(ListView) view.findViewById(R.id.lv_mine_secretary_quetions_detail);
 		LinearLayoutManager manager=new LinearLayoutManager(getActivity());
-		my_secretary_question_recycle.setLayoutManager(manager);
+//		my_secretary_question_recycle.setLayoutManager(manager);
 		
 		btn_secretary_question_commit=(TextView)view.findViewById(R.id.btn_secretary_question_commit);
 		btn_secretary_question_commit.setOnClickListener(new OnClickListener(){
@@ -253,7 +252,9 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 						newList= gson.fromJson(json, QuestionDetailNew.class);
 						currentType = newList.getType();
 						processList = processList(newList);
-						newAdapter = new QuestionMultiAnswerAdapter(processList);
+//						newAdapter = new QuestionMultiAnswerAdapter(processList);
+						
+						newAdapter = new QuestionMultiAnswerListViewAdapter(processList);
 					}
 					
 					handleOk.sendEmptyMessage(0);
@@ -366,9 +367,11 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 	public void onFocusChange(View v, boolean hasFocus) {
 		Log.e("focus", hasFocus+"");
 		if(type == HISTORY_VER){
-			my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);
+//			my_secretary_question_recycle.scrollToPosition(adapter.getItemCount()-1);
+			my_secretary_question_recycle.smoothScrollToPosition(adapter.getItemCount()-1);
 		}else if(type == NEW_VER){
-			my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);
+//			my_secretary_question_recycle.scrollToPosition(newAdapter.getItemCount()-1);
+			my_secretary_question_recycle.smoothScrollToPosition(newAdapter.getCount()-1);
 		}
 	}
 	

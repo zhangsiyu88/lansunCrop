@@ -136,12 +136,13 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 				}
 				App.app.setData("in_this_fragment_time","");
 				
+				
 				refresh();
 				
+				//再怎么网络访问，归根结底，都是模拟手动back()方法
 				MineBankcardFragment.this.back();
 				break;
 			}
-			
 		};
 	};
 	
@@ -193,9 +194,6 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 		
 		touchListener.SwipeType = ListViewSwipeGesture.Dismiss;
 		lv_ban_card_other.setOnTouchListener(touchListener);*/
-		
-		
-		
 		/*
 		 *  listView的整体判断自己的Item被点击效果，暂时使用单个Item被点击的效果
 		 * 
@@ -554,7 +552,7 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 						
 						//替换掉适配器的内容
 						/*adapter = new SwipeListMineBankcardAdapter(activity,lv_ban_card_other,dataList,R.layout.activity_bank_card_item_swipe);*/
-						adapter = new SwipeListMineBankcardAdapter(activity, dataList);
+						adapter = new SwipeListMineBankcardAdapter(activity, dataList,lv_ban_card_other);
 						adapter.setFromNetCallBack(this);
 						lv_ban_card_other.setAdapter(adapter);
 						adapter.setFragment(this);
@@ -809,7 +807,6 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 						FragmentEntity event = new FragmentEntity();
 						event.setFragment(fragment);
 						EventBus.getDefault().post(event);
-
 					}
 					@Override
 					public void onNegativeButtonClick(DialogInterface dialog, int which) {
@@ -1027,8 +1024,12 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 					return;
 				}
 			}
-			
-			super.back();
+			if(getFragmentManager()!=null||getActivity()!=null){
+				Intent intent=new Intent("com.lansun.qmyo.refreshHome");
+				getActivity().sendBroadcast(intent);
+				System.out.println("因为进行了换卡操作，所以无论从哪个页面进入我的银行卡页，都得发送广播后，再back！");
+				super.back();
+			}
 			return;
 			
 			
@@ -1227,7 +1228,9 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 			super.back();
 			return;
 		}
-		super.back();
+		
+	     super.back();
+		
 		
 	}
 

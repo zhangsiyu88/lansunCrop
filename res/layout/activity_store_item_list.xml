@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.lansun.qmyo.utils.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipelayout"
+    android:layout_width="fill_parent"
+    android:layout_gravity="center_vertical"
+    android:minHeight="80dp"
+    android:layout_height="wrap_content" 
+    android:background="@drawable/found_bcakgroundcolor_selector">
+
+	 <com.lansun.qmyo.utils.swipe.FrontLayout
+	        android:id="@+id/front"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:background="@color/app_bg"
+	        android:paddingLeft="@dimen/margin_top_35"
+	        android:paddingRight="@dimen/margin_top_35"
+	        android:paddingTop="@dimen/margin_top_17"
+	        android:paddingBottom="@dimen/margin_top_17"
+	        ><!-- android:background="@drawable/found_bcakgroundcolor_selector" -->
+
+
+		<RelativeLayout 
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content" 
+		    android:background="@drawable/found_bcakgroundcolor_selector">
+		
+		    <LinearLayout
+		        android:id="@+id/list_display_view_container"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:background="@drawable/found_bcakgroundcolor_selector"
+		        android:orientation="vertical" >
+		
+		        <TextView
+		            android:id="@+id/tv_store_item_name"
+		            style="@style/text_style_big_34"
+		            android:textColor="@color/text_nomal"
+		            android:layout_marginLeft="@dimen/l_r_35"
+		            android:layout_marginTop="@dimen/margin_top_35" 
+		            /><!-- android:text="BINGXU COLLECTION(延庆路店)"
+		            android:textSize="12dp" -->
+		        <TextView
+		            android:id="@+id/tv_store_item_address"
+		            style="@style/text_style_big_32"
+		            android:layout_marginLeft="@dimen/l_r_35"
+		            android:layout_marginTop="@dimen/margin_top_25" 
+		            android:textColor="@color/app_circle_gray"
+		            android:singleLine="true"
+		            /><!-- android:text="上海市长宁区虹桥路店"
+		            android:textSize="12dp" -->
+		 		<View
+		            android:id="@+id/line"
+		            android:layout_width="match_parent"
+		            android:layout_height="1px"
+		            android:layout_marginTop="@dimen/l_r_30"
+		            android:layout_marginLeft="@dimen/l_r_35"
+		            android:layout_marginRight="@dimen/l_r_35"
+		            android:background="@color/line_bg1" />
+		        <RelativeLayout
+		            style="@style/w_full_h_wrap"
+		            android:layout_marginBottom="@dimen/margin_top_35"
+		            android:layout_marginLeft="@dimen/l_r_35"
+		            android:layout_marginTop="@dimen/margin_top_30" >
+		
+		            <RelativeLayout
+		                android:id="@+id/rl_store_item_gz"
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content" >
+		
+		                <com.android.pc.ioc.image.RecyclingImageView
+		                    android:id="@+id/iv_store_iem_gz"
+		                    style="@style/w_wrap_h_wrap"
+		                    android:layout_centerVertical="true"
+		                    android:background="@drawable/gz_icon" />
+		
+		                <TextView
+		                    android:id="@+id/tv_store_item_num"
+		                    style="@style/text_style_big_34"
+		                    android:layout_centerVertical="true"
+		                    android:layout_marginLeft="@dimen/l_r_14"
+		                    android:layout_toRightOf="@id/iv_store_iem_gz"
+		                    android:text="2166"
+		                    android:textColor="@color/app_green2" />
+		
+		                <TextView
+		                    android:layout_width="wrap_content"
+		                    android:layout_height="wrap_content"
+		                    android:layout_centerVertical="true"
+		                    android:layout_marginLeft="@dimen/l_r_20"
+		                    android:layout_toRightOf="@id/tv_store_item_num"
+		                    android:text="/"
+		                    android:textColor="@color/line_bg" />
+		            </RelativeLayout>
+		
+		            <RatingBar
+		                android:id="@+id/rb_store_item"
+		                style="@style/w_wrap_h_wrap"
+		                android:layout_height="@dimen/rb_h"
+		                android:layout_centerVertical="true"
+		                android:layout_marginLeft="@dimen/l_r_20"
+		                android:layout_marginRight="@dimen/l_r_35"
+		                android:layout_toRightOf="@id/rl_store_item_gz"
+		                android:clickable="false"
+		                android:isIndicator="true"
+		                android:numStars="5"
+		                android:progressDrawable="@drawable/ratingbar_drawable"
+		                android:rating="3" />
+		
+		            <TextView
+		                android:layout_centerVertical="true"
+		                android:id="@+id/tv_store_item_distance"
+		                style="@style/text_style_big_33"
+		                android:layout_alignParentRight="true"
+		                android:layout_marginRight="@dimen/l_r_35" 
+		                android:textColor="@color/text_nomal"
+		                /><!-- android:text="443m" -->
+		        </RelativeLayout>
+		
+		        <View
+		            android:id="@+id/line1"
+		            android:visibility="gone"
+		            android:layout_width="match_parent"
+		            android:layout_height="1px"
+		            android:layout_marginLeft="@dimen/l_r_35"
+		            android:layout_marginRight="@dimen/l_r_35"
+		            android:background="@color/line_bg1" />
+		    </LinearLayout>
+		
+		</RelativeLayout>
+</com.lansun.qmyo.utils.swipe.FrontLayout>
+
+ <LinearLayout
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:background="#ff0000"
+        android:gravity="center">
+  
+        <Button
+            android:id="@+id/bt_call"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:background="#888888"
+            android:gravity="center"
+            android:text="call"
+            android:textColor="@android:color/white" 
+            android:visibility="gone"/><!-- android:text="@string/call" -->
+        <ImageButton
+            android:id="@+id/bt_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#ff0000"
+            android:src="@drawable/trash"
+            android:cropToPadding="true"
+            android:padding="20dp"
+            android:scaleX="1.2"
+            android:scaleY="1.2"
+            android:scaleType="centerInside"
+            android:baselineAlignBottom="true"
+            android:gravity="center"
+            android:text="删除"
+            android:textColor="@android:color/white" /><!-- android:text="@string/delete" -->
+    </LinearLayout>
+    
+</com.lansun.qmyo.utils.swipe.SwipeLayout>

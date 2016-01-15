@@ -24,6 +24,7 @@ import com.android.pc.util.Handler_Json;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.ArticlePoster;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.listener.ElasticTouchListener;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
@@ -56,6 +57,10 @@ public class FoundFragment extends BaseFragment {
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_found, null);
+		View ll_pop = rootView.findViewById(R.id.ll_pop);
+		
+		ll_pop.setOnTouchListener(new ElasticTouchListener());
+		
 		Handler_Inject.injectFragment(this, rootView);
 		v.iv_found_icon.setPressed(true);
 		v.tv_found_icon.setTextColor(getResources()

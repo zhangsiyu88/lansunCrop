@@ -1,27 +1,21 @@
 package com.lansun.qmyo.fragment.task;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import jp.wasabeef.blurry.Blurry;
-
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.DialogInterface.OnKeyListener;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.speech.RecognizerIntent;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -29,26 +23,23 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.view.GifMovieView;
-import com.android.pc.util.Handler_Inject;
 import com.google.gson.Gson;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
-import com.iflytek.cloud.SpeechRecognizer;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.iflytek.speech.RecognizerListener;
@@ -59,9 +50,11 @@ import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.IFlytekResultBean;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.BaseFragment;
+import com.lansun.qmyo.fragment.MineBankcardFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
-import com.lansun.qmyo.fragment.SecretaryFragment;
 import com.lansun.qmyo.net.OkHttp;
+import com.lansun.qmyo.utils.DialogUtil;
+import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
@@ -69,7 +62,6 @@ import com.lansun.qmyo.view.LoginDialog;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-import com.umeng.socialize.utils.LoadingDialog;
 public class TaskAssignment extends BaseFragment implements TextWatcher{//,OnClickListener
 	
 	private RegisterFragment fragment;
@@ -94,22 +86,23 @@ public class TaskAssignment extends BaseFragment implements TextWatcher{//,OnCli
 					dialogpg.dismiss();
 				}
 				final Dialog dialog=new Dialog(activity,R.style.Translucent_NoTitle);
+				dialog.getWindow().setDimAmount((float) 0.8);
 				
 				/**
 				 * 模糊化背景
 				 */
-				/*Blurry.with(getActivity())
+				Blurry.with(getActivity())
 				.radius(25)
 				.sampling(2)
 				.async()
 				.animate(500)
-				.onto((ViewGroup)rootView);*/
+				.onto((ViewGroup)rootView);
 				
 				//dialog消失时，需要恢复背景页面的效果
 				dialog.setOnDismissListener(new OnDismissListener() {
 					@Override
 					public void onDismiss(DialogInterface arg0) {
-						/*Blurry.deleteNoAnimation((ViewGroup) rootView);*/
+						Blurry.deleteNoAnimation((ViewGroup) rootView);
 						try{
 							FragmentEntity entity=new FragmentEntity();
 							/*Fragment f=new SecretaryFragment(); */
@@ -197,7 +190,7 @@ public class TaskAssignment extends BaseFragment implements TextWatcher{//,OnCli
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments()!=null) {
-			hint="关于任务指派的提问建议\n"+getArguments().getString("content", "");
+			hint="您或许想要询问以下问题：\n"+getArguments().getString("content", "");
 			type=getArguments().getString("type");
 		}
 		InputMethodManager imm = (InputMethodManager) activity
@@ -243,7 +236,21 @@ public class TaskAssignment extends BaseFragment implements TextWatcher{//,OnCli
 		iv_activity_back.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				getFragmentManager().popBackStack();
+				if(et_secretary_form_content.getEditableText().length()>0){
+					DialogUtil.createTipAlertDialog(getActivity(), "确认放弃已编辑内容？",new TipAlertDialogCallBack() {
+						@Override
+						public void onPositiveButtonClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+							getFragmentManager().popBackStack();
+						}
+						@Override
+						public void onNegativeButtonClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					});
+				}else{
+					getFragmentManager().popBackStack();
+				}
 			}
 		});
 		
@@ -537,4 +544,5 @@ public class TaskAssignment extends BaseFragment implements TextWatcher{//,OnCli
 //		break;
 //		}
 //	}
+    
 }	

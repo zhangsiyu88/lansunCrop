@@ -1,61 +1,35 @@
 package com.lansun.qmyo.view;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.text.ClipboardManager;
 import android.text.Html;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.internet.FastHttp;
-import com.android.pc.ioc.internet.FastHttpHander;
-import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
-import com.android.pc.util.Handler_Json;
-import com.lansun.qmyo.adapter.BankCardAdapter;
-import com.lansun.qmyo.app.App;
-import com.lansun.qmyo.domain.BankCardData;
-import com.lansun.qmyo.domain.Secret;
-import com.lansun.qmyo.domain.Token;
-import com.lansun.qmyo.event.entity.FragmentEntity;
-import com.lansun.qmyo.fragment.HomeFragment;
-import com.lansun.qmyo.fragment.RegisterFragment;
-import com.lansun.qmyo.utils.GlobalValue;
-import com.lansun.qmyo.utils.LogUtils;
+import com.lansun.qmyo.R;
+import com.lansun.qmyo.fragment.GrabRedPackFragment;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
-import com.tencent.mm.sdk.modelbiz.JumpToBizProfile;
-import com.lansun.qmyo.MainFragment;
-import com.lansun.qmyo.R;
-
-import fr.tvbarthel.lib.blurdialogfragment.BlurDialogFragment;
 
 /**
  * 体验dialog
@@ -63,8 +37,8 @@ import fr.tvbarthel.lib.blurdialogfragment.BlurDialogFragment;
  * @author bhxx
  * 
  */
-@SuppressLint("ValidFragment")
-public class RandomNumDialog extends DialogFragment {
+@SuppressLint({ "ValidFragment", "NewApi" })
+public class GrabRedPackOverDialog extends DialogFragment {
 
 	private DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.cacheInMemory(true).cacheOnDisk(true).considerExifParams(true)
@@ -90,6 +64,10 @@ public class RandomNumDialog extends DialogFragment {
 
 	private String mResult;
 
+	private GrabRedPackFragment mGrabRedPackFragment;
+
+	private ObservableWebView mWebView;
+
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		Button btn_expe_confirm, tv_expe_relogin;
@@ -99,16 +77,22 @@ public class RandomNumDialog extends DialogFragment {
 		TextView tv_expe_desc,tv_copy_randomnum,tv_random_num,tv_command_content_2;
 	}
 	
-	public RandomNumDialog(Activity activity) {
+	public GrabRedPackOverDialog(Activity activity) {
 		this.mActivity = activity;
 	}
 
-	public RandomNumDialog(Activity activity, String result) {
+	public GrabRedPackOverDialog(Activity activity, String result) {
 		this.mResult = result;
 	}
 
-	
-	
+	public GrabRedPackOverDialog(Activity activity,
+			GrabRedPackFragment grabRedPackFragment, ObservableWebView webView) {
+		this.mActivity = activity;
+		this.mGrabRedPackFragment = grabRedPackFragment;
+		this.mWebView = webView;
+		
+	}
+
 	public void setOnConfirmListener(OnConfirmListener listener) {
 		this.listener = listener;
 	}
@@ -134,11 +118,11 @@ public class RandomNumDialog extends DialogFragment {
 		});
 		
 		getDialog().setCanceledOnTouchOutside(true);
-		View view = inflater.inflate(R.layout.dialog_random_num, container);
+		View view = inflater.inflate(R.layout.dialog_grabredpack_over, container);
 		Handler_Inject.injectFragment(this, view);
 		
-		v.tv_command_content_2.setText(Html.fromHtml(String.format(getString(R.string.command_content_2), "迈界","qmyoservice")));
-		v.tv_random_num.setText(mResult);
+		/*v.tv_command_content_2.setText(Html.fromHtml(String.format(getString(R.string.command_content_2), "迈界","qmyoservice")));
+		v.tv_random_num.setText(mResult);*/
 		
 		/*
 		 * 刮刮乐
@@ -151,21 +135,15 @@ public class RandomNumDialog extends DialogFragment {
 		return view;
 	}
 
-	private void click(View view) {
+	@SuppressLint("NewApi") private void click(View view) {
 		switch (view.getId()) {
-		case R.id.tv_copy_randomnum:
-				ClipboardManager cm = (ClipboardManager)getActivity().getSystemService(App.app.CLIPBOARD_SERVICE);
+		case R.id.tv_copy_randomnum://实际为：webView滑动至底端的操作
+				/*ClipboardManager cm = (ClipboardManager)getActivity().getSystemService(App.app.CLIPBOARD_SERVICE);
 		        cm.setText(v.tv_random_num.getText());
-		        Toast.makeText(getActivity(), "复制成功,棒棒哒！关注“迈界”速领红包", Toast.LENGTH_LONG).show();
+		        Toast.makeText(getActivity(), "复制成功,棒棒哒！关注“迈界”速领红包", Toast.LENGTH_LONG).show();*/
+			    this.dismiss();
+			    mWebView.scrollTo(0, mWebView.getContentHeight()*2);
 			
-			    /*JumpToBizProfile.Req req = new JumpToBizProfile.Req();
-				req.toUserName = "gh_aed20ad78a2d"; //公众号原始ID
-				req.profileType = JumpToBizProfile.JUMP_TO_NORMAL_BIZ_PROFILE;
-				req.extMsg = "extMsg";
-				App.app.api.sendReq(req);*/
-		        App.app.api.openWXApp();
-			
-//			dismiss();
 			break;
 		}
 	}
@@ -181,4 +159,8 @@ public class RandomNumDialog extends DialogFragment {
 		}
 	}
 	
+	
+	/*public interface onWebViewScrollToBottom{
+		public void webViewScrollTo();
+	}*/
 }

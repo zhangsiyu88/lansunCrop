@@ -26,11 +26,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -67,6 +69,7 @@ import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.view.CustomToast;
+import com.lansun.qmyo.view.ExpandTabView;
 import com.lansun.qmyo.view.MyListView;
 import com.lansun.qmyo.view.MySubListView;
 import com.lansun.qmyo.view.SharedDialog;
@@ -89,6 +92,8 @@ import com.umeng.socialize.media.GooglePlusShareContent;
  */
 public class ActivityDetailFragment extends BaseFragment {
 
+	
+	
 	private int position;
 	private ImageView[] imageViews;
 
@@ -126,6 +131,13 @@ public class ActivityDetailFragment extends BaseFragment {
 		private MySubListView lv_comments_list;
 		private MySubListView lv_tip_list;
 		private RecyclingImageView iv_activity_collection;
+	}
+
+
+	public ActivityDetailFragment(ExpandTabView expandtab_view) {
+		mClosePop = expandtab_view;
+	}
+	public ActivityDetailFragment() {
 		
 	}
 
@@ -136,8 +148,16 @@ public class ActivityDetailFragment extends BaseFragment {
 		rootView = inflater.inflate(R.layout.activity_activity_detail, null);
 		Handler_Inject.injectFragment(this, rootView);
 		
-		activity.sendBroadcast(new Intent("com.lansun.qmyo.backPressedExpandTabView"));
+		//GlobalValue.popupWindow.dismiss();
+	   // activity.getWindow().notify();
+	    
+	    if(mClosePop!= null){
+	    	mClosePop.onClose();
+	    	LogUtils.toDebugLog("close", "ActivityDetails页面在onCreateView试图进行关闭操作");
+	    }
+	    
 		
+		activity.sendBroadcast(new Intent("com.lansun.qmyo.backPressedExpandTabView"));
 		broadCastReceiver = new ActivityDetailsRefreshBroadCastReceiver();
 		System.out.println(" 活动详情页 注册广播 ing");
 		IntentFilter filter = new IntentFilter();
@@ -152,7 +172,20 @@ public class ActivityDetailFragment extends BaseFragment {
 	@Override
 	public void onDestroy() {
 		activity.unregisterReceiver(broadCastReceiver);
+		if(mClosePop != null){
+			mClosePop.sendShowSign(true);
+			LogUtils.toDebugLog("close", "在onDestroy()恢复popupWindow的展示标签");
+		}
 		super.onDestroy();
+	}
+	
+	@Override
+	public void onPause() {
+		if(mClosePop != null){
+			mClosePop.sendShowSign(true);
+			LogUtils.toDebugLog("close", "在onPause()恢复popupWindow的展示标签");
+		}
+		super.onPause();
 	}
 
 	@InjectInit
@@ -161,7 +194,6 @@ public class ActivityDetailFragment extends BaseFragment {
 		v.lv_comments_list.setParentScrollView(v.sc_activity_detail);
 		
 		AnimUtils.startRotateIn(activity, v.iv_open_activity_detail);
-		
 		if(getArguments()!=null){
 			shopId = getArguments().getString("shopId");
 			activityId = getArguments().getString("activityId");
@@ -188,6 +220,13 @@ public class ActivityDetailFragment extends BaseFragment {
 				initData();
 			}
 		});
+		
+		if(mClosePop!= null){
+			mClosePop.sendShowSign(false);
+			LogUtils.toDebugLog("close", "已将popupWindow展示标识送至ExpandTabView中");
+	    	mClosePop.onClose();
+	    	LogUtils.toDebugLog("close", "ActivityDetails页面在init试图进行关闭操作");
+	    }
 	}
 
 
@@ -895,8 +934,14 @@ public class ActivityDetailFragment extends BaseFragment {
 
 			}
 		 }
-
 	 
-		
-		
+	 public onClosePopupWindow mClosePop;
+	 /**
+		 * 在进入活动详情页时，通知ExpandTabView将自己的popupWindow关闭掉
+		 * @author Yeun.Zhang
+		 */
+		public interface onClosePopupWindow{
+			public void onClose();//关闭掉popupWindow
+			public void sendShowSign(boolean isShowDropDown);
+		}
 }

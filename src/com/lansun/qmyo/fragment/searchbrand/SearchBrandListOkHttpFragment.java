@@ -701,7 +701,7 @@ import com.squareup.okhttp.Response;
 					HashMap<String, Object> data = datas.get(position-1);
 					String activityId = data.get("activityId").toString();
 					String shopId = data.get("shopId").toString();
-					ActivityDetailFragment fragment = new ActivityDetailFragment();
+					ActivityDetailFragment fragment = new ActivityDetailFragment(expandtab_view);
 					Bundle args = new Bundle();
 					args.putString("activityId", activityId);
 					args.putString("shopId", shopId);

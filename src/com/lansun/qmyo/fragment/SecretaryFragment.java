@@ -455,6 +455,12 @@ import com.squareup.okhttp.Response;
 	@Override
 	public void onResume() {
 		v.iv_secretary_icon.setPressed(true);
+		
+		if(handler!=null&&v.vp_sercretary_bg_pager!=null){
+			//handler.postDelayed(new InternalTask(), 0);
+			//v.vp_sercretary_bg_pager.setCurrentItem(1000*300);
+			LogUtils.toDebugLog("cloud", "开启云的滚动");
+		}
 		//v.iv_register_bg.threadFlag = true;
 		super.onResume();
 	}
@@ -465,6 +471,10 @@ import com.squareup.okhttp.Response;
 				R.color.text_nomal));*/
 		//v.iv_register_bg.threadFlag = false;
 		
+		if(handler!=null){
+			//handler.removeCallbacksAndMessages(null);
+			LogUtils.toDebugLog("cloud", "关闭云的滚动");
+		}
 		justOneTimes = true;
 		super.onPause();
 	}
@@ -647,6 +657,7 @@ import com.squareup.okhttp.Response;
 					 */
 					dialog.setContentView(R.layout.dialog_setting_secretary);
 			    	Window window = dialog.getWindow();
+			    	window.setDimAmount((float) 0.8);
 //					WindowManager.LayoutParams lp = window.getAttributes();
 //
 //					// 模糊度
