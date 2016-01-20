@@ -344,7 +344,6 @@ public class MainFragment extends Fragment {
 		case R.id.bottom_secretary:
 			//vp_mainfrag.setCurrentItem(1);
 			vp_mainfrag.setCurrentItem(1,false);
-			
 			/*
 			 * 点击私人秘书页面时，发送广播通知秘书页进行访问，判断秘书信息是否已录入
 			 */

@@ -20,14 +20,14 @@
 
         <TextView
             style="@style/text_style_small_27"
-            android:text="口令已领完"
+            android:text="口令已领过"
             android:textColor="@color/text_grey_10" 
             android:textSize="16dp"/><!--  android:layout_marginTop="@dimen/margin_top_20"-->
         
         <TextView
             style="@style/text_style_small_27"
             android:layout_marginTop="@dimen/margin_top_20"
-            android:text="就慢了那么一丢丢~"
+            android:text="把机会留给更多朋友~"
             android:textColor="@color/text_black_2" 
             android:textSize="16dp"/>
         
@@ -39,7 +39,7 @@
             android:layout_height="60dip"
             android:gravity="center"
             android:layout_marginTop="@dimen/margin_top_35"
-            android:text="下次派发时间再接再厉哟"
+            android:text="下个红包日再来领取哟"
             android:textColor="@color/command_new" 
             android:textSize="22dp"
             /><!--  android:paddingLeft="5dp"

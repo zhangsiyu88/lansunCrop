@@ -2,6 +2,7 @@ package com.lansun.qmyo.view;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
 import android.graphics.Color;
@@ -44,7 +45,8 @@ public class GrabRedPackOverDialog extends DialogFragment {
 			.cacheInMemory(true).cacheOnDisk(true).considerExifParams(true)
 			.displayer(new FadeInBitmapDisplayer(300))
 			.displayer(new RoundedBitmapDisplayer(10)).build();
-	
+	private static final int HAVE_OVER = 1;
+	private static final int HAVE_GOT = 2;
 	public String mCardId ;
 	public String mCardHeadPhotoUrl ;
 	public String mCardDesc ;
@@ -68,6 +70,8 @@ public class GrabRedPackOverDialog extends DialogFragment {
 
 	private ObservableWebView mWebView;
 
+	private int mStatue;
+
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		Button btn_expe_confirm, tv_expe_relogin;
@@ -85,11 +89,25 @@ public class GrabRedPackOverDialog extends DialogFragment {
 		this.mResult = result;
 	}
 
+	public GrabRedPackOverDialog(Activity activity, ObservableWebView webView) {
+		this.mActivity = activity;
+		this.mWebView = webView;
+		
+	}
+
+	public GrabRedPackOverDialog(Activity activity,
+			ObservableWebView webView, int statue) {
+		this.mActivity = activity;
+		this.mWebView = webView;
+		this.mStatue = statue;
+		
+	}
+
 	public GrabRedPackOverDialog(Activity activity,
 			GrabRedPackFragment grabRedPackFragment, ObservableWebView webView) {
 		this.mActivity = activity;
-		this.mGrabRedPackFragment = grabRedPackFragment;
 		this.mWebView = webView;
+		this.mGrabRedPackFragment = grabRedPackFragment;
 		
 	}
 
@@ -118,7 +136,19 @@ public class GrabRedPackOverDialog extends DialogFragment {
 		});
 		
 		getDialog().setCanceledOnTouchOutside(true);
-		View view = inflater.inflate(R.layout.dialog_grabredpack_over, container);
+		View view = null;
+		switch(mStatue){
+		case HAVE_GOT:
+			view = inflater.inflate(R.layout.dialog_grabredpack_got, container);
+			break;
+		case HAVE_OVER:
+			view = inflater.inflate(R.layout.dialog_grabredpack_over, container);
+			break;
+		default:
+			view = inflater.inflate(R.layout.dialog_grabredpack_over, container);
+			break;
+		}
+		
 		Handler_Inject.injectFragment(this, view);
 		
 		/*v.tv_command_content_2.setText(Html.fromHtml(String.format(getString(R.string.command_content_2), "迈界","qmyoservice")));
@@ -158,6 +188,7 @@ public class GrabRedPackOverDialog extends DialogFragment {
 			}
 		}
 	}
+
 	
 	
 	/*public interface onWebViewScrollToBottom{

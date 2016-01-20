@@ -3,6 +3,7 @@ package com.lansun.qmyo.fragment;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -28,7 +29,9 @@ import com.android.pc.util.Handler_Inject;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.base.BackHandedFragment;
 import com.lansun.qmyo.port.BackHanderInterface;
+import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.R;
 
@@ -166,7 +169,7 @@ public class ReportFragment extends BackHandedFragment {
 	@Override
 	@InjectMethod(@InjectListener(ids = 2131361895, listeners = OnClick.class))
 	protected void back() {
-		if(!TextUtils.isEmpty(v.et_activity_report_content.getText().toString())){
+		/*if(!TextUtils.isEmpty(v.et_activity_report_content.getText().toString())){
 			Toast.makeText(activity, "内容存至草稿箱", Toast.LENGTH_LONG).show();
 			if (!TextUtils.isEmpty(activityId)) {//活动举报
 				App.app.setData("_activity_report", v.et_activity_report_content.getText().toString());
@@ -179,6 +182,20 @@ public class ReportFragment extends BackHandedFragment {
 			}else if(type==1){//投诉门店
 				App.app.setData("_shop_report", "");
 			}
+		}*/
+		if(v.et_activity_report_content.getEditableText().length()>0){
+			DialogUtil.createTipAlertDialog(getActivity(), "确认放弃已编辑内容？",new TipAlertDialogCallBack() {
+				@Override
+				public void onPositiveButtonClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+					getFragmentManager().popBackStack();
+				}
+				@Override
+				public void onNegativeButtonClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+				}
+			});
+			return;
 		}
 		super.back();
 	}

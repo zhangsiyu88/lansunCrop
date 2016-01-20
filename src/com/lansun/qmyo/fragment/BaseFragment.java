@@ -101,7 +101,7 @@ import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 		}
 		loadView = view;
 		LayoutParams lp = view.getLayoutParams();
-		ViewParent parent = view.getParent();
+		ViewParent parent = view.getParent();              //这一步是关键，是将整个屏幕展示权拿到手
 		FrameLayout container = new FrameLayout(activity);
 		ViewGroup group = (ViewGroup) parent;
 		int index = group.indexOfChild(view);
@@ -110,13 +110,9 @@ import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 		container.addView(view);
 		if (inflater != null) {
 			progress = inflater.inflate(R.layout.fragment_progress, null);
-			progress_container = (LinearLayout) progress
-					.findViewById(R.id.progress_container);
-
+			progress_container = (LinearLayout) progress.findViewById(R.id.progress_container);
 			progress_text = (TextView) progress.findViewById(R.id.progress_text);//动态猫头鹰底部显示：内容正在加载中
-			
 			progress_container.setOnClickListener(new OnClickListener() {
-
 				@Override
 				public void onClick(View arg0) {
 					try{

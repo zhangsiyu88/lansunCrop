@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -183,6 +184,7 @@ import com.squareup.okhttp.Response;
 		private TextView tv_home_icon, tv_home_experience,
 		tv_top_home_experience;
 		private View iv_card, iv_top_card;
+		private View snow_view;
 		@InjectBinder(method = "click", listeners = OnClick.class)
 		private EditText et_home_search;
 	}
@@ -203,9 +205,12 @@ import com.squareup.okhttp.Response;
 
 	@Override
 	public void onResume() {
-		
+		if(v.snow_view!=null){
+			v.snow_view.setVisibility(View.VISIBLE);
+		}
 		//v.rl_top_r_top_menu.setVisibility(View.GONE);
 		justComeBackFromHome = true;
+		
 		
 		if(searchView!=null){
 			justComeBackFromHome = true;
@@ -253,6 +258,7 @@ import com.squareup.okhttp.Response;
 		/*if (adapter != null) {                  //adapter若置为空，在退出后台时，再进去页面进行刷新，会导致刷新后至顶部 
 			adapter = null;
 		}*/ 
+		v.snow_view.setVisibility(View.INVISIBLE);
 		
 		if (promoteAdapter != null) {
 			promoteAdapter = null;
@@ -351,7 +357,6 @@ import com.squareup.okhttp.Response;
 		
 		/*head =  rootView.findViewById(R.id.head_banner);*/
 		Handler_Inject.injectFragment(this, rootView);//当前的fragment里面使用 自动去注入组件
-		
 		
 		
 		lv_home_list.setOnItemClickListener(new OnItemClickListener() {
@@ -1555,14 +1560,16 @@ import com.squareup.okhttp.Response;
 					break;
 				case 31:
 					//1.1 向服务器发送获取随机码的请求（或者在 webView界面进行请求），顺带上传一个 用户信息
-					fragment = new GrabRedPackFragment();
-					bundle.putString("loadUrl", homePhotoList.get(mPosition%homePhotoList.size()).get("photoDataWebViewUrl"));
-					fragment.setArguments(bundle);	
-//					Intent intentToGrab = new Intent(activity,GrabRedPackActivity.class);
-//					bundleToGrab = new Bundle();
-//					bundleToGrab.putString("loadUrl", homePhotoList.get(mPosition%homePhotoList.size()).get("photoDataWebViewUrl"));
-//					intentToGrab.putExtras(bundleToGrab);
+//					fragment = new GrabRedPackFragment();
+//					bundle.putString("loadUrl", homePhotoList.get(mPosition%homePhotoList.size()).get("photoDataWebViewUrl"));
+//					fragment.setArguments(bundle);	
+					Intent intentToGrab = new Intent(activity,GrabRedPackActivity.class);
+					bundleToGrab = new Bundle();
+					bundleToGrab.putString("loadUrl", homePhotoList.get(mPosition%homePhotoList.size()).get("photoDataWebViewUrl"));
+					intentToGrab.putExtras(bundleToGrab);
 //					activity.startActivity(intentToGrab);
+					startActivityForResult(intentToGrab, 6666);
+					getActivity().overridePendingTransition(R.anim.in_from_right,R.anim.out_to_left);
 					break;
 				default:
 					break;

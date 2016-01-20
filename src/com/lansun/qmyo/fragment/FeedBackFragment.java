@@ -6,6 +6,7 @@ import java.util.Map;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,13 +24,17 @@ import android.widget.TextView;
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectInit;
+import com.android.pc.ioc.inject.InjectListener;
+import com.android.pc.ioc.inject.InjectMethod;
 import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.net.OkHttp;
+import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.view.CustomToast;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
@@ -150,5 +155,25 @@ public class FeedBackFragment extends BaseFragment implements TextWatcher{
 			btn_feedback_commit.setClickable(false);
 			btn_feedback_commit.setTextColor(Color.parseColor("#AFAFAF"));
 		}	
+	}
+	
+	@Override
+	@InjectMethod(@InjectListener(ids = 2131427431, listeners = OnClick.class))
+	protected void back() {
+		if(et_feedback_content.getEditableText().length()>0){
+			DialogUtil.createTipAlertDialog(getActivity(), "确认放弃已编辑内容？",new TipAlertDialogCallBack() {
+				@Override
+				public void onPositiveButtonClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+					getFragmentManager().popBackStack();
+				}
+				@Override
+				public void onNegativeButtonClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+				}
+			});
+			return;
+		}
+		super.back();
 	}
 }

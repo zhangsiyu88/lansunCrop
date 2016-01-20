@@ -14,6 +14,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 //import android.support.v7.widget.RecyclerView.Adapter;
@@ -39,6 +40,7 @@ public class QuestionMultiAnswerListViewAdapter extends BaseAdapter{
 	
 	private QuestionDetailNew detail;
 	public ArrayList<QAMetaData> mArrayQAMetaData ;
+	private Activity mActivty;
 	
 	final int VIEW_TYPE = 3;
 
@@ -47,12 +49,17 @@ public class QuestionMultiAnswerListViewAdapter extends BaseAdapter{
 	final int TYPE_2 = 1;
 
 	final int TYPE_3 = 2;
+	
 
 	public QuestionMultiAnswerListViewAdapter(QuestionDetailNew detail) {
 		this.detail=detail;
 	}
 	public QuestionMultiAnswerListViewAdapter(ArrayList<QAMetaData> arrayQAMetaData) {
 		this.mArrayQAMetaData = arrayQAMetaData;
+	}
+	public QuestionMultiAnswerListViewAdapter(ArrayList<QAMetaData> arrayQAMetaData,Activity activity) {
+		this.mArrayQAMetaData = arrayQAMetaData;
+		this.mActivty = activity;
 	}
 	
 	@Override
@@ -174,7 +181,14 @@ public class QuestionMultiAnswerListViewAdapter extends BaseAdapter{
 	@Override
 	public MyViewHolder getItem(int position) {
 		int viewType = getItemViewType(position);
-		Context ctx = App.app;
+		
+//		Context ctx = App.app;  
+		//此处涉及到隐形的startActivity，当此Activity内部的控件应该是以activity作为上下文的，
+		//若跳出Activity的上下文，如App.app的（getApplicationContext）内容，会爆出错误：
+		//Caused by: android.util.AndroidRuntimeException: Calling startActivity() from 
+		//outside of an Activity context requires the FLAG_ACTIVITY_NEW_TASK flag. Is this really what you want?
+		
+		Context ctx = mActivty;
 		LayoutInflater inflater=LayoutInflater.from(ctx);
 		MyViewHolder holder = null;
 		if(viewType == TYPE_1){//完整的一问一答形式的ItemView

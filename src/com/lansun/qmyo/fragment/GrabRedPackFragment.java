@@ -102,7 +102,7 @@ public class GrabRedPackFragment extends BaseFragment implements OnClickListener
 		//v.webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);//滚动条在WebView外侧显示
 		
 		
-		/* v.webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);*/
+		v.webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 		/*v.webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);*/
 		v.webView.setOnKeyListener(new OnKeyListener( ){
 			@Override
@@ -266,8 +266,7 @@ public class GrabRedPackFragment extends BaseFragment implements OnClickListener
 		}
 	}
 	
-	public void setNewFrag(String url) {
-		
+	public void setNewFrag(String url){
 		LogUtils.toDebugLog("webview", url);
 		LogUtils.toDebugLog("webview", "走到判断里来了");
 		ActivityDetailFragment activtiFragment = new ActivityDetailFragment();

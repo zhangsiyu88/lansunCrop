@@ -9,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,7 +29,10 @@ import android.widget.TextView;
 
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectInit;
+import com.android.pc.ioc.inject.InjectListener;
+import com.android.pc.ioc.inject.InjectMethod;
 import com.android.pc.ioc.inject.InjectView;
+import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.google.gson.Gson;
 import com.lansun.qmyo.R;
@@ -43,8 +47,10 @@ import com.lansun.qmyo.domain.QuestionDetailNew;
 import com.lansun.qmyo.domain.SubAnswer;
 import com.lansun.qmyo.listener.RequestCallBack;
 import com.lansun.qmyo.net.OkHttp;
+import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
+import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.view.CustomToast;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
@@ -229,19 +235,15 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 				if (response.isSuccessful()) {
 					String json=response.body().string();
 					
-					
 //					if(json.contains(",'answer'：[")){
 //						type = NEW_VER ;
 //					}else{
 //						type = HISTORY_VER ;
 //					}
-					
-					
 					//LogUtils.toDebugLog("json", response.body().string());
 					//json=json.replace(" ", "");
 					LogUtils.toDebugLog("json", json.toString());
 					Gson gson=new Gson();
-					
 					
 					if(type == HISTORY_VER){
 						list=gson.fromJson(json, QuestionDetail.class);
@@ -254,9 +256,8 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 						processList = processList(newList);
 //						newAdapter = new QuestionMultiAnswerAdapter(processList);
 						
-						newAdapter = new QuestionMultiAnswerListViewAdapter(processList);
+						newAdapter = new QuestionMultiAnswerListViewAdapter(processList,activity);
 					}
-					
 					handleOk.sendEmptyMessage(0);
 				}
 			}
@@ -265,8 +266,6 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 
 			}
 		});
-		
-		
 	}
 	@InjectInit
 	private void init() {
@@ -502,4 +501,23 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		
 	}
 	
+	@Override
+	@InjectMethod(@InjectListener(ids = 2131427431, listeners = OnClick.class))
+	protected void back() {
+		if(v.et_secretary_question.getEditableText().length()>0){
+			DialogUtil.createTipAlertDialog(getActivity(), "确认放弃已编辑内容？",new TipAlertDialogCallBack() {
+				@Override
+				public void onPositiveButtonClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+					getFragmentManager().popBackStack();
+				}
+				@Override
+				public void onNegativeButtonClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+				}
+			});
+			return;
+		}
+		super.back();
+	}
 }

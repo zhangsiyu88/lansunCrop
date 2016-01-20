@@ -57,9 +57,8 @@ public class FoundFragment extends BaseFragment {
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_found, null);
-		View ll_pop = rootView.findViewById(R.id.ll_pop);
-		
-		ll_pop.setOnTouchListener(new ElasticTouchListener());
+		/*View ll_pop = rootView.findViewById(R.id.ll_pop);
+		ll_pop.setOnTouchListener(new ElasticTouchListener());*/
 		
 		Handler_Inject.injectFragment(this, rootView);
 		v.iv_found_icon.setPressed(true);

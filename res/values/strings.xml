@@ -125,6 +125,8 @@
     <string name="nickname_tip">好名字可以让你的朋友更容易记住你。</string>
     <string name="edit_nick_name">更改昵称</string>
     <string name="commit">提交</string>
+    <string name="command_content_8">领取他人分享的红包无上限哦</string>
+    <string name="command_content_7">赶紧招呼伙伴们来抢红包</string>
     <string name="command_content_6">相互分享机会更多哦~</string>
     <string name="command_content_5">赶紧告诉好友一起来抢</string>
     <string name="command_content_4">分享微信好友群组，好友继续领</string>
@@ -233,6 +235,7 @@
     <string name="delete_faild">删除失败</string>
     <string name="loading_faild">加载失败</string>
     <string name="eightpart_loading">正在搜索幸运中</string>
+    <string name="grebredpack_loading">幸运红包运输中</string>
     <string name="card_desc">卡片简介</string>
     <string name="banli_tiaojian">办理条件</string>
     <string name="shoufei_bz">收费标准</string>

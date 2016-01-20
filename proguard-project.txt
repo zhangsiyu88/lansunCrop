@@ -30,7 +30,7 @@
 -libraryjars libs/jpush-sdk-release1.8.0.jar
 -libraryjars libs/Msc.jar
 -libraryjars libs/NavigationApi_1.2.0.jar
--libraryjars libs/nineoldandroids-2.4.0.jar
+#-libraryjars libs/nineoldandroids-2.4.0.jar
 
 -libraryjars libs/SDKIntegration.jar
 -libraryjars libs/okhttp-2.5.0.jar
@@ -40,7 +40,6 @@
 -libraryjars libs/SocialSDK_QQZone_3.jar
 
 -libraryjars libs/SocialSDK_Sina.jar
-
 -libraryjars libs/SocialSDK_tencentWB_1.jar
 -libraryjars libs/SocialSDK_tencentWB_2.jar
 -libraryjars libs/SocialSDK_tencentWB_3.jar
@@ -60,25 +59,49 @@
 #-libraryjars libs/android-support-v7-appcompat.jar
 
 
+-dontwarn com.jfeinstein.jazzyviewpager.**    
+-keep class com.jfeinstein.jazzyviewpager.** { *; }  
+
+-dontwarn okio.**    
+-keep class okio.** { *; }  
+
+-dontwarn com.dd.**    
+-keep class com.dd.** { *; }  
+
+-dontwarn com.getbase.floatingactionbutton.**    
+-keep class com.getbase.floatingactionbutton.** { *; }  
+
+-dontwarn com.ns.mutiphotochoser.**    
+-keep class com.ns.mutiphotochoser.** { *; }  
+
+-dontwarn com.ryanharter.viewpager.**    
+-keep class com.ryanharter.viewpager.** { *; }  
+
+-dontwarn com.stylingandroid.snowfall.**    
+-keep class com.stylingandroid.snowfall.** { *; }  
+
 
 -dontwarn android.support.v4.**    
 -keep class android.support.v4.** { *; }  
 -keep interface android.support.v4.app.** { *; }  
 -keep public class * extends android.support.v4.**  
--keep public class * extends android.app.Fragment
+#-keep public class * extends android.app.Fragment
+
+
 
 -dontshrink
 -dontoptimize
--dontskipnonpubliclibraryclassmembers
+#-dontskipnonpubliclibraryclassmembers
 -optimizationpasses 5
 -dontusemixedcaseclassnames
 -dontskipnonpubliclibraryclasses
 -dontpreverify
--verbose
+#-verbose
 -optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
 
 
-
+-dontwarn com.android.pc.**    
+-keep class com.android.pc.** { *; } 
 
 -keep public class * extends android.app.Activity
 -keep public class * extends android.app.Application
@@ -179,10 +202,9 @@
 -dontwarn com.autonavi.**   
 
 -keep class com.amap.api.**  {*;}      
-
+-keep class com.a.a.**  {*;}
 -keep class com.autonavi.**  {*;}
 
--keep class com.a.a.**  {*;}
 
 
 #JPush obcure code 

@@ -146,7 +146,7 @@ public class AboutFragment extends BaseFragment {
 			
 			
 			
-			
+			/*
 			for(int i = 0;i<100;i++){
 				ReportContentBean agenda = new ReportContentBean();
 				agenda.setId(i);
@@ -157,18 +157,18 @@ public class AboutFragment extends BaseFragment {
 				LogUtils.toDebugLog("all", "建表"+i);
 			}
 			ArrayList<ReportContentBean> all = draftBoxDB.getAll();
-			LogUtils.toDebugLog("all", all.toString());
+			LogUtils.toDebugLog("all", all.toString());*/
 			
 			
 			break;
 			
 		case R.id.tv_about_qmyo_net:
 			
-//			  Intent intent= new Intent();        
-//			  intent.setAction("android.intent.action.VIEW");    
-//			  Uri content_url = Uri.parse("http://m.qmyo.com");   
-//			  intent.setData(content_url);  
-//			  startActivity(intent);
+			  Intent intent= new Intent();        
+			  intent.setAction("android.intent.action.VIEW");    
+			  Uri content_url = Uri.parse("http://m.qmyo.com");   
+			  intent.setData(content_url);  
+			  startActivity(intent);
 			
 			
 /*			draftBoxDB.deleteByAcId(j++);
@@ -177,7 +177,7 @@ public class AboutFragment extends BaseFragment {
 		
 			
 			//draftBoxDB.queryItemByAcId(10);
-			draftBoxDB.queryItemByShopId(3435);
+			/*draftBoxDB.queryItemByShopId(3435);*/
 			
 			break;
 			
@@ -190,18 +190,17 @@ public class AboutFragment extends BaseFragment {
 				intentToWX.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				startActivity(intentToWX); //当然要在Activity界面 调用了。*/				
 			
-			/*App.app.api.openWXApp();
-			Toast.makeText(activity, "result="+"打开微信App", Toast.LENGTH_LONG).show();*/
+			App.app.api.openWXApp();
+			//Toast.makeText(activity, "result="+"打开微信App", Toast.LENGTH_LONG).show();
+			Toast.makeText(activity, "关注“迈界”公众号，小迈送你惊喜哟~", Toast.LENGTH_LONG).show();
 			
-			draftBoxDB = new DraftBoxDBOpenHelper(getActivity());
+			/*draftBoxDB = new DraftBoxDBOpenHelper(getActivity());*/
 			
 //			JumpToBizProfile.Req req = new JumpToBizProfile.Req();
 //			req.toUserName = "gh_aed20ad78a2d"; //公众号原始ID
 //			req.profileType = JumpToBizProfile.JUMP_TO_NORMAL_BIZ_PROFILE;
 //			req.extMsg = "extMsg";
 //			App.app.api.sendReq(req);
-			
-			
 			
 //				Intent intentToWX = activity.getPackageManager().getLaunchIntentForPackage("com.tencent.mm");  
 //				String qmyoclubRL = "http://weixin.qq.com/r/f3VFXS3Es3DMrWk_9yBt";
@@ -224,17 +223,12 @@ public class AboutFragment extends BaseFragment {
 	}
 
 	private void initCacheSize() {
-		
-		
-		
-		
-		
 //		long length = ImageLoader.getInstance().getDiskCache().getDirectory().length();
 		
 		 File cacheDirectory = StorageUtils.getCacheDirectory(activity.getApplicationContext());
 		 long length = cacheDirectory.length();
 		 
-		float mbSize = (float) length / 1024 / 1024;
+		float mbSize = (float) length / 1024;
 		BigDecimal b = new BigDecimal(mbSize);
 		
 		float f1 = b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();

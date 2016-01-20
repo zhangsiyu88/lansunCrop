@@ -43,16 +43,17 @@
 		            android:id="@+id/tv_store_item_address"
 		            style="@style/text_style_big_32"
 		            android:layout_marginLeft="@dimen/l_r_35"
-		            android:layout_marginTop="@dimen/margin_top_25" 
+		            android:layout_marginRight="@dimen/l_r_35"
+		            android:layout_marginTop="@dimen/margin_top_10" 
 		            android:textColor="@color/app_circle_gray"
 		            android:singleLine="true"
-		            /><!-- android:text="上海市长宁区虹桥路店"
+		            /><!--  android:text="上海市长宁区虹桥路店上海市长宁区虹桥路店"
 		            android:textSize="12dp" -->
 		 		<View
 		            android:id="@+id/line"
 		            android:layout_width="match_parent"
 		            android:layout_height="1px"
-		            android:layout_marginTop="@dimen/l_r_30"
+		            android:layout_marginTop="@dimen/margin_top_15"
 		            android:layout_marginLeft="@dimen/l_r_35"
 		            android:layout_marginRight="@dimen/l_r_35"
 		            android:background="@color/line_bg1" />
@@ -60,7 +61,7 @@
 		            style="@style/w_full_h_wrap"
 		            android:layout_marginBottom="@dimen/margin_top_35"
 		            android:layout_marginLeft="@dimen/l_r_35"
-		            android:layout_marginTop="@dimen/margin_top_30" >
+		            android:layout_marginTop="@dimen/margin_top_18" >
 		
 		            <RelativeLayout
 		                android:id="@+id/rl_store_item_gz"
@@ -107,9 +108,9 @@
 		                android:rating="3" />
 		
 		            <TextView
-		                android:layout_centerVertical="true"
 		                android:id="@+id/tv_store_item_distance"
-		                style="@style/text_style_big_33"
+		                android:layout_centerVertical="true"
+		                style="@style/text_style_small_26"
 		                android:layout_alignParentRight="true"
 		                android:layout_marginRight="@dimen/l_r_35" 
 		                android:textColor="@color/text_nomal"

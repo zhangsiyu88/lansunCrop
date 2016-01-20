@@ -34,4 +34,6 @@
         <attr name="android:requiresFadingEdge" />
         <attr name="android:fadingEdgeLength" />
     </declare-styleable>
+    
+    
 </resources>

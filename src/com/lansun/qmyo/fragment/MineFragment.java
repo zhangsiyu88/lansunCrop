@@ -161,8 +161,8 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 		rootView = inflater.inflate(R.layout.activity_mine,container,false);
 		
 		Handler_Inject.injectFragment(this, rootView);//此方法一旦被调用，由于随即调用了init()方法，所以看到log显示init()方法优于onCreatView()方法，实则不然
-		View ll_pop = rootView.findViewById(R.id.ll_pop);
-		ll_pop.setOnTouchListener(new ElasticTouchListener());
+		/*View ll_pop = rootView.findViewById(R.id.ll_pop);
+		ll_pop.setOnTouchListener(new ElasticTouchListener());*/
 		
 		v.iv_mine_icon.setPressed(true);
 		
@@ -358,16 +358,16 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 
 			break;
 		case R.id.rl_mine_about:
-			/*fragment = new AboutFragment();
-			break;*/
+			fragment = new AboutFragment();
+			break;
 			
-			Intent intentToGrab = new Intent(activity,GrabRedPackActivity.class);
+/*			Intent intentToGrab = new Intent(activity,GrabRedPackActivity.class);
 			Bundle bundleToGrab = new Bundle();
 			bundleToGrab.putString("loadUrl", "http://act.qmyo.com/redpack/1");
 			intentToGrab.putExtras(bundleToGrab);
 //			activity.startActivity(intentToGrab);	
 			this.startActivityForResult(intentToGrab, Activity.RESULT_FIRST_USER);
-			return;
+			return;*/
 			
 //			fragment = new PromoteDetailFragment();
 //			供测试使用
@@ -393,10 +393,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 //			});
 //			dialog.show(getActivity().getFragmentManager(), "update");
 			
-			
 //			return;
-			
-			
 		case R.id.rl_mine_shared://分享APP
 			fragment = new SharedFragment();
 			//activity.sendBroadcast(new Intent("com.lansun.qmyo.ChangeTheLGPStatus"));
@@ -419,7 +416,6 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 	
 	@InjectHttp
 	private void result(ResponseEntity r) {
-		
 		if (r.getStatus() == FastHttp.result_ok) {
 			endProgress();
 			

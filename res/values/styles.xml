@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
@@ -33,11 +33,21 @@
         <item name="android:windowBackground">@android:color/transparent</item>
     </style> -->
     
-       <!-- Application theme. -->
+    <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
-        <!-- <item name="android:windowIsTranslucent">true</item> -->
+       <!--  <item name="android:windowIsTranslucent">true</item>  --> 
+    </style>
+    
+    
+    <style name="GrabActivityTheme" parent="AppBaseTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:foreground">@android:color/transparent</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
     
     
@@ -51,7 +61,6 @@
         <!-- 设置无遮罩层 -->  
         <item name="android:backgroundDimEnabled">true</item>  
     </style>
-    
     
 
     <style name="PopupWindowAnimation">

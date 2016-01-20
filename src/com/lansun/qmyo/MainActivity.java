@@ -1,6 +1,8 @@
 package com.lansun.qmyo;
 import java.io.IOException;
 
+import main.java.me.imid.swipebacklayout.lib.app.SwipeBackActivity;
+
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -179,7 +181,6 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 				LogUtils.toDebugLog("firstUseApp", "退至后台，关闭定位服务");
 			}
 		}
-		
 		super.onPause();
 	}
 
@@ -220,9 +221,7 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		fragmentTransaction = fragmentManager.beginTransaction();
 		Fragment to_fragment = fragmentManager.findFragmentByTag(fragment.getClass().getName());
-		
-		
-	// fragmentTransaction.setCustomAnimations(R.anim.left_in,R.anim.left_out, R.anim.right_in, R.anim.right_out);
+//	    fragmentTransaction.setCustomAnimations(R.anim.left_in,R.anim.left_out, R.anim.right_in, R.anim.right_out);
 		/*将这里的动画效果取消掉，即隐去淡入淡出的效果
 		 * */
 	 //fragmentTransaction.setCustomAnimations(R.anim.fade_in,R.anim.fade_out, R.anim.fade_in, R.anim.fade_out);
@@ -246,6 +245,9 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		}
 		fragmentTransaction.addToBackStack(fragment.getClass().getName());
 		fragmentTransaction.add(R.id.content_frame, fragment, fragment.getClass().getName());
+		
+//		fragmentTransaction.addSharedElement(arg0, arg1);
+		
 		fragmentTransaction.commitAllowingStateLoss();
 		/**
 		 * 在此地方启动了一个服务来获取8大板块的导航
@@ -311,7 +313,9 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 			mBackHandedFragment.onBackPressed();
 			return;
 		}
-		
+		 LogUtils.toDebugLog("finish", "Main的Activity中" +
+					"onBackPressed()"+
+					"执行一次finish()");
 		super.onBackPressed();
 		/*else if(fragment.getClass().getName().equals(getSupportFragmentManager().findFragmentByTag("experience"))){
 			if(GlobalValue.user==null && !GlobalValue.isFirst){//在首页，且还没有拿到体验用户的那张卡，那么需要将物理返回键去除掉，强行要求进行填卡操作者，避免三无状态有机会存在
@@ -330,8 +334,7 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
 			
-			if (fragment.getClass().getName()
-					.equals(ExperienceSearchFragment.class.getName())) {
+			if (fragment.getClass().getName().equals(ExperienceSearchFragment.class.getName())) {
 //				DialogUtil.createTipAlertDialog(this, R.string.is_exit,
 //						new TipAlertDialogCallBack() {
 //							@Override
@@ -392,17 +395,16 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		        } else {
 		        	MainActivity.this.finish();
 		        }
+				 LogUtils.toDebugLog("finish", "Main的Activity中" +"onKeyDown()"+"首页中"+"执行一次finish()");
 				return true;
 			}/*else if(fragment.getClass().getName()
 					.equals(ExperienceDialog.class.getName())){//当Fragment为ExperienceDialog时，取消返回键效果
 				return true;
 			}*/
-			
-			
 		}
+		 LogUtils.toDebugLog("finish", "Main的Activity中" +"onKeyDown()"+"default"+"执行一次finish()");
 		  return super.onKeyDown(keyCode, event);
 	}
-
 	
 	/**主线程的开启fragment事件
 	 *
@@ -415,8 +417,6 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 	
 	@Override
 	protected void onDestroy() {
-		
-		
 		GlobalValue.commitedStatisticsInfo_Login=false;
 		
 		/*App.app.setData("isExperience","true");
@@ -498,11 +498,7 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 			filter.addAction(MESSAGE_RECEIVED_ACTION);
 			registerReceiver(mMessageReceiver, filter);
 		}
-
-		
-		
 		public class MessageReceiver extends BroadcastReceiver {
-
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				if (MESSAGE_RECEIVED_ACTION.equals(intent.getAction())) {
@@ -577,19 +573,25 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		
 		@Override
 		public void onActivityResult(int requestCode, int resultCode, Intent data) {
-			super.onActivityResult(requestCode, resultCode, data);
-			if(requestCode ==Activity.RESULT_FIRST_USER){
-				if(resultCode == 1){
-					if(data.getExtras().getString("back").equals("yes")){
-						Bundle bundle = new Bundle();
-						bundle.putString("fragment_name","GrabRedpackFragment");
-						RegisterFragment fragment = new RegisterFragment();
-						FragmentEntity fEntity = new FragmentEntity();
-						fragment.setArguments(bundle);
-						fEntity.setFragment(fragment);
-						EventBus.getDefault().post(fEntity);
-					}
-				}
+//			super.onActivityResult(requestCode, resultCode, data);
+			LogUtils.toDebugLog("result", "requestCode: "+ requestCode);
+			LogUtils.toDebugLog("result", "resultCode: "+ resultCode);
+			if(data!=null && data.getExtras()!=null ){
+				LogUtils.toDebugLog("result", data.getExtras().getString("back"));
 			}
+			//由新生成的Activity返回回来，启动Activity的onActivityResult中的requestCode是不同于之前startActivityForResult()中的requestCode
+			if(resultCode == 1){
+				LogUtils.toDebugLog("result", resultCode+"");
+				if(data.getExtras().getString("back").equals("yes")){
+					LogUtils.toDebugLog("result", data.getExtras().getString("back"));
+					Bundle bundle = new Bundle();
+					bundle.putString("fragment_name","GrabRedpackFragment");
+					RegisterFragment fragment = new RegisterFragment();
+					FragmentEntity fEntity = new FragmentEntity();
+					fragment.setArguments(bundle);
+					fEntity.setFragment(fragment);
+					EventBus.getDefault().post(fEntity);
+				}
+		}   
 		}
 }
