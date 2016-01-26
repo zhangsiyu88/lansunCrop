@@ -16,27 +16,28 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class CustomDialogGrebRedpack extends Dialog {
+public class CustomDialogGrebRedpackWait extends Dialog {
 	
-	public  static CustomDialogGrebRedpack customDialogProgress = null;
+	public  static CustomDialogGrebRedpackWait customDialogProgress = null;
 	public Context context = null;
 	
-	public CustomDialogGrebRedpack(Context context, int theme) {
+	public CustomDialogGrebRedpackWait(Context context, int theme) {
 		super(context, theme);
 	}
 
 
-	public CustomDialogGrebRedpack(Context context) {
+	public CustomDialogGrebRedpackWait(Context context) {
 		super(context);
 		this.context = context;
 		createDialog(this.context);
 		
 	}
 
-	public static CustomDialogGrebRedpack createDialog(Context context){
+	public static CustomDialogGrebRedpackWait createDialog(Context context){
 		
-		customDialogProgress = new CustomDialogGrebRedpack(context,R.style.CustomProgressDialog);
+		customDialogProgress = new CustomDialogGrebRedpackWait(context,R.style.CustomProgressDialogWait);
 		customDialogProgress.setContentView(R.layout.customdialog_grebredpack);
+//		customDialogProgress.getWindow().setDimAmount((float) 0.2);
 		customDialogProgress.getWindow().getAttributes().gravity = Gravity.CENTER;
 		customDialogProgress.show();
 		return customDialogProgress;
@@ -67,7 +68,7 @@ public class CustomDialogGrebRedpack extends Dialog {
      * @return
      *
      */
-    public CustomDialogGrebRedpack setTitile(String strTitle){
+    public CustomDialogGrebRedpackWait setTitile(String strTitle){
     	return customDialogProgress;
     }
     
@@ -79,7 +80,7 @@ public class CustomDialogGrebRedpack extends Dialog {
      * @return
      *
      */
-    public CustomDialogGrebRedpack setMessage(String strMessage){
+    public CustomDialogGrebRedpackWait setMessage(String strMessage){
     	TextView tvMsg = (TextView)customDialogProgress.findViewById(R.id.messageText);
     	if (tvMsg != null){
     		tvMsg.setText(strMessage);
@@ -87,8 +88,8 @@ public class CustomDialogGrebRedpack extends Dialog {
     	return customDialogProgress;
     }
 
-	public static CustomDialogGrebRedpack customDialogProgress(Activity activity) {
-		customDialogProgress = new CustomDialogGrebRedpack(activity,R.style.CustomProgressDialog);
+	public static CustomDialogGrebRedpackWait customDialogProgress(Activity activity) {
+		customDialogProgress = new CustomDialogGrebRedpackWait(activity,R.style.CustomProgressDialog);
 		customDialogProgress.setContentView(R.layout.customdialogprogress);
 		customDialogProgress.getWindow().getAttributes().gravity = Gravity.CENTER;
 		/*GifMovieView gifLoadingView = (GifMovieView) customDialogProgress.findViewById(R.id.gifLoadingView);

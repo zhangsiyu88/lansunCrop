@@ -283,6 +283,7 @@ public class SplashActivity extends FragmentActivity {
 			//版本高于4.4，那么进行系统状态栏透明化处理
 			setTranslucentStatus(true);
 		}
+		
 		new Thread()
 		    {
 		      public void run()
@@ -337,7 +338,7 @@ public class SplashActivity extends FragmentActivity {
 		
 		if(Integer.valueOf(sdk) < 17){
 			DialogUtil.createTipAlertDialog(SplashActivity.this,
-					"亲爱的 "+brand+" 用户"+"\n"+"请将系统升级至4.4版本后使用",
+					"亲爱的 "+brand+" 用户"+"\n"+"迈界暂不支持Android4.2以下版本的服务",
 					new DialogUtil.TipAlertDialogCallBack() {
 						@Override
 						public void onPositiveButtonClick(

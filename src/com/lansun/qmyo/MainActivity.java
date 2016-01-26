@@ -1,10 +1,4 @@
 package com.lansun.qmyo;
-import java.io.IOException;
-
-import main.java.me.imid.swipebacklayout.lib.app.SwipeBackActivity;
-
-
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -30,38 +24,29 @@ import com.android.pc.ioc.inject.InjectLayer;
 import com.android.pc.ioc.view.PullToRefreshManager;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.base.BackHandedFragment;
-import com.lansun.qmyo.biz.ServiceAllBiz;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.ActivityDetailFragment;
 import com.lansun.qmyo.fragment.ExperienceSearchFragment;
 import com.lansun.qmyo.fragment.FoundFragment;
 import com.lansun.qmyo.fragment.HomeFragment;
-import com.lansun.qmyo.fragment.HomeFragmentOld;
 import com.lansun.qmyo.fragment.IntroductionPageFragment;
 import com.lansun.qmyo.fragment.MineBankcardFragment;
 import com.lansun.qmyo.fragment.MineFragment;
-import com.lansun.qmyo.fragment.MineSecretaryFragment;
-import com.lansun.qmyo.fragment.NewCommentFragment;
 import com.lansun.qmyo.fragment.PersonCenterFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.fragment.ReportFragment;
 import com.lansun.qmyo.fragment.SearchBankCardFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
 import com.lansun.qmyo.fragment.StoreDetailFragment;
-import com.lansun.qmyo.fragment.TestMineActivityFragment;
 import com.lansun.qmyo.port.BackHanderInterface;
 import com.lansun.qmyo.service.AccessTokenService;
 import com.lansun.qmyo.service.LocationService;
-import com.lansun.qmyo.utils.CommitStaticsinfoUtils;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.ExampleUtil;
 import com.lansun.qmyo.utils.GlobalValue;
-import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 
 @InjectLayer(R.layout.activity_main)
@@ -171,9 +156,13 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 	protected void onPause() {
 		JPushInterface.onPause(this);
 		isForeground = true;
-		//ImageLoader.getInstance().clearMemoryCache();  
+		
+		
+		/* 当缓存的清除效果正常的时候，并且在Pause的时候暂时不需要进行内存缓存的关闭操作，会造成首页轮播大图在从抢红包页面回来时图片重新请求，暂时无图的情况
+		 * 故在此处关闭
+		 * ImageLoader.getInstance().clearMemoryCache();  
 		ImageLoader.getInstance().clearDiskCache();  //清除imageloader在Disk中的缓存
-		LogUtils.toDebugLog("ImageLoader", "ImageLoader清除掉Disk缓存");
+		LogUtils.toDebugLog("ImageLoader", "ImageLoader清除掉Disk缓存");*/
 		
 		if(App.app.getData("firstUseApp")=="true"){
 			if(locationService!=null){
@@ -430,10 +419,11 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 			LogUtils.toDebugLog("firstUseApp", "正常退出App，结束使用者的App首秀");
 		}
 		
-		
-		ImageLoader.getInstance().clearMemoryCache();  
-		ImageLoader.getInstance().clearDiskCache();  
-		LogUtils.toDebugLog("ImageLoader", "ImageLoader清除掉缓存");
+		/* 当缓存的清除效果正常的时候，自动取出缓存的做法可以关闭
+			ImageLoader.getInstance().clearMemoryCache();  
+			ImageLoader.getInstance().clearDiskCache();  
+			LogUtils.toDebugLog("ImageLoader", "ImageLoader清除掉缓存");
+		 */
 		
 		GlobalValue.isWaitingForUpdateApp =  true;
 		

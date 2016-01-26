@@ -16,14 +16,15 @@ public class RedPackInfo {
 	public void setEnd_time(String end_time) {
 		this.end_time = end_time;
 	}
-	public int getData() {
+	
+	public String end_time;
+	public String data;
+	public String getData() {
 		return data;
 	}
-	public void setData(int data) {
+	public void setData(String data) {
 		this.data = data;
 	}
-	public String end_time;
-	public int data;
 	
 	
 }

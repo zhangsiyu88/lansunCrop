@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -68,7 +69,8 @@ public class GrabRedPackOverDialog extends DialogFragment {
 
 	private GrabRedPackFragment mGrabRedPackFragment;
 
-	private ObservableWebView mWebView;
+//	private ObservableWebView mWebView;
+	private WebView mWebView;
 
 	private int mStatue;
 
@@ -92,7 +94,10 @@ public class GrabRedPackOverDialog extends DialogFragment {
 	public GrabRedPackOverDialog(Activity activity, ObservableWebView webView) {
 		this.mActivity = activity;
 		this.mWebView = webView;
-		
+	}
+	public GrabRedPackOverDialog(Activity activity, WebView webView) {
+		this.mActivity = activity;
+		this.mWebView = webView;
 	}
 
 	public GrabRedPackOverDialog(Activity activity,
@@ -100,7 +105,12 @@ public class GrabRedPackOverDialog extends DialogFragment {
 		this.mActivity = activity;
 		this.mWebView = webView;
 		this.mStatue = statue;
-		
+	}
+	public GrabRedPackOverDialog(Activity activity,
+			WebView webView, int statue) {
+		this.mActivity = activity;
+		this.mWebView = webView;
+		this.mStatue = statue;
 	}
 
 	public GrabRedPackOverDialog(Activity activity,
@@ -177,7 +187,6 @@ public class GrabRedPackOverDialog extends DialogFragment {
 			break;
 		}
 	}
-
 	int cardId = 0;
 
 	@InjectHttp

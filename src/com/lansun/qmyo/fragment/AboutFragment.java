@@ -3,9 +3,11 @@ package com.lansun.qmyo.fragment;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
@@ -39,7 +41,10 @@ import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.TelDialog;
+import com.nostra13.universalimageloader.cache.memory.MemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.utils.DiskCacheUtils;
+import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.tencent.mm.sdk.modelbiz.JumpToBizProfile;
 import com.lansun.qmyo.R;
@@ -55,7 +60,8 @@ public class AboutFragment extends BaseFragment {
 	Views v;
 	private PackageManager manager;
 	private DraftBoxDBOpenHelper draftBoxDB;
-	int j = 45; 
+	int j = 45;
+	private int length_total; 
 
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
@@ -80,12 +86,9 @@ public class AboutFragment extends BaseFragment {
 
 	@InjectInit
 	private void init() {
-		v.tv_about_qmyo_net
-				.setText(Html.fromHtml(getString(R.string.qmyo_net)));
+		v.tv_about_qmyo_net.setText(Html.fromHtml(getString(R.string.qmyo_net)));
 		
-		
-		v.tv_about_qmyo_wx
-			.setText(Html.fromHtml(getString(R.string.qmyo_wx)));
+		v.tv_about_qmyo_wx.setText(Html.fromHtml(getString(R.string.qmyo_wx)));
 		
 		
 		PackageInfo info = null;
@@ -95,17 +98,79 @@ public class AboutFragment extends BaseFragment {
 		} catch (NameNotFoundException e) {
 		  e.printStackTrace();
 		}
-		v.tv_about_qmyo_version
-		.setText(Html.fromHtml(getString(R.string.qmyo_version))+info.versionName);
+		v.tv_about_qmyo_version.setText(Html.fromHtml(getString(R.string.qmyo_version))+info.versionName);
 		
 		
-		
-		initCacheSize();
+		//初始化包含所有AppCache和ImageLoader中的缓存值
+		initAllCacheSize();
 		
 		
 	}
-	
-	
+
+	@SuppressLint("NewApi") @SuppressWarnings("deprecation")
+	private void initAllCacheSize() {
+
+		  File cacheDir1 = StorageUtils.getOwnCacheDirectory(App.app,"qmyo/Cachee");
+		  String absolutePath = cacheDir1.getAbsolutePath();
+		  LogUtils.toDebugLog("absolutePath", "absolutePath: "+ absolutePath);
+	      File file = new File(absolutePath);  
+	      File[] files = file.listFiles();  
+	      if (files != null) {  
+	      int count = files.length;  //文件的个数
+	      length_total = 0;                 
+	      for (int i = 0; i < count; i++) {  
+	           File _file = files[i];  
+	           /*String filepath = file.getAbsolutePath();  
+	           String path = file.getPath();  */
+	           length_total+=_file.length();
+	        }
+	      LogUtils.toDebugLog("cache", "length_total:  "+ length_total);
+	      }
+	      
+	      
+	      
+	      
+		//----------------------------------------------------------------------------------------------------------
+		//这个就是在App类中对ImageLoader设置的缓存地址
+		File cacheDirectory = StorageUtils.getOwnCacheDirectory(App.app,"qmyo/Cachee");
+		long length = cacheDirectory.length();
+		LogUtils.toDebugLog("cache", "length:  "+ length);
+		//----------------------------------------------------------------------------------------------------------
+		
+		
+		
+		//----------------------------------------------------------------------------------------------------------
+		File cacheDir = App.app.getCacheDir();
+		long length_cacheDir = cacheDir.length();
+		LogUtils.toDebugLog("cache", "length_cacheDir:  "+ length_cacheDir);
+		//----------------------------------------------------------------------------------------------------------
+		
+		//----------------------------------------------------------------------------------------------------------
+		File[] externalCacheDirs = App.app.getExternalCacheDirs();
+		long length_external_CacheDir = 0;
+		for(File f:externalCacheDirs){
+			length_external_CacheDir+=f.length();
+		}
+		LogUtils.toDebugLog("cache", "length_external_CacheDir:  "+ length_external_CacheDir);
+		//----------------------------------------------------------------------------------------------------------
+		/*long length_disk_total = ImageLoader.getInstance().getDiskCache().getDirectory().getTotalSpace();
+		long length_disk_free = ImageLoader.getInstance().getDiskCache().getDirectory().getFreeSpace();
+		long length_disk_usable = ImageLoader.getInstance().getDiskCache().getDirectory().getUsableSpace();
+		LogUtils.toDebugLog("cache", "length_disk_total:  "+length_disk_total);
+		LogUtils.toDebugLog("cache", "length_disk_free:  "+length_disk_free);
+		LogUtils.toDebugLog("cache", "length_disk_usable:  "+length_disk_usable);*/
+		long length_disc = ImageLoader.getInstance().getDiscCache().getDirectory().length();
+		LogUtils.toDebugLog("cache", "length_disc:  "+length_disc);
+		/*float mbSize = (float) (length+length_disc+length_disk) / 1024;*/
+		//----------------------------------------------------------------------------------------------------------
+		
+		
+		float mbSize = (float) (length_total) / 1024/1024;
+		BigDecimal b = new BigDecimal(mbSize);
+		//提示删除之后的大小的位置
+		float f1 = b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
+		v.tv_setting_cache_size.setText(String.format(getString(R.string.cache_size), f1));
+	}
 
 	private void click(View view) {
 		BaseFragment fragment = null;
@@ -129,10 +194,10 @@ public class AboutFragment extends BaseFragment {
 							//实质上清除图片的缓存内容来达到节省空间的作用
 							ImageLoader.getInstance().getDiskCache().getDirectory().delete();
 							ImageLoader.getInstance().getDiskCache().clear();
-							
 							ImageLoader.getInstance().clearMemoryCache();  
 							ImageLoader.getInstance().clearDiskCache();  
-							
+							File cacheDirectory = StorageUtils.getOwnCacheDirectory(App.app,"qmyo/Cachee");
+							cacheDirectory.delete();
 							initCacheSize();
 						}
 					});
@@ -143,8 +208,6 @@ public class AboutFragment extends BaseFragment {
 			break;
 		case R.id.rl_mine_user_agreement:// TODO 用户协议
 			fragment = new UserProtocolFragment();
-			
-			
 			
 			/*
 			for(int i = 0;i<100;i++){
@@ -224,15 +287,32 @@ public class AboutFragment extends BaseFragment {
 
 	private void initCacheSize() {
 //		long length = ImageLoader.getInstance().getDiskCache().getDirectory().length();
-		
-		 File cacheDirectory = StorageUtils.getCacheDirectory(activity.getApplicationContext());
-		 long length = cacheDirectory.length();
+//		 File cacheDirectory = StorageUtils.getOwnCacheDirectory(activity.getApplicationContext(),"qmyo/Cachee");
+//		 long length = cacheDirectory.length();
 		 
-		float mbSize = (float) length / 1024;
-		BigDecimal b = new BigDecimal(mbSize);
+		 
+		 File cacheDir1 = StorageUtils.getOwnCacheDirectory(App.app,"qmyo/Cachee");
+		  String absolutePath = cacheDir1.getAbsolutePath();
+		  LogUtils.toDebugLog("absolutePath", "absolutePath: "+ absolutePath);
+	      File file = new File(absolutePath);  
+	      File[] files = file.listFiles();  
+	      if (files != null) {  
+	      int count = files.length;  //文件的个数
+	      length_total = 0;                 
+	      for (int i = 0; i < count; i++) {  
+	           File _file = files[i];  
+	           /*String filepath = file.getAbsolutePath();  
+	           String path = file.getPath();  */
+	           length_total+=_file.length();
+	        }
+	      LogUtils.toDebugLog("cache", "length_total:  "+ length_total);
+	      }
+		 
+		 float mbSize = (float) length_total / 1024/1024;
+		 BigDecimal b = new BigDecimal(mbSize);
 		
-		float f1 = b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
-		
+		//提示删除之后的大小的位置
+		float f1 = b.setScale(4, BigDecimal.ROUND_HALF_UP).floatValue();
 		v.tv_setting_cache_size.setText(String.format(getString(R.string.cache_size), f1));
 		
 	}

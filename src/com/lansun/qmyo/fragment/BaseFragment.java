@@ -71,9 +71,11 @@ import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 	protected View progress;
 	protected LinearLayout progress_container;
 	protected ProgressDialog pd;
+	
 	protected DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.cacheInMemory(true).cacheOnDisk(true).considerExifParams(true)
 			.displayer(new FadeInBitmapDisplayer(300)).build();
+	
 	protected View loadView;
 
 	protected String refreshUrl;
@@ -221,7 +223,6 @@ import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 					}*/
 						//Token token = gson.fromJson(result.toString(), Token.class);
 						App.app.setData("access_token", token.getToken());
-						
 						App.app.setData("LastRefreshTokenTime",String.valueOf(System.currentTimeMillis()));
 						
 						/*LogUtils.toDebugLog("Token",token.getToken() );

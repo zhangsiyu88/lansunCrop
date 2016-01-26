@@ -40,6 +40,7 @@ import com.lansun.qmyo.domain.Address3;
 import com.lansun.qmyo.domain.AddressList;
 import com.lansun.qmyo.domain.Sensitive;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
@@ -58,6 +59,7 @@ public class App extends Application {
 	public static List<String> search_list_history=new ArrayList<String>();
 	
 	public static IWXAPI api;
+	
 	
 	public static App getInstance() {
 		return app;
@@ -236,30 +238,35 @@ public class App extends Application {
 	 * 初始化ImageLoader
 	 * @param context
 	 */
+	@SuppressWarnings("deprecation")
 	private void initImageLoader(Context context) {
-		File cacheDir = StorageUtils.getOwnCacheDirectory(context,
-				"qmyo/Cachee");
+		File cacheDir = StorageUtils.getOwnCacheDirectory(context,"qmyo/Cachee");
+//		File cacheDir = StorageUtils.getCacheDirectory(context);
+		String absolutePath = cacheDir.getAbsolutePath();
+		LogUtils.toDebugLog("absolutePath", "absolutePath: "+ absolutePath);
+		
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
 				context)
 				.memoryCacheExtraOptions(1920, 1080)
 				// 缓存图片的大小
-				.threadPoolSize(20)
+				.threadPoolSize(5)
 				// 线程池数量
 				.threadPriority(Thread.NORM_PRIORITY - 2)
 				// 线程的优先等级
 				.denyCacheImageMultipleSizesInMemory()
 				// 缓存图片在内存
 				.diskCacheFileNameGenerator(new Md5FileNameGenerator())
-				.memoryCache(new UsingFreqLimitedMemoryCache(8 * 1024 * 1024))
+				.memoryCache(new UsingFreqLimitedMemoryCache(4 * 1024 * 1024))
 				// 内存缓存大小
-				.memoryCacheSize(16 * 1024 * 1024)
+				.memoryCacheSize(30 * 1024 * 1024)
 				// 内存缓存最大值
-				.diskCacheSize(16 * 1024 * 1024)
+				.diskCacheSize(50 * 1024 * 1024)
+				.diskCacheFileCount(200)
 				// SD卡缓存最大值
 				.tasksProcessingOrder(QueueProcessingType.LIFO)
 				.diskCache(new UnlimitedDiskCache(cacheDir))
 				.imageDownloader(new BaseImageDownloader(context, 5 * 1000, 30 * 3000))
-				.writeDebugLogs().build();
+				.build();//.writeDebugLogs()------------------------------->从此不再疯狂打log
 		
 		ImageLoader.getInstance().init(config);
 	}

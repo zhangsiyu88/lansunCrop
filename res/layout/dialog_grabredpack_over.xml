@@ -50,7 +50,7 @@
 		    android:id="@+id/tv_command_content_3"
 		    android:layout_below="@id/ll_dialog_content"
             style="@style/text_style_small_27"
-            android:layout_marginTop="@dimen/margin_top_10"
+            android:layout_marginTop="@dimen/margin_top_35"
             android:text="@string/command_content_7"
             android:textColor="@color/text_gray1" 
             android:textSize="16dp"/>

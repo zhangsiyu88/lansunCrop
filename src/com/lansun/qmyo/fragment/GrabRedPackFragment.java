@@ -61,9 +61,7 @@ public class GrabRedPackFragment extends BaseFragment implements OnClickListener
 		private ObservableWebView webView;
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private View ll_promote_detail_title,iv_activity_back,iv_activity_shared;
-		
 	}
-
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -164,12 +162,9 @@ public class GrabRedPackFragment extends BaseFragment implements OnClickListener
 		v.iv_activity_shared.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				
 				InternetConfig config = new InternetConfig();
 				config.setKey(2);
 				FastHttpHander.ajaxGet(GlobalValue.GRAB_RED_PACK_SHARE_CONTENT, null, config, GrabRedPackFragment.this);
-				
-				
 			}
 		});
 		
@@ -202,20 +197,20 @@ public class GrabRedPackFragment extends BaseFragment implements OnClickListener
 				//对result进行解析
 				Gson grabJson = new Gson();
 				RedPackInfo redPackInfo = grabJson.fromJson(result, RedPackInfo.class);
-				int statueTag = redPackInfo.getData();
+				String statueTag = redPackInfo.getData();
 				LogUtils.toDebugLog("result", "result: "+ statueTag);
 				switch(statueTag){
-				    case -2://已领完
+				    case "-2"://已领完
 				    	//Toast.makeText(activity, "大大您来迟了，请等待下一大波红包到来~~", Toast.LENGTH_LONG).show();
 				    	GrabRedPackOverDialog overDialog = new GrabRedPackOverDialog(activity,this,v.webView);//这么个体验的对话框，需要单独在其内部设置点击响应事件
 				    	overDialog.show(getFragmentManager(), "grabredpackisover");
 					break;
-				    case -1://未开始
+				    case "-1"://未开始
 //				    	Toast.makeText(activity, "大大您来早了，活动还未开始呢~~", Toast.LENGTH_LONG).show();
 				    	GrabRedPackOverDialog overDialog1 = new GrabRedPackOverDialog(activity,this,v.webView);//这么个体验的对话框，需要单独在其内部设置点击响应事件
 				    	overDialog1.show(getFragmentManager(), "grabredpackisover");
 					break;
-				    case 0://已领过
+				    case "0"://已领过
 //				    	Toast.makeText(activity, "大大您忘啦，您刚刚领过了~~", Toast.LENGTH_LONG).show();
 				    	GrabRedPackOverDialog overDialog2 = new GrabRedPackOverDialog(activity,this,v.webView);//这么个体验的对话框，需要单独在其内部设置点击响应事件
 				    	overDialog2.show(getFragmentManager(), "grabredpackisover");
@@ -233,14 +228,16 @@ public class GrabRedPackFragment extends BaseFragment implements OnClickListener
 				ShareRedPackInfo shareRedPackInfo = shareJson.fromJson(result, ShareRedPackInfo.class);
 				LogUtils.toDebugLog("", r.getContentAsString());
 					
-				String title = shareRedPackInfo.getRedpack_title();
-				String content = shareRedPackInfo.getRedpack_sub();
+				String title = shareRedPackInfo.getWechat_title();
+				String content = shareRedPackInfo.getWechat_sub();
 //				String imageUrl = "http://act.qmyo.com/images/redpack/pre-redpack.jpg";
 				String currentActivityUrl = shareRedPackInfo.getShare_url();
+				String weibo_title = shareRedPackInfo.getWeibo_title();
 				
 				new GrabRedPackSharedDialog().showPopwindow(rootView, getActivity(), 
 						title , 
 						content ,
+						weibo_title,
 						"",
 						currentActivityUrl);
 				LogUtils.toDebugLog("Grab", "执行到分享这一步");
@@ -355,11 +352,11 @@ public class GrabRedPackFragment extends BaseFragment implements OnClickListener
 			
 			LogUtils.toDebugLog("popup", "弹出分享按钮");
 			
-			new GrabRedPackSharedDialog().showPopwindow(rootView, getActivity(), 
+			/*new GrabRedPackSharedDialog().showPopwindow(rootView, getActivity(), 
 					title , 
 					content ,
 					imageUrl,
-					currentActivityUrl);
+					currentActivityUrl);*/
 			break;
 		}
 	}

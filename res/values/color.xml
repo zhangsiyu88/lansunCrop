@@ -42,6 +42,7 @@
     <color name="update_text_tittle_green">#9DC14F</color>
     <color name="text_grey_10">#9fa0a0</color>
     <color name="text_black_1">#212121</color>
+    <color name="background">#55000000</color>
     <color name="text_black_2">#545454</color>
     <color name="images_counts">#75000000</color>
     <color name="choose_eara_item_press_color">#2000</color>

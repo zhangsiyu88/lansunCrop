@@ -2,20 +2,28 @@ package com.lansun.qmyo.domain;
 
 public class ShareRedPackInfo {
 
-	public String redpack_title;
-	public String redpack_sub;
+	public String wechat_title;
+	public String wechat_sub;
+	public String weibo_title;
 	public String share_url;
-	public String getRedpack_title() {
-		return redpack_title;
+	
+	public String getWechat_title() {
+		return wechat_title;
 	}
-	public void setRedpack_title(String redpack_title) {
-		this.redpack_title = redpack_title;
+	public void setWechat_title(String wechat_title) {
+		this.wechat_title = wechat_title;
 	}
-	public String getRedpack_sub() {
-		return redpack_sub;
+	public String getWechat_sub() {
+		return wechat_sub;
 	}
-	public void setRedpack_sub(String redpack_sub) {
-		this.redpack_sub = redpack_sub;
+	public void setWechat_sub(String wechat_sub) {
+		this.wechat_sub = wechat_sub;
+	}
+	public String getWeibo_title() {
+		return weibo_title;
+	}
+	public void setWeibo_title(String weibo_title) {
+		this.weibo_title = weibo_title;
 	}
 	public String getShare_url() {
 		return share_url;
@@ -23,6 +31,10 @@ public class ShareRedPackInfo {
 	public void setShare_url(String share_url) {
 		this.share_url = share_url;
 	}
+	
+	
+	
+
 	
 	
 	

@@ -41,6 +41,8 @@ import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectInit;
+import com.android.pc.ioc.inject.InjectListener;
+import com.android.pc.ioc.inject.InjectMethod;
 import com.android.pc.ioc.internet.FastHttpHander;
 import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.view.listener.OnClick;
@@ -431,5 +433,13 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 	public void onDestroy() {
 		activity.unregisterReceiver(broadCastReceiver);
 		super.onDestroy();
+	}
+	
+	
+	@Override
+	@InjectMethod(@InjectListener(ids = 2131427431, listeners = OnClick.class))
+	protected void back() {
+		imm.hideSoftInputFromWindow(et_home_search.getWindowToken(), 0);
+		super.back();
 	}
 }

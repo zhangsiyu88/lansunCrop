@@ -9,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Interpolator;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
@@ -72,13 +73,13 @@ public class GrabRedPackSharedDialog implements OnClickListener {
 	private boolean mNeedShake = true;
 	
 
-	public void showPopwindow(View v, final Activity activity, String title,
-			String content, String imageUrl) {
+/*	public void showPopwindow(View v, final Activity activity, String title,
+			String content, String imageUrl,String weibo_tittle) {
 		this.activity = activity;
 		
 		 
 		configPlatforms();
-		setShareContent(title, content, imageUrl,null);//分享的内容
+		setShareContent(title, content, imageUrl,null, weibo_tittle);//分享的内容
 		
 		// 利用layoutInflater获得View
 		LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -114,8 +115,8 @@ public class GrabRedPackSharedDialog implements OnClickListener {
 		window.setAnimationStyle(R.style.mypopwindow_anim_style);
 		
 		// 实例化一个ColorDrawable颜色为半透明
-		/*ColorDrawable dw = new ColorDrawable(0xb0000000);
-		window.setBackgroundDrawable(dw);*/
+		ColorDrawable dw = new ColorDrawable(0xb0000000);
+		window.setBackgroundDrawable(dw);
 
 		// 在底部显示
 		window.showAtLocation(v, Gravity.BOTTOM, 0, 0);
@@ -129,14 +130,11 @@ public class GrabRedPackSharedDialog implements OnClickListener {
 				activity.getWindow().setAttributes(params);
 			}
 		});
-	}
+	}*/
 	
 	
-	
-	
-	
-	@SuppressLint("HandlerLeak") public void showPopwindow(View v, final Activity activity, String title,
-			String content, String imageUrl, String currentActivityUrl) {
+	@SuppressLint("HandlerLeak") public void showPopwindow(View v, final Activity activity, String wechat_title,
+			String wechat_sub,String weibo_tittle ,String imageUrl, String currentActivityUrl) {
 		this.activity = activity;
 		DisplayMetrics dm = new DisplayMetrics(); 
 		activity.getWindowManager().getDefaultDisplay().getMetrics(dm);  
@@ -145,8 +143,7 @@ public class GrabRedPackSharedDialog implements OnClickListener {
         } 
         
 		configPlatforms();
-		
-		setShareContent(title, content, imageUrl,currentActivityUrl);//分享的内容
+		setShareContent(wechat_title, wechat_sub, weibo_tittle ,imageUrl,currentActivityUrl);//分享的内容
 		
 		// 利用layoutInflater获得View
 		LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -176,9 +173,8 @@ public class GrabRedPackSharedDialog implements OnClickListener {
 
 		window = new PopupWindow(view, WindowManager.LayoutParams.MATCH_PARENT,
 				WindowManager.LayoutParams.WRAP_CONTENT);
-		WindowManager.LayoutParams params = activity.getWindow()
-				.getAttributes();
-		params.alpha = 1.0f;
+		WindowManager.LayoutParams params = activity.getWindow().getAttributes();
+		params.alpha = 0.2f;
 		activity.getWindow().setAttributes(params);
 
 		window.setOutsideTouchable(false);
@@ -188,8 +184,8 @@ public class GrabRedPackSharedDialog implements OnClickListener {
 
 		window.setAnimationStyle(R.style.mypopwindow_anim_style);
 		// 实例化一个ColorDrawable颜色为半透明
-		/*ColorDrawable dw = new ColorDrawable(0xb0000000);
-		window.setBackgroundDrawable(dw);*/
+		ColorDrawable dw = new ColorDrawable(0xaa000000);
+		window.setBackgroundDrawable(dw);
 
 		// 在底部显示
 		window.showAtLocation(v, Gravity.BOTTOM, 0, 0);
@@ -277,8 +273,9 @@ public class GrabRedPackSharedDialog implements OnClickListener {
 	}
 	/**
 	 * 设置四大板块的分享内容
+	 * @param weibo_tittle 
 	 */
-	private void setShareContent(String title, String content, String imageUrl,String currentActivityUrl) {
+	private void setShareContent(String title, String content,String weibo_tittle, String imageUrl,String currentActivityUrl) {
 		/**
 		 * 微信个人分享
 		 */
@@ -292,13 +289,11 @@ public class GrabRedPackSharedDialog implements OnClickListener {
 			UMImage urlImage = new UMImage(activity, imageUrl);
 			weixinContent.setShareMedia(urlImage);
 		}else{
-			UMImage urlImage =new UMImage(activity, R.drawable.icon_redpack1);//带圆角分dpi的新图
+//			UMImage urlImage =new UMImage(activity, R.drawable.icon_redpack1);//带圆角分dpi的新图
+			UMImage urlImage =new UMImage(activity, R.drawable.redpack_share);//直角
 			weixinContent.setShareMedia(urlImage);
 		}
 		mController.setShareMedia(weixinContent);
-		
-		
-		
 		
 		
 		/**
@@ -309,7 +304,7 @@ public class GrabRedPackSharedDialog implements OnClickListener {
 		/*circleMedia.setTitle(title);*/ //---> 将分享内容修改至标题处
 		circleMedia.setShareContent(content);
 		
-		String  circleShareContent = title+","+content;
+		String  circleShareContent = title;//+","+content
 		circleMedia.setTitle(circleShareContent);
 		
 		/*circleMedia.setTargetUrl(GlobalValue.TARGET_URL);*/
@@ -319,7 +314,9 @@ public class GrabRedPackSharedDialog implements OnClickListener {
 			UMImage urlImage = new UMImage(activity, imageUrl);
 			circleMedia.setShareMedia(urlImage);
 		}else{
-			UMImage urlImage =new UMImage(activity, R.drawable.icon_redpack1);//带圆角分dpi的新图
+//			UMImage urlImage =new UMImage(activity, R.drawable.icon_redpack1);//带圆角分dpi的新图
+			UMImage urlImage =new UMImage(activity, R.drawable.redpack_share);//直角
+			
 			circleMedia.setShareMedia(urlImage);
 		}
 		// circleMedia.setShareMedia(uMusic);
@@ -371,7 +368,7 @@ public class GrabRedPackSharedDialog implements OnClickListener {
 	    //String newTencentShareContent = "#迈界惊喜好活动#我发现了一个超赞的活动,就在【"+title+"】,"+content+", 戳我戳我-->"+currentActivityUrl;
 	    
 //	    String newTencentShareContent = "#迈界猴年派红包#"+title+","+content+" 戳我戳我-->"+currentActivityUrl;
-	    String newTencentShareContent = "#迈界猴年派红包#三天九波发放时间表剧透，好友配合拿更多！下载迈界APP，关注迈界服务号微信，2/7除夕夜-2/11财神夜-2/22元宵夜，约约约！财富好运送上门，难道眼睁睁让它错过？！"+"戳我戳我-->"+currentActivityUrl;
+	    String newTencentShareContent = weibo_tittle + currentActivityUrl;
 	    tencentWbShareContent.setShareContent(newTencentShareContent);
 	    
 	    if (!TextUtils.isEmpty(imageUrl)){
@@ -393,7 +390,7 @@ public class GrabRedPackSharedDialog implements OnClickListener {
 	    //String newSinaShareContent = "#迈界惊喜好活动#我发现了一个超赞的活动,就在【"+title+"】,"+content+", 戳我戳我-->"+currentActivityUrl;
 	    
 //	    String newSinaShareContent = "#迈界猴年派红包#"+title+","+content+" 戳我戳我-->"+currentActivityUrl;
-	    String newSinaShareContent = "#迈界猴年派红包#三天九波发放时间表剧透，好友配合拿更多！下载迈界APP，关注迈界服务号微信，2/7除夕夜-2/11财神夜-2/22元宵夜，约约约！财富好运送上门，难道眼睁睁让它错过？！"+"戳我戳我-->"+currentActivityUrl;
+	    String newSinaShareContent = weibo_tittle+currentActivityUrl;
 	    /*sinaShareContent.setShareContent(content+"."+currentActivityUrl);//-->test*/	
 	    sinaShareContent.setShareContent(newSinaShareContent);
     

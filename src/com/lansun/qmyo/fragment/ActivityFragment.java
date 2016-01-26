@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -59,6 +60,14 @@ import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.ioc.view.listener.OnItemClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
+import com.android.volley.AuthFailureError;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.Request.Method;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.lansun.qmyo.adapter.SearchAdapter;
 import com.lansun.qmyo.app.App;
@@ -165,6 +174,8 @@ import com.lansun.qmyo.R;
 	private boolean justFirstClick = true;
 	private boolean isFromNoNetworkViewTip = false;
 	/*private boolean spyJustFirstClick = false;*/
+
+	private RequestQueue queue;
 
 	class Views {
 		private View iv_card;
@@ -280,7 +291,6 @@ import com.lansun.qmyo.R;
 						
 						lv_activity_list.removeFooterView(emptyView);//不能忘了去除底部的emptyView
 						
-						
 						/*lv_activity_list.invalidate();*/
 				}else{
 					CustomToast.show(activity, "ti", "activityList == null");
@@ -366,7 +376,8 @@ import com.lansun.qmyo.R;
 						if(page!=currentPage){
 							//更新当前页面的下一个页面时,前面的数据不应该被取消掉,应该拼接在后面
 							/*refreshCurrentList(activityList.getNext_page_url(),null, 4, lv_activity_list);*/
-							refreshCurrentList(GlobalValue.URL_ALL_ACTIVITY ,refreshParams, 4, lv_activity_list);
+//							refreshCurrentList(GlobalValue.URL_ALL_ACTIVITY ,refreshParams, 4, lv_activity_list);
+							refreshCurrentListByVolley(GlobalValue.URL_ALL_ACTIVITY ,refreshParams, 4, lv_activity_list);
 							currentPage = page;
 							lv_activity_list.setNoHeader(true);
 						}
@@ -381,6 +392,185 @@ import com.lansun.qmyo.R;
 		
 		return rootView;
 	}
+	
+	
+	protected void refreshCurrentListByVolley(String next_page_url,
+			 final LinkedHashMap<String, String> refreshParam, int key,
+			ActivityMyListView listView) {
+		queue = Volley.newRequestQueue(App.app);
+		String url = next_page_url;
+		
+		
+//		refreshParams.put("location",GlobalValue.gps.toString());
+//			refreshParams.put("location",GlobalValue.gps.toString());
+//		refreshParams.put("site", getSelectCity()[0]);
+//		refreshParams.put("position",position_bussnessAfterEncode);
+//		refreshParams.put("service", HODLER_TYPE);
+//		refreshParams.put("type", type);
+//		refreshParams.put("intelligent", intelligentStr);
+//		refreshParams.put("page", page);
+		
+		url= url+"location="+refreshParam.get("location")
+				+"&site="+refreshParam.get("site")
+				+"&position="+refreshParam.get("position")
+				+"&service="+refreshParam.get("service")
+				+"&type="+refreshParam.get("type")
+				+"&intelligent="+refreshParam.get("intelligent")
+				+"&page="+refreshParam.get("page");
+		
+		//根据给定的URL新建一个请求
+		StringRequest stringRequest = new StringRequest(Method.GET, url,new Listener<String>() {
+
+			@Override
+			public void onResponse(String response) {
+				//此时是加载更多。。。，故adapter不为空
+		    	LogUtils.toDebugLog("loading", "加载更多成功");
+		    	lv_activity_list.onRefreshFinshed(true);
+				lv_activity_list.onLoadMoreFished();
+				lv_activity_list.setNoHeader(false);
+				if(cPd!=null){
+					cPd.dismiss();
+					cPd = null;
+				}
+					lv_activity_list.setVisibility(View.VISIBLE);
+				try{
+					lv_activity_list.removeFooterView(emptyView);
+				}catch(Exception e ){}
+				try{
+					lv_activity_list.removeFooterView(noNetworkView);
+				}catch(Exception e ){}
+				endProgress();
+				//从服务器端拿到数据
+				activityList = Handler_Json.JsonToBean(ActivityList.class,response);
+				if (activityList.getData() != null) {//服务器返回回来的数据中的Data不为null
+					if(isDownChange){//下拉刷新时,需要将数据重新获取,即将shopDataList清空掉
+						shopDataList.clear();
+						isDownChange = false;
+					}
+					for (ActivityListData data : activityList.getData()) {
+						HashMap<String, Object> map = new HashMap<String, Object>();
+						map.put("tv_search_activity_name", data.getShop().getName());
+						map.put("tv_search_activity_distance", data.getShop().getDistance());
+						map.put("tv_search_activity_desc", data.getActivity().getName());
+						map.put("iv_search_activity_head", data.getActivity().getPhoto());
+						map.put("activityId", data.getActivity().getId());
+						map.put("shopId", data.getShop().getId());
+						map.put("tv_search_tag", data.getActivity().getTag());
+						map.put("icons", data.getActivity().getCategory());
+						shopDataList.add(map);
+					}
+//					if (activityAdapter == null) {
+//						activityAdapter = new EightPartActivityAdapter(activity,shopDataList);
+//						activityAdapter.setIClickBackPress(ActivityFragment.this);
+//						if(activityList.getData().size()<10){
+//							try{ lv_activity_list.removeFooterView(emptyView); 
+//							}catch(Exception e ){ 
+//							}finally{
+//								if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司
+//									lv_activity_list.addFooterView(emptyView);
+//									lv_activity_list.onLoadMoreOverFished();
+//									lv_activity_list.setNoHeader(true);
+//						          }else{
+//						          }
+//							}
+//						}
+//						lv_activity_list.setAdapter(activityAdapter);
+//						endProgress();//当ListView链接上适配器时,我们需要将gif的动画关掉
+//					} else {
+						
+						//adapter并不为空时
+						if(activityList.getData().size()<10){
+							try{
+								lv_activity_list.removeFooterView(emptyView);
+							}catch(Exception e ){
+								//CustomToast.show(activity, "提示", "emptyView移除失败哦");
+							}finally{
+								if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司
+									lv_activity_list.addFooterView(emptyView);
+									lv_activity_list.onLoadMoreOverFished();
+									lv_activity_list.setNoHeader(true);
+						          }else{
+						            //DO-OP
+						          }
+								activityAdapter.notifyDataSetChanged();
+							}
+						}else{
+							activityAdapter.notifyDataSetChanged();
+						}
+//					}
+					first_enter = Integer.MAX_VALUE;
+
+				} else {   //------->因为上拉前去获取到的数据为null，此时需要  将之前的值保留住并展示
+					    endProgress();
+					try{
+						lv_activity_list.removeFooterView(emptyView);
+					}catch(Exception e ){ }
+						lv_activity_list.addFooterView(emptyView);
+						lv_activity_list.onLoadMoreOverFished();
+						lv_activity_list.setAdapter(activityAdapter);
+						lv_activity_list.setNoHeader(true);
+				    }
+			    }
+		}, new ErrorListener() {
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				LogUtils.toDebugLog("loading", "加载更多失效");
+				progress_text.setText(R.string.net_error_refresh);
+				//针对在断网后再次点击上部筛选栏的自己菜单时，做出的重复添加无效的 noNetworkView界面操作
+				try{  lv_activity_list.removeFooterView(noNetworkView);
+				}catch(Exception e ){ }
+				CustomToast.show(activity, "网络异常", "服务器睡着了！");
+					if(cPd!=null){//断网情况下，且还拥有了cPd，表明其走到了loadActivityList，表示之前成功使用过筛选栏进行列表选择过， 实际上是访问不到数据的 
+						cPd.dismiss();
+						cPd = null;
+						noNetworkView = setNetworkView();
+						lv_activity_list.setVisibility(View.VISIBLE);
+						lv_activity_list.onLoadMoreOverFished();
+						lv_activity_list.addFooterView(noNetworkView);
+					}else{//注意下面的两个判断的安放顺序
+						if(isFromNoNetworkViewTip){//由ListView添加上的footerview画面点击产生的效果
+							//筛选栏的点击在无网的状态下，点击提示画面，进行尝试联网操作，但依旧是返回统一的检查网络的提示画面
+							/*	ImageView iv_gif_loadingprogress = (ImageView) noNetworkView.findViewById(R.id.iv_gif_loadingprogress);
+					    	((AnimationDrawable)iv_gif_loadingprogress.getDrawable()).start();*/
+							noNetworkView = setNetworkView();
+							lv_activity_list.addFooterView(noNetworkView);
+							isFromNoNetworkViewTip = false;
+							return;
+						}
+						if(!justFirstClick){//针对 一进来就是无网状态，此时点击container会进行initData()的操作，此时点击一次后，justFirstClick=false，但是为了来网络时点击有效，那么很明显，不可禁掉点击监听，但可以禁掉 点击响应后的操作
+							justFirstClick = true;
+						}
+					 }
+			     }
+		}){
+			@Override  
+		   public Map<String, String> getHeaders() throws AuthFailureError  
+		   {  
+				//super.getHeaders();
+				Map<String, String> headers = new HashMap<String, String>();  
+				headers.put("Charset", "UTF-8");  
+				headers.put("Content-Type", "application/x-javascript");  
+				headers.put("Accept-Encoding", "gzip,deflate");  
+				headers.put("Authorization", "Bearer "+App.app.getData("access_token"));  
+				return headers;  
+		   } 
+			
+		};
+		stringRequest.setTag("loadingMore");
+		// 把这个请求加入请求队列
+		queue.add(stringRequest);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	private String typeStr;
 	private int secretaryPosition;
 
@@ -888,6 +1078,10 @@ import com.lansun.qmyo.R;
 
 			@Override
 			public void getValue(String distance, String showText, int position) {
+				if(queue!=null){
+					queue.cancelAll("loadingMore");//取消
+				}
+				LogUtils.toDebugLog("cancel", "取消之前加载更多页面的响应");
 				intelligentStr = intelligent.getData().get(position).getKey();
 				
 				try{
@@ -914,7 +1108,10 @@ import com.lansun.qmyo.R;
 		viewLeft.setOnSelectListener(new ViewLeft.OnSelectListener() {
 			@Override
 			public void getValue(String showText, int parentId, int position) {
-				
+				if(queue!=null){
+					queue.cancelAll("loadingMore");//取消
+				}
+				LogUtils.toDebugLog("cancel", "取消之前加载更多页面的响应");
 				if (AllService.getData().get(parentId).getItems() == null) {
 					onRefresh(viewLeft, showText);
 					HODLER_TYPE = AllService.getData().get(parentId).getKey()
@@ -951,9 +1148,11 @@ import com.lansun.qmyo.R;
 
 			@Override
 			public void getValue(String showText, int parentId, int position) {
-
+				if(queue!=null){
+					queue.cancelAll("loadingMore");//取消
+				}
+				LogUtils.toDebugLog("cancel", "取消之前加载更多页面的响应");
 				if (parentId == 0) {
-
 					if (nearService.getData().get(parentId).getItems() == null) {
 						onRefresh(viewLeft, showText);
 						position_bussness = nearService.getData().get(parentId).getItems().get(position).getKey()+ "";
@@ -991,6 +1190,10 @@ import com.lansun.qmyo.R;
 		viewRight.setOnSelectListener(new ViewRight.OnSelectListener() {
 			@Override
 			public void getValue(String distance, String showText, int position) {
+				if(queue!=null){
+					queue.cancelAll("loadingMore");//取消
+				}
+				LogUtils.toDebugLog("cancel", "取消之前加载更多页面的响应");
 				type = sxintelligent.getData().get(position).getKey();
 				shopDataList.clear();
 				try{

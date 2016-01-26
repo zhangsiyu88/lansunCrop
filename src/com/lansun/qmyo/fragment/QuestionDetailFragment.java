@@ -208,7 +208,7 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		
 //		my_secretary_question_recycle=(RecyclerView)view.findViewById(R.id.lv_mine_secretary_quetions_detail);
 		my_secretary_question_recycle=(ListView) view.findViewById(R.id.lv_mine_secretary_quetions_detail);
-		LinearLayoutManager manager=new LinearLayoutManager(getActivity());
+//		LinearLayoutManager manager=new LinearLayoutManager(getActivity());
 //		my_secretary_question_recycle.setLayoutManager(manager);
 		
 		btn_secretary_question_commit=(TextView)view.findViewById(R.id.btn_secretary_question_commit);
@@ -433,12 +433,20 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 			QAMetaData qaMetaDataSpareWheel = new QAMetaData();
 			qaMetaDataSpareWheel.setContent(mainContent);
 			qaMetaDataSpareWheel.setType(1);//标准一问一答的操作
-			
 			qaMetaDataSpareWheel.setTime(askTime);
 			
 //			qaMetaDataSpareWheel.setAnswer("大哥，终于等到你提问了");
-			qaMetaDataSpareWheel.setAnswer("小秘书已经收到您的留言喽，立即开启暴风处理模式~2小时内必定有回复！为保证答复质量，如需更多处理时间，" +
-					"小秘书也将第一时间告知~全心全意为您哟~我们的服务时间：周一至周五工作日9:00-18:00（周末及法定节假日休息），小秘书将逐步实现7*24无休服务。");
+			String timeStr = askTime.substring(11, 13);
+			int intTime = Integer.valueOf(timeStr);
+			//2.2.1 9-18点
+			if((intTime>=9) && (intTime<18)){
+				qaMetaDataSpareWheel.setAnswer("小秘书已经收到您的留言喽，立即开启暴风处理模式~2小时内必定有回复！为保证答复质量，如需更多处理时间，" +
+				"小秘书也将第一时间告知~全心全意为您哟~我们的服务时间：周一至周五工作日9:00-18:00（周末及法定节假日休息），小秘书将逐步实现7*24无休服务。");
+			}
+			//2.2.2  18-24点      0-9点
+			else if(((intTime>=0) && (intTime<9))||((intTime>=18)&&(intTime<=24))){
+				qaMetaDataSpareWheel.setAnswer("收到您的留言喽~但但但...人家现在正休息，为了养足精神更好为您服务哦~小秘书开工后立即处理（周一至周五工作日9:00-18:00），谢谢体谅哟~小秘书将逐步实现7*24无休服务。");
+			}
 			arrayDataSource.add(qaMetaDataSpareWheel);
 		}
 		

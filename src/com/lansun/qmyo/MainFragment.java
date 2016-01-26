@@ -54,6 +54,7 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -207,6 +208,7 @@ public class MainFragment extends Fragment {
 		bottom =  (RelativeLayout)rootView.findViewById(R.id.bottom);
 		
 		Handler_Inject.injectFragment(this, rootView);
+		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN|WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 		initView(rootView);
 		initFrag();
 		
@@ -642,7 +644,7 @@ class MainFragmentBroadCastReceiver extends BroadcastReceiver{
 				.radius(25)
 				.sampling(2)
 				.async()
-				.animate(300)
+				.animate(10)
 				.onto((ViewGroup)rootView);
 				System.out.println("首页收到模糊整体背景的广播了");
 				
@@ -653,7 +655,7 @@ class MainFragmentBroadCastReceiver extends BroadcastReceiver{
 //			//bottom_menu.setVisibility(View.VISIBLE);
 			
 			Blurry.delete((ViewGroup)rootView);
-			
+			System.out.println("首页收到解除之前模糊整体背景的广播了");
 /*			v.bottom_home.setVisibility(View.VISIBLE);
 			v.bottom_found.setVisibility(View.VISIBLE);
 			v.bottom_mine.setVisibility(View.VISIBLE);

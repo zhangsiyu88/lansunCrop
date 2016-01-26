@@ -57,7 +57,9 @@ public class MessageCenterFragment extends BaseFragment implements ItemClickCall
 
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
-		private TextView tv_message_activity, tv_message_maijie,no_data;
+		private TextView tv_message_activity, tv_message_maijie;
+		private View no_data;
+		
 	}
 
 //	@InjectView(down = true, pull = true)
@@ -168,6 +170,7 @@ public class MessageCenterFragment extends BaseFragment implements ItemClickCall
 		dataList.clear();
 		adapter = null;
 		times = 0;
+		first_enter = 0;
 		switch (view.getId()) {
 		case R.id.tv_message_activity:// TODO 活动
 			refreshUrl = GlobalValue.URL_USER_MESSAGE_LIST+ GlobalValue.MESSAGE.activity;
@@ -201,7 +204,7 @@ public class MessageCenterFragment extends BaseFragment implements ItemClickCall
 			switch (r.getKey()) {
 			case 0:
 				endProgress();
-				
+				lv_message_list.setVisibility(View.VISIBLE);
 				lv_message_list.onLoadMoreFished();
 				
 				list = Handler_Json.JsonToBean(MessageList.class,
@@ -255,11 +258,14 @@ public class MessageCenterFragment extends BaseFragment implements ItemClickCall
 						}
 						this.first_enter = Integer.MAX_VALUE;
 						
-					} else {
+					} else {//list.getData() == null
 						lv_message_list.setAdapter(null);
+						lv_message_list.onLoadMoreOverFished();
+						lv_message_list.setVisibility(View.INVISIBLE);
 						v.no_data.setVisibility(View.VISIBLE);
 					}
-				}else{
+				}else{//list==null
+					v.no_data.setVisibility(View.VISIBLE);
 					lv_message_list.onLoadMoreOverFished();
 				}
 				

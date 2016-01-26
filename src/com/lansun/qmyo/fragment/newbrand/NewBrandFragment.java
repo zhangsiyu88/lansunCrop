@@ -1,5 +1,7 @@
 package com.lansun.qmyo.fragment.newbrand;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -51,6 +53,14 @@ import com.android.pc.ioc.view.PullToRefreshManager;
 import com.android.pc.ioc.view.listener.OnItemClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request.Method;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.lansun.qmyo.MainActivity;
 import com.lansun.qmyo.MainFragment;
@@ -419,6 +429,7 @@ public class NewBrandFragment extends BaseFragment{
 	private NewBrandRefreshBroadCastReceiver broadCastReceiver;
 	private RelativeLayout noNetworkView;
 	private int times = 0;
+	private RequestQueue queue;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -591,6 +602,11 @@ public class NewBrandFragment extends BaseFragment{
 				}
 			}
 			
+			
+			
+			/**
+			 * 加载更多的操作，现在修改为Volley的网络访问，力求当筛选栏被点击后，此时加载更多的网络请求被终止掉cancel掉（换句话说，不再执行onResponse()和onErrorResponse()）
+			 */
 			@Override
 			public void onLoadingMore() {
 				isShowDialog=false;
@@ -623,7 +639,9 @@ public class NewBrandFragment extends BaseFragment{
 						
 					} else {
 						//下面的startSearchData()注意与 删选栏点击的startSearchData() 区分开来 
-						startSearchData(activityList.getNext_page_url());
+//						startSearchData(activityList.getNext_page_url());
+						startSearchDataByVolley(activityList.getNext_page_url());
+						
 						lv_activity_list.setNoHeader(true);
 					}
 				}
@@ -655,22 +673,29 @@ public class NewBrandFragment extends BaseFragment{
 								DialogInterface dialog, int which) {
 							dialog.dismiss();
 							
-							
 						}
 					});
 			}
 		return view;
 	}
+
 	/**
 	 * 对标题栏下面的四个分点击TextView模块设置对应的监听者
 	 */
 	private void initListener() {
 
+		
+		
 		//智能排序模块
 		viewMiddle.setOnSelectListener(new ViewMiddle.OnSelectListener() {
 
 			@Override
 			public void getValue(String distance, String showText, int position) {
+				if(queue!=null){
+					queue.cancelAll("loadingMore");//取消
+				}
+				LogUtils.toDebugLog("cancel", "取消之前加载更多页面的响应");
+				
 				intelligentStr = intelligent.getData().get(position).getKey();
 				shopDataList.clear();
 				if (activityAdapter != null) {
@@ -688,6 +713,10 @@ public class NewBrandFragment extends BaseFragment{
 		viewLeft.setOnSelectListener(new ViewLeft.OnSelectListener() {
 			@Override
 			public void getValue(String showText, int parentId, int position) {
+				if(queue!=null){
+					queue.cancelAll("loadingMore");//取消
+				}
+				LogUtils.toDebugLog("cancel", "取消之前加载更多页面的响应");
 				if (root.getData().get(parentId).getData()== null) {
 					onRefresh(viewLeft, showText);
 					HODLER_TYPE = root.getData().get(parentId).getKey()+ "";
@@ -713,7 +742,10 @@ public class NewBrandFragment extends BaseFragment{
 
 			@Override
 			public void getValue(String showText, int parentId, int position) {
-
+				if(queue!=null){
+					queue.cancelAll("loadingMore");//取消
+				}
+				LogUtils.toDebugLog("cancel", "取消之前加载更多页面的响应");
 				if (parentId == 0) {
 
 					if (nearService.getData().get(parentId).getItems() == null) {
@@ -966,6 +998,64 @@ public class NewBrandFragment extends BaseFragment{
 			}
 		});
 	}
+	@SuppressWarnings("deprecation")
+	protected void startSearchDataByVolley(String next_page_url) {
+		queue = Volley.newRequestQueue(App.app);
+		String url = next_page_url;
+		
+		
+//		addHeader("Authorization", "Bearer "+App.app.getData("access_token"))
+		 
+		//根据给定的URL新建一个请求
+		StringRequest stringRequest = new StringRequest(Method.GET, url,new Listener<String>() {
+
+			@Override
+			public void onResponse(String response) {
+				 // 在这里处理请求得到的String类型的响应
+		    	LogUtils.toDebugLog("loading", "加载更多成功");
+				String json = (String)response;
+				activityList=gson.fromJson(json, ActivityList.class);
+				handleOk.sendEmptyMessage(1);
+			}
+		}, new ErrorListener() {
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				LogUtils.toDebugLog("loading", "加载更多失效");
+			}
+		}){
+			@Override  
+		   public Map<String, String> getHeaders() throws AuthFailureError  
+		   {  
+				//super.getHeaders();
+				Map<String, String> headers = new HashMap<String, String>();  
+				headers.put("Charset", "UTF-8");  
+				headers.put("Content-Type", "application/x-javascript");  
+				headers.put("Accept-Encoding", "gzip,deflate");  
+				headers.put("Authorization", "Bearer "+App.app.getData("access_token"));  
+				return headers;  
+		   } 
+		};
+		
+		stringRequest.setTag("loadingMore");
+		// 把这个请求加入请求队列
+		queue.add(stringRequest);
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * 这个地方要写v.expandtab_view.onPressBack();否则下拉控件会有问题
 	 */

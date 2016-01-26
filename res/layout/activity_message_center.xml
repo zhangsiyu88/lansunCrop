@@ -94,22 +94,41 @@
             android:background="@color/app_grey5" />
     </LinearLayout>
 	<FrameLayout 
-	    style="@style/w_match_h_match"
-	    >
+	    style="@style/w_match_h_match">
+        
 	    <com.lansun.qmyo.view.TestMyListView
-        android:id="@+id/lv_message_list"
-        style="@style/w_h_full"
-        android:cacheColorHint="#00000000"
-        android:divider="@null"
-        android:scrollbars="none" 
-        android:overScrollMode="never"/>
-	<TextView 
-	    android:visibility="gone"
+	        android:id="@+id/lv_message_list"
+	        style="@style/w_h_full"
+	        android:cacheColorHint="#00000000"
+	        android:divider="@null"
+	        android:scrollbars="none" 
+	        android:overScrollMode="never"/>
+	
+	<RelativeLayout 
+	    style="@style/w_h_full"
+	    android:background="@color/app_bg"
 	    android:id="@+id/no_data"
-	    android:text="您还未收到最新活动消息哦"
-	    android:gravity="center"
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
+	    android:visibility="gone">
+          
+	   <ImageView
+	        android:id="@+id/bt_close"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="@dimen/margin_top_30"
+	        android:layout_gravity="center"
+	        android:src="@drawable/lv_empty" 
+	        android:layout_centerInParent="true"/>
+	    <TextView 
+	        style="@style/text_style_nomal_28"
+	        android:textColor="#AFAFAF" 
+	        android:layout_marginTop="@dimen/margin_top_20"
+		    android:layout_below="@id/bt_close"
+		    android:text="您还未收到最新活动消息哦"
+		    android:layout_centerHorizontal="true"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
 	    />
+	</RelativeLayout>
+	
 	</FrameLayout>
 </LinearLayout>

@@ -1,5 +1,8 @@
 package com.lansun.qmyo.view;
 
+import com.lansun.qmyo.listener.RubbleTextListener;
+import com.lansun.qmyo.utils.LogUtils;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -37,7 +40,10 @@ import android.widget.TextView;
 	    private Path mPath; 
 	    private float mX, mY; 
 	   
-	    private boolean isDraw = false; 
+	    private boolean isDraw = false;
+
+		private int mTouchPoints = 0; 
+		public  RubbleTextListener mRubbleTextListener;
 	   
 	    public RubbleTextView(Context context) { 
 	        /**
@@ -92,9 +98,11 @@ import android.widget.TextView;
 	        // 设置画笔 
 	        mPaint = new Paint(); 
 	        // mPaint.setAlpha(0); 
+	      
+	        
 	        // 画笔划过的痕迹就变成透明色了 
 	        mPaint.setColor(Color.BLACK); // 此处不能为透明色 
-	        mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT)); 
+	        mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT)); //实现橡皮擦的关键：被dst触碰的部分，全部执行去除
 	        // 或者 
 	        // mPaint.setAlpha(0); 
 	        // mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN)); 
@@ -126,6 +134,13 @@ import android.widget.TextView;
 	        if (!isDraw) { 
 	            return true; 
 	        } 
+	        if(mTouchPoints <160){
+	        	mTouchPoints++;
+	        	LogUtils.toDebugLog("points", "mTouchPoints := "+mTouchPoints);
+	        }else{
+	        	//通知RubberTextView所在的Layout控件
+	        	mRubbleTextListener.notifyShowBehind();
+	        }
 	        switch (event.getAction()) { 
 	        case MotionEvent.ACTION_DOWN: // 触点按下 
 	            // touchDown(event.getRawX(),event.getRawY()); 
@@ -168,7 +183,11 @@ import android.widget.TextView;
 	        mPath.lineTo(x, y); 
 	        mCanvas.drawPath(mPath, mPaint); 
 	        mPath.reset(); 
-	    } 
+	    }
+
+		public void setRubbleTextListener(RubbleTextListener rubbleTextListener) {
+			this.mRubbleTextListener = rubbleTextListener;
+		} 
 	   
 	
 }

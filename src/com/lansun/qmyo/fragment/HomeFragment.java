@@ -234,15 +234,11 @@ import com.squareup.okhttp.Response;
 		
 		v.tv_home_icon.setTextColor(getResources().getColor(R.color.app_green1));
 
-		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN|WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
+//		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+//				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN|WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
 
 		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(lv_home_list.getWindowToken(), 0); 
-		
-//		PullToRefreshManager.getInstance().headerUnable();
-//		PullToRefreshManager.getInstance().onFooterRefreshComplete();
-		/*PullToRefreshManager.getInstance().footerUnable(); */ //底部刷新不可用
 		
 		/*v.rl_bg.setPressed(true);
 		v.rl_top_bg.setPressed(true);*/
@@ -350,8 +346,10 @@ import com.squareup.okhttp.Response;
 		}
 		
 		LayoutInflater inflater  = LayoutInflater.from(activity);
-		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+//		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+//				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+		
+		
 		
 		rootView = inflater.inflate(R.layout.activity_home_old, null, false);  //填充其home界面，由于activity_home.xml已被修改为了含ScrollView的界面，故使用原有的xml布局
 		
@@ -456,8 +454,10 @@ import com.squareup.okhttp.Response;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+		/*activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);*/
+//		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+		
 		v.tv_home_icon.setTextColor(getResources().getColor(R.color.app_green2));
 
 		if(mFromBankCardFragment){
@@ -1569,7 +1569,7 @@ import com.squareup.okhttp.Response;
 					intentToGrab.putExtras(bundleToGrab);
 //					activity.startActivity(intentToGrab);
 					startActivityForResult(intentToGrab, 6666);
-					getActivity().overridePendingTransition(R.anim.in_from_right,R.anim.out_to_left);
+//					getActivity().overridePendingTransition(R.anim.in_from_right,R.anim.out_to_left);
 					break;
 				default:
 					break;

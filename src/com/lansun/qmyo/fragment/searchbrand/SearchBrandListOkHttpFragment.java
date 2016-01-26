@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -46,6 +47,16 @@ import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.view.GifMovieView;
 import com.android.pc.ioc.view.PullToRefreshManager;
 import com.android.pc.util.Handler_Inject;
+import com.android.pc.util.Handler_Json;
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.Request.Method;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.lansun.qmyo.MainActivity;
 import com.lansun.qmyo.MainFragment;
@@ -379,6 +390,7 @@ import com.squareup.okhttp.Response;
 	private RelativeLayout noNetworkView;
 	private InputMethodManager imm;
 	private int times = 0;
+	private RequestQueue queue;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		isShowFromInitData = true;
@@ -662,7 +674,6 @@ import com.squareup.okhttp.Response;
 			            }else{
 			              lv_search_content.onLoadMoreOverFished();
 			            }
-						
 
 //						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 //						PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
@@ -670,23 +681,82 @@ import com.squareup.okhttp.Response;
 					} else {
 						String nextPageUrl = list.getNext_page_url();
 						lv_search_content.setNoHeader(true);
-						startSearchNext(nextPageUrl);
+//						startSearchNext(nextPageUrl);
+						startSearchNextByVolley(nextPageUrl);
 						isPull = true;
 					}
 				}
 			}
 				
 		});
-		
-		
-		
-		
-		
 		getTitleBanner();
 		setListener();
 		return rootView;
 	}
 
+	protected void startSearchNextByVolley(String nextPageUrl) {
+		queue = Volley.newRequestQueue(App.app);
+		String url = nextPageUrl;
+		
+		//根据给定的URL新建一个请求
+		StringRequest stringRequest = new StringRequest(Method.GET, url,new Listener<String>() {
+
+			@Override
+			public void onResponse(String response) {
+				//此时是加载更多。。。，故adapter不为空
+		    	LogUtils.toDebugLog("loading", "加载更多成功");
+		    	Gson gson=new Gson();
+				list = gson.fromJson(response, ActivityList.class);
+				if(isPull){
+					isPull = false;
+				}else{
+					datas = new ArrayList<HashMap<String, Object>>();//重新new出来一个新的list
+				}
+				if (list.getData() != null && !list.getData().toString().equals("[]") ){
+					for (ActivityListData data : list.getData()) {
+						HashMap<String, Object> map = new HashMap<String, Object>();
+						map.put("tv_search_activity_name", data.getShop().getName());
+						map.put("tv_search_activity_distance", data.getShop().getDistance());
+						map.put("tv_search_activity_desc", data.getActivity().getName());
+						map.put("iv_search_activity_head", data.getActivity().getPhoto());
+						map.put("activityId", data.getActivity().getId());
+						map.put("shopId", data.getShop().getId());
+						map.put("tv_search_tag", data.getActivity().getTag());
+						map.put("icons", data.getActivity().getCategory());
+						datas.add(map);
+					}
+					handleOkhttp.sendEmptyMessage(1);
+					return;
+				}
+				if(list.getData().toString().equals("[]")){
+					handleOkhttp.sendEmptyMessage(2);            //返回的数据解析后为空时 
+					return;
+				}
+			} 	
+		}, new ErrorListener() {
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				LogUtils.toDebugLog("loading", "加载更多失效");
+			}
+		}){
+			@Override  
+		   public Map<String, String> getHeaders() throws AuthFailureError  
+		   {  
+				//super.getHeaders();
+				Map<String, String> headers = new HashMap<String, String>();  
+				headers.put("Charset", "UTF-8");  
+				headers.put("Content-Type", "application/x-javascript");  
+				headers.put("Accept-Encoding", "gzip,deflate");  
+				headers.put("Authorization", "Bearer "+App.app.getData("access_token"));  
+				return headers;  
+		   } 
+		};
+		stringRequest.setTag("loadingMore");
+		stringRequest.setRetryPolicy(new DefaultRetryPolicy(20*1000, 1, (float) 2.0));
+		
+		// 把这个请求加入请求队列
+		queue.add(stringRequest);
+	}
 	/*
 	 * listView 对象设置上点击事件
 	 */
@@ -1024,6 +1094,10 @@ import com.squareup.okhttp.Response;
 			@Override
 			public void getValue(String distance, String showText,
 					int position) {
+				if(queue!=null){
+					queue.cancelAll("loadingMore");//取消
+				}
+				LogUtils.toDebugLog("cancel", "取消之前加载更多页面的响应");
 				intelligentStr = intelligent.getData()
 						.get(position).getKey();
 				//				searchBankcardAdapter = null;//上面四个板块点击之前需要进行  设置为空的操作，为了将前面的页面数据给我清掉
@@ -1047,8 +1121,11 @@ import com.squareup.okhttp.Response;
 
 		viewLeft.setOnSelectListener(new ViewLeft.OnSelectListener(){
 			@Override
-			public void getValue(String showText, int parendId,
-					int position) {
+			public void getValue(String showText, int parendId,int position) {
+				if(queue!=null){
+					queue.cancelAll("loadingMore");//取消
+				}
+				LogUtils.toDebugLog("cancel", "取消之前加载更多页面的响应");
 				if (root.getData().get(parendId).getData() == null) {
 					onRefresh(viewLeft, showText);
 					HODLER_TYPE = root.getData().get(parendId).getKey()+ "";
@@ -1077,6 +1154,10 @@ import com.squareup.okhttp.Response;
 		viewLeft2.setOnSelectListener(new ViewLeft.OnSelectListener() {
 			@Override
 			public void getValue(String showText, int parendId,int position) {
+				if(queue!=null){
+					queue.cancelAll("loadingMore");//取消
+				}
+				LogUtils.toDebugLog("cancel", "取消之前加载更多页面的响应");
 				if (parendId == 0) {
 					if (nearService.getData().get(parendId).getItems() == null) {
 						onRefresh(viewLeft, showText);
@@ -1117,6 +1198,10 @@ import com.squareup.okhttp.Response;
 		viewRight.setOnSelectListener(new ViewRight.OnSelectListener() {
 			@Override
 			public void getValue(String distance, String showText,int position) {
+				if(queue!=null){
+					queue.cancelAll("loadingMore");//取消
+				}
+				LogUtils.toDebugLog("cancel", "取消之前加载更多页面的响应");
 				type = sxintelligent.getData().get(position).getKey();
 				if ("all".equals(type)) {
 					typeSb.delete(0, typeSb.length());
@@ -1132,8 +1217,6 @@ import com.squareup.okhttp.Response;
 				if (searchBankcardAdapter != null) {
 					searchBankcardAdapter.notifyDataSetChanged();
 				}
-				
-				
 				if (!isShowDialog) {
 					endProgress();
 				}

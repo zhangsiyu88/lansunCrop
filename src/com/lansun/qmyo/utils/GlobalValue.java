@@ -377,5 +377,8 @@ public class GlobalValue {
 	
 
 	public static  boolean  commitedStatisticsInfo_Login = false;
+	
+	
+	public static long RANDOM_TIME = (long) (2000 + Math.random()*5*1000);//3000 + Math.random()*5*1000
 
 }

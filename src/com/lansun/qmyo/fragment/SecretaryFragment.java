@@ -3,6 +3,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.zip.Inflater;
 
 import jp.wasabeef.blurry.Blurry;
@@ -16,6 +18,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
@@ -31,7 +34,9 @@ import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.text.format.Time;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -348,8 +353,7 @@ import com.squareup.okhttp.Response;
 						if ("false".equals(GlobalValue.mySecretary.getHas())) {
 							final Dialog dialog=new Dialog(activity, R.style.Translucent_NoTitle);
 							
-							
-//							//当dialog弹出时，背景(当前界面和底部的buttom)进行虚化的操作
+							//当dialog弹出时，背景(当前界面和底部的buttom)进行虚化的操作
 //							Blurry.with(getActivity())
 //							.radius(25)
 //							.sampling(2)
@@ -357,20 +361,30 @@ import com.squareup.okhttp.Response;
 //							.animate(500)
 //							.onto((ViewGroup) rootView);
 							
+							// 此举会通知在MainFragment的广播接收器进行模糊当前View的操作
 							activity.sendBroadcast(new Intent("com.lansun.qmyo.hideTheBottomMenu"));
 							System.out.println("SecretaryFragment的  发送   隐藏MainFrag的底部菜单按钮的广播了");
 							
 							dialog.setContentView(R.layout.dialog_setting_secretary);
-							//dialog消失时，需要恢复背景页面的效果
+							
+							// dialog消失时，需要恢复背景页面的效果
 							dialog.setOnDismissListener(new OnDismissListener() {
 								@Override
 								public void onDismiss(DialogInterface arg0) {
 //									Blurry.delete((ViewGroup) rootView);
-									activity.sendBroadcast(new Intent("com.lansun.qmyo.recoverTheBottomMenu"));
-									System.out.println("SecretaryFragment的  发送   恢复MainFrag的底部菜单按钮的广播了");
+									new Timer().schedule(new TimerTask() {
+										@Override
+										public void run() {
+											activity.sendBroadcast(new Intent("com.lansun.qmyo.recoverTheBottomMenu"));
+											System.out.println("SecretaryFragment的  发送   恢复MainFrag的底部菜单按钮的广播了");
+										}
+									}, 300);
 								}
 							});
 							Window window = dialog.getWindow();
+							
+							window.setDimAmount((float) 0.8);
+							
 							window.findViewById(R.id.setting_now).setOnClickListener(new OnClickListener() {
 								@Override
 								public void onClick(View v) {
@@ -678,13 +692,33 @@ import com.squareup.okhttp.Response;
 							EventBus.getDefault().post(entity);
 						}
 					});
+//					dialog.setOnKeyListener(new OnKeyListener() {
+//						@Override
+//						public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+//							 if (keyCode == KeyEvent.KEYCODE_BACK){
+//								 activity.sendBroadcast(new Intent("com.lansun.qmyo.recoverTheBottomMenu"));
+//								 System.out.println("SecretaryFragment的  发送   恢复MainFrag的底部菜单按钮的广播了");
+//								 dialog.dismiss();
+//					             return true; // pretend we've processed it
+//							 }else{
+//					        	   return false; // pass on to be processed as normal
+//					           }
+//						}
+//					});
+					
 					//dialog消失时，需要恢复背景页面的效果
 					dialog.setOnDismissListener(new OnDismissListener() {
 						@Override
 						public void onDismiss(DialogInterface arg0) {
 //							Blurry.delete((ViewGroup) rootView);
-							activity.sendBroadcast(new Intent("com.lansun.qmyo.recoverTheBottomMenu"));
-							System.out.println("SecretaryFragment的  发送   恢复MainFrag的底部菜单按钮的广播了");
+							
+							new Timer().schedule(new TimerTask() {
+								@Override
+								public void run() {
+									activity.sendBroadcast(new Intent("com.lansun.qmyo.recoverTheBottomMenu"));
+									System.out.println("SecretaryFragment的  发送   恢复MainFrag的底部菜单按钮的广播了");
+								}
+							}, 300);
 						}
 					});
 					dialog.show();

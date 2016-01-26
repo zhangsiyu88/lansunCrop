@@ -254,10 +254,15 @@ import android.widget.TextView;
 		this.times  = 0;
 		this.first_enter =0;
 		
-		lv_mine_history_list.onLoadMoreFished();//需将OnLoadingMore的参数值重新置为 false,供后面的测试使用
+		
 
 		switch (view.getId()) {
 		case R.id.tv_mine_history_activity:// 活动
+			this.times  = 0;
+			this.first_enter =0;
+			lv_mine_history_list.onLoadMoreFished();//需将OnLoadingMore的参数值重新置为 false,供后面的测试使用
+			
+			
 			lv_mine_history_list.setVisibility(View.INVISIBLE);//防止脚步局在切换时显示出来
 			emptyView.setVisibility(View.INVISIBLE);
 			v.rl_new_emptyview.setVisibility(View.INVISIBLE);
@@ -274,6 +279,10 @@ import android.widget.TextView;
 			isShowDialog  = true;
 			break;
 		case R.id.tv_mine_history_store:// 门店
+			this.times  = 0;
+			this.first_enter =0;
+			lv_mine_history_list.onLoadMoreFished();//需将OnLoadingMore的参数值重新置为 false,供后面的测试使用
+			
 			lv_mine_history_list.setVisibility(View.INVISIBLE);//防止脚步局在切换时显示出来
 			emptyView.setVisibility(View.INVISIBLE);
 			v.rl_new_emptyview.setVisibility(View.INVISIBLE);
@@ -361,6 +370,18 @@ import android.widget.TextView;
 											lv_mine_history_list.setVisibility(View.GONE);
 											v.rl_new_emptyview.setVisibility(View.VISIBLE);
 											
+											//当全部清除成功的时候，才会弹出dialog
+											if (isShowDialog){
+												if(cPd == null ){
+													Log.d("dialog","生成新的dialog！");
+													cPd = CustomDialogProgress.createDialog(activity);
+													cPd.setCanceledOnTouchOutside(false);
+													cPd.show();
+												}else{
+													cPd.show();
+												}
+											}
+											
 //											PullToRefreshManager.getInstance().footerUnable();
 											
 										} else {
@@ -368,7 +389,10 @@ import android.widget.TextView;
 													getString(R.string.delete_faild));
 										}
 								}
+								
 							};
+							
+							
 							RequestParams requestParams = new RequestParams();
 							requestParams.addHeader("Authorization", "Bearer" + App.app.getData("access_token"));
 							
@@ -385,16 +409,7 @@ import android.widget.TextView;
 			break;
 		}
 		
-		if (isShowDialog){
-			if(cPd == null ){
-				Log.d("dialog","生成新的dialog！");
-				cPd = CustomDialogProgress.createDialog(activity);
-				cPd.setCanceledOnTouchOutside(false);
-				cPd.show();
-			}else{
-				cPd.show();
-			}
-		}
+		
 	}
 
 	private void changeTextColor(TextView tv) {
