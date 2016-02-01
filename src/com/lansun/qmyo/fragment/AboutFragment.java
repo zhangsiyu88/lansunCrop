@@ -142,16 +142,16 @@ public class AboutFragment extends BaseFragment {
 		//----------------------------------------------------------------------------------------------------------
 		File cacheDir = App.app.getCacheDir();
 		long length_cacheDir = cacheDir.length();
-		LogUtils.toDebugLog("cache", "length_cacheDir:  "+ length_cacheDir);
+//		LogUtils.toDebugLog("cache", "length_cacheDir:  "+ length_cacheDir);
 		//----------------------------------------------------------------------------------------------------------
 		
 		//----------------------------------------------------------------------------------------------------------
-		File[] externalCacheDirs = App.app.getExternalCacheDirs();
-		long length_external_CacheDir = 0;
-		for(File f:externalCacheDirs){
-			length_external_CacheDir+=f.length();
-		}
-		LogUtils.toDebugLog("cache", "length_external_CacheDir:  "+ length_external_CacheDir);
+//		File[] externalCacheDirs = App.app.getExternalCacheDirs();
+//		long length_external_CacheDir = 0;
+//		for(File f:externalCacheDirs){
+//			length_external_CacheDir+=f.length();
+//		}
+//		LogUtils.toDebugLog("cache", "length_external_CacheDir:  "+ length_external_CacheDir);
 		//----------------------------------------------------------------------------------------------------------
 		/*long length_disk_total = ImageLoader.getInstance().getDiskCache().getDirectory().getTotalSpace();
 		long length_disk_free = ImageLoader.getInstance().getDiskCache().getDirectory().getFreeSpace();
@@ -160,10 +160,9 @@ public class AboutFragment extends BaseFragment {
 		LogUtils.toDebugLog("cache", "length_disk_free:  "+length_disk_free);
 		LogUtils.toDebugLog("cache", "length_disk_usable:  "+length_disk_usable);*/
 		long length_disc = ImageLoader.getInstance().getDiscCache().getDirectory().length();
-		LogUtils.toDebugLog("cache", "length_disc:  "+length_disc);
+//		LogUtils.toDebugLog("cache", "length_disc:  "+length_disc);
 		/*float mbSize = (float) (length+length_disc+length_disk) / 1024;*/
 		//----------------------------------------------------------------------------------------------------------
-		
 		
 		float mbSize = (float) (length_total) / 1024/1024;
 		BigDecimal b = new BigDecimal(mbSize);
@@ -312,7 +311,7 @@ public class AboutFragment extends BaseFragment {
 		 BigDecimal b = new BigDecimal(mbSize);
 		
 		//提示删除之后的大小的位置
-		float f1 = b.setScale(4, BigDecimal.ROUND_HALF_UP).floatValue();
+		float f1 = b.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
 		v.tv_setting_cache_size.setText(String.format(getString(R.string.cache_size), f1));
 		
 	}

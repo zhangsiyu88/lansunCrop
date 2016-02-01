@@ -45,11 +45,22 @@ import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
+import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
+import com.android.pc.ioc.inject.InjectListener;
+import com.android.pc.ioc.inject.InjectMethod;
+import com.android.pc.ioc.internet.FastHttp;
+import com.android.pc.ioc.internet.FastHttpHander;
+import com.android.pc.ioc.internet.InternetConfig;
+import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
+import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.base.BackHandedFragment;
 import com.lansun.qmyo.domain.MySecretary;
+import com.lansun.qmyo.domain.Secretary;
+import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
@@ -68,7 +79,7 @@ import com.squareup.okhttp.Response;
  * @author bhxx
  * 
  */
-public class SecretarySettingFragment extends BaseFragment implements OnClickListener{
+public class SecretarySettingFragment extends BackHandedFragment implements OnClickListener{
 	@InjectAll
 	Views v;
 	private String currentHeadPath;
@@ -113,6 +124,7 @@ public class SecretarySettingFragment extends BaseFragment implements OnClickLis
 		};
 	};
 	private ProgressDialog dialogpg;
+	private String mAvatar;
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private View btn_secretary_save;
@@ -234,7 +246,17 @@ public class SecretarySettingFragment extends BaseFragment implements OnClickLis
 				v.et_secretary_name.setText(GlobalValue.mySecretary.getName());
 				v.et_hope_call_you.setText(GlobalValue.mySecretary.getOwner_name());
 			}
+			mAvatar = GlobalValue.mySecretary.getAvatar();
 			loadPhoto(GlobalValue.mySecretary.getAvatar(), v.iv_secretary_head);
+			//与此同时，前往服务器再拿一次user的信息
+			InternetConfig config = new InternetConfig();
+			config.setKey(1);
+			HashMap<String, Object> head = new HashMap<String, Object>();
+			head.put("Authorization", "Bearer " + App.app.getData("access_token"));
+			config.setHead(head);
+			FastHttpHander.ajaxGet(GlobalValue.URL_SECRETARY, config, SecretarySettingFragment.this);
+			
+			
 		}else {
 			v.iv_secretary_head.setImageResource(R.drawable.secretary_default_avatar);
 		}
@@ -251,6 +273,22 @@ public class SecretarySettingFragment extends BaseFragment implements OnClickLis
 		}
 	}
 
+	
+	@InjectHttp
+	private void result(ResponseEntity r) {
+		if (r.getStatus() == FastHttp.result_ok) {
+			switch(r.getKey()){
+			case 1:
+				GlobalValue.secretary = Handler_Json.JsonToBean(Secretary.class,r.getContentAsString());
+				Log.i("PersonCenterFragment中的secretary返回回来的值为： ",GlobalValue.secretary.toString());
+				if(!mAvatar.equals(GlobalValue.secretary.getAvatar())){
+					loadPhoto(GlobalValue.secretary.getAvatar(), v.iv_secretary_head);
+				}
+				break;
+			}
+			
+		}
+	}
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -496,6 +534,10 @@ public class SecretarySettingFragment extends BaseFragment implements OnClickLis
 				CustomToast.show(activity, "提示","总裁大大，给起个名字吧");
 				return;
 			}
+			if (TextUtils.isEmpty(hope_call_you)) {
+				CustomToast.show(activity, "提示","总裁大大，我该怎么称呼您");
+				return;
+			}
 			HashMap<String, String> params = new HashMap<>();
 			params.put("name", secretary_name);
 			params.put("owner", hope_call_you);
@@ -539,5 +581,23 @@ public class SecretarySettingFragment extends BaseFragment implements OnClickLis
 			LogUtils.toDebugLog("softInput", "键盘降下");
 			break;
 		}
+	}
+	
+	@Override
+	@InjectMethod(@InjectListener(ids = 2131427431, listeners = OnClick.class))
+	protected void back() {
+		if(!mAvatar.equals(GlobalValue.secretary.getAvatar())){
+			fragment=new MainFragment(1);
+			entity.setFragment(fragment);
+			bus.post(entity);
+		}else{
+			super.back();
+		}
+	}
+
+	@Override
+	public boolean onBackPressed() {
+		back();
+		return true;
 	}
 }

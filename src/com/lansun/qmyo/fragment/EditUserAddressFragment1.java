@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.InputMethodManager;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -201,6 +202,14 @@ public class EditUserAddressFragment1 extends BaseFragment
 		case R.id.rl_select_city:
 			/*selectCity();*/
 			Log.d("tag", "请弹出弹框~~");
+			
+			/*activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE 
+					|WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);*/
+			
+			InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+//			imm.hideSoftInputFromInputMethod(rootView.getWindowToken(), 0);
+			imm.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
+			
 			cityPopupWindow();
 			break;
 		case R.id.tv_edit_user_like_commit:
@@ -385,9 +394,7 @@ public class EditUserAddressFragment1 extends BaseFragment
 		updateAreas();
 
 		
-		Log.d("tag", "弹框弹不出来是因为这个鬼吗?~~");
-		popupWindow = new PopupWindow(rootView.findViewById(R.id.fl_data), this.width,
-				380, true);
+		popupWindow = new PopupWindow(rootView.findViewById(R.id.fl_data), this.width,380, true);
 		
 		/*popupWindow.setAnimationStyle(R.style.AnimBottom);*/
 		popupWindow.setAnimationStyle(R.style.PopupWindowAnimation);

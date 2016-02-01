@@ -49,8 +49,7 @@
                 app:circle_border_width="2dp"
                 app:circle_border_color="@color/app_green1"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="@dimen/l_r_35"
-                android:src="@drawable/default_avatar" />
+                android:src="@drawable/default_avatar" /><!--  android:layout_marginRight="@dimen/l_r_35" -->
         </RelativeLayout>
     </RelativeLayout>
 

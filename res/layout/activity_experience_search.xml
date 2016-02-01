@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginTop="@dimen/margin_top_12"
-            android:background="@drawable/circle_background_green"
+            android:background="@drawable/circle_background_gray"
             android:gravity="center" >
 
             <TextView
@@ -95,9 +95,9 @@
             android:layout_marginTop="@dimen/margin_top_6"
             android:text="@string/search_card_tip2_2" />
 
-        <View
+        <!-- <View
             style="@style/line_style_2"
-            android:layout_marginTop="@dimen/margin_top_22" />
+            android:layout_marginTop="@dimen/margin_top_22" /> -->
 
         <TextView
             android:id="@+id/btn_experience_jump"
@@ -106,11 +106,11 @@
             android:layout_height="@dimen/btn_h_60"
             android:layout_marginBottom="25dp"
             android:layout_marginTop="@dimen/margin_top_22"
-            android:background="@drawable/main_btn_shape"
+            android:background="@drawable/selector_main_btn_shape"
             android:gravity="center"
             android:layout_gravity="center_horizontal"
-            android:text="@string/experience_jump_now"
-            android:textColor="#939393" />
+            android:text="        体验迈界推荐银行卡        "
+            android:textColor="#939393" /><!-- @string/experience_jump_now -->
     </LinearLayout>
 
 </RelativeLayout>

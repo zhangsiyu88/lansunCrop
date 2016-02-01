@@ -137,7 +137,7 @@ public class TestMineActivityFragment extends BaseFragment {
 					 
 					if (list.getNext_page_url()=="null"){
 						if(times == 0){
-							CustomToast.show(activity, "到底啦！", "您只收藏了以上活动哦");
+							CustomToast.show(activity,R.string.reach_bottom,R.string.just_collect_acts);
 							lv_mine_activity.onLoadMoreOverFished();
 							times++;
 						}else{

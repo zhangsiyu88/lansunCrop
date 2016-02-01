@@ -3,8 +3,11 @@ package com.lansun.qmyo.fragment;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -55,8 +58,10 @@ public class ExperienceSearchFragment extends BaseFragment {
 
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
-		private View btn_experience_jump, ll_experience_login,
+		private View  ll_experience_login,
 				rl_experience_search_card;
+		@InjectBinder(listeners = { OnClick.class }, method = "click")
+		private TextView btn_experience_jump;
 
 	}
 
@@ -68,7 +73,6 @@ public class ExperienceSearchFragment extends BaseFragment {
 		if (GlobalValue.user != null) {
 			back();
 		}
-
 		Handler_Inject.injectFragment(this, view);
 		return view;
 	}
@@ -80,12 +84,15 @@ public class ExperienceSearchFragment extends BaseFragment {
 		}
 	}
 
+	@SuppressLint("ResourceAsColor") 
 	private void click(View view) {
 		Fragment fragment = null;
 		FragmentEntity event = new FragmentEntity();
 		switch (view.getId()) {
 		case R.id.btn_experience_jump:
 			GlobalValue.isFirst = false;//走的时候已将isFirst设置为false
+			v.btn_experience_jump.setTextColor(Color.WHITE);
+			v.btn_experience_jump.setBackgroundResource(R.drawable.main_btn_shape_pressed);
 			/*fragment = new HomeFragment();*/
 			fragment = new MainFragment(0);
 			break;

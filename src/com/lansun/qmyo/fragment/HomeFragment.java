@@ -1,6 +1,7 @@
 package com.lansun.qmyo.fragment;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -106,6 +108,7 @@ import com.lansun.qmyo.domain.MySecretary;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.newbrand.NewBrandFragment;
 import com.lansun.qmyo.listener.RequestCallBack;
+import com.lansun.qmyo.listener.ToLoginListener;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.AnimUtils;
 import com.lansun.qmyo.utils.CustomDialog;
@@ -117,6 +120,7 @@ import com.lansun.qmyo.utils.swipe.EightPartActivityAdapter;
 import com.lansun.qmyo.view.CloudView;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExperienceDialog;
+import com.lansun.qmyo.view.HomeAdViewPager;
 import com.lansun.qmyo.view.LoginDialog;
 import com.lansun.qmyo.view.MyMesureSelfViewPager;
 import com.lansun.qmyo.view.UpdateAppVersionDialog;
@@ -237,8 +241,16 @@ import com.squareup.okhttp.Response;
 //		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 //				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN|WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
 
-		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(lv_home_list.getWindowToken(), 0); 
+		
+		/**
+		 * 该方法：(InputMethodManager) imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+		 * 通过获取到的软键盘管理器 操作着 软键盘本身的显示和隐藏
+		 * 实质上和 
+		 * activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);方法去操作界面的效果是一致
+		 * getWindow().setSoftInputMode是通过设置针对输入法展示情况的模式属性，来直接地影响着 界面上的控件，但又间接地影响着 软键盘的展示
+		 */
+//		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+//		imm.hideSoftInputFromWindow(lv_home_list.getWindowToken(), 0); 
 		
 		/*v.rl_bg.setPressed(true);
 		v.rl_top_bg.setPressed(true);*/
@@ -336,6 +348,7 @@ import com.squareup.okhttp.Response;
 		//FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION + info.versionCode , config, this);
 //		FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION+"?key=Android&version="+1 ,params, config, this);
 		FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION + "?key=Android&version="+info.versionCode , config, this);
+//		FastHttpHander.ajaxGet("http://api.andrew.qmyo.net/version/info/?key=Android&version=12", config, this);
 		
 		
 		intent = new Intent("com.lansun.qmyo.fragment.newbrand");
@@ -393,7 +406,7 @@ import com.squareup.okhttp.Response;
 					if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url()=="null") {
 //						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 //						PullToRefreshManager.getInstance().footerUnable();
-						CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
+						CustomToast.show(activity, R.string.reach_bottom, R.string.collect_more_superise);
 						lv_home_list.onLoadMoreOverFished();
 					} else {
 						refreshParams = new LinkedHashMap<>();
@@ -475,9 +488,7 @@ import com.squareup.okhttp.Response;
 	}
 	boolean canscoll = false;
 	
-	private ArrayList<HomeAdPhotoData> homeAdPhotoList = new ArrayList<HomeAdPhotoData>();
-	
-	
+	/*private ArrayList<HomeAdPhotoData> homeAdPhotoList = new ArrayList<HomeAdPhotoData>();
 	public void setDataIntoHomeAdPhotoList(){
 		HomeAdPhotoData homeAdPhotoData1 = new HomeAdPhotoData();
     	homeAdPhotoData1.setPhoto("http://lansuntest.qiniudn.com/201507201746_143738561397");
@@ -485,13 +496,13 @@ import com.squareup.okhttp.Response;
     	homeAdPhotoData2.setPhoto("http://lansuntest.qiniudn.com/201507201746_143738561397");
     	homeAdPhotoList.add(homeAdPhotoData1);
     	homeAdPhotoList.add(homeAdPhotoData2);
-	}
+	}*/
 	
 
 	@InjectInit
 	private void init() {
 		//模拟图片的数据源
-		setDataIntoHomeAdPhotoList();
+		/*setDataIntoHomeAdPhotoList();*/
 	
 		
 		v.tv_home_icon.setTextColor(getResources().getColor(R.color.app_green2));
@@ -812,6 +823,10 @@ import com.squareup.okhttp.Response;
 
 	}
 	
+	/**
+	 * 给首页轮播大图上的绿色小点设置对应的颜色
+	 * @param position
+	 */
 	private void changeHomeAdPointColor(int position) {
 		   pointSets.removeAllViews();
 		   int selectPosition = position % homePhotoList.size();
@@ -905,7 +920,7 @@ import com.squareup.okhttp.Response;
 	private ImageView iv_homead_point;
 	private ImageView iv_homead_point2;
 	private ImageView iv_homead_point3;
-	private ViewPager vp_home_ad;
+	private HomeAdViewPager vp_home_ad;
 //	private JazzyViewPager vp_home_ad;
 	private HomeRefreshBroadCastReceiver broadCastReceiver;
 	private IntentFilter filter;
@@ -1000,11 +1015,17 @@ import com.squareup.okhttp.Response;
 				    
 				    
 				    //拿到数据后，进行viewpager的负载问题
-				    vp_home_ad = (ViewPager) head.findViewById(R.id.vp_home_ad);
+				    vp_home_ad = (HomeAdViewPager) head.findViewById(R.id.vp_home_ad);
 				    
 				    /*vp_home_ad = (JazzyViewPager) head.findViewById(R.id.vp_home_ad);
 					vp_home_ad.setTransitionEffect(TransitionEffect.CubeIn);*/
 				    
+				    
+				    if(homePhotoList.size()>1){
+				    	vp_home_ad.setPagingEnabled(true);
+					}else{
+						vp_home_ad.setPagingEnabled(false);
+					}
 				    
 					//1.给ViewPager设置上资源适配器
 			/*		MyHomeAdPagerAdapter homeAdPagerAdapter = new MyHomeAdPagerAdapter(homeAdPhotoList);*/		
@@ -1014,7 +1035,11 @@ import com.squareup.okhttp.Response;
 						@Override
 						public void onPageSelected(int position) {
 							//NTD1.改变对应的小圆点的颜色
-							changeHomeAdPointColor(position);
+							if(homePhotoList.size()>1){
+								changeHomeAdPointColor(position);
+							}else{
+								pointSets.setVisibility(View.INVISIBLE);
+							}
 						}
 						@Override
 						public void onPageScrolled(int arg0, float arg1, int arg2) {
@@ -1046,10 +1071,12 @@ import com.squareup.okhttp.Response;
 						e.printStackTrace();
 					}
 					mScroller.setmDuration(450);
-					
 					vp_home_ad.setOnPageChangeListener(homeAdPageChangeListener);
-					handler.removeCallbacksAndMessages(null);
-					handler.postDelayed(new InternalTask(), 5000);
+					
+					if(homePhotoList.size()>1){
+						handler.removeCallbacksAndMessages(null);
+						handler.postDelayed(new InternalTask(), 5000);
+					}
 					vp_home_ad.setCurrentItem(1000*3);
 					
 					
@@ -1368,6 +1395,7 @@ import com.squareup.okhttp.Response;
     * @author Yeun.Zhang
     *
     */
+	@SuppressLint("ClickableViewAccessibility") 
 	class MyOnTouchListener implements OnTouchListener{
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
@@ -1379,12 +1407,16 @@ import com.squareup.okhttp.Response;
 				break;
 				
 			case MotionEvent.ACTION_CANCEL:
-				handler.postDelayed(new InternalTask(), 5000);
-				LogUtils.toDebugLog("点击", "onTouch中的ACTION_CANCEL");
+				if(homePhotoList.size()>1){
+					handler.postDelayed(new InternalTask(), 5000);
+					LogUtils.toDebugLog("点击", "onTouch中的ACTION_CANCEL");
+				}
 				break;
 			case MotionEvent.ACTION_UP:
-				handler.postDelayed(new InternalTask(), 5000);
-				LogUtils.toDebugLog("点击", "onTouch中的ACTION_UP");
+				if(homePhotoList.size()>1){
+					handler.postDelayed(new InternalTask(), 5000);
+					LogUtils.toDebugLog("点击", "onTouch中的ACTION_UP");
+				}
 				break;
 			}
 			/*return true;*/
@@ -1408,13 +1440,13 @@ import com.squareup.okhttp.Response;
 					ToggleDialogByUserStatus();
 					break;	
 				default:
-					/*int nextIndex = (vp_home_ad.getCurrentItem()+1)%homeAdPhotoList.size();*/
-					int nextIndex = vp_home_ad.getCurrentItem()+1;
 					/**
 					 * mScroller.setmDuration(3000);
 					 * */
-					vp_home_ad.setCurrentItem(nextIndex);
+					/*int nextIndex = (vp_home_ad.getCurrentItem()+1)%homeAdPhotoList.size();*/
+					int nextIndex = vp_home_ad.getCurrentItem()+1;
 					//vp_home_ad.setFadingEdgeLength(100);
+					vp_home_ad.setCurrentItem(nextIndex);
 					handler.postDelayed(new InternalTask(), 5000);//自己给自己发信息
 				    break;
 			}
@@ -1562,15 +1594,18 @@ import com.squareup.okhttp.Response;
 					//1.1 向服务器发送获取随机码的请求（或者在 webView界面进行请求），顺带上传一个 用户信息
 //					fragment = new GrabRedPackFragment();
 //					bundle.putString("loadUrl", homePhotoList.get(mPosition%homePhotoList.size()).get("photoDataWebViewUrl"));
-//					fragment.setArguments(bundle);	
-					Intent intentToGrab = new Intent(activity,GrabRedPackActivity.class);
+//					fragment.setArguments(bundle);
+					GrabRedPackActivity grabRedPackActivity = new GrabRedPackActivity((ToLoginListener)activity);
+					Intent intentToGrab = new Intent(activity,grabRedPackActivity.getClass());
 					bundleToGrab = new Bundle();
+//					bundleToGrab.putParcelable("activity", (Parcelable)activity);
 					bundleToGrab.putString("loadUrl", homePhotoList.get(mPosition%homePhotoList.size()).get("photoDataWebViewUrl"));
 					intentToGrab.putExtras(bundleToGrab);
-//					activity.startActivity(intentToGrab);
-					startActivityForResult(intentToGrab, 6666);
+					activity.startActivity(intentToGrab);
+//					startActivityForResult(intentToGrab, 6666);
 //					getActivity().overridePendingTransition(R.anim.in_from_right,R.anim.out_to_left);
-					break;
+//					break;
+					return;
 				default:
 					break;
 				}
@@ -1593,7 +1628,10 @@ import com.squareup.okhttp.Response;
 		public void onReceive(Context ctx, Intent intent) {
 			if(intent.getAction().equals("com.lansun.qmyo.refreshHome")){
 				System.out.println("首页收到局部刷新的广播了");
-				
+				refreshUrl = GlobalValue.URL_ALL_ACTIVITY;
+				refreshKey = 1;
+				refreshParams.put("site", getSelectCity()[0]);
+				refreshParams.put("intelligent", "home");
 				refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_home_list);
 				
 				v.iv_card.setVisibility(View.VISIBLE);//原本右边银行卡可见

@@ -136,7 +136,6 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 					}
 //					lv_search_bank_card.onLoadMoreOverFished();
 //					CustomToast.show(activity, "到底啦！", "该关键词下关联的 银行卡暂时只有这么多");
-					
 				}
 				
 				break;
@@ -220,18 +219,17 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 		if(getArguments()!= null){
 			mIsFromRegisterAndHaveNoBankcard  = getArguments().getBoolean("isFromRegisterAndHaveNoBankcard");
 		}
-		/*
+		
+		/* 如果目前是无卡的状态，那么下面可以进行对应的界面变化的操作
+		 * 
 		 * if(mIsFromRegisterAndHaveNoBankcard){
 			//当我点击银行卡的搜索结果页时，需要直接将卡添置到用户选中的卡上，作为默认的选中卡
-		    }
-		 */
+		    }*/
 		Handler_Inject.injectFragment(this, rootView);
-		
 		
 		lv_search_bank_card.setNoHeader(true);
 //		lv_search_bank_card.onLoadMoreOverFished();
 		lv_search_bank_card.setOnRefreshListener(new OnRefreshListener() {
-
 			@Override
 			public void onRefreshing() {
 				
@@ -246,7 +244,7 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 //						PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
 						if(times == 0){
 							lv_search_bank_card.onLoadMoreOverFished();
-							CustomToast.show(activity, "到底啦！", "该关键字下的银行卡暂时只有这么多");
+							CustomToast.show(activity,  R.string.reach_bottom,R.string.just_curr_bankcard);
 							times++;
 						}else{
 							lv_search_bank_card.onLoadMoreOverFished();
@@ -350,8 +348,7 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 	}
 
 	private void onKeyShowAlways() {
-		InputMethodManager imm = (InputMethodManager) getActivity()
-				.getSystemService(Context.INPUT_METHOD_SERVICE);
+		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);//对虚拟键盘进行隐藏
 	}
 
@@ -465,7 +462,7 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 		case R.id.tv_search_cancle:
 			
 			if(App.app.getData("isEmbrassStatus").equals("true")&& getString(R.string.cancle).equals(v.tv_search_cancle.getText())){
-				CustomToast.show(activity, "抱歉,请点击登录", "请至少选择一张银行卡作为通行证");
+				CustomToast.show(activity, "添加至少一张银行卡吧~", "添加的银行卡不同，看到的内容也不同哦");
 				onKeyHideAlways(view);
 				return;
 			}
@@ -749,7 +746,7 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 	@Override//@InjectMethod(@InjectListener(ids = 2131296342, listeners = OnClick.class))
 	protected void back() {
 		if(App.app.getData("isEmbrassStatus").equals("true") ){
-			CustomToast.show(activity, "抱歉,请选择银行卡", "请至少选择一张银行卡作为通行证");
+			CustomToast.show(activity, "添加至少一张银行卡吧~", "添加的银行卡不同，看到的内容也不同哦");
 			return;
 		}else{
 			super.back();

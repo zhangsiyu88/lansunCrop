@@ -29,7 +29,7 @@
 	                    android:layout_gravity="center_vertical"
 	                    android:scaleType="fitXY" />  -->
 	                    
-	           <com.jfeinstein.jazzyviewpager.JazzyViewPager
+	           <com.lansun.qmyo.view.HomeAdViewPager
 	                    android:id="@+id/vp_home_ad"
 	                    android:layout_width="match_parent"
 	                    android:layout_height="@dimen/home_ad_h"

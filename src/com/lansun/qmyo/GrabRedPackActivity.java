@@ -21,12 +21,15 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpParams;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -58,6 +61,7 @@ import com.lansun.qmyo.domain.RedPackInfo;
 import com.lansun.qmyo.domain.ShareRedPackInfo;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.ActivityDetailFragment;
+import com.lansun.qmyo.listener.ToLoginListener;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomDialogGrebRedpack;
@@ -71,7 +75,8 @@ import com.lansun.qmyo.view.RandomNumDialog.onDismissListener;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 
-@SuppressLint("SetJavaScriptEnabled") public class GrabRedPackActivity extends FragmentActivity implements OnClickListener,onDismissListener{//SwipeBackActivity
+@SuppressLint("SetJavaScriptEnabled") 
+public class GrabRedPackActivity extends FragmentActivity implements OnClickListener,onDismissListener{//SwipeBackActivity
 
 private static final String APP_CACAHE_DIRNAME = "/webcache";
 private static final String TAG = GrabRedPackActivity.class.getSimpleName();
@@ -87,6 +92,7 @@ private static final int HAVE_GOT = 2;
 //		@InjectBinder(listeners = { OnClick.class }, method = "click")
 //		private View ll_promote_detail_title;
 //	}
+	public ToLoginListener mToLoginListener;
 	private ObservableWebView webView;
 //	private WebView webView;
 	private View ll_promote_detail_title;
@@ -109,10 +115,6 @@ private static final int HAVE_GOT = 2;
 				break;
 			case 1:
 				htmlContent = htmlContent.replace("\"", "\'");
-                Log.d("info", "===>>> htmlContent(修改后！！！):" + htmlContent);
-//              webView.loadData(htmlContent, "text/html","utf-8");
-//				webView.loadData(htmlContent, "text/HTML", "UTF-8");
-//				LogUtils.toDebugLog("html:----》", htmlContent);
 			    webView.loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null);
                 break;
 			case 2:
@@ -129,6 +131,19 @@ private static final int HAVE_GOT = 2;
 		}
 	};
 	private String currentPage = null;
+	
+	
+	
+	public GrabRedPackActivity(){
+		
+	}
+	/**
+	 * 将Activity传入进来
+	 * @param act
+	 */
+	public GrabRedPackActivity(ToLoginListener mainActivity){
+		mToLoginListener = ((ToLoginListener) mainActivity);
+	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -148,7 +163,6 @@ private static final int HAVE_GOT = 2;
 		iv_activity_shared = (LinearLayout) findViewById(R.id.iv_activity_shared);
 		iv_activity_refresh = (LinearLayout) findViewById(R.id.iv_activity_refresh);
 		pb_refresh = (ProgressBar) findViewById(R.id.pb_refresh);
-		
 //		setEdgeFromLeft();
 		init();
 	}
@@ -166,15 +180,7 @@ private static final int HAVE_GOT = 2;
 		
 		webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 		webView.getSettings().setRenderPriority(RenderPriority.HIGH);
-//		webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-		
-		
 		webView.setVerticalScrollBarEnabled(false); //垂直不显示
-		/*webView.getSettings().setSupportZoom(true);
-		webView.getSettings().setDefaultZoom(ZoomDensity.CLOSE);
-		webView.getSettings().setBuiltInZoomControls(true);
-		webView.getSettings().setUseWideViewPort(true);*/
-		
 		// 用JavaScript调用Android函数：
         // 先建立桥梁类，将要调用的Android代码写入桥梁类的public函数
         // 绑定桥梁类和WebView中运行的JavaScript代码
@@ -205,6 +211,7 @@ private static final int HAVE_GOT = 2;
 					if (keyCode == KeyEvent.KEYCODE_BACK&& webView.canGoBack()) {// 表示按返回键 时的操作
 						webView.goBack(); //后退
 						
+						//因当前webView只有一层界面，故可以在此统一执行finish的操作
 						GrabRedPackActivity.this.onClick(iv_activity_back);
 						return true; // 已处理
 					}
@@ -257,40 +264,12 @@ private static final int HAVE_GOT = 2;
 			   }
 			}
 		});
-		
-//		webView.setWebChromeClient(new WebChromeClient(){
-//		//onCloseWindow(关闭WebView)
-//		//onCreateWindow()
-//		//onJsAlert (WebView上alert无效，需要定制WebChromeClient处理弹出)
-//		//onJsPrompt
-//		//onJsConfirm
-//		//onProgressChanged
-//		//onReceivedIcon
-//		//onReceivedTitle
-//			@Override
-//			public boolean onCreateWindow(WebView view, boolean isDialog,boolean isUserGesture, Message resultMsg) {
-//				return super.onCreateWindow(view, isDialog, isUserGesture, resultMsg);
-//			}
-//			
-//			@Override
-//			public void onCloseWindow(WebView window) {
-//					super.onCloseWindow(window);
-//				}
-//			@Override
-//			public void onProgressChanged(WebView view, int newProgress) {
-//					super.onProgressChanged(view, newProgress);
-//				}
-//		});
 		webView.setOnScrollChangedCallback(onScrollChangedCallback);
 		
 //		testLocalPort();//--------------------------------------------------------------------------->guanbi
 		
-//		Map<String,String> hashMap = new HashMap<String,String>();
-//		hashMap.put("User-Agent","Mozilla/5.0 (Linux; Android 4.4.4; Nexus 5 Build/KTU84P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.114 Mobile Safari/537.36");
-//		webView.loadUrl(loadUrl,hashMap);
 		
 		webView.loadUrl(loadUrl);
-//		webView.loadUrl("http://lansun.andrew.qmyo.net/redpack/1");
 	}
 
 	 public String convertToString(InputStream inputStream) {
@@ -318,24 +297,19 @@ private static final int HAVE_GOT = 2;
 				Gson grabJson = new Gson();
 				RedPackInfo redPackInfo = grabJson.fromJson(result, RedPackInfo.class);
 				statueTag  = redPackInfo.getData();
-				
-//				statueTag  = "8rh62G";
 				LogUtils.toDebugLog("result", "result: "+ statueTag );
 				switch(statueTag){//statueTag
 				    case "-2"://已领完
-				    	//Toast.makeText(activity, "大大您来迟了，请等待下一大波红包到来~~", Toast.LENGTH_LONG).show();
 				    	GrabRedPackOverDialog overDialog = new GrabRedPackOverDialog(this,webView,HAVE_OVER);//这么个体验的对话框，需要单独在其内部设置点击响应事件
 				    	overDialog.show(getSupportFragmentManager(), "grabredpack_isover");
 					break;
 				    case "-1"://未开始,也显示为已领完
-		//		    	Toast.makeText(activity, "大大您来早了，活动还未开始呢~~", Toast.LENGTH_LONG).show();
 				    	GrabRedPackOverDialog overDialog1 = new GrabRedPackOverDialog(this,webView);//这么个体验的对话框，需要单独在其内部设置点击响应事件
 				    	overDialog1.show(getSupportFragmentManager(), "grabredpackisover");
 					break;
 				    case "0"://已领过
-		//		    	Toast.makeText(activity, "大大您忘啦，您刚刚领过了~~", Toast.LENGTH_LONG).show();
 				    	GrabRedPackOverDialog overDialog2 = new GrabRedPackOverDialog(this,webView,HAVE_GOT);//这么个体验的对话框，需要单独在其内部设置点击响应事件
-				    	overDialog2.show(getSupportFragmentManager(), "grabredpack_hasgot");
+				    	overDialog2.show(getSupportFragmentManager(), "grabredpack_havegot");
 					break;
 				   default://正常返回数据
 					   new Timer().schedule(new TimerTask(){
@@ -343,7 +317,7 @@ private static final int HAVE_GOT = 2;
 						public void run() {
 							refreshHandler.sendEmptyMessage(2);
 						}
-					}, 100);
+					}, 10);
 					break;
 		    }
 		break;
@@ -361,11 +335,9 @@ private static final int HAVE_GOT = 2;
 		Gson shareJson = new Gson();
 		ShareRedPackInfo shareRedPackInfo = shareJson.fromJson(result, ShareRedPackInfo.class);
 		LogUtils.toDebugLog("", r.getContentAsString());
-		
 		String wechat_title = shareRedPackInfo.getWechat_title();
 		String wechat_sub = shareRedPackInfo.getWechat_sub();
 		String weibo_title = shareRedPackInfo.getWeibo_title();
-		
 		String currentActivityUrl = shareRedPackInfo.getShare_url();
 		
 		new GrabRedPackSharedDialog().showPopwindow(getWindow().getDecorView(), this, 
@@ -394,19 +366,6 @@ private static final int HAVE_GOT = 2;
 		}
 	}
 	
-/*	public void setNewFrag(String url){
-		LogUtils.toDebugLog("webview", url);
-		LogUtils.toDebugLog("webview", "走到判断里来了");
-		ActivityDetailFragment activtiFragment = new ActivityDetailFragment();
-		Bundle args = new Bundle();
-		args.putString("activityId","8147");
-		args.putString("shopId", "116629");
-		activtiFragment.setArguments(args);
-		FragmentEntity fEntity = new FragmentEntity();
-		fEntity.setFragment(activtiFragment);
-		EventBus.getDefault().post(fEntity);
-	}*/
-	
 	private void getUrlTailDict(String url){
 		int headIndex = url.indexOf("{");
 		//int tailIndex = url.indexOf("}");
@@ -425,8 +384,6 @@ private static final int HAVE_GOT = 2;
 			args.putString("shopId",shop_id);
 			LogUtils.toDebugLog("activityId", activity_id);
 			LogUtils.toDebugLog("shopId", shop_id);
-			/*args.putString("activityId","8147");
-			args.putString("shopId", "116629");*/
 			activtiFragment.setArguments(args);
 			FragmentEntity fEntity = new FragmentEntity();
 			fEntity.setFragment(activtiFragment);
@@ -438,11 +395,17 @@ private static final int HAVE_GOT = 2;
 			 */
 			if("true".equals(App.app.getData("isExperience"))){
 				Toast.makeText(this, "请登陆注册后,再抢红包大奖", Toast.LENGTH_LONG).show();
-				Bundle bundle = new Bundle();
-				bundle.putString("back", "yes");
-				Intent intent = new Intent();
-				intent.putExtras(bundle);
-				setResult(1, intent);//Activity.RESULT_FIRST_USER
+//				Bundle bundle = new Bundle();
+//				bundle.putString("back", "yes");
+//				Intent intent = new Intent();
+//				intent.putExtras(bundle);
+//				setResult(1, intent);//Activity.RESULT_FIRST_USER
+				
+				//此处换用接口的形式进行操作
+//				mToLoginListener.toLoginForGrabRedpack();
+				//发送广播通知MainActivity跳转至注册页面
+				this.sendBroadcast(new Intent("com.lansun.qmyo.toRegisterPage"));
+				
 				finish();
 			}else{
 				//1.抢红包网址/*http://appapi.qmyo.org/redpack/key*/				
@@ -457,8 +420,8 @@ private static final int HAVE_GOT = 2;
 					head.put("Authorization", "Bearer " + App.app.getData("access_token"));
 					config.setHead(head);
 					FastHttpHander.ajaxGet(GlobalValue.GRAB_RED_PACK, null, config, this);
+//					FastHttpHander.ajaxGet("http://api.andrew.qmyo.net/redpack/key", null, config, this);
 				}
-				/*FastHttpHander.ajaxGet(GlobalValue.GRAB_RED_PACK, null, config, this);*/
 			}
 		}else if(tag == 40){ //----------------------------------------->进行分享活动预告页面的点击事件
 			/*"lansunqmyo://maijieclient/?{'tag':40,'type':'share'}"*/
@@ -471,15 +434,7 @@ private static final int HAVE_GOT = 2;
 				FastHttpHander.ajaxGet(GlobalValue.GRAB_RED_PACK_SHARE_CONTENT, null, config, this);
 				LogUtils.toDebugLog("send", "发送获取分享内容的请求");
 			}
-
 		   }
-	}
-
-	/**
-	 * 发送请求前往朗信后台拿到口令
-	 */
-	private void getClickButtonRequest() {
-		
 	}
 
 	@Override
@@ -493,9 +448,6 @@ private static final int HAVE_GOT = 2;
 			break;
 		case R.id.iv_activity_refresh:
 			LogUtils.toDebugLog("reload", "执行reload()方法");
-			/*if(refreshDialog!=null){
-				refreshDialog.show();
-			}*/
 			if(pb_refresh!=null){
 				pb_refresh.setVisibility(View.VISIBLE);
 				pb_refresh.setProgress( 1+(int)(Math.random()*30));
@@ -543,7 +495,7 @@ private static final int HAVE_GOT = 2;
 	private CustomDialogGrebRedpackWait refreshDialog;
 	private boolean hadDone = false;
 	
-	/*  webView 中首先就拦截着 物理返回键
+	/*  webView的Client 中首先就拦截着 物理返回键
 	 * @Override
 		public boolean onKeyDown(int keyCode, KeyEvent event) {
 		 if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -717,19 +669,6 @@ private static final int HAVE_GOT = 2;
 	                    }else{
 	                    	 Log.d("request_info", "===>>> 已发送过请求  httpGet.getEntity()为空");
 	                    }
-	                    URI uri = httpGet.getURI();
-	                    Log.d("request_info", "===>>>  已发送过请求  uri.toString():  "+ uri.toString());
-	                    HttpParams params = httpGet.getParams();
-	                    Log.d("request_info", "===>>>  已发送过请求  params.getParameter(\'User-Agent\'):  "+ params.getParameter("User-Agent"));
-	                    String method = httpGet.getMethod();
-	                    Log.d("request_info", "===>>>  已发送过请求 method:  "+ method);
-	                    ProtocolVersion version = httpGet.getProtocolVersion();
-	                    Log.d("request_info", "===>>>  已发送过请求 version.getProtocol():  "+ version.getProtocol());
-	                    
-	                    Header header1 = httpGet.getFirstHeader("User-Agent");
-	                    Log.d("request_info", "===>>>  已发送过请求 : httpGet.getFirstHeader(\'User-Agent\') :"+ header1.getValue());
-	                    
-	                    
 	                    Log.d("info", "response==: "+ response.toString());
 	                    
 	                    if (response.getStatusLine().getStatusCode() == 200) {
@@ -746,12 +685,6 @@ private static final int HAVE_GOT = 2;
 	                            htmlContent = convertToString(inputStream);
 	                            Log.d("info", "===>>> htmlContent:" + htmlContent);
 	                           refreshHandler.sendEmptyMessage(1);
-//	                          webView.loadData(htmlContent, "text/html;charset=UTF-8",null);
-//	                          webView.loadDataWithBaseURL(null, htmlContent, "text/html", "utf-8", null);
-	                           
-//	                           htmlContent = htmlContent.replace("\"", "\'");
-//	                           Log.d("info", "===>>> htmlContent(修改后！！！):" + htmlContent);
-//	                           webView.loadData(htmlContent, "text/html","utf-8");
 	                        }
 	                    }
 	                } catch (Exception e) {
@@ -759,7 +692,6 @@ private static final int HAVE_GOT = 2;
 	            }
 	        });
 	        theard.start();
-	        LogUtils.toDebugLog("html", "加载html页面");
 		}
 
 		/**
@@ -771,4 +703,6 @@ private static final int HAVE_GOT = 2;
 			lastClickTime = System.currentTimeMillis()-2000;
 		}
 	    
+		
+		
 }

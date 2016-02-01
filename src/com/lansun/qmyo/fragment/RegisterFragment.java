@@ -47,6 +47,7 @@ import com.ryanharter.viewpager.ViewPager;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
@@ -64,6 +65,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.View.OnTouchListener;
 import android.view.animation.LinearInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -75,7 +77,7 @@ import android.widget.ImageView.ScaleType;
  * @author bhxx
  * 
  */
-public class RegisterFragment extends BaseFragment{
+@SuppressLint("InflateParams") public class RegisterFragment extends BaseFragment{
 	@InjectAll
 	Views v;
 	private String code;
@@ -107,6 +109,7 @@ public class RegisterFragment extends BaseFragment{
 	private boolean isTheSameCardAsUsual = false;
 	private RecyclingImageView iv_activity_back;
 	private boolean mIsFromRegisterAndHaveNothingThenGoToRegister = false;
+	private View rootView;
 	class Views {
 		private View fl_register_recode, rl_register_dialog, fl_register_pwd;
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
@@ -142,7 +145,7 @@ public class RegisterFragment extends BaseFragment{
 
 		//getActivity().getWindow().setFormat(PixelFormat.TRANSLUCENT);
 
-		View rootView = inflater.inflate(R.layout.activity_register, null);
+		rootView = inflater.inflate(R.layout.activity_register, null);
 		Handler_Inject.injectFragment(this, rootView);
 
 		activity.getWindow().setSoftInputMode(
@@ -222,11 +225,13 @@ public class RegisterFragment extends BaseFragment{
 				v.tv_register_reg_login.setVisibility(View.GONE);
 			}
 			if(isJustLogin){
+				/* 暂时将注册的效果展开
+				 * */
 				v.fl_register_pwd.setVisibility(View.VISIBLE);
 				v.fl_register_recode.setVisibility(View.GONE);
 				v.register_bg.setImageResource(R.drawable.log_in);
 				v.tv_register_forget_password.setVisibility(View.VISIBLE);
-				v.tv_register_reg_login.setVisibility(View.GONE);//将右上角的注册gone掉
+//				v.tv_register_reg_login.setVisibility(View.GONE);//将右上角的注册gone掉
 				v.btn_register_reg_login.setText(getString(R.string.login));
 				v.et_register_pwd.setHint("输入密码");
 			}
@@ -249,7 +254,6 @@ public class RegisterFragment extends BaseFragment{
 			if(mIsFromRegisterAndHaveNothingThenGoToRegister){
 				
 			}
-
 			/*SpannableString ss = new SpannableString("输入密码");
 			AbsoluteSizeSpan ass = new AbsoluteSizeSpan(7,true);
 			ss.setSpan(ass, 0, ss.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -263,9 +267,15 @@ public class RegisterFragment extends BaseFragment{
 	 */
 	/*@InjectMethod(value = { @InjectListener(ids = { R.id.iv_activity_back }, listeners = { OnClick.class }) })*/
 	protected void back() {
-
+		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getWindowToken(), 0);
+		
+		//强制收下软键盘
+		/*activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);*/
+		/*autoHiddenKey();//内部实为Toggle方法，不是真是的控制操作*/		
+		
 		if(App.app.getData("isEmbrassStatus").equals("true") ){
-			CustomToast.show(activity, "抱歉,请点击登录", "请至少选择一张银行卡作为通行证");
+			CustomToast.show(activity, "请使用注册账号登录哦~", "登陆后请至少添加一张银行卡");
 			return;
 		}
 		
@@ -312,7 +322,6 @@ public class RegisterFragment extends BaseFragment{
 			FragmentEntity entity = new FragmentEntity();
 			entity.setFragment(fragment);
 			EventBus.getDefault().post(entity);*/
-			 
 		}
 
 		if(GlobalValue.user==null && GlobalValue.isFirst){
@@ -346,6 +355,9 @@ public class RegisterFragment extends BaseFragment{
 		switch (view.getId()) {
 		case R.id.btn_register_reg_login://登录或者注册的横向长按钮
 
+			/**
+			 * 对输入的手机号码在此处进行校验
+			 */
 			if (phone.length() != 11) {
 				CustomToast.show(activity, R.string.tip3,R.string.please_enter_phone_pwd);
 				return;
@@ -413,7 +425,7 @@ public class RegisterFragment extends BaseFragment{
 							CustomToast.show(activity, "登录失败", "服务器睡着了...");
 						}
 					} 
-				}, 8000);
+				}, 10*1000);
 
 
 				params.put("mobile", phone);
@@ -466,8 +478,7 @@ public class RegisterFragment extends BaseFragment{
 			}else{//正常注册
 				typeParams.put("type", "register");
 			}
-			FastHttpHander.ajaxGet(GlobalValue.URL_AUTH_CAPTCHA + phone, typeParams ,
-					config, this);
+			FastHttpHander.ajaxGet(GlobalValue.URL_AUTH_CAPTCHA + phone, typeParams ,config, this);
 
 			break;
 		case R.id.tv_register_reg_login://点击右上角的登录和注册复用按钮
@@ -842,37 +853,37 @@ public class RegisterFragment extends BaseFragment{
 							fragment=new MainFragment(1);
 						}else if("SecretaryTravelShowFragment".equals(fragment_name)){
 							fragment=new SecretaryTravelShowFragment();
-							getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshTheIcon"));
+							sendBroadcastDelay();
 							LogUtils.toDebugLog("RegisterFragment", "SecretaryTravelShowFragment 发送刷新广播");
 							
 						}else if("SecretaryShoppingShowFragment".equals(fragment_name)){
 							fragment=new SecretaryShoppingShowFragment();
-							getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshTheIcon"));
+							sendBroadcastDelay();
 							LogUtils.toDebugLog("RegisterFragment", "SecretaryShoppingShowFragment 发送刷新广播");
 							
 						}else if("SecretaryPartyShowFragment".equals(fragment_name)){
 							fragment=new SecretaryPartyShowFragment();
-							getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshTheIcon"));
+							sendBroadcastDelay();
 							LogUtils.toDebugLog("RegisterFragment", "SecretaryPartyShowFragment 发送刷新广播");
 							
 						}else if("SecretaryLifeShowFragment".equals(fragment_name)){
 							fragment=new SecretaryLifeShowFragment();
-							getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshTheIcon"));
+							sendBroadcastDelay();
 							LogUtils.toDebugLog("RegisterFragment", "SecretaryLifeShowFragment 发送刷新广播");
 							
 						}else if("SecretaryStudentShowFragment".equals(fragment_name)){
 							fragment=new SecretaryStudentShowFragment();
-							getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshTheIcon"));
+							sendBroadcastDelay();
 							LogUtils.toDebugLog("RegisterFragment", "SecretaryStudentShowFragment 发送刷新广播");
 							
 						}else if("SecretaryInvestmentShowFragment".equals(fragment_name)){
 							fragment=new SecretaryInvestmentShowFragment();
-							getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshTheIcon"));
+							sendBroadcastDelay();
 							LogUtils.toDebugLog("RegisterFragment", "SecretaryInvestmentShowFragment 发送刷新广播");
 							
 						}else if("SecretaryCardShowFragment".equals(fragment_name)){
 							fragment=new SecretaryCardShowFragment();
-							getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshTheIcon"));
+							sendBroadcastDelay();
 							LogUtils.toDebugLog("RegisterFragment", "SecretaryCardShowFragment 发送刷新广播");
 						}else if("FoundFragment".equals(fragment_name)){
 							/*fragment=new FoundFragment();*/
@@ -1000,4 +1011,10 @@ public class RegisterFragment extends BaseFragment{
 				}
 			}
 	
+			/**
+			 * 针对七大秘书页面进行的延迟发送广播操作
+			 */
+			private void sendBroadcastDelay(){
+				getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshTheIcon"));
+			}
 }

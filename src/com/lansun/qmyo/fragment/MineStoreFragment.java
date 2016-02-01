@@ -134,7 +134,7 @@ public class MineStoreFragment extends BaseFragment {
 						Log.i("第三次刷新","第二次拿到的list中的next_page_url的值为null");
 						
 						if(times <1){
-							CustomToast.show(activity, "到底啦！", "您只关注了以上的门店哦");
+							CustomToast.show(activity, R.string.reach_bottom, R.string.just_collect_store);
 							times++;
 							lv_mine_store.onLoadMoreOverFished();
 						}else{
@@ -484,7 +484,7 @@ public class MineStoreFragment extends BaseFragment {
 				if (list.getNext_page_url()== "null"||TextUtils.isEmpty(list.getNext_page_url())) {
 					Log.i("第三次刷新","第二次拿到的list中的next_page_url的值为null");
 //					PullToRefreshManager.getInstance().onFooterRefreshComplete();
-					CustomToast.show(activity, "到底啦！", "您只关注了以上的门店哦");
+					CustomToast.show(activity,R.string.reach_bottom,R.string.just_collect_store );
 //					PullToRefreshManager.getInstance().footerUnable();
 //					PullToRefreshManager.getInstance().headerUnable();
 				} else {

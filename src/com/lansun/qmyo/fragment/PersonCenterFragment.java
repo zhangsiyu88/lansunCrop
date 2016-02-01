@@ -29,6 +29,7 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -43,7 +44,12 @@ import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
+import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
+import com.android.pc.ioc.internet.FastHttp;
+import com.android.pc.ioc.internet.FastHttpHander;
+import com.android.pc.ioc.internet.InternetConfig;
+import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
@@ -52,6 +58,7 @@ import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.override.CircleImageView;
+import com.lansun.qmyo.service.AccessTokenService;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CircularImage;
 import com.lansun.qmyo.view.CustomToast;
@@ -101,6 +108,7 @@ public class PersonCenterFragment extends BaseFragment{
 			}
 		};
 	};
+	private String mAvatar;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -120,9 +128,20 @@ public class PersonCenterFragment extends BaseFragment{
 		}else{
 			v.tv_person_center_nickname.setText("请设置昵称");
 		}
+		
+		//此时需要将头像送入到
 		if (!TextUtils.isEmpty(GlobalValue.user.getAvatar())) {
+			mAvatar = GlobalValue.user.getAvatar();
 			loadPhoto(GlobalValue.user.getAvatar(), v.iv_person_center_head);
 		}
+		
+		InternetConfig config = new InternetConfig();
+		config.setKey(1);
+		HashMap<String, Object> head = new HashMap<String, Object>();
+		head.put("Authorization", "Bearer " + App.app.getData("access_token"));
+		config.setHead(head);
+		FastHttpHander.ajaxGet(GlobalValue.URL_FRESHEN_USER, config, PersonCenterFragment.this);
+		
 		initTitle(v.tv_activity_title, R.string.person_info, null, 0);
 		
 		iv_activity_back.setOnClickListener(new OnClickListener() {
@@ -137,12 +156,30 @@ public class PersonCenterFragment extends BaseFragment{
 		});
 	}
 
+	@InjectHttp
+	private void result(ResponseEntity r) {
+		if (r.getStatus() == FastHttp.result_ok) {
+			switch(r.getKey()){
+			case 1:
+				GlobalValue.user = Handler_Json.JsonToBean(User.class,r.getContentAsString());
+				Log.i("PersonCenterFragment中的user返回回来的值为： ",GlobalValue.user.toString());
+				App.app.setData("user_avatar",GlobalValue.user.getAvatar());
+				App.app.setData("user_nickname",GlobalValue.user.getNickname());
+				if(!mAvatar.equals(GlobalValue.user.getAvatar())){
+					loadPhoto(GlobalValue.user.getAvatar(), v.iv_person_center_head);
+				}
+				break;
+			}
+			
+		}
+	}
 	private void click(View view) {
 		Fragment fragment = null;
 		switch (view.getId()) {
 		case R.id.rl_person_center_head:
 			upDataHead();
-			break;
+			return;
+//			break;
 		case R.id.iv_person_center_nickname:
 			fragment = new EditUserInfoFragment(); //更改用户昵称
 			Bundle args = new Bundle();
@@ -226,8 +263,7 @@ public class PersonCenterFragment extends BaseFragment{
 				if (checkCameraHardWare(activity)) {
 					String status = Environment.getExternalStorageState();
 					if (status.equals(Environment.MEDIA_MOUNTED)) {
-						SimpleDateFormat format = new SimpleDateFormat(
-								"yyyyMMddHHmmss");
+						SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
 						Date date = new Date(System.currentTimeMillis());
 						String filename = format.format(date);
 						File path = Environment
@@ -243,8 +279,7 @@ public class PersonCenterFragment extends BaseFragment{
 						}
 						// 将File对象转换为Uri并启动照相程序
 						imageUri = Uri.fromFile(outputImage);
-						Intent intent = new Intent(
-								android.provider.MediaStore.ACTION_IMAGE_CAPTURE); // 照相
+						Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE); // 照相
 						intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri); // 指定图片输出地址
 						intent.putExtra("return-data", true);
 						startActivityForResult(intent, ACTION_IMAGE_CAPTURE); // 启动照相
@@ -285,8 +320,7 @@ public class PersonCenterFragment extends BaseFragment{
 				return;
 			}
 			path = getPath(activity, imageUri);
-			ImageLoader.getInstance().displayImage(imageUri.toString(),
-					v.iv_person_center_head);
+			ImageLoader.getInstance().displayImage(imageUri.toString(),v.iv_person_center_head);
 			break;
 		case ACTION_IMAGE_PICK:
 			if (data == null) {

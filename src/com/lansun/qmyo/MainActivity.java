@@ -1,4 +1,6 @@
 package com.lansun.qmyo;
+import java.io.Serializable;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -6,6 +8,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -22,6 +26,7 @@ import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.inject.InjectLayer;
 import com.android.pc.ioc.view.PullToRefreshManager;
+import com.android.pc.util.Gps;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.base.BackHandedFragment;
 import com.lansun.qmyo.event.entity.FragmentEntity;
@@ -37,7 +42,9 @@ import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.fragment.ReportFragment;
 import com.lansun.qmyo.fragment.SearchBankCardFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
+import com.lansun.qmyo.fragment.SecretarySettingFragment;
 import com.lansun.qmyo.fragment.StoreDetailFragment;
+import com.lansun.qmyo.listener.ToLoginListener;
 import com.lansun.qmyo.port.BackHanderInterface;
 import com.lansun.qmyo.service.AccessTokenService;
 import com.lansun.qmyo.service.LocationService;
@@ -46,14 +53,14 @@ import com.lansun.qmyo.utils.ExampleUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 
 @InjectLayer(R.layout.activity_main)
-public class MainActivity extends FragmentActivity implements BackHanderInterface {
+public class MainActivity extends FragmentActivity implements BackHanderInterface, ToLoginListener{//,Parcelable
 	private FragmentTransaction fragmentTransaction;
 	public static boolean isForeground = false;
 	private long exitTime = 0;
+	private int counts = 0;
 	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,7 +71,34 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		
 		//注册一个广播接收者
 		registerMessageReceiver();
-		
+		/**
+		 * 针对后台MainActivity被清除，由于GlobalValue.gps初始化于SplashActivity无法出现，故在此处重新初始化gps的值
+		 */
+		if(GlobalValue.gps == null){
+			LogUtils.toDebugLog("gps_", "GlobalValue.gps == null");
+			if((!TextUtils.isEmpty(App.app.getData("gps.Wglat")))
+			&&(!TextUtils.isEmpty(App.app.getData("gps.Wglon")))){
+				double geoLat =  Double.valueOf(App.app.getData("gps.Wglat"));
+				double geoLng =  Double.valueOf(App.app.getData("gps.Wglon"));
+				GlobalValue.gps = new Gps(geoLat, geoLng);
+				LogUtils.toDebugLog("gps_", "从本地获取之前的定位坐标");
+				
+			}else{
+				GlobalValue.gps = new Gps(31.230431, 121.473705);
+				LogUtils.toDebugLog("gps_", "传入固定人民广场");
+			}
+			//无论后台的服务是否运行中，都前去启动定位服务
+			if(locationService == null){
+				LogUtils.toDebugLog("gps_", "locationService为 空值，重启locationService的服务");
+				locationService = new Intent(this, LocationService.class);
+				startService(locationService);
+			}else{ 
+				LogUtils.toDebugLog("gps_", "locationService不为 空值，但我仍然去重新启动 locationService的服务");
+				locationService = new Intent(this, LocationService.class);
+				startService(locationService);
+			}
+			
+		}
 		
 		/*TextView mImei = (TextView) findViewById(R.id.tv_imei);*/
 		String udid =  ExampleUtil.getImei(getApplicationContext(), "");
@@ -156,8 +190,6 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 	protected void onPause() {
 		JPushInterface.onPause(this);
 		isForeground = true;
-		
-		
 		/* 当缓存的清除效果正常的时候，并且在Pause的时候暂时不需要进行内存缓存的关闭操作，会造成首页轮播大图在从抢红包页面回来时图片重新请求，暂时无图的情况
 		 * 故在此处关闭
 		 * ImageLoader.getInstance().clearMemoryCache();  
@@ -260,7 +292,7 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 			}
 			
 			if(App.app.getData("isEmbrassStatus").equals("true") ){
-				CustomToast.show(this, "抱歉,请点击登录", "请至少选择一张银行卡作为通行证");
+				CustomToast.show(this, "请使用注册账号登录哦~", "登陆后请至少添加一张银行卡");
 				return;
 			}
 			if(GlobalValue.user==null && GlobalValue.isFirst){
@@ -276,7 +308,16 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 			}
 		}else if(fragment.getClass().getName().equals(SearchBankCardFragment.class.getName())){
 			if(App.app.getData("isEmbrassStatus").equals("true") ){
-				CustomToast.show(this, "抱歉,请选择银行卡", "请至少选择一张银行卡作为通行证");
+				
+				if(counts++ == 0){
+					CustomToast.show(this, "添加至少一张银行卡吧~", "添加至少一张银行卡吧~");
+				}
+				if((System.currentTimeMillis()-exitTime ) > 1000){  
+		            Toast.makeText(getApplicationContext(), "再按一次退出迈界哦~", Toast.LENGTH_SHORT).show();                                
+		            exitTime = System.currentTimeMillis();   
+		        } else {
+		        	MainActivity.this.finish();
+		        }
 				return;
 			}
 		}else if(fragment.getClass().getName().equals(PersonCenterFragment.class.getName())){
@@ -296,6 +337,9 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 					return;
 				}  */
 				
+				mBackHandedFragment.onBackPressed();
+				return;
+		}else if(fragment.getClass().getName().equals(SecretarySettingFragment.class.getName())){
 				mBackHandedFragment.onBackPressed();
 				return;
 		}else if(fragment.getClass().getName().equals(MineBankcardFragment.class.getName())){
@@ -486,6 +530,8 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 			IntentFilter filter = new IntentFilter();
 			filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
 			filter.addAction(MESSAGE_RECEIVED_ACTION);
+			filter.addAction("com.lansun.qmyo.toRegisterPage");
+			
 			registerReceiver(mMessageReceiver, filter);
 		}
 		public class MessageReceiver extends BroadcastReceiver {
@@ -506,6 +552,9 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 	              
 	              
 	              //setCostomMsg(showMsg.toString());
+				}
+				if("com.lansun.qmyo.toRegisterPage".equals(intent.getAction())){
+					toLoginForGrabRedpack();
 				}
 			}
 		}
@@ -560,28 +609,67 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		public void selectFragment(BackHandedFragment selectFragment) {
 			this.mBackHandedFragment = (BackHandedFragment) selectFragment;
 		}
-		
+
+		/**
+		 * 实现未登录注册跳转至注册登录页功能
+		 */
 		@Override
-		public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//			super.onActivityResult(requestCode, resultCode, data);
-			LogUtils.toDebugLog("result", "requestCode: "+ requestCode);
-			LogUtils.toDebugLog("result", "resultCode: "+ resultCode);
-			if(data!=null && data.getExtras()!=null ){
-				LogUtils.toDebugLog("result", data.getExtras().getString("back"));
-			}
-			//由新生成的Activity返回回来，启动Activity的onActivityResult中的requestCode是不同于之前startActivityForResult()中的requestCode
-			if(resultCode == 1){
-				LogUtils.toDebugLog("result", resultCode+"");
-				if(data.getExtras().getString("back").equals("yes")){
-					LogUtils.toDebugLog("result", data.getExtras().getString("back"));
-					Bundle bundle = new Bundle();
-					bundle.putString("fragment_name","GrabRedpackFragment");
-					RegisterFragment fragment = new RegisterFragment();
-					FragmentEntity fEntity = new FragmentEntity();
-					fragment.setArguments(bundle);
-					fEntity.setFragment(fragment);
-					EventBus.getDefault().post(fEntity);
-				}
-		}   
+		public void toLoginForGrabRedpack() {
+			Bundle bundle = new Bundle();
+			bundle.putString("fragment_name","GrabRedpackFragment");
+			RegisterFragment fragment = new RegisterFragment();
+			FragmentEntity fEntity = new FragmentEntity();
+			fragment.setArguments(bundle);
+			fEntity.setFragment(fragment);
+			EventBus.getDefault().post(fEntity);
 		}
+
+		
+//		/**
+//		 * 实现Parcel接口待实现的下面两个方法
+//		 */
+//		@Override
+//		public int describeContents() {
+//			return 0;
+//		}
+//
+//		@Override
+//		public void writeToParcel(Parcel dest, int flags) {
+//			dest.writeParcelable(this, flags);
+//		}
+		
+		
+		/**
+		 * 由于某些Fragment中拥有着自己的onActivityResult()方法，所以此处去除该方法，避免被覆盖掉
+		 */
+//		@Override
+//		public void onActivityResult(int requestCode, int resultCode, Intent data){
+////			super.onActivityResult(requestCode, resultCode, data);
+//			LogUtils.toDebugLog("result", "requestCode: "+ requestCode);
+//			LogUtils.toDebugLog("result", "resultCode: "+ resultCode);
+//			if(data!=null && data.getExtras()!=null ){
+//				LogUtils.toDebugLog("result", data.getExtras().getString("back"));
+//			}
+//			//由新生成的Activity返回回来，启动Activity的onActivityResult中的requestCode是不同于之前startActivityForResult()中的requestCode
+//			switch(resultCode){
+//			case 1:
+//				LogUtils.toDebugLog("result", resultCode+"");
+//				if(data.getExtras().getString("back").equals("yes")){
+//					LogUtils.toDebugLog("result", data.getExtras().getString("back"));
+//					Bundle bundle = new Bundle();
+//					bundle.putString("fragment_name","GrabRedpackFragment");
+//					RegisterFragment fragment = new RegisterFragment();
+//					FragmentEntity fEntity = new FragmentEntity();
+//					fragment.setArguments(bundle);
+//					fEntity.setFragment(fragment);
+//					EventBus.getDefault().post(fEntity);
+//				}
+//				break;
+//			 case RESULT_OK:
+//				
+//				 
+//				 break;
+//			}
+////			if(resultCode == 1){}
+//		}
 }

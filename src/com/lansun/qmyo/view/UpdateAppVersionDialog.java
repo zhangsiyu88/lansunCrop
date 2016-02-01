@@ -305,12 +305,9 @@ public class UpdateAppVersionDialog extends BlurDialogFragment {
 			switch (r.getKey()) {
 			case 1://拿到更新的描述内容
 				
-				
 				updateInfo = Handler_Json.JsonToBean(UpdateAppVersionInfo.class,r.getContentAsString());
 				
 				LogUtils.toDebugLog("updateInfo",updateInfo.getData().get(0).toString() );
-				LogUtils.toDebugLog("updateInfo",updateInfo.getData().get(1).toString() );
-				LogUtils.toDebugLog("updateInfo",updateInfo.getData().get(2).toString() );
 				
 				
 				ArrayList<LinearLayout>  llList = new ArrayList<LinearLayout>();
@@ -343,7 +340,7 @@ public class UpdateAppVersionDialog extends BlurDialogFragment {
 					
 					llList.get(i).setVisibility(View.VISIBLE);
 					String content = String.valueOf(updateInfo.getData().get(i).toString());
-					((TextView) tvList.get(i)).setText(content.substring(2, content.length()));
+					((TextView) tvList.get(i)).setText(content);
 					
 					/*v.ll_desc_item1.setVisibility(View.VISIBLE);
 					String content = String.valueOf(updateInfo.getData().get(i));
@@ -457,7 +454,7 @@ public class UpdateAppVersionDialog extends BlurDialogFragment {
 
 					@Override
 					public void onFailure(HttpException arg0, String arg1) {
-						v.tv_update_progress.setText("下载失败,请重试");
+						v.tv_update_progress.setText("下载异常,请重试");
 						LogUtils.toDebugLog("updateInfo)", arg0.toString());
 						
 					}
@@ -490,11 +487,15 @@ public class UpdateAppVersionDialog extends BlurDialogFragment {
 						//v.line_splite.setVisibility(View.INVISIBLE);
 						v.tv_update_progress.setVisibility(View.VISIBLE);
 						v.tv_update_progress.setText("开始下载");
-						File file = new File (Environment.getExternalStorageDirectory().getAbsolutePath()+"/maijie_newVer.apk");
 						
+						
+						File file = new File (Environment.getExternalStorageDirectory().getAbsolutePath()+"/maijie_newVer.apk");
 						LogUtils.toDebugLog("delete", Environment.getExternalStorageDirectory().getAbsolutePath()+"/maijie_newVer.apk");
 						LogUtils.toDebugLog("delete", file.getAbsolutePath());
-						
+						if(file.exists()){
+							file.delete();
+							LogUtils.toDebugLog("delete", "file之前存在，且执行了清除操作");
+						}
 						boolean delete = file.delete();
 						if(delete){
 							LogUtils.toDebugLog("delete", "删除成功");
@@ -532,7 +533,7 @@ public class UpdateAppVersionDialog extends BlurDialogFragment {
 				LogUtils.toDebugLog("updateInfo.getUrl()", Environment.getExternalStorageDirectory().getAbsolutePath());
 				
 				httpHandler = http.download(updateInfo.getUrl(), 
-						Environment.getExternalStorageDirectory().getAbsolutePath()+"/maijie_newVer.apk", true, true, requestCallBack);
+						Environment.getExternalStorageDirectory().getAbsolutePath()+"/maijie_newVer.apk", false, false, requestCallBack);
 
 				//httpHandler.cancel(true);
 			  }

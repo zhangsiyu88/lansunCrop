@@ -20,6 +20,7 @@ import com.amap.api.location.LocationManagerProxy;
 import com.amap.api.location.LocationProviderProxy;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
 
 	/**
@@ -30,7 +31,7 @@ import com.lansun.qmyo.view.CustomToast;
 	 */
 	public class LocationService extends Service implements AMapLocationListener {
 	    
-		public static final long LOCATION_UPDATE_MIN_TIME = 2 * 60 * 1000;
+		public static final long LOCATION_UPDATE_MIN_TIME = 30 * 1000;
 	    public static final float LOCATION_UPDATE_MIN_DISTANCE = 1;
 
 	    //private FixedLengthList<AMapLocation> locationList = FixedLengthList.newInstance();
@@ -51,6 +52,7 @@ import com.lansun.qmyo.view.CustomToast;
 	        locationManagerProxy.requestLocationData(LocationProviderProxy.AMapNetwork, LOCATION_UPDATE_MIN_TIME,LOCATION_UPDATE_MIN_DISTANCE, this);
 	        // 如果定位方式包括GPS定位需要手动设置GPS可用
 	        locationManagerProxy.setGpsEnable(true);
+	        
 	        Log.v("locationservice", "locationservicestart");
 	    }
 
@@ -124,7 +126,6 @@ import com.lansun.qmyo.view.CustomToast;
 	        correctGpsCoordinateAndSetData(aMapLocation.getLatitude(),aMapLocation.getLongitude());
 	        Log.d("更新的坐标","高德更新的坐标:"+aMapLocation.getLatitude()+","+aMapLocation.getLongitude());
 	        Log.d("更新的坐标","修整为固定小数点后六位的坐标:"+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
-	        
 	        
 	        
 	        

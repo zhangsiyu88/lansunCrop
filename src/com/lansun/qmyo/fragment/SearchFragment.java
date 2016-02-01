@@ -97,7 +97,6 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 		//一进来就已经将键盘收齐
 //		  activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
 //		  WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-		  
 		Handler_Inject.injectFragment(this, rootView);//这一步实际上是重新调用了init()方法
 		initView(rootView);
 		return rootView;

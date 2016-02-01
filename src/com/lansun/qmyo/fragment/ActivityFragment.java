@@ -316,7 +316,7 @@ import com.lansun.qmyo.R;
 						if(times == 0){
 							lv_activity_list.onLoadMoreOverFished();
 							lv_activity_list.addFooterView(emptyView);
-				              CustomToast.show(activity, "到底啦！", "小迈会加油搜集更多惊喜哦");
+				              CustomToast.show(activity, R.string.reach_bottom, R.string.collect_more_superise);
 				              times++;
 				            }else{
 				            	lv_activity_list.addFooterView(emptyView);
@@ -1243,6 +1243,10 @@ import com.lansun.qmyo.R;
 		refreshParams = new LinkedHashMap<>();
 		if (getCurrentCity()[0].equals(getSelectCity()[0])) {
 			isPosition = true;
+			
+			/**
+			 * 下面的GlobalValue.gps在后台被清理之时，会出现此值为null的情况
+			 */
 			refreshParams.put("location", GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());//问题在这儿!这个location 拼接在了服务器访问接口里面
 		}
 		
@@ -1759,7 +1763,7 @@ import com.lansun.qmyo.R;
 					lv_activity_list.addFooterView(emptyView);
 //					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 //					PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
-					CustomToast.show(activity, "到底啦！", "小迈会加油搜集更多惊喜哦");
+					CustomToast.show(activity, R.string.reach_bottom, R.string.collect_more_superise);
 
 				} else {
 					/* 下面这一步代码应该耽误了半天时间

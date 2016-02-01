@@ -23,8 +23,8 @@ public class MainViewPager extends ViewPager {
 
 	 @Override
 	    public boolean onTouchEvent(MotionEvent event) {
-	        /*return this.isPagingEnabled && super.onTouchEvent(event);*/
-		 return true;
+	     return this.isPagingEnabled && super.onTouchEvent(event);
+		 /*return true;*/
 	    }
 	 
 	    @Override

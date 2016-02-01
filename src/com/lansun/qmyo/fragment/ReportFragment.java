@@ -67,10 +67,6 @@ public class ReportFragment extends BackHandedFragment {
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_report, null);
 		Handler_Inject.injectFragment(this, rootView);
-		/*activity.onKeyDown(keyCode, event){
-			
-		}*/
-		
 		return rootView;
 	}
 	

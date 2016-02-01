@@ -260,7 +260,7 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 					if (list!=null) {
 					if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url()=="null"||list.getNext_page_url().equals("")) {
 						while(times <1){
-							CustomToast.show(activity, "到底啦!", "您添加的银行卡目前只有这么多");
+							CustomToast.show(activity,  R.string.reach_bottom,R.string.add_bankcard);
 							times++;
 						}
 						lv_ban_card_other.onLoadMoreOverFished();
@@ -898,6 +898,7 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 	
 	@Override/*@InjectMethod(@InjectListener(ids = R.id.iv_activity_back, listeners = OnClick.class))*/
 	protected void back() {
+		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 		
 		Log.d("bankcard","isChangeTheChoseCard  :"+isChangeTheChoseCard );
 		Log.d("bankcard","isChangeTheChoseCardUnderSearchBankcardPage  :"+isChangeTheChoseCardUnderSearchBankcardPage );

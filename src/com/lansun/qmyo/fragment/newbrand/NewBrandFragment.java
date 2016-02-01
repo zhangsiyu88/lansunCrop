@@ -289,7 +289,7 @@ public class NewBrandFragment extends BaseFragment{
 									lv_activity_list.setNoHeader(true);
 									lv_activity_list.onLoadMoreOverFished();
 									lv_activity_list.addFooterView(emptyView);
-									CustomToast.show(activity, "到底啦！", "小迈会加油搜索更多惊喜的！");
+									CustomToast.show(activity, R.string.reach_bottom, R.string.collect_more_superise);
 						          }else{
 						            //DO-OP
 						          }
@@ -626,7 +626,7 @@ public class NewBrandFragment extends BaseFragment{
 						if(times == 0){
 				              lv_activity_list.onLoadMoreOverFished();
 				              lv_activity_list.addFooterView(emptyView);
-				              CustomToast.show(activity, "到底啦！", "小迈会加油搜集更多惊喜哦");
+				              CustomToast.show(activity, R.string.reach_bottom, R.string.collect_more_superise);
 				              times++;
 				            }else{
 				              lv_activity_list.addFooterView(emptyView);

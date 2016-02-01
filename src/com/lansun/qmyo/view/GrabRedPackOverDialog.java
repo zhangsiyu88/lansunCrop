@@ -182,7 +182,7 @@ public class GrabRedPackOverDialog extends DialogFragment {
 		        cm.setText(v.tv_random_num.getText());
 		        Toast.makeText(getActivity(), "复制成功,棒棒哒！关注“迈界”速领红包", Toast.LENGTH_LONG).show();*/
 			    this.dismiss();
-			    mWebView.scrollTo(0, mWebView.getContentHeight()*2);
+			    mWebView.scrollTo(0, (int) (mWebView.getContentHeight()));
 			
 			break;
 		}

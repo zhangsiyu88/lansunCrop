@@ -148,7 +148,7 @@ public class StoreListFragment extends BaseFragment {//implements OnItemClickLis
 						}catch(Exception e ){
 						}
 						lv_stores_content.addFooterView(emptyView);*/
-						CustomToast.show(activity, "到底啦！", "涉及此活动的门店只有这么多");
+						CustomToast.show(activity, R.string.reach_bottom,R.string.about_curr_act);
 						lv_stores_content.onLoadMoreOverFished();
 						
 					} else {

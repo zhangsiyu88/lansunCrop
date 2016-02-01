@@ -24,7 +24,7 @@ public abstract class BackHandedFragment extends BaseFragment {
 		if(!(getActivity() instanceof BackHanderInterface)){  
             throw new ClassCastException("Hosting Activity must implements BackHandledInterface");  
         }else{  
-            mBackHanderInterface = (BackHanderInterface)getActivity();  
+            mBackHanderInterface = (BackHanderInterface)getActivity();  //将Activity作为接口的实现类，完成实际上想要完成的操作
         } 
 		super.onCreate(savedInstanceState);
 	}

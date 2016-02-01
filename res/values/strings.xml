@@ -114,6 +114,16 @@
     <string name="activity">活动</string>
     <string name="maijie">迈界</string>
     <string name="all">全部</string>
+    <string name="just_collect_store">您只关注了以上的门店哦</string>
+    <string name="just_collect_acts">您只收藏了以上的活动哦</string>
+    <string name="about_curr_act">涉及此活动的门店只有这么多哦</string>
+    <string name="just_watch_acts">您最近仅浏览了这么多的活动哦</string>
+    <string name="just_watch_store">您最近仅浏览了这么多的门店哦</string>
+    <string name="just_curr_bankcard">该关键字下的银行卡暂时只有这么多哦</string>
+    <string name="add_bankcard">您添加的银行卡目前只有这么多哦</string>
+    <string name="reach_bottom">到底啦~</string>
+    <string name="not_more">该关键词下暂时只有这么多活动哦</string>
+    <string name="collect_more_superise">小迈会加油搜集更多惊喜哦</string>
     <string name="setting">设置</string>
     <string name="setting_clear_cache">清空缓存</string>
     <string name="feedback">意见反馈</string>
@@ -154,7 +164,7 @@
     <string name="store">门店</string>
     <string name="qmyo_version">迈界 V</string>
     <string name="qmyo_desc">收集世界各地惊喜\n伴随迈友走遍世界</string>
-    <string name="qmyo_wx">迈界微信公众号：<Data><![CDATA[<font color="#9DC14F">qmyoclub</font>]]></Data></string>
+    <string name="qmyo_wx">迈界微信公众号：<Data><![CDATA[<font color="#9DC14F">qmyoservice</font>]]></Data></string>
     <string name="qmyo_net">迈界官网：<Data><![CDATA[<font color="#9DC14F">www.qmyo.com</font>]]></Data></string>
     <string name="qmyo_jianjie">迈界简介</string>
     <string name="feedback_desc">欢迎你提出宝贵的意见与建议，收到您的反馈以后，我们将尽快3-7个工作日内回复您，届时请您查看“我的”信息信箱(500字以内)</string>
@@ -229,6 +239,8 @@
     <string name="maijie_tip">迈界小贴士</string>
     <string name="search_card_tip1">在您的银行卡正面左上角印有所持卡的全称</string>
     <string name="search_card_tip2">也可以输入相关银行名称进行搜索</string>
+    <string name="search_card_tip3">不需要您绑定卡号或提供私人信息哦</string>
+    <string name="search_card_tip4">搜索银行卡名称即可进行添加</string>
     <string name="search">搜索</string>
     <string name="add_bankCard">您是否要添加该银行卡？</string>
     <string name="delete_success">删除成功</string>
@@ -246,7 +258,7 @@
       <string name="please_enter_correct_code">请您输入正确的验证码哦</string>
     <string name="search_city">中文/拼音搜索城市</string>
     <string name="none">活动评论暂无，赶紧抢沙发哟~~</string>
-    <string name="none_data_tip">到底啦</string>
+    <string name="none_data_tip">到底啦~</string>
     <string name="none_data_content">您指派的任务只有这么多哦</string>
     <string name="activity_detail_info">活动详情</string>
     <string name="maijie_tigong">迈界推荐您体验</string>
@@ -332,7 +344,7 @@
     <string name="search_card_tip2_1">如果您暂时不想选择自己的银行卡</string>
      <string name="search_card_tip2_2">也可以先行体验迈界为您推荐的银行卡哟</string>
 
-    <string name="experience_jump_now">体验迈界推荐银行卡</string>
+    <string name="experience_jump_now">   体验迈界推荐银行卡   </string>
 
 
     <string name="jiwen_about">共有%1$s篇文章与<Data><![CDATA[<font color="#9DC14F">%2$s</font>]]></Data>有关</string>

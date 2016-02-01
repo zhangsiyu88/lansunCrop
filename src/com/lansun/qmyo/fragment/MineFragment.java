@@ -2,6 +2,8 @@ package com.lansun.qmyo.fragment;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -141,6 +143,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 					if (response.isSuccessful()) {
 						Gson gson=new Gson();
 						String json=response.body().string();
+						//GlobalValue在此处进行初始化操作(另一处位于SecretaryFragment)
 						GlobalValue.mySecretary=gson.fromJson(json,MySecretary.class);
 						activity.sendBroadcast(new Intent("com.lansun.qmyo.refreshMySecretary"));
 						/*if(first_enter == 0){
@@ -528,8 +531,14 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 									Gson gson=new Gson();
 									String json=response.body().string();
 									GlobalValue.mySecretary=gson.fromJson(json,MySecretary.class);
-									activity.sendBroadcast(new Intent("com.lansun.qmyo.refreshMySecretary"));
-									
+									new Timer().schedule(new TimerTask() {
+										
+										@Override
+										public void run() {
+											activity.sendBroadcast(new Intent("com.lansun.qmyo.refreshMySecretary"));
+											LogUtils.toDebugLog("cast", "MineFragment拿到秘书信息后发送更新秘书信息的广播");
+										}
+									}, 800);
 									/*if(first_enter == 0){
 										activity.sendBroadcast(new Intent("com.lansun.qmyo.refreshMySecretary"));
 										first_enter = Integer.MAX_VALUE;
@@ -544,10 +553,6 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 					
 					
 					
-					
-					
-					
-					
 					/*init();*/
 					/**
 					 * 保证从后台重新进入当前fragment时，头像部分可以重新加载上去
@@ -558,9 +563,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 							//加载头像上去
 							loadPhoto(avatar, v.iv_mine_head);
 						}
-						
 						if (!TextUtils.isEmpty(GlobalValue.user.getNickname())) {
-							
 							if(GlobalValue.user.getNickname() == null||GlobalValue.user.getNickname() =="null"||GlobalValue.user.getNickname().contains("null")){
 								v.tv_mine_nickname.setText("请设置昵称");
 								Log.i("Tag：nickName","NickName应该为设置昵称");
@@ -584,11 +587,12 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 							
 						}
 					}
+					
 				}else if(intent.getAction().equals("com.lansun.qmyo.refreshAvatar_NickName")){
 					loadNickAndAvatar();
 				}
 				
-				isFirstReceiveBroadcast=false;
+//				isFirstReceiveBroadcast=false;
 			}
 		}
 	}
@@ -597,7 +601,6 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 		activity.unregisterReceiver(broadCastReceiver);
 		super.onDestroy();
 	}
-	
 	private void loadNickAndAvatar() {
 		
 		LogUtils.toDebugLog("userinfo", "init()方法里：App.app.getData(isExperience)=： "+App.app.getData("isExperience"));
@@ -641,7 +644,6 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 					}else{
 						v.tv_mine_nickname.setText(App.app.getData("user_nickname"));
 					}
-					
 					LogUtils.toDebugLog("userinfo", "init()方法里： App.app.getData(user_nickname)=： "+App.app.getData("user_nickname"));
 				}else{
 					LogUtils.toDebugLog("userinfo", "init()方法里：  GlobalValue.user为空，App.app.getData(user_nickname)为空，App.app.getData(user_avatar)为空");

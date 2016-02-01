@@ -621,8 +621,8 @@ import com.squareup.okhttp.Response;
 		initView(rootView);
 
 		//当前页面根据键盘的问题自动判断是否将布局进行重新编排 ，以保证键盘不会将界面盖住
-		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
-				WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+//		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
+//				WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 		
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN); 
 		
@@ -669,7 +669,7 @@ import com.squareup.okhttp.Response;
 					  if(times == 0){
 						lv_search_content.addFooterView(emptyView);
 			              lv_search_content.onLoadMoreOverFished();
-			              CustomToast.show(activity, "到底啦！", "该关键词下暂时只有这么多内容");
+			              CustomToast.show(activity, R.string.reach_bottom, R.string.not_more);
 			              times++;
 			            }else{
 			              lv_search_content.onLoadMoreOverFished();
@@ -1298,7 +1298,7 @@ import com.squareup.okhttp.Response;
 
 //					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 //					PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
-					CustomToast.show(activity, "到底啦！", "该关键词下暂时只有这么多内容");
+					CustomToast.show(activity, R.string.reach_bottom, R.string.not_more);
 				} else {
 					String nextPageUrl = list.getNext_page_url();
 					startSearchNext(nextPageUrl);

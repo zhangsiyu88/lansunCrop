@@ -28,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_top_35"
-            android:text="总裁大大~发现版本啦~"
+            android:text="总裁大大~发现新版本啦~"
             android:textColor="@color/text_nomal" />
         
          <TextView
@@ -53,13 +53,13 @@
             android:id="@+id/pb_update"
             style="?android:attr/progressBarStyleHorizontal"
 	        android:layout_gravity="center_vertical" 
-	        android:background="#90000000"
+	        android:background="#90ffffff"
 	        android:max="100"
 	        android:progress="0"
 	        android:progressDrawable="@drawable/progressbar_bg"
             android:layout_height="2dp"
-            android:layout_width="200dp"
-            android:visibility="gone"/><!-- android:secondaryProgress="70"  -->
+            android:layout_width="match_parent"
+            /><!-- android:secondaryProgress="70"  -->
          
          <!--  下载中的百分比展示 -->
          <TextView 

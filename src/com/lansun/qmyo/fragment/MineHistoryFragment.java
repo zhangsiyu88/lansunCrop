@@ -160,7 +160,7 @@ import android.widget.TextView;
 							//CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的活动");
 							 if(times == 0){
 					              lv_mine_history_list.onLoadMoreOverFished();
-					              CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的活动");
+					              CustomToast.show(activity,  R.string.reach_bottom,R.string.just_watch_acts);
 					              times++;
 					            }else{
 					              lv_mine_history_list.onLoadMoreOverFished();
@@ -176,7 +176,7 @@ import android.widget.TextView;
 							//CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的门店");
 							 if(times == 0){
 					              lv_mine_history_list.onLoadMoreOverFished();
-					              CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的门店");
+					              CustomToast.show(activity,  R.string.reach_bottom,R.string.just_watch_store);
 					              times++;
 					            }else{
 					              lv_mine_history_list.onLoadMoreOverFished();
@@ -680,7 +680,7 @@ import android.widget.TextView;
 							||activityList.getNext_page_url().contains("null")) {
 //						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 //						PullToRefreshManager.getInstance().footerUnable();
-						CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的活动");
+						CustomToast.show(activity, R.string.reach_bottom,R.string.just_watch_acts);
 						return;
 					}
 					refreshUrl = activityList.getNext_page_url();
@@ -689,7 +689,7 @@ import android.widget.TextView;
 							||storeList.getNext_page_url().contains("null")) {
 //						PullToRefreshManager.getInstance().onFooterRefreshComplete();
 //						PullToRefreshManager.getInstance().footerUnable();
-						CustomToast.show(activity, "到底啦！", "您最近仅浏览了这么多的门店");
+						CustomToast.show(activity,  R.string.reach_bottom,R.string.just_watch_acts);
 						return;
 					}
 					refreshUrl = storeList.getNext_page_url();

@@ -189,9 +189,8 @@ import com.squareup.okhttp.Response;
 				break;
 			}
 		}
-
-		
 	};
+	
 	private SecretaryFragmentBroadCastReceiver broadCastReceiver;
 	private IntentFilter filter;
 	private View rootView;
@@ -203,8 +202,14 @@ import com.squareup.okhttp.Response;
 	
 	
 	private void setSecretaryInformation(){
-		if(!avatarShowedOnce){
-			v.tv_secretary_tip1.setText(GlobalValue.mySecretary.getOwner_name());
+		if(!avatarShowedOnce){//avatarShowedOnce:头像一经展示
+			if(!GlobalValue.mySecretary.getOwner_name().equals(" ")&&
+					!TextUtils.isEmpty(GlobalValue.mySecretary.getOwner_name())&&
+					!GlobalValue.mySecretary.getOwner_name().equals("null")){
+				v.tv_secretary_tip1.setText(GlobalValue.mySecretary.getOwner_name());
+			}else{
+				v.tv_secretary_tip1.setText("总裁大大");
+			}
 			
 			v.tv_secretary_name.setText(GlobalValue.mySecretary.getName());
 			loadPhoto(GlobalValue.mySecretary.getAvatar(),iv_secretary_head);
@@ -428,6 +433,8 @@ import com.squareup.okhttp.Response;
 					if (response.isSuccessful()) {
 						Gson gson=new Gson();
 						String json=response.body().string();
+						
+						//GlobalValue在此处进行初始化操作(另一处位于MineFragment)
 						GlobalValue.mySecretary=gson.fromJson(json,MySecretary.class);
 						handleOk.sendEmptyMessage(0);
 					}else {
@@ -722,7 +729,7 @@ import com.squareup.okhttp.Response;
 						}
 					});
 					dialog.show();
-					dialog.setCanceledOnTouchOutside(false);
+					dialog.setCanceledOnTouchOutside(true);
 					
 					activity.sendBroadcast(new Intent("com.lansun.qmyo.hideTheBottomMenu"));
 					System.out.println("SecretaryFragment的  发送   隐藏MainFrag的底部菜单按钮的广播了");

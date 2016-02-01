@@ -100,7 +100,23 @@
                 style="@style/line_style_1"
                 android:layout_marginTop="@dimen/margin_top_22"
                 android:background="@color/line_bg2" />
+           
             <TextView
+                android:id="@+id/textView3"
+                style="@style/text_style_small_26"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/margin_top_22"
+                android:lineSpacingExtra="6px"
+                android:text="@string/search_card_tip3" />
+            <TextView
+                android:id="@+id/textView4"
+                style="@style/text_style_small_26"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="4dp"
+                android:lineSpacingExtra="6px"
+                android:text="@string/search_card_tip4" />
+            
+             <TextView
                 android:id="@+id/textView1"
                 style="@style/text_style_small_26"
                 android:layout_gravity="center_horizontal"

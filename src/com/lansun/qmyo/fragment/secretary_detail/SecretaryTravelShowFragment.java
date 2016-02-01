@@ -21,6 +21,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,28 +32,32 @@ import android.view.WindowManager;
 import android.widget.TextView;
 public class SecretaryTravelShowFragment extends SecretaryDetailsBaseFragment implements ExecutInitData{
 	private RecyclingImageView iv_activity_back;
-	private TextView commit_tv,check_suprice,content,tv_secretary_answer;
+	private TextView commit_tv,check_suprice,content;
 	private Fragment fragment;
 	private FragmentEntity event;
-	private CircleImageView iv_secretary_head;
-	private String owner_name;
-	private String tv_secretary_answer_text;
 	private View rootView;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		event = new FragmentEntity();
 	}
-	private void initData() {
-		if (GlobalValue.mySecretary!=null) {
-			loadPhoto(GlobalValue.mySecretary.getAvatar(), iv_secretary_head);
-			owner_name=GlobalValue.mySecretary.getOwner_name();
-		}else {
-			owner_name="总裁大人";
-		}
-		tv_secretary_answer_text = tv_secretary_answer.getText().toString();
-		tv_secretary_answer.setText(owner_name+","+tv_secretary_answer_text);
-	}
+//	private void initData() {
+//		if (GlobalValue.mySecretary!=null) {
+//			loadPhoto(GlobalValue.mySecretary.getAvatar(), iv_secretary_head);
+//			if(!GlobalValue.mySecretary.getOwner_name().equals(" ")&&
+//					!TextUtils.isEmpty(GlobalValue.mySecretary.getOwner_name())&&
+//					GlobalValue.mySecretary.getOwner_name().equals("null")){
+//				owner_name=GlobalValue.mySecretary.getOwner_name();
+//			}else{
+//				owner_name="总裁大大";
+//			}
+//		}else {
+//			owner_name="总裁大大";
+//		}
+//		tv_secretary_answer_text = tv_secretary_answer.getText().toString();
+//		tv_secretary_answer.setText(owner_name+","+tv_secretary_answer_text);
+//	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -176,7 +181,7 @@ public class SecretaryTravelShowFragment extends SecretaryDetailsBaseFragment im
 			loadPhoto(GlobalValue.mySecretary.getAvatar(), iv_secretary_head);
 			owner_name=GlobalValue.mySecretary.getOwner_name();
 		}else {
-			owner_name="总裁大人";
+			owner_name="总裁大大";
 		}
 		tv_secretary_answer.setText(owner_name+","+tv_secretary_answer_text);
 	}

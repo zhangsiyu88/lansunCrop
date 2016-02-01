@@ -161,7 +161,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginRight="@dimen/l_r_35"
                         android:layout_toLeftOf="@id/iv_setting_clear_cache"
-                        android:text="55"
+                        android:text=""
                         android:textColor="@color/app_green1" />
                     <!--  android:layout_alignBottom="@id/iv_setting_clear_cache" -->
                 </RelativeLayout>
