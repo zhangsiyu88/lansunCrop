@@ -67,7 +67,7 @@
                 style="@style/w_wrap_h_wrap"
                 android:layout_gravity="center"
                 android:background="@drawable/shared1" /> 
-        </LinearLayout>
+        </LinearLayout><!--   -->
         
          <!-- 进度条内容 -->
          <ProgressBar 

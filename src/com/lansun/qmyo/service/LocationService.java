@@ -11,6 +11,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 /*import cn.letsbook.running.model.FixedLengthList;
 import cn.letsbook.running.util.Constants;*/
 
@@ -18,6 +19,7 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.location.LocationManagerProxy;
 import com.amap.api.location.LocationProviderProxy;
+import com.android.pc.util.Gps;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
@@ -52,15 +54,12 @@ import com.lansun.qmyo.view.CustomToast;
 	        locationManagerProxy.requestLocationData(LocationProviderProxy.AMapNetwork, LOCATION_UPDATE_MIN_TIME,LOCATION_UPDATE_MIN_DISTANCE, this);
 	        // 如果定位方式包括GPS定位需要手动设置GPS可用
 	        locationManagerProxy.setGpsEnable(true);
-	        
 	        Log.v("locationservice", "locationservicestart");
 	    }
 
 	    @SuppressWarnings("deprecation")
 	    @Override
 	    public void onDestroy() {
-	        super.onDestroy();
-
 	        // 在Service销毁的时候销毁定位资源
 	        if (locationManagerProxy != null) {
 	            locationManagerProxy.removeUpdates(this);
@@ -68,8 +67,14 @@ import com.lansun.qmyo.view.CustomToast;
 	        }
 	        //设置为null是为了提醒垃圾回收器回收资源
 	        locationManagerProxy = null;
+//	        Toast.makeText(App.app, "定位服务被销毁", Toast.LENGTH_SHORT).show();
+	        super.onDestroy();
 	    }
 
+	    
+	    
+	    
+	    
 	    @Override
 	    public void onLocationChanged(Location location) {
 	        //在较新的SDK版本中，这个方法在位置发生变化的时候不会被
@@ -101,6 +106,7 @@ import com.lansun.qmyo.view.CustomToast;
 	        // 如果使用虚拟机测试的时候遇到这个问题，建议使用真机测试。
 	        if (aMapLocation == null|| aMapLocation.getAMapException().getErrorCode() != 0) {
 	            Log.v("locationservice", aMapLocation == null ? "null" : "not null");
+	            Toast.makeText(App.app, "定位异常，请检查网络", Toast.LENGTH_LONG).show();
 	            
 	            if (aMapLocation != null) {
 	                Log.v("locationservice", "errorcode" + aMapLocation.getAMapException().getErrorCode());
@@ -122,14 +128,20 @@ import com.lansun.qmyo.view.CustomToast;
 //	        GlobalValue.gps.setWgLat(aMapLocation.getLatitude());
 //	        GlobalValue.gps.setWgLon(aMapLocation.getLongitude());
 //	        
-
-	        correctGpsCoordinateAndSetData(aMapLocation.getLatitude(),aMapLocation.getLongitude());
-	        Log.d("更新的坐标","高德更新的坐标:"+aMapLocation.getLatitude()+","+aMapLocation.getLongitude());
-	        Log.d("更新的坐标","修整为固定小数点后六位的坐标:"+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
+	    	if(!(App.app.getData("select_cityCode").equals(App.app.getData("cityCode")))){
+				//如果是当前定位城市 不是 你所选中的城市，那么前往访问的就是： 默认城市中的默认position
+				//Gps的值不做更新，维持之前写定的Gps的值
+	    		Log.d("更新的坐标","更新的操作在进行，但Gps值并未替换");
+			}else{
+				//如果是当前定位城市 正是 你所选中的城市，那么前往访问的就是：当前定位到的position值
+				correctGpsCoordinateAndSetData(aMapLocation.getLatitude(),aMapLocation.getLongitude());
+				Log.d("更新的坐标","高德更新的坐标:"+aMapLocation.getLatitude()+","+aMapLocation.getLongitude());
+				Log.d("更新的坐标","修整为固定小数点后六位的坐标:"+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
+				
+			}
+	        //Toast.makeText(App.app, "坐标已更新。。。", Toast.LENGTH_SHORT).show();
 	        
-	        
-	        
-	       // CustomToast.show(getApplicationContext(), "更新坐标位置", "已更新");
+	        // CustomToast.show(getApplicationContext(), "更新坐标位置", "已更新");
 	        //CustomToast.show(getApplicationContext(), "纬度：", ""+aMapLocation.getLatitude());
 	        //CustomToast.show(getApplicationContext(), "经度：", ""+aMapLocation.getLongitude());
 	        

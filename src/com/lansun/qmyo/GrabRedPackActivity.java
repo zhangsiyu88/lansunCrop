@@ -131,9 +131,6 @@ private static final int HAVE_GOT = 2;
 		}
 	};
 	private String currentPage = null;
-	
-	
-	
 	public GrabRedPackActivity(){
 		
 	}
@@ -267,8 +264,6 @@ private static final int HAVE_GOT = 2;
 		webView.setOnScrollChangedCallback(onScrollChangedCallback);
 		
 //		testLocalPort();//--------------------------------------------------------------------------->guanbi
-		
-		
 		webView.loadUrl(loadUrl);
 	}
 
@@ -467,7 +462,7 @@ private static final int HAVE_GOT = 2;
 			webView.loadUrl(loadUrl);
 			
 			break;
-		case R.id.iv_activity_shared:
+		case R.id.iv_activity_shared://此处针对分享按钮实现单独的分享功能
 			//NO-OP
 			break;
 		

@@ -14,7 +14,8 @@
         android:icon="@drawable/icon_redpack"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" 
-        android:largeHeap="true">
+        android:largeHeap="true"
+        ><!--  -->
 
         
 	     <!-- 包名为 com.qmyo.activity 本人(Yeun's PC上)申请开发模式下的高德地图的key -->
@@ -22,34 +23,43 @@
 	            android:name="com.amap.api.v2.apikey"
 	            android:value="fa0aa51b559886e355075a4c8697a35b" />  -->
        <!--  包名为 com.qmyo.activity 本人(Yeun's LansunCorp  PC上)申请开发模式下的高德地图的key -->
-   	   <!--<meta-data
+   	   <!-- <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="7b6ab7010e05188877fb2c29dff0240c" /> -->
        
        
-       <!--  包名为com.lansun.qmyo 本人(Yeun's LansunCorp  PC上)申请开发模式下的高德地图的key -->
-       <!--   <meta-data
+        <!--  包名为com.lansun.qmyo 本人(Yeun's LansunCorp  PC上)申请开发模式下的高德地图的key -->
+        <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="e5b6027255bb77d1aa285e5cec53c134" />  
-        -->
+            android:value="e5b6027255bb77d1aa285e5cec53c134" /> 
+       
          <!--  包名为com.lansun.qmyo 本人(Yeun's  PC上)申请开发模式下的高德地图的key -->
-      <!--  <meta-data
+         <!--  <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="" />  -->
         
         
+       
         <!--  包名为com.lansun.qmyo  申请    发布版本模式下的高德地图的key -->
-	    <meta-data
+	   <!--  <meta-data
 	            android:name="com.amap.api.v2.apikey"
-	            android:value="a81d22502d5958d33c95c7e32f97c656" /> 
+	            android:value="a81d22502d5958d33c95c7e32f97c656" />  -->
 	           
 	   
 	    <!-- 后台开启的高德定位服务 -->
-        <service
-                 android:name="com.lansun.qmyo.service.LocationService"
-                 android:exported="false" />   <!--android:process=".Location"  -->
-	       
+        <service  android:name="com.lansun.qmyo.service.LocationService"
+            	  /> 
+            	  <!--android:exported="true" android:process=":MPush"  -->
+                  <!--android:exported="true" android:process=".Location"  -->
+                  
+        <!-- 后台更新Token的服务 -->          
+	    <service android:name="com.lansun.qmyo.service.AccessTokenService" 
+	              />  
+	              <!--  android:exported="true" android:process=":MPush" -->
+	              <!-- android:exported="true" android:process=".RefreshToken" -->
        
+        
+        
         <!-- 友盟的元数据 -->
         <meta-data
             android:name="UMENG_APPKEY"
@@ -66,6 +76,8 @@
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" >
         </activity>
         
+        
+        
         <!-- 腾讯分享的辅助界面 -->
         <activity
             android:name="com.tencent.connect.common.AssistActivity"
@@ -79,8 +91,8 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
-             ><!--  android:excludeFromRecents="true"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
+            <!--  android:excludeFromRecents="true"
              android:windowSoftInputMode="adjustResize|stateAlwaysHidden"-->
         </activity>
         
@@ -102,7 +114,7 @@
             </intent-filter>
         </activity><!--android:launchMode="singleTask"  -->
 
-        <service android:name="com.lansun.qmyo.service.AccessTokenService" />
+       
 
         <!-- 关于微信分享的Activity -->
         <activity
@@ -124,7 +136,7 @@
                 <action android:name="com.ns.mutiphotochoser.sample.action.CHOSE_PHOTOS" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </activity> 
+         </activity> 
 
         
         
@@ -153,7 +165,9 @@
         <service
             android:name="cn.jpush.android.service.PushService"
             android:enabled="true"
-            android:exported="false" >
+            android:exported="false" 
+            android:process=":MPush"
+            ><!-- android:process=":MPush" -->
             <intent-filter>
                 <action android:name="cn.jpush.android.intent.REGISTER" />
                 <action android:name="cn.jpush.android.intent.REPORT" />
@@ -166,13 +180,16 @@
         <service
             android:name="cn.jpush.android.service.DaemonService"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true" 
+            android:process=":MPush"
+            ><!--   -->
             <intent-filter>
                 <action android:name="cn.jpush.android.intent.DaemonService" />
-
                 <category android:name="com.lansun.qmyo" />
             </intent-filter>
         </service>
+        
+        
 
         <!-- Required SDK核心功能 -->
         <receiver
@@ -238,8 +255,9 @@
     <permission
         android:name="com.lansun.qmyo.permission.JPUSH_MESSAGE"
         android:protectionLevel="signature" />
-
     <uses-permission android:name="com.lansun.qmyo.permission.JPUSH_MESSAGE" />
+    
+    
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -273,4 +291,7 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
 
+    <!--OneApm的快照权限  -->
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 </manifest>

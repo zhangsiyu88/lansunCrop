@@ -556,7 +556,7 @@ import com.squareup.okhttp.Response;
 			switch (r.getKey()) {
 			case 0:
 				Token token = Handler_Json.JsonToBean(Token.class,r.getContentAsString());
-				CustomToast.show(activity, "欢迎回来", "小迈静候多时");
+				CustomToast.show(activity, "欢迎回来哦", "不用找，优惠到，随身小秘帮您挑~");
 				//CustomToast.show(activity, "权限更新成功", "已获取最新令牌");
 				App.app.setData("access_token", token.getToken());
 				

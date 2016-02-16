@@ -20,6 +20,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.text.Html;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -46,6 +47,8 @@ import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
+import com.android.pc.ioc.inject.InjectListener;
+import com.android.pc.ioc.inject.InjectMethod;
 import com.android.pc.ioc.inject.InjectView;
 import com.android.pc.ioc.internet.CallBack;
 import com.android.pc.ioc.internet.FastHttp;
@@ -70,8 +73,10 @@ import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.AdCode;
 import com.lansun.qmyo.domain.City;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.service.LocationService;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
@@ -136,16 +141,20 @@ public class GpsFragment extends BaseFragment {
 			
 			@Override
 			public void onClick(View arg0) {
-				//将城市数据放入到
-				/*HomeFragment fragment = new HomeFragment();*/
-				MainFragment fragment = new MainFragment(0);
-				Bundle args = new Bundle();
-				saveSelectCity(localCityCode, localCity);
 				
-				fragment.setArguments(args);
-				FragmentEntity event = new FragmentEntity();
-				event.setFragment(fragment);
-				EventBus.getDefault().post(event);
+				if(localCityCode!=null&&localCity!=null){
+					//将城市数据放入到
+					/*HomeFragment fragment = new HomeFragment();*/
+					MainFragment fragment = new MainFragment(0);
+					Bundle args = new Bundle();
+					args.putBoolean("restartGps", true);
+					
+					saveSelectCity(localCityCode, localCity);
+					fragment.setArguments(args);
+					FragmentEntity event = new FragmentEntity();
+					event.setFragment(fragment);
+					EventBus.getDefault().post(event);
+				}
 			}
 		});
 		return rootView;
@@ -154,9 +163,14 @@ public class GpsFragment extends BaseFragment {
 	@InjectInit
 	private void init() {
 		
-		//刚进来就初始化一下当前定位城市!
-		locationData();
-
+		//1.停止程序中的location服务
+		//2.初始化一下当前定位城市!
+		MainActivity mainActivity = (MainActivity) activity;
+		mainActivity.stopLocationService();
+		
+		/* 由于下方代码的locationData()方法中的AMap核心代码是全局单例的形式，当单例未被关闭时，会导致下方代码无效的情况，故移至界面搭建完成后再执行
+		 * locationData();*/
+		
 		
 		//headerView是 当前城市定位:一栏和下面的两个GridView(见下面)
 		View headerView = LayoutInflater.from(activity).inflate(R.layout.city_header, null);
@@ -192,8 +206,7 @@ public class GpsFragment extends BaseFragment {
 		HashMap<String, Object> head = new HashMap<>();
 		head.put("Authorization", "Bearer " + App.app.getData("access_token"));
 		config.setHead(head);
-		FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_SITE + currentState,
-				config, this);
+		FastHttpHander.ajaxGet(GlobalValue.URL_SEARCH_SITE + currentState,config, this);
 		
 		/*使用FastHttpHander去访问服务器
 		InternetConfig config1 = new InternetConfig();
@@ -221,15 +234,10 @@ public class GpsFragment extends BaseFragment {
 								App.app.setData("firstEnter","notblank");//但此时已不是第一次进入
 							}
 				          dialog.dismiss();
-						
 					}
-
 					@Override
-					public void onNegativeButtonClick(
-							DialogInterface dialog, int which) {
+					public void onNegativeButtonClick(DialogInterface dialog, int which) {
 						dialog.dismiss();
-						
-						
 					}
 				});
 		}
@@ -256,13 +264,13 @@ public class GpsFragment extends BaseFragment {
 	@InjectHttp
 	private void result(ResponseEntity r) {
 		if (r.getStatus() == FastHttp.result_ok) {
-			if (citys != null) {
-				citys.clear();
-			}
+			
 			switch (r.getKey()) {
 			case 0:   //拿到城市的返回结果，将返回城市的数据放到ListView中
+				if (citys != null) {
+					citys.clear();
+				}
 				String json = r.getContentAsString();
-				
 				/* parseCity(Json): 将返回的json串转换为HashMap<String, ArrayList<City>>
 				 * fillGridView(citys):填充GridView对象的数据,将城市数据和gv对象挂上钩,如:近期访问和热门城市
 				 * filledData(cityList):将获取到的城市名链表转换成 按拼音排序的链表
@@ -275,12 +283,19 @@ public class GpsFragment extends BaseFragment {
 					CityListAdapter mCityListAdapter = new CityListAdapter(activity, filledData(cityList));
 					
 					v.listView.setAdapter(mCityListAdapter);
-					
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
+				
+				//在Init()方法中，之前由于stopLocation代码执行的速度问题，导致下方的locationData()实际操作无效，故将代码移至此处
+				locationData();
+				
+				
 				break;
 			case 1:
+				if (citys != null) {
+					citys.clear();
+				}
 				String json1 = r.getContentAsString();
 				try {
 					citys = parseCity(json1);
@@ -300,8 +315,7 @@ public class GpsFragment extends BaseFragment {
 				
 				localCity = code.getCity();//从网络获取而来的定位城市信息
 				localCityCode = code.getAdcode();
-				tv_city_header_current_city.setText(Html.fromHtml(String.format(getString(R.string.current_city),
-						localCity)));
+				tv_city_header_current_city.setText(Html.fromHtml(String.format(getString(R.string.current_city),localCity)));
 				city_gps_loading.setVisibility(View.GONE);
 				break;
 			}
@@ -324,7 +338,7 @@ public class GpsFragment extends BaseFragment {
 		SearchHotAdapter recentAdapter = new SearchHotAdapter(
 				gv_city_header_recent_visit, dataList,
 				R.layout.activity_search_hot_item);
-		gv_city_header_recent_visit.setAdapter(recentAdapter);
+		gv_city_header_recent_visit.setAdapter(recentAdapter);//最近访问搜索
 
 		ArrayList<City> recommendCitys = citys.get("recommend");
 		ArrayList<HashMap<String, String>> dataList1 = new ArrayList<>();
@@ -336,7 +350,7 @@ public class GpsFragment extends BaseFragment {
 		SearchHotAdapter recommendAdapter = new SearchHotAdapter(
 				gv_city_header_recent_visit, dataList1,
 				R.layout.activity_search_hot_item);
-		gv_city_header_hot_city.setAdapter(recommendAdapter);
+		gv_city_header_hot_city.setAdapter(recommendAdapter);//热门推荐搜索
 
 		if (!"foreign".equals(currentState)) {
 			ArrayList<City> foreignCitys = citys.get("foreign");
@@ -394,8 +408,7 @@ public class GpsFragment extends BaseFragment {
 				ArrayList<City> countryCity = new ArrayList<>();
 				Iterator keys = country.keys();
 				while (keys.hasNext()) {
-					JSONArray array = country.getJSONArray(keys.next()
-							.toString());
+					JSONArray array = country.getJSONArray(keys.next().toString());
 					for (int i = 0; i < array.length(); i++) {
 						City city2 = Handler_Json.JsonToBean(City.class, array
 								.get(i).toString());
@@ -410,8 +423,7 @@ public class GpsFragment extends BaseFragment {
 
 				ArrayList<City> foreignCity = new ArrayList<>();
 				for (int i = 0; i < foreign.length(); i++) {
-					City city = Handler_Json.JsonToBean(City.class, foreign
-							.get(i).toString());
+					City city = Handler_Json.JsonToBean(City.class, foreign.get(i).toString());
 					foreignCity.add(city);
 				}
 				citys.put("foreign", foreignCity);
@@ -475,25 +487,25 @@ public class GpsFragment extends BaseFragment {
 		/*v.et_home_search.setInputType(InputType.TYPE_DATETIME_VARIATION_NORMAL);*/
 		super.onPause();
 	}
-	
-	
+	@Override
+	public void onDestroy() {
+		stopLocation();// 停止定位
+		aMapLocation = null;
+		LogUtils.toDebugLog("GpsFragment", "GpsFragment中的定位终止");
+		activity.sendBroadcast(new Intent("com.lansun.qmyo.restartGPS"));
+		super.onDestroy();
+	}
 	/**
 	 * 利用定位代理来定位城市信息
 	 */
 	protected void locationData() {
 		aMapLocManager = LocationManagerProxy.getInstance(activity);
-		/*
-		 * Notice!!! 这里定位使用的是LocationManagerProxy.NETWORK_PROVIDER !!!,没有使用高德地图的 混合定位
-		 */
 		aMapLocManager.requestLocationData(LocationProviderProxy.AMapNetwork, 1000, 10, locationListener);
-		/*aMapLocManager.requestLocationData(LocationManagerProxy.NETWORK_PROVIDER, 2000, 10, locationListener);*///此处使用的是网络（硬件）定位，故会产生偏差
+		/* Notice!!! 这里定位使用的是LocationManagerProxy.NETWORK_PROVIDER !!!,没有使用高德地图的 混合定位
+		 * aMapLocManager.requestLocationData(LocationManagerProxy.NETWORK_PROVIDER, 2000, 10, locationListener);*///此处使用的是网络（硬件）定位，故会产生偏差
 		aMapLocManager.setGpsEnable(true);
-		
-		
-		
 	}
-	private AMapLocationListener locationListener = new AMapLocationListener() {
-
+	private AMapLocationListener locationListener = new AMapLocationListener(){
 		/**
 		 * 混合定位回调函数(未走)
 		 * 暂时走Network的渠道
@@ -522,10 +534,10 @@ public class GpsFragment extends BaseFragment {
 				}*/
 				
 				
-				String cityName = App.app.getData("cityName");
+				/*String cityName = App.app.getData("cityName");
 				tv_city_header_current_city.setText(Html.fromHtml(String
 						.format(getString(R.string.current_city),  cityName)));
-				city_gps_loading.setVisibility(View.GONE);
+				city_gps_loading.setVisibility(View.GONE);*/
 				
 				
 				
@@ -537,18 +549,16 @@ public class GpsFragment extends BaseFragment {
 				}
 				Log.i("location的地址信息: ",GlobalValue.gps.getWgLat() +" & "+ GlobalValue.gps.getWgLon());
 				
-				/*if (aMapLocation != null) {
-					stopLocation();
-				}*/
 				
-				
-				
-		    	/*//使用FastHttpHander去访问服务器
+		    	//使用FastHttpHander去访问服务器
 				InternetConfig config1 = new InternetConfig();
 				config1.setKey(2);
 				FastHttpHander.ajaxGet(String.format(GlobalValue.URL_GPS_ADCODE, GlobalValue.gps.getWgLon(),
-						GlobalValue.gps.getWgLat()), null, config1, this);*/
+						GlobalValue.gps.getWgLat()), null, config1, GpsFragment.this);
 				
+				if (aMapLocation != null) {
+					stopLocation();
+				}
 				
 				
 				/* 使用HttpUtils去访问服务器
@@ -594,7 +604,7 @@ public class GpsFragment extends BaseFragment {
 		}
 	};
 	
-	private HashMap<String, ArrayList<City>> citys;
+	private HashMap<String, ArrayList<City>> citys =new HashMap<String, ArrayList<City>>() ;
 	
 	
 	
@@ -722,8 +732,12 @@ public class GpsFragment extends BaseFragment {
 		} else {
 			/*fragment = new HomeFragment();*/
 			fragment = new MainFragment(0);
+			args.putBoolean("restartGps", true);
 			saveSelectCity(city.getCode(), city.getName());
-			saveCurrentCity(city.getCode(), city.getName());
+			
+			/** 不去变更当前城市的定位值
+			 *  saveCurrentCity(city.getCode(), city.getName());
+			 */
 		}
 		fragment.setArguments(args);
 		FragmentEntity event = new FragmentEntity();
@@ -747,16 +761,18 @@ public class GpsFragment extends BaseFragment {
 			City city = citys.get("recommend").get(position);
 			Fragment fragment;
 			Bundle args = new Bundle();
-			if (city.getCity() > 0) {// 有2个城市就要跳转
+			if(city.getCity() > 0){// 有2个城市就要跳转
 				fragment = new SelectCityFragment();
 				args.putString("code", city.getCode());
 				currentState = "all";
-			} else {
+			}else{
 				/*fragment = new HomeFragment();*/
-				
 				fragment = new MainFragment(0);
+				args.putBoolean("restartGps", true);
 				saveSelectCity(city.getCode(), city.getName());
-				saveCurrentCity(city.getCode(), city.getName());
+				/** 不去变更当前城市的定位值
+				 *  saveCurrentCity(city.getCode(), city.getName());
+				 */
 			}
 			fragment.setArguments(args);
 			FragmentEntity event = new FragmentEntity();
@@ -786,11 +802,13 @@ public class GpsFragment extends BaseFragment {
 				args.putString("code", city.getCode());
 				currentState = "all";
 			} else {
-				
 				/*fragment = new HomeFragment();*/
 				fragment = new MainFragment(0);
+				args.putBoolean("restartGps", true);
 				saveSelectCity(city.getCode(), city.getName());
-				saveCurrentCity(city.getCode(), city.getName());
+				/** 不去变更当前城市的定位值
+				 *  saveCurrentCity(city.getCode(), city.getName());
+				 */
 			}
 			fragment.setArguments(args);
 			FragmentEntity event = new FragmentEntity();

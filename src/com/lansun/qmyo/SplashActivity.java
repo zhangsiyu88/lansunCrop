@@ -289,6 +289,9 @@ public class SplashActivity extends FragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
+//		setContentView(R.layout.activity_splash);
+		
 	//---后期修改
 		 if (((LocationManager) getSystemService("location")).isProviderEnabled("gps")){
 			 
@@ -314,11 +317,12 @@ public class SplashActivity extends FragmentActivity {
 		        localSelector.select(new String[] { " * " });
 		        //localSelector.limit(2147483647);
 		        GlobalValue.sensitiveList = Ioc.getIoc().getDb(SplashActivity.this.getCacheDir().getPath(), "qmyo_sensitive.db").findAll(localSelector);
+
 		      }
 		    }.start();
 		//------------------
 		    
-		Handler_Inject.injectFragment(this, null);
+		Handler_Inject.injectFragment(this, null); 
 		super.onCreate(savedInstanceState);
 	}
 
@@ -524,9 +528,7 @@ public class SplashActivity extends FragmentActivity {
 												GlobalValue.gps = new Gps(31.230431, 121.473705);
 												
 												finish();
-												startActivity(new Intent(
-														SplashActivity.this,
-														MainActivity.class));
+												startActivity(new Intent(SplashActivity.this,MainActivity.class));
 											}
 										}, 1500);
 										stopLocation();

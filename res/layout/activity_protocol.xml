@@ -7,6 +7,16 @@
 
     <include layout="@layout/activity_com" />
 
+    
+    <TextView 
+        style="@style/w_match_h_wrap"
+        android:text="您使用迈界服务前，应当仔细阅读《迈界用户协议》（以下简称“本协议”）的全部内容。您在用户注册页面点击“同意以下协议并注册”按钮后，即视为您已阅读、理解并同意本协议的全部内容，本协议即在您与迈界之间产生法律效力，成为对双方均具有约束力的法律文件。"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:lineSpacingExtra="3dp"
+        android:textSize="12dp" />
     <ExpandableListView
         android:id="@+id/elv_help"
         android:layout_width="match_parent"

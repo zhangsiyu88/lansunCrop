@@ -61,7 +61,10 @@ import com.android.pc.ioc.view.listener.OnItemClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.Request.Method;
 import com.android.volley.Response.ErrorListener;
@@ -119,6 +122,8 @@ import com.lansun.qmyo.R;
 	private ViewMiddle viewMiddle;
 
 	private ViewRight viewRight;
+	
+	public RequestQueue queue = Volley.newRequestQueue(App.app);
 
 
 	int index = 0;
@@ -175,7 +180,7 @@ import com.lansun.qmyo.R;
 	private boolean isFromNoNetworkViewTip = false;
 	/*private boolean spyJustFirstClick = false;*/
 
-	private RequestQueue queue;
+
 
 	class Views {
 		private View iv_card;
@@ -323,8 +328,6 @@ import com.lansun.qmyo.R;
 				                lv_activity_list.onLoadMoreOverFished();
 				            }
 
-//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
-//						PullToRefreshManager.getInstance().footerUnable();//此处关闭上拉的操作
 					} else {
 						/* 下面这一步代码应该耽误了半天时间
 						 * PullToRefreshManager.getInstance().onFooterRefreshComplete();
@@ -352,7 +355,6 @@ import com.lansun.qmyo.R;
 						} catch (UnsupportedEncodingException e) {
 						}
 						refreshParams.put("position",position_bussnessAfterEncode);*/
-						
 						refreshParams.put("service", HODLER_TYPE);
 						refreshParams.put("type", type);
 						
@@ -373,6 +375,8 @@ import com.lansun.qmyo.R;
 						 * 仅当当前页数currentPage和即将作为请求参数传至服务器端的page不相同时，即前往服务器提交请求
 						 */
 						
+						
+						
 						if(page!=currentPage){
 							//更新当前页面的下一个页面时,前面的数据不应该被取消掉,应该拼接在后面
 							/*refreshCurrentList(activityList.getNext_page_url(),null, 4, lv_activity_list);*/
@@ -388,8 +392,6 @@ import com.lansun.qmyo.R;
 				}
 			}
 		});
-		
-		
 		return rootView;
 	}
 	
@@ -397,12 +399,12 @@ import com.lansun.qmyo.R;
 	protected void refreshCurrentListByVolley(String next_page_url,
 			 final LinkedHashMap<String, String> refreshParam, int key,
 			ActivityMyListView listView) {
-		queue = Volley.newRequestQueue(App.app);
+		
 		String url = next_page_url;
 		
 		
 //		refreshParams.put("location",GlobalValue.gps.toString());
-//			refreshParams.put("location",GlobalValue.gps.toString());
+//		refreshParams.put("location",GlobalValue.gps.toString());
 //		refreshParams.put("site", getSelectCity()[0]);
 //		refreshParams.put("position",position_bussnessAfterEncode);
 //		refreshParams.put("service", HODLER_TYPE);
@@ -500,7 +502,7 @@ import com.lansun.qmyo.R;
 //					}
 					first_enter = Integer.MAX_VALUE;
 
-				} else {   //------->因为上拉前去获取到的数据为null，此时需要  将之前的值保留住并展示
+				}else{   //------->因为上拉前去获取到的数据为null，此时需要  将之前的值保留住并展示
 					    endProgress();
 					try{
 						lv_activity_list.removeFooterView(emptyView);
@@ -515,11 +517,16 @@ import com.lansun.qmyo.R;
 			@Override
 			public void onErrorResponse(VolleyError error) {
 				LogUtils.toDebugLog("loading", "加载更多失效");
+				LogUtils.toDebugLog("error: ", "error: "+ error.toString());
+				LogUtils.toDebugLog("error.networkResponse: ", "error: "+ error.networkResponse);
+				LogUtils.toDebugLog("error.getMessage(): ", "error: "+ error.getMessage());
+				LogUtils.toDebugLog("error.getLocalizedMessage(): ", "error: "+ error.getLocalizedMessage());
+				
 				progress_text.setText(R.string.net_error_refresh);
 				//针对在断网后再次点击上部筛选栏的自己菜单时，做出的重复添加无效的 noNetworkView界面操作
 				try{  lv_activity_list.removeFooterView(noNetworkView);
 				}catch(Exception e ){ }
-				CustomToast.show(activity, "网络异常", "服务器睡着了！");
+				CustomToast.show(activity, "网络异常", "无法连接服务器");
 					if(cPd!=null){//断网情况下，且还拥有了cPd，表明其走到了loadActivityList，表示之前成功使用过筛选栏进行列表选择过， 实际上是访问不到数据的 
 						cPd.dismiss();
 						cPd = null;
@@ -548,25 +555,39 @@ import com.lansun.qmyo.R;
 		   {  
 				//super.getHeaders();
 				Map<String, String> headers = new HashMap<String, String>();  
-				headers.put("Charset", "UTF-8");  
+			  /*headers.put("Charset", "UTF-8");  
 				headers.put("Content-Type", "application/x-javascript");  
-				headers.put("Accept-Encoding", "gzip,deflate");  
+				headers.put("Accept-Encoding", "gzip,deflate"); */ 
 				headers.put("Authorization", "Bearer "+App.app.getData("access_token"));  
 				return headers;  
 		   } 
-			
+
+//			
+//			@Override
+//			protected Map<String, String> getParams() throws AuthFailureError {
+//				
+//				Map<String, String> paramas = new HashMap<String, String>();  
+//				paramas.put("location",GlobalValue.gps.toString());
+//				paramas.put("site", getSelectCity()[0]);
+//				paramas.put("position",position_bussnessAfterEncode);
+//				paramas.put("service", HODLER_TYPE);
+//				paramas.put("type", type);
+//				paramas.put("intelligent", intelligentStr);
+//				paramas.put("page", refreshParam.get("page"));
+//				
+//				return paramas;
+//			}
 		};
+		
 		stringRequest.setTag("loadingMore");
+		stringRequest.setRetryPolicy(new DefaultRetryPolicy(20*1000, 1, (float)1.5));
+		
 		// 把这个请求加入请求队列
 		queue.add(stringRequest);
+//		queue.start();
 	}
 	
-	
-	
-	
-	
-	
-	
+
 	
 	
 	
@@ -1628,7 +1649,7 @@ import com.lansun.qmyo.R;
 				lv_activity_list.removeFooterView(noNetworkView);
 			}catch(Exception e ){
 			}
-			CustomToast.show(activity, "网络异常", "服务器睡着了！");
+			CustomToast.show(activity, "网络异常", "无法连接服务器");
 			
 				if(cPd!=null){//断网情况下，且还拥有了cPd，表明其走到了loadActivityList，表示之前成功使用过筛选栏进行列表选择过， 实际上是访问不到数据的 
 					cPd.dismiss();

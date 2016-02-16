@@ -73,17 +73,15 @@ public class App extends Application {
 		
 		SpeechUtility.createUtility(getApplicationContext(), SpeechConstant.APPID +"=567209d1"); 
 		
-		Ioc.getIoc().init(this);
+		Ioc.getIoc().init(this); // -----------------------------------------------fadsfs
 		
 		JPushInterface.init(getApplicationContext());
-		Log.i("很明显，程序一旦某机上安装成功，便获取到唯一的RegisterId","");
-		 
+//		Log.i("很明显，程序一旦某机上安装成功，便获取到唯一的RegisterId","");
 		super.onCreate();
-		initHistory();
+		initHistory();  // -----------------------------------------------fadsfs
 		initImageLoader(getApplicationContext());
 		
 		app = this;
-		// JPushInterface.init(this);
 		
 		/*if (TextUtils.isEmpty(App.app.getData("HasCity"))) {*/
 	
@@ -361,4 +359,5 @@ public class App extends Application {
 			}
 		}
 	}
+	
 }

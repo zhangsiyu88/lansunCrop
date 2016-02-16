@@ -22,7 +22,7 @@
                 android:layout_height="@dimen/home_ad_h" >
 
                <!--  <com.android.pc.ioc.image.RecyclingImageView -->
-               <ImageView
+               <com.android.pc.ioc.image.RecyclingImageView
                     android:id="@+id/iv_found_bg"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

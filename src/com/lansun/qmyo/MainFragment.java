@@ -27,6 +27,7 @@ import com.lansun.qmyo.fragment.HomeFragment;
 import com.lansun.qmyo.fragment.MineFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
+import com.lansun.qmyo.service.LocationService;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.gooview.GooViewListener;
 import com.lansun.qmyo.view.CustomToast;
@@ -141,6 +142,14 @@ public class MainFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		if(getArguments()!= null){//从GpsFragment页面传送过来信号，需要重启定位的服务
+			boolean launchPos = (boolean)getArguments().get("restartGps");
+			if(launchPos){
+				activity.startService(new Intent(activity,LocationService.class));
+				LogUtils.toDebugLog("launchPos", "从GpsFragment传来重启location的信号");
+			}
+		}
+		
 		 //进入活动详情时，就需要做好后面用户发表评论的准备工作了
 		new Thread(new Runnable() {
 			@Override
@@ -180,6 +189,7 @@ public class MainFragment extends Fragment {
 		filter.addAction("com.lansun.qmyo.DeleteTheLGPStatus");
 		filter.addAction("com.lansun.qmyo.hideTheBottomMenu");
 		filter.addAction("com.lansun.qmyo.recoverTheBottomMenu");
+		filter.addAction("com.lansun.qmyo.restartGPS");
 		getActivity().registerReceiver(broadCastReceiver, filter);
 		
 		
@@ -302,6 +312,11 @@ public class MainFragment extends Fragment {
 		fragList.add(new SecretaryFragment());
 		fragList.add(new FoundFragment());
 		fragList.add(new MineFragment());
+		
+		/*fragList.add(new FoundFragment());
+		fragList.add(new FoundFragment());
+		fragList.add(new FoundFragment());
+		fragList.add(new FoundFragment());*/
 		
 		vp_mainfrag.setOffscreenPageLimit(4);
 		vp_mainfrag.setAdapter(new MyFragAdapter(manager));
@@ -661,7 +676,10 @@ class MainFragmentBroadCastReceiver extends BroadcastReceiver{
 			v.bottom_mine.setVisibility(View.VISIBLE);
 			v.bottom_secretary.setVisibility(View.VISIBLE);
 			v.line_bottom.setVisibility(View.VISIBLE);*/
-	}
+	    }else if(intent.getAction().equals("com.lansun.qmyo.restartGPS")){
+	    	activity.startService(new Intent(activity,LocationService.class));
+			LogUtils.toDebugLog("launchPos", "从GpsFragment未点击其他按键，由返回按键转回，传来重启location的信号");
+	     }
 		}
 	 }
 

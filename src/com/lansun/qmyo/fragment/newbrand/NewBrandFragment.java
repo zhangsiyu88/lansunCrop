@@ -54,6 +54,7 @@ import com.android.pc.ioc.view.listener.OnItemClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request.Method;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response.ErrorListener;
@@ -429,7 +430,7 @@ public class NewBrandFragment extends BaseFragment{
 	private NewBrandRefreshBroadCastReceiver broadCastReceiver;
 	private RelativeLayout noNetworkView;
 	private int times = 0;
-	private RequestQueue queue;
+	private RequestQueue queue = Volley.newRequestQueue(App.app);
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -1000,9 +1001,8 @@ public class NewBrandFragment extends BaseFragment{
 	}
 	@SuppressWarnings("deprecation")
 	protected void startSearchDataByVolley(String next_page_url) {
-		queue = Volley.newRequestQueue(App.app);
-		String url = next_page_url;
 		
+		String url = next_page_url;
 		
 //		addHeader("Authorization", "Bearer "+App.app.getData("access_token"))
 		 
@@ -1037,8 +1037,10 @@ public class NewBrandFragment extends BaseFragment{
 		};
 		
 		stringRequest.setTag("loadingMore");
+		stringRequest.setRetryPolicy(new DefaultRetryPolicy(20*1000, 1, (float)1.5));
 		// 把这个请求加入请求队列
 		queue.add(stringRequest);
+//		queue.start();
 	}
 
 	

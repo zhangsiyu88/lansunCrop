@@ -127,6 +127,6 @@ public class SecretaryDetailsBaseFragment extends BaseFragment {
 			owner_name="总裁大大";
 		}
 		tv_secretary_answer_text = tv_secretary_answer.getText().toString();
-		tv_secretary_answer.setText(owner_name+","+tv_secretary_answer_text);
+		tv_secretary_answer.setText(owner_name+"，"+tv_secretary_answer_text);
 	}
 }

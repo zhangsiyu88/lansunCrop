@@ -42,7 +42,7 @@
                 android:layout_toRightOf="@+id/iv_search_activity_head"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="迈界偷偷告诉你喜欢的活动名"
+                android:text=""
                 android:textColor="#6F6F6F" />
 
             <TextView
@@ -55,7 +55,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:text="默默地说，其实小迈我也不知道，嚯嚯嚯嚯"
+                android:text=""
                 android:textColor="#AFAFAF" />
 
             

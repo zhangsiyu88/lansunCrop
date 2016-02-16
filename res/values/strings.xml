@@ -48,12 +48,15 @@
     <string name="yhq_money">适用优惠券金额</string>
     <string name="gz_sucess">关注成功</string>
     <string name="gz_qx_sucess_content">取消关注成功</string>
+    <string name="gz_qx_sucess_content_new">（╯^╰） 总裁大大~等您回来哟~~</string>
     <string name="gz_qx_faild_content">取消关注失败</string>
-    <string name="sc_sucess">收藏成功</string>
+    <string name="sc_sucess">收藏成功哟</string>
     <string name="sc_sucess_cancle">取消收藏成功</string>
     <string name="sc_sucess_content_cancle">您已经成功取消收藏</string>
     <string name="sc_sucess_cancle_collection">迈界小贴士</string>
+    <string name="sc_sucess_cancle_collection_new">取消收藏</string>
     <string name="sc_sucess_content_cancle_collection">取消收藏</string>
+    <string name="sc_sucess_content_cancle_collection_new">小迈期待您找到更中意的活动哦</string>
     <string name="gz_sucess_title">关注成功</string>
     <string name="gz_sucess_content">您可在“发现/门店关注”中查看\n还可自行设置门店的活动推送功能</string>
     <string name="gz_sucess_content1">您可在“发现/门店关注”中查看</string>
@@ -185,6 +188,7 @@
      <string name="tip4">总裁大大，迈界欢迎您</string>
     <string name="tip1">关注成功哟</string>
     <string name="tip2">迈界小贴士</string>
+    <string name="tip_qx_gz">取消关注</string>
      <string name="tip3">手机号或密码错误</string>
      <string name="tip_pswnotenter">密码未输入</string>
      <string name="tip_phonenotenter">手机号未输入</string>
@@ -334,6 +338,8 @@
     <string name="report_store">门店投诉</string>
     <string name="please_enter_content">请输入内容</string>
     <string name="report_success">举报成功</string>
+    <string name="report_success_act">举报成功</string>
+    <string name="report_success_store">投诉成功</string>
     <string name="delete">删除</string>
     <string name="max_add_eight">最多只能添加9张图片 </string>
     <string name="reply">回复</string>
@@ -467,8 +473,8 @@
     <string name="user_protocol">用户协议</string>
 
     <string-array name="protocol_title">
-        <item>一、相关定义：</item>
-        <item>二、用户资格及帐户：</item>
+        <item>一、相关定义</item>
+        <item>二、用户资格及帐户</item>
         <item>三、用户信息安全</item>
         <item>四、 迈界服务规则</item>
         <item>五、 服务条款修改</item>

@@ -199,6 +199,8 @@ import com.squareup.okhttp.Response;
 	
 	private ArrayList<HashMap<String, Object>> shopDataList = new ArrayList<HashMap<String, Object>>();
 	private PackageManager manager;
+	
+
 	public HomeFragment(boolean mIsFirstEnter) {
 		mFromBankCardFragment = mIsFirstEnter;
 	}
@@ -232,7 +234,6 @@ import com.squareup.okhttp.Response;
 		//v.fl_home_top_menu.setVisibility(View.GONE);
 		
 		v.iv_home_icon.setPressed(true);//底部的首页定位button
-		
 		//isPlay = false;
 		
 		
@@ -266,7 +267,9 @@ import com.squareup.okhttp.Response;
 		/*if (adapter != null) {                  //adapter若置为空，在退出后台时，再进去页面进行刷新，会导致刷新后至顶部 
 			adapter = null;
 		}*/ 
-		v.snow_view.setVisibility(View.INVISIBLE);
+		if(v.snow_view!=null){
+			v.snow_view.setVisibility(View.INVISIBLE);
+		}
 		
 		if (promoteAdapter != null) {
 			promoteAdapter = null;
@@ -329,6 +332,17 @@ import com.squareup.okhttp.Response;
 		filter.addAction("com.lansun.qmyo.refreshHomeList");
 		getActivity().registerReceiver(broadCastReceiver, filter);
 		
+		
+		if(!(App.app.getData("select_cityCode").equals(App.app.getData("cityCode")))){
+			//如果是当前定位城市 不是 你所选中的城市，那么前往访问的就是： 默认城市中的默认position
+			isSameCity = false;
+			if(App.app.getData("select_cityCode").equals("310000")){
+				GlobalValue.gps = new Gps(31.230431, 121.473705);
+			}
+		}else{
+			//如果是当前定位城市 正是 你所选中的城市，那么前往访问的就是：当前定位到的position值
+			isSameCity = true;
+		}
 		
 		/**
 		 * 判断是否需要进行版本的更新
@@ -404,8 +418,6 @@ import com.squareup.okhttp.Response;
 			public void onLoadingMore() {
 				if (list != null) {
 					if (TextUtils.isEmpty(list.getNext_page_url())||list.getNext_page_url()=="null") {
-//						PullToRefreshManager.getInstance().onFooterRefreshComplete();
-//						PullToRefreshManager.getInstance().footerUnable();
 						CustomToast.show(activity, R.string.reach_bottom, R.string.collect_more_superise);
 						lv_home_list.onLoadMoreOverFished();
 					} else {
@@ -567,6 +579,13 @@ import com.squareup.okhttp.Response;
 			}
 
 			head = inflater.inflate(R.layout.activity_home_banner, null);
+			TextView tv_home_hot_v16 = (TextView) head.findViewById(R.id.home_hot_v16);
+			
+			if(!isSameCity){
+				tv_home_hot_v16.setText("当前城市暂未开通服务");
+				lv_home_list.onLoadMoreOverFished();
+			}
+			
 			pointSets = (LinearLayout) head.findViewById(R.id.ll_point_sets);
 			
 			/*尝试在head被充起来的瞬间就将其放到ListView的头上*/
@@ -574,7 +593,6 @@ import com.squareup.okhttp.Response;
 
 			ViewTreeObserver vto = head.getViewTreeObserver();
 			vto.addOnScrollChangedListener(new OnScrollChangedListener() {
-
 
 				@Override
 				public void onScrollChanged() {
@@ -649,6 +667,7 @@ import com.squareup.okhttp.Response;
 				}
 			});
 
+			
 
 
 			/* 优惠券的点击监听
@@ -812,9 +831,8 @@ import com.squareup.okhttp.Response;
 				refreshParams.put("intelligent", "home");
 				isChina = true;
 			}
-			refreshKey = 1;
-			
 			//列表也有可能展示不出来，导致下方代码无法执行下去，便出现了八大板块页面无法展示的问题
+			refreshKey = 1;
 			refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_home_list);//这个地方需要进行去服务器访问数据，                                                           setKey为1      
 		}
 		
@@ -931,6 +949,11 @@ import com.squareup.okhttp.Response;
 	private boolean justComeBackFromHome = false;
 	private ArrayList<HashMap<String, String>> homePhotoList = new  ArrayList<HashMap<String, String>>();
 	private LinearLayout pointSets;
+	
+	/**
+	 * 当前定位城市与选中城市是否一致
+	 */
+	private boolean isSameCity;
 
 	public int getLocation(View v) {
 		int[] loc = new int[4];
@@ -1078,6 +1101,7 @@ import com.squareup.okhttp.Response;
 						handler.postDelayed(new InternalTask(), 5000);
 					}
 					vp_home_ad.setCurrentItem(1000*3);
+					vp_home_ad.setOffscreenPageLimit(3);  
 					
 					
 					//dataList为空
@@ -1163,6 +1187,9 @@ import com.squareup.okhttp.Response;
 					lv_home_list.onLoadMoreFished();
 					lv_home_list.onRefreshFinshed(true);
 					
+					if(!isSameCity){
+						lv_home_list.onLoadMoreOverFished();
+					}
 					list = Handler_Json.JsonToBean(ActivityList.class,r.getContentAsString());
 					
 					if(isDeleteShopData){
@@ -1351,7 +1378,7 @@ import com.squareup.okhttp.Response;
 		}
 		@Override
 		public Object instantiateItem(ViewGroup container, int position) {
-			ImageView imageView = new ImageView(activity);
+			RecyclingImageView imageView = new RecyclingImageView(activity);
 			imageView.setBackgroundResource(R.drawable.default_details);
 			
 			imageView.setScaleType(ScaleType.CENTER_CROP);

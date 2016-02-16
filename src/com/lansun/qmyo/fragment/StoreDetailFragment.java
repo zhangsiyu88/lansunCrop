@@ -543,86 +543,116 @@ public class StoreDetailFragment extends BaseFragment {
 			});
 		}else{
 			if (shop.isMy_attention()) { 						//-->点击则取消关注
-			DialogUtil.createTipAlertDialog(activity, R.string.gz_cancle,
-					new TipAlertDialogCallBack() {
-
-						@Override
-						public void onPositiveButtonClick(
-								DialogInterface dialog, int which) {
-							InternetConfig config = new InternetConfig();
-							config.setKey(3);
-							HashMap<String, Object> head = new HashMap<>();
-							head.put("Authorization",
-									"Bearer "+ App.app.getData("access_token"));
-							config.setHead(head);
-							config.setMethod("DELETE");
-							
-							/*点击删除后，我们应该要有的返回提示
-							 * if ("true".equals(r.getContentAsString())) {
-								CustomToast.show(
-										getActivity(),
-										getActivity().getString(R.string.tip),
-										getActivity().getString(
-												R.string.gz_qx_sucess_content));
-								v.tv_store_fans_num.setText(shop.getAttention() - 1 + "");
-								shop.setMy_attention(false);
-								v.iv_store_detail_gz_store.setPressed(false);
-							} else {
-								CustomToast.show(activity,
-										activity.getString(R.string.tip),
-										activity.getString(R.string.gz_qx_faild_content));
-							}
-							break;*/
-							
-							
-							
-							// 上述代码的副本！！
-							//暂时关闭了取消收藏的按钮，这样避免不能提供足够数据进行测试
-							  HttpUtils httpUtils = new HttpUtils();
-							  RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
-
-								@Override
-								public void onFailure(HttpException arg0, String arg1) {
-									Log.i("取消门店关注失败返回的结果","访问是失败的!");
-									CustomToast.show(activity,
-											activity.getString(R.string.tip),
-											activity.getString(R.string.gz_qx_faild_content));
-								}
-								@Override
-								public void onSuccess(ResponseInfo<String> arg0) {
-									CustomToast.show(
-											getActivity(),
-											getActivity().getString(R.string.tip2),
-											getActivity().getString(
-													R.string.gz_qx_sucess_content));
-									//v.tv_store_fans_num.setText(shop.getAttention() - 1 + "");
-									
-									v.tv_store_fans_num.setText((tempShopAttention-1) + "");
-									tempShopAttention =  tempShopAttention-1;
-									
-									shop.setMy_attention(false);
-									//v.iv_store_detail_gz_store.setPressed(false);
-									v.iv_store_detail_gz_store.setBackgroundResource(R.drawable.gz_store1);
-									
-								}
-							};
-							RequestParams requestParams = new RequestParams();
-							requestParams.addHeader("Authorization", "Bearer" + App.app.getData("access_token"));
-							httpUtils.send(HttpMethod.DELETE, 
-									GlobalValue.URL_QX_GZ_SHOP+ shopId,
-									requestParams,requestCallBack );
-							
-							/* 实则无效的 删除 提交
-							 * FastHttpHander.ajax(GlobalValue.URL_QX_GZ_SHOP+ shopId, null, config,StoreDetailFragment.this);*/
-							dialog.dismiss();
-						}
-						@Override
-						public void onNegativeButtonClick(
-								DialogInterface dialog, int which) {
-							v.iv_store_detail_gz_store.setBackgroundResource(R.drawable.gz_store_press1);//是我关注的，但点击后问我要不要取消关注，决定还是算了，不取消关注了吧
-							dialog.dismiss();
-						}
-					});
+				
+//			DialogUtil.createTipAlertDialog(activity, R.string.gz_cancle,
+//					new TipAlertDialogCallBack() {
+//
+//						@Override
+//						public void onPositiveButtonClick(DialogInterface dialog, int which) {
+//							InternetConfig config = new InternetConfig();
+//							config.setKey(3);
+//							HashMap<String, Object> head = new HashMap<>();
+//							head.put("Authorization",
+//									"Bearer "+ App.app.getData("access_token"));
+//							config.setHead(head);
+//							config.setMethod("DELETE");
+//							
+//							/*点击删除后，我们应该要有的返回提示
+//							 * if ("true".equals(r.getContentAsString())) {
+//								CustomToast.show(
+//										getActivity(),
+//										getActivity().getString(R.string.tip),
+//										getActivity().getString(
+//												R.string.gz_qx_sucess_content));
+//								v.tv_store_fans_num.setText(shop.getAttention() - 1 + "");
+//								shop.setMy_attention(false);
+//								v.iv_store_detail_gz_store.setPressed(false);
+//							} else {
+//								CustomToast.show(activity,
+//										activity.getString(R.string.tip),
+//										activity.getString(R.string.gz_qx_faild_content));
+//							}
+//							break;*/
+//							
+//							
+//							
+//							// 上述代码的副本！！
+//							//暂时关闭了取消收藏的按钮，这样避免不能提供足够数据进行测试
+//							  HttpUtils httpUtils = new HttpUtils();
+//							  RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
+//
+//								@Override
+//								public void onFailure(HttpException arg0, String arg1) {
+//									Log.i("取消门店关注失败返回的结果","访问是失败的!");
+//									CustomToast.show(activity,
+//											activity.getString(R.string.tip),
+//											activity.getString(R.string.gz_qx_faild_content));
+//								}
+//								@Override
+//								public void onSuccess(ResponseInfo<String> arg0) {
+//									CustomToast.show(
+//											getActivity(),
+//											getActivity().getString(R.string.tip2),
+//											getActivity().getString(
+//													R.string.gz_qx_sucess_content));
+//									//v.tv_store_fans_num.setText(shop.getAttention() - 1 + "");
+//									
+//									v.tv_store_fans_num.setText((tempShopAttention-1) + "");
+//									tempShopAttention =  tempShopAttention-1;
+//									
+//									shop.setMy_attention(false);
+//									//v.iv_store_detail_gz_store.setPressed(false);
+//									v.iv_store_detail_gz_store.setBackgroundResource(R.drawable.gz_store1);
+//									
+//								}
+//							};
+//							RequestParams requestParams = new RequestParams();
+//							requestParams.addHeader("Authorization", "Bearer" + App.app.getData("access_token"));
+//							httpUtils.send(HttpMethod.DELETE, 
+//									GlobalValue.URL_QX_GZ_SHOP+ shopId,
+//									requestParams,requestCallBack );
+//							
+//							/* 实则无效的 删除 提交
+//							 * FastHttpHander.ajax(GlobalValue.URL_QX_GZ_SHOP+ shopId, null, config,StoreDetailFragment.this);*/
+//							dialog.dismiss();
+//						}
+//						@Override
+//						public void onNegativeButtonClick(
+//								DialogInterface dialog, int which) {
+//							v.iv_store_detail_gz_store.setBackgroundResource(R.drawable.gz_store_press1);//是我关注的，但点击后问我要不要取消关注，决定还是算了，不取消关注了吧
+//							dialog.dismiss();
+//						}
+//					});
+				
+				  HttpUtils httpUtils = new HttpUtils();
+				  RequestCallBack<String> requestCallBack = new RequestCallBack<String>() {
+					@Override
+					public void onFailure(HttpException arg0, String arg1) {
+						Log.i("取消门店关注失败返回的结果","访问是失败的!");
+						CustomToast.show(activity,
+								activity.getString(R.string.tip),
+								activity.getString(R.string.gz_qx_faild_content));
+					}
+					@Override
+					public void onSuccess(ResponseInfo<String> arg0) {
+						CustomToast.show(
+								getActivity(),
+								getActivity().getString(R.string.tip_qx_gz),
+								getActivity().getString(R.string.gz_qx_sucess_content_new));
+						
+						v.tv_store_fans_num.setText((tempShopAttention-1) + "");
+						tempShopAttention =  tempShopAttention-1;
+						shop.setMy_attention(false);
+						v.iv_store_detail_gz_store.setBackgroundResource(R.drawable.gz_store1);
+					}
+				};
+				RequestParams requestParams = new RequestParams();
+				requestParams.addHeader("Authorization", "Bearer" + App.app.getData("access_token"));
+				httpUtils.send(HttpMethod.DELETE, 
+						GlobalValue.URL_QX_GZ_SHOP+ shopId,
+						requestParams,requestCallBack );
+				
+				
 		} else {
 			InternetConfig config = new InternetConfig();
 			config.setKey(2);

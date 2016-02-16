@@ -883,8 +883,8 @@ public class ActivityDetailFragment extends BaseFragment {
 						v.ll_activity_collection.setBackgroundResource(R.drawable.circle_background_gray);
 						data.getActivity().setMy_attention(false);
 						CustomToast.show(activity,
-								getString(R.string.sc_sucess_cancle_collection),
-								getString(R.string.sc_sucess_content_cancle_collection));
+								getString(R.string.sc_sucess_cancle_collection_new),
+								getString(R.string.sc_sucess_content_cancle_collection_new));
 					}
 				}
 			};

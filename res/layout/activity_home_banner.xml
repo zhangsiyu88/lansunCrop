@@ -193,6 +193,7 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/home_hot_v16"
         style="@style/text_style_nomal_30"
         android:layout_gravity="center"
         android:layout_marginBottom="@dimen/margin_top_35"

@@ -28,6 +28,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/xUtils-2.6.14.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/Msc.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/volly-1.0.11.jar"/>
+	<classpathentry kind="lib" path="libs/oneapm-android-agent.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="output" path="bin/classes"/>

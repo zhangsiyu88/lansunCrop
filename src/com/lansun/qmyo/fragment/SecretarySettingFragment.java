@@ -528,6 +528,8 @@ public class SecretarySettingFragment extends BackHandedFragment implements OnCl
 			upDataHead();
 			break;
 		case R.id.btn_secretary_save:
+			
+			
 			String secretary_name = v.et_secretary_name.getText().toString();
 			String hope_call_you = v.et_hope_call_you.getText().toString();
 			if (TextUtils.isEmpty(secretary_name)) {
@@ -573,8 +575,11 @@ public class SecretarySettingFragment extends BackHandedFragment implements OnCl
 			});
 			
 			//点击保存后，让键盘隐藏下去
+//			InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+//			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+			//将键盘移下去
 			InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+			imm.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getWindowToken(), 0);
 			
 //			activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE |
 //					WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -597,7 +602,11 @@ public class SecretarySettingFragment extends BackHandedFragment implements OnCl
 
 	@Override
 	public boolean onBackPressed() {
-		back();
+		try{
+			back();
+		}catch(Exception e){
+			LogUtils.toDebugLog("catch", "SecretarySettingFragment.back()异常");
+		}
 		return true;
 	}
 }

@@ -159,6 +159,8 @@ import com.squareup.okhttp.Response;
 	 */
 	private Handler handleOkhttp=new Handler(){
 
+		private long insertDataCurrentTimeMillis;
+
 		public void handleMessage(android.os.Message msg) {  //TODO
 			lv_search_content.setVisibility(View.VISIBLE);
 			
@@ -199,6 +201,11 @@ import com.squareup.okhttp.Response;
 				            //DO-OP
 				          }
 						lv_search_content.setAdapter(searchBankcardAdapter);
+						
+						insertDataCurrentTimeMillis = System.currentTimeMillis();
+						Log.d("全局搜索测试", "数据放到界面上的时间点 "+insertDataCurrentTimeMillis);
+						Log.d("全局搜索测试", "数据放到界面上的时间差 "+(insertDataCurrentTimeMillis - getRespCurrentTimeMillis));
+						
 					}else{													//不等于list的Data数组的值大于等于10时，正常刷新
 						try{
 							lv_search_content.removeFooterView(emptyView);
@@ -206,6 +213,9 @@ import com.squareup.okhttp.Response;
 						}catch(Exception e ){
 						}finally{
 							lv_search_content.setAdapter(searchBankcardAdapter);
+							insertDataCurrentTimeMillis = System.currentTimeMillis();
+							Log.d("全局搜索测试", "数据放到界面上的时间点 "+insertDataCurrentTimeMillis);
+							Log.d("全局搜索测试", "数据放到界面上的时间差 "+(insertDataCurrentTimeMillis - getRespCurrentTimeMillis));
 							/*endProgress();*/
 						}
 					}
@@ -390,7 +400,11 @@ import com.squareup.okhttp.Response;
 	private RelativeLayout noNetworkView;
 	private InputMethodManager imm;
 	private int times = 0;
-	private RequestQueue queue;
+	private RequestQueue queue = Volley.newRequestQueue(App.app);
+	
+	private long sendReqCurrentTimeMillis;
+	private long getRespCurrentTimeMillis;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		isShowFromInitData = true;
@@ -569,7 +583,9 @@ import com.squareup.okhttp.Response;
 	}
 
 	private void initView( View view){
+		//拿到searchFragment送来的搜素关键字
 		initData();
+		
 		iv_activity_back=(RecyclingImageView)view.findViewById(R.id.iv_activity_back);
 		del_search_content=(ImageView)view.findViewById(R.id.del_search_content);
 		et_home_search=(EditText)view.findViewById(R.id.et_home_search);
@@ -599,7 +615,6 @@ import com.squareup.okhttp.Response;
 		expandtab_view=(ExpandTabView)view.findViewById(R.id.expandtab_view);
 		expandtab_view.removeAllViews();//ExpandTab终于上场了！
 
-
 		lv_search_content=(ActivityMyListView)view.findViewById(R.id.lv_search_content); 
 
 		//初始化完成之后去请求网络获取所有数据
@@ -607,7 +622,11 @@ import com.squareup.okhttp.Response;
 			//而筛选栏是直接的进行loadActivityList()的操作，那么在一进入页面就断网的环境下，是没有机会点击筛选栏的，自然也无法 弹出那个customDialogProgress
 			isShowDialog = false;
 		}
+		//这才是真实的搜索操作
 		startSearch(defaultVisitUrl,getSelectCity()[0],HODLER_TYPE,"nearby","intelligent","all",GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon(),query);
+		sendReqCurrentTimeMillis = System.currentTimeMillis();
+		Log.d("全局搜索测试", "搜索发送请求的时间点 "+sendReqCurrentTimeMillis);
+		
 		search_tv_cancle=(TextView)view.findViewById(R.id.search_tv_cancle);
 		search_tv_cancle.setOnClickListener(this);
 	}
@@ -695,7 +714,7 @@ import com.squareup.okhttp.Response;
 	}
 
 	protected void startSearchNextByVolley(String nextPageUrl) {
-		queue = Volley.newRequestQueue(App.app);
+		
 		String url = nextPageUrl;
 		
 		//根据给定的URL新建一个请求
@@ -756,6 +775,7 @@ import com.squareup.okhttp.Response;
 		
 		// 把这个请求加入请求队列
 		queue.add(stringRequest);
+//		queue.start();
 	}
 	/*
 	 * listView 对象设置上点击事件
@@ -938,8 +958,13 @@ import com.squareup.okhttp.Response;
 		
 		OkHttp.asyncGet(visitUrl+"site="+site+"&service="+service+"&position="+positon+"&intelligent="+intelligent+"&type="
 				+type+"&location="+location+"&query="+query, "Authorization", "Bearer "+App.app.getData("access_token"), "SearchBrandListOkHttpFragment", new Callback() {
+			
 			@Override
 			public void onResponse(Response response) throws IOException {
+				getRespCurrentTimeMillis = System.currentTimeMillis();
+				Log.d("全局搜索测试", "服务器针对请求返回数据的时间点 "+getRespCurrentTimeMillis);
+				Log.d("全局搜索测试", "发送与返回服务的时间差 "+(getRespCurrentTimeMillis - sendReqCurrentTimeMillis));
+				
 				
 				Gson gson=new Gson();
 				list = gson.fromJson(response.body().string(), ActivityList.class);

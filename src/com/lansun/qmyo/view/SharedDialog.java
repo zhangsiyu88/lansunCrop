@@ -105,12 +105,13 @@ public class SharedDialog implements OnClickListener {
 				.getAttributes();
 		params.alpha = 0.7f;
 		params.dimAmount = (float) 1.0;
-		window.setOutsideTouchable(false);
+		
 		window.update();
 		activity.getWindow().setAttributes(params);
 
 		// 设置popWindow弹出窗体可点击，这句话必须添加，并且是true
 		window.setFocusable(true);
+		window.setOutsideTouchable(true);
 
 		window.setAnimationStyle(R.style.mypopwindow_anim_style);
 		// 实例化一个ColorDrawable颜色为半透明

@@ -50,6 +50,7 @@ public class ReportFragment extends BackHandedFragment {
 	private String shopId;
 	private String activityId;
 	private int type;
+	private int titileRes;
 
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
@@ -83,7 +84,7 @@ public class ReportFragment extends BackHandedFragment {
 		}
 		
 
-		int titileRes = R.string.report_activity;
+		titileRes = R.string.report_activity;
 		switch (type) {
 		case 0:
 			titileRes = R.string.report_activity;
@@ -151,8 +152,11 @@ public class ReportFragment extends BackHandedFragment {
 			switch (r.getKey()) {
 			case 0:
 				if ("true".equals(r.getContentAsString())) {
-					CustomToast.show(activity, R.string.tip,
-							R.string.report_success);
+					if(titileRes == R.string.report_store){
+						CustomToast.show(activity, R.string.tip,R.string.report_success_store);
+					}else if(titileRes == R.string.report_activity){
+						CustomToast.show(activity, R.string.tip,R.string.report_success_act);
+					}
 					v.et_activity_report_content.setText("");
 					back();
 				}

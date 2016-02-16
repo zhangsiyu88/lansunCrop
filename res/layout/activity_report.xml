@@ -16,6 +16,7 @@
         android:text="@string/report_content" />
 
     <EditText
+        android:padding="10dp"
         android:id="@+id/et_activity_report_content"
         style="@style/text_style_nomal_28"
         android:layout_width="match_parent"

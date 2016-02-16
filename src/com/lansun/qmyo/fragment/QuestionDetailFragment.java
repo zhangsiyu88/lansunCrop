@@ -38,6 +38,7 @@ import com.google.gson.Gson;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.question.QuestionAnswerAdapter;
 import com.lansun.qmyo.adapter.question.QuestionMultiAnswerListViewAdapter;
+import com.lansun.qmyo.base.BackHandedFragment;
 import com.lansun.qmyo.biz.AddQuestionBiz;
 import com.lansun.qmyo.domain.QAMetaData;
 import com.lansun.qmyo.domain.QuestionAnswerDetail;
@@ -63,7 +64,7 @@ import com.squareup.okhttp.Response;
  * 
  */
 @SuppressLint("SimpleDateFormat") 
-public class QuestionDetailFragment extends BaseFragment implements RequestCallBack,OnFocusChangeListener{
+public class QuestionDetailFragment extends BackHandedFragment implements RequestCallBack,OnFocusChangeListener{
 	
 	
 	@InjectView
@@ -531,5 +532,10 @@ public class QuestionDetailFragment extends BaseFragment implements RequestCallB
 		}
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 		super.back();
+	}
+	@Override
+	public boolean onBackPressed() {
+		back();
+		return true;
 	}
 }

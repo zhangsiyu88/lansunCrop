@@ -27,6 +27,7 @@ import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.inject.InjectLayer;
 import com.android.pc.ioc.view.PullToRefreshManager;
 import com.android.pc.util.Gps;
+import com.blueware.agent.android.BlueWare;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.base.BackHandedFragment;
 import com.lansun.qmyo.event.entity.FragmentEntity;
@@ -38,6 +39,7 @@ import com.lansun.qmyo.fragment.IntroductionPageFragment;
 import com.lansun.qmyo.fragment.MineBankcardFragment;
 import com.lansun.qmyo.fragment.MineFragment;
 import com.lansun.qmyo.fragment.PersonCenterFragment;
+import com.lansun.qmyo.fragment.QuestionDetailFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.fragment.ReportFragment;
 import com.lansun.qmyo.fragment.SearchBankCardFragment;
@@ -53,6 +55,7 @@ import com.lansun.qmyo.utils.ExampleUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.view.CustomToast;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 
 @InjectLayer(R.layout.activity_main)
@@ -64,6 +67,8 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
+		BlueWare.withApplicationToken("CF43C23A15E1A23535E729F918BE02EB10").start(this.getApplication());
+		
 		if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
 			finish();
 			return;
@@ -71,6 +76,8 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		
 		//注册一个广播接收者
 		registerMessageReceiver();
+		
+		
 		/**
 		 * 针对后台MainActivity被清除，由于GlobalValue.gps初始化于SplashActivity无法出现，故在此处重新初始化gps的值
 		 */
@@ -82,7 +89,6 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 				double geoLng =  Double.valueOf(App.app.getData("gps.Wglon"));
 				GlobalValue.gps = new Gps(geoLat, geoLng);
 				LogUtils.toDebugLog("gps_", "从本地获取之前的定位坐标");
-				
 			}else{
 				GlobalValue.gps = new Gps(31.230431, 121.473705);
 				LogUtils.toDebugLog("gps_", "传入固定人民广场");
@@ -97,7 +103,6 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 				locationService = new Intent(this, LocationService.class);
 				startService(locationService);
 			}
-			
 		}
 		
 		/*TextView mImei = (TextView) findViewById(R.id.tv_imei);*/
@@ -154,36 +159,37 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 			//一进来，首先开启后台的两个服务
 			accesstokenService = new Intent(this, AccessTokenService.class);
 			startService(accesstokenService);
-			locationService = new Intent(this, LocationService.class);
-			startService(locationService);
 			
+			if(locationService == null){
+				locationService = new Intent(this, LocationService.class);
+				startService(locationService);
+			}
 			startFragmentAdd(new IntroductionPageFragment());
-			
 		} else {
 			getTokenService();
-			/*startFragmentAdd(new HomeFragment());    */                 //--------------------->by Yeun 11.16//TODO
+//			startFragmentAdd(new IntroductionPageFragment());
+			
+			/*startFragmentAdd(new HomeFragment());   */                 //--------------------->by Yeun 11.16//TODO
 			/*startFragmentAdd(new HomeFragmentOld());*/					//--------------------->by Yeun 11.13//TODO
 //			startFragmentAdd(new MainFragment());
 			/*startFragmentAdd(new TestMineActivityFragment());*/
-			
-			
 		}
 		
 		
 		//PullTorefreshManager中就已经获取到了界面内容
-		PullToRefreshManager.getInstance().setRefreshLayout(
-				R.layout.refresh_header);
-		int[] headerIds = new int[] {R.id.mHeaderImageView,
-				R.id.mHeaderArrowImageView, R.id.mHeaderProgressBar,
-				R.id.mHeaderTextView };
-		PullToRefreshManager.getInstance().setHeaderIds(headerIds);
-
-		// 设置底部
-		PullToRefreshManager.getInstance().setRefreshFooterLayout(
-				R.layout.refresh_footer);
-		int[] footerIds = new int[] { R.id.mFooterImageView,
-				R.id.mFooterProgressBar, R.id.mFooterTextView };
-		PullToRefreshManager.getInstance().setFooterIds(footerIds);
+//		PullToRefreshManager.getInstance().setRefreshLayout(
+//				R.layout.refresh_header);
+//		int[] headerIds = new int[] {R.id.mHeaderImageView,
+//				R.id.mHeaderArrowImageView, R.id.mHeaderProgressBar,
+//				R.id.mHeaderTextView };
+//		PullToRefreshManager.getInstance().setHeaderIds(headerIds);
+//
+//		// 设置底部
+//		PullToRefreshManager.getInstance().setRefreshFooterLayout(
+//				R.layout.refresh_footer);
+//		int[] footerIds = new int[] { R.id.mFooterImageView,
+//				R.id.mFooterProgressBar, R.id.mFooterTextView };
+//		PullToRefreshManager.getInstance().setFooterIds(footerIds);
 	}
 
 	@Override
@@ -192,9 +198,15 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		isForeground = true;
 		/* 当缓存的清除效果正常的时候，并且在Pause的时候暂时不需要进行内存缓存的关闭操作，会造成首页轮播大图在从抢红包页面回来时图片重新请求，暂时无图的情况
 		 * 故在此处关闭
-		 * ImageLoader.getInstance().clearMemoryCache();  
-		ImageLoader.getInstance().clearDiskCache();  //清除imageloader在Disk中的缓存
-		LogUtils.toDebugLog("ImageLoader", "ImageLoader清除掉Disk缓存");*/
+			ImageLoader.getInstance().clearMemoryCache();  
+			ImageLoader.getInstance().clearDiskCache();  //清除imageloader在Disk中的缓存
+			LogUtils.toDebugLog("ImageLoader", "ImageLoader清除掉Disk缓存");*/
+		
+		
+		ImageLoader.getInstance().clearMemoryCache();
+		ImageLoader.getInstance().clearDiscCache();
+		ImageLoader.getInstance().clearDiskCache();
+		LogUtils.toDebugLog("onPause", "ImageLoader清除内容");
 		
 		if(App.app.getData("firstUseApp")=="true"){
 			if(locationService!=null){
@@ -202,6 +214,7 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 				LogUtils.toDebugLog("firstUseApp", "退至后台，关闭定位服务");
 			}
 		}
+		System.gc();
 		super.onPause();
 	}
 
@@ -217,6 +230,8 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 				LogUtils.toDebugLog("firstUseApp", "回到前台，重新启动定位服务，加速");
 			}
 		}
+		
+		
 		super.onResume();
 	}
 
@@ -228,9 +243,12 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		startService(accesstokenService);
 		LogUtils.toDebugLog("accesstokenService", "accesstokenService正常启动");
 
-		LogUtils.toDebugLog("location", "locationService正常启动");
-		locationService = new Intent(this, LocationService.class);
-		startService(locationService);
+		
+		if(locationService==null){
+			LogUtils.toDebugLog("location", "locationService正常启动");
+			locationService = new Intent(this, LocationService.class);
+			startService(locationService);
+		}
 		
 		startFragmentAdd(new MainFragment());
 //		startFragmentAdd(new MineSecretaryFragment());
@@ -340,6 +358,9 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 				mBackHandedFragment.onBackPressed();
 				return;
 		}else if(fragment.getClass().getName().equals(SecretarySettingFragment.class.getName())){
+				mBackHandedFragment.onBackPressed();
+				return;
+		}else if(fragment.getClass().getName().equals(QuestionDetailFragment.class.getName())){
 				mBackHandedFragment.onBackPressed();
 				return;
 		}else if(fragment.getClass().getName().equals(MineBankcardFragment.class.getName())){
@@ -506,7 +527,19 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 				  App.app.setData("exp_secret","");为评测过期exp_secret是否可以自己去获取全新secret，暂时关闭*/
 			
 		}
+		
+		System.exit(0);
 		super.onDestroy();
+	}
+	
+	/**
+	 * func：停止定位的服务
+	 */
+	public void stopLocationService(){
+		if(locationService!= null){
+			stopService(locationService);
+			LogUtils.toDebugLog("location", "locationService被停止掉");
+		}
 	}
 
 	//下面是极光的广播接收者!!!
@@ -517,7 +550,7 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		public static final String KEY_MESSAGE = "message";
 		public static final String KEY_EXTRAS = "extras";
 		private Intent intent;
-		private Intent locationService;
+		public Intent locationService;
 		private Intent accesstokenService;
 		
 		/**
@@ -549,8 +582,6 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 	              
 	              sendBroadcast(new Intent("com.lansun.qmyo.ChangeTheLGPStatus"));//LGP:Little Green Point
 			      LogUtils.toDebugLog("infos", "接收到推送消息后，发送广播");
-	              
-	              
 	              //setCostomMsg(showMsg.toString());
 				}
 				if("com.lansun.qmyo.toRegisterPage".equals(intent.getAction())){
@@ -672,4 +703,6 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 //			}
 ////			if(resultCode == 1){}
 //		}
+		
+		
 }
