@@ -85,7 +85,7 @@ public class QuestionListAdapter extends BaseAdapter {
 		@SuppressWarnings("unchecked")
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
-			ViewHolder holder;
+			final ViewHolder holder;
 			if (convertView != null) {
 				holder = (ViewHolder) convertView.getTag();
 			}else {
@@ -163,13 +163,15 @@ public class QuestionListAdapter extends BaseAdapter {
 					holder.tv_time.setText(current_date);
 				}
 				SpannableString sp_question=new SpannableString("问题:");
-				SpannableString sp_question_content=new SpannableString(Html.fromHtml("<font style='font-size:12pt' color='#939393'>"+" "+mList.get(position).getContent()+"</font>"));
+				SpannableString sp_question_content=new SpannableString(Html.fromHtml("<font style='font-size:12pt' color='#939393'>"+"   "+mList.get(position).getContent()+"</font>"));
 				SpannableStringBuilder builder_question=new SpannableStringBuilder();
 				builder_question.append(sp_question).append(sp_question_content);
 				holder.tv_question.setText(builder_question);
 				
 				SpannableString sp_answer=new SpannableString("回复:");
-				SpannableString sp_answer_content=new SpannableString(Html.fromHtml("<font style='font-size:12pt' color='#939393'>"+" "+GlobalValue.mySecretary.getName()+"已收到您的任务指派哦,2小时内必有回复,请耐心等待哟。如果您对收到的回答不满意,还可以继续追问哦~</font>"));
+				SpannableString sp_answer_content=new SpannableString(Html.fromHtml
+						("<font style='font-size:12pt' color='#939393'>"+"   "+GlobalValue.mySecretary.getName()+
+								mList.get(position).getAnswer()+"</font>"));//已收到您的任务指派哦,2小时内必有回复,请耐心等待哟。如果您对收到的回答不满意,还可以继续追问哦~
 				SpannableStringBuilder answer=new SpannableStringBuilder();
 				answer.append(sp_answer).append(sp_answer_content);
 				holder.tv_answer.setText(answer);
@@ -182,6 +184,8 @@ public class QuestionListAdapter extends BaseAdapter {
 							LogUtils.toDebugLog("mySercretary", "点击了，但不做反应");
 							return;
 						}
+						holder.have_information.setVisibility(View.GONE);
+						mList.get(position).setIs_read(1);
 						callBack.callBack(Integer.valueOf(mList.get(position).getId()),type);
 					}
 				});

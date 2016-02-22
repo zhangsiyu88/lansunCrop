@@ -332,7 +332,16 @@ public class MessageCenterFragment extends BaseFragment implements ItemClickCall
 			entity.setFragment(fragment);
 			EventBus.getDefault().post(entity);
 		}else {//迈界消息
+			FragmentEntity entity=new FragmentEntity();
+			Fragment fragment=new MaijieMessageDetailFragment();
 			
+			Bundle bundle=new Bundle();
+			bundle.putString("content", dataList.get(position).get("tv_message_item_desc"));
+			bundle.putString("title", dataList.get(position).get("tv_message_item_name"));
+			fragment.setArguments(bundle);
+			
+			entity.setFragment(fragment);
+			EventBus.getDefault().post(entity);
 		}
 	}
 

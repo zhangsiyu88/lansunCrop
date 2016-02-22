@@ -1,6 +1,4 @@
 package com.lansun.qmyo;
-import java.io.Serializable;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,8 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -25,7 +21,6 @@ import cn.jpush.android.api.JPushInterface;
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectInit;
 import com.android.pc.ioc.inject.InjectLayer;
-import com.android.pc.ioc.view.PullToRefreshManager;
 import com.android.pc.util.Gps;
 import com.blueware.agent.android.BlueWare;
 import com.lansun.qmyo.app.App;
@@ -46,6 +41,7 @@ import com.lansun.qmyo.fragment.SearchBankCardFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
 import com.lansun.qmyo.fragment.SecretarySettingFragment;
 import com.lansun.qmyo.fragment.StoreDetailFragment;
+import com.lansun.qmyo.fragment.searchbrand.SearchBrandListOkHttpFragment;
 import com.lansun.qmyo.listener.ToLoginListener;
 import com.lansun.qmyo.port.BackHanderInterface;
 import com.lansun.qmyo.service.AccessTokenService;
@@ -54,6 +50,7 @@ import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.ExampleUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
+import com.lansun.qmyo.utils.NotifyUtils;
 import com.lansun.qmyo.view.CustomToast;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -67,17 +64,28 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
+		if(!TextUtils.isEmpty(App.app.getData("access_token"))){
+			if(!TextUtils.isEmpty(App.app.getData("secret"))){
+		        //因非登录状态，关闭了推送的服务；若为已登录用户，即可进行推送消息的测试
+			if(JPushInterface.isPushStopped(getApplicationContext())){
+				JPushInterface.resumePush(getApplicationContext());
+			}
+		}
+	 }	
 		BlueWare.withApplicationToken("CF43C23A15E1A23535E729F918BE02EB10").start(this.getApplication());
-		
 		if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
 			finish();
 			return;
 		}
 		
+		//跳转至我的页面，便于查看信息
+		if (getIntent().getExtras()!=null && getIntent().getExtras().getString("message").equals("message")) {
+			//使用广播机制通信机制  或 EventBus 来通知页面的跳转
+			sendBroadcast(new Intent("com.lansun.qmyo.message"));
+		}
+		
 		//注册一个广播接收者
 		registerMessageReceiver();
-		
-		
 		/**
 		 * 针对后台MainActivity被清除，由于GlobalValue.gps初始化于SplashActivity无法出现，故在此处重新初始化gps的值
 		 */
@@ -150,6 +158,7 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		super.onCreate(savedInstanceState);
 	}
 	
+	
 	@InjectInit
 	private void init() {
 		EventBus eventBus = EventBus.getDefault();
@@ -166,7 +175,17 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 			}
 			startFragmentAdd(new IntroductionPageFragment());
 		} else {
+			if (TextUtils.isEmpty(App.app.getData("access_token"))/*没有拿到access_Token,isFirst也为true的时候，则跳至体验搜索页*/
+					&& GlobalValue.isFirst) {
+				ExperienceSearchFragment fragment = new ExperienceSearchFragment();
+				FragmentEntity event = new FragmentEntity();
+				event.setFragment(fragment);
+				EventBus.getDefault().post(event);
+				return;
+			} 
+			LogUtils.toDebugLog("启动", "接下来执行getTokenService()...");
 			getTokenService();
+			
 //			startFragmentAdd(new IntroductionPageFragment());
 			
 			/*startFragmentAdd(new HomeFragment());   */                 //--------------------->by Yeun 11.16//TODO
@@ -239,17 +258,18 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 	 * 获取token的服务
 	 */
 	private void getTokenService() {
-		accesstokenService = new Intent(this, AccessTokenService.class);
-		startService(accesstokenService);
-		LogUtils.toDebugLog("accesstokenService", "accesstokenService正常启动");
-
-		
+		if(accesstokenService==null){
+			accesstokenService = new Intent(this, AccessTokenService.class);
+			startService(accesstokenService);
+			LogUtils.toDebugLog("accesstokenService", "accesstokenService正常启动");
+		}
 		if(locationService==null){
 			LogUtils.toDebugLog("location", "locationService正常启动");
 			locationService = new Intent(this, LocationService.class);
 			startService(locationService);
 		}
 		
+		LogUtils.toDebugLog("启动", "接下来执行startFragmentAdd(new MainFragment())...");
 		startFragmentAdd(new MainFragment());
 //		startFragmentAdd(new MineSecretaryFragment());
 	}
@@ -257,6 +277,7 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 	
 
 	public  void startFragmentAdd(Fragment fragment) {
+		LogUtils.toDebugLog("times", "startFragmentAdd(fragment frag): "+System.currentTimeMillis());
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		fragmentTransaction = fragmentManager.beginTransaction();
 		Fragment to_fragment = fragmentManager.findFragmentByTag(fragment.getClass().getName());
@@ -302,7 +323,7 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		
 		Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
 		
-		if (fragment.getClass().getName().equals(RegisterFragment.class.getName())) {
+		if (fragment.getClass().getName().equals(RegisterFragment.class.getName())){
 			
 			if(App.app.getData("isResetPsw").equals("true")){
 				CustomToast.show(this, "迈界小贴士", "更改新密码后，请登录");
@@ -325,7 +346,7 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 				return;
 			}
 		}else if(fragment.getClass().getName().equals(SearchBankCardFragment.class.getName())){
-			if(App.app.getData("isEmbrassStatus").equals("true") ){
+			if(App.app.getData("isEmbrassStatus").equals("true")){
 				
 				if(counts++ == 0){
 					CustomToast.show(this, "添加至少一张银行卡吧~", "添加至少一张银行卡吧~");
@@ -364,8 +385,11 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 				mBackHandedFragment.onBackPressed();
 				return;
 		}else if(fragment.getClass().getName().equals(MineBankcardFragment.class.getName())){
-			mBackHandedFragment.onBackPressed();
-			return;
+				mBackHandedFragment.onBackPressed();
+				return;
+		}else if(fragment.getClass().getName().equals(SearchBrandListOkHttpFragment.class.getName())){
+				mBackHandedFragment.onBackPressed();
+				return;
 		}
 		 LogUtils.toDebugLog("finish", "Main的Activity中" +
 					"onBackPressed()"+
@@ -388,7 +412,8 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
 			
-			if (fragment.getClass().getName().equals(ExperienceSearchFragment.class.getName())) {
+			if (fragment.getClass().getName().equals(ExperienceSearchFragment.class.getName())||
+					fragment.getClass().getName().equals(IntroductionPageFragment.class.getName())) {
 //				DialogUtil.createTipAlertDialog(this, R.string.is_exit,
 //						new TipAlertDialogCallBack() {
 //							@Override
@@ -411,6 +436,7 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		            Toast.makeText(getApplicationContext(), "再按一次退出迈界哦~", Toast.LENGTH_SHORT).show();                                
 		            exitTime = System.currentTimeMillis();   
 		        } else {
+//		        	getSupportFragmentManager().popBackStack();
 		        	MainActivity.this.finish();
 		        }
 				
@@ -625,7 +651,7 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		 */
 		@Override
 		protected void onSaveInstanceState(Bundle outState){
-			super.onSaveInstanceState(outState);
+//			super.onSaveInstanceState(outState);
 		}
 		/**
 		 * (non-Javadoc)

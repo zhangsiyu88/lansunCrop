@@ -49,6 +49,7 @@ import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.base.BackHandedFragment;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.event.entity.RefreshTokenEntity;
 import com.lansun.qmyo.fragment.HomeFragment.HomeRefreshBroadCastReceiver;
@@ -123,7 +124,6 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 
 	private void initView(View root) {
 		del_search_content=(ImageView)root.findViewById(R.id.del_search_content);
-		//
 		
 		et_home_search=(EditText)root.findViewById(R.id.et_home_search);
 		et_home_search.requestFocus();
@@ -155,14 +155,15 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 						Toast.makeText(activity, "请输入搜索内容", 2000).show();
 					}else{
 						/*android:inputType="text"
-						android:imeActionLabel="完成"
-						android:imeOptions="actionNone"*/
+						  android:imeActionLabel="完成"
+						  android:imeOptions="actionNone"*/
 						
 //						imm = (InputMethodManager) getActivity()
 //								.getSystemService(Context.INPUT_METHOD_SERVICE);
 						imm.hideSoftInputFromWindow(et_home_search.getWindowToken(), 0);
 						//CustomToast.show(activity, "et_home_search的点击搜索", "收起键盘");
 						startSearch(search_value);//开始搜索
+						addSearchHistory(search_value);
 						
 					}
 					return true;
@@ -209,16 +210,17 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 				bundle.putString("searchName",s.toString().trim());  
 				fragment.setArguments(bundle);  
 				setFragmentChose(fragment);//                       -->当输入框不为空即将其转至PuzzyFragment
-				et_home_search.setFocusable(true);
+//				et_home_search.setFocusable(true);
 				
 				//当搜索栏中的内容不为空的时候，需要将
 				et_home_search.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 				isPuzzy=true;
 			}
 			v.search_tv_cancle.setText(R.string.search);
-			v.search_tv_cancle.setTextColor(getResources().getColor(
-					R.color.app_green1));
+			v.search_tv_cancle.setTextColor(getResources().getColor(R.color.app_green1));
 			String search_name=et_home_search.getText().toString().trim();
+			
+			//其实下面的广播是给 模糊搜索页面 的广播接收者使用的，注意fiter的String值
 			Intent intent=new Intent("com.qmyo.puzzysearch");
 			intent.putExtra("searchName", search_name);
 			getActivity().sendBroadcast(intent);
@@ -230,7 +232,8 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 	 */
 	private void setFragmentChose(Fragment fragment) {
 		transaction = manager.beginTransaction();
-		transaction.replace(R.id.search_conten,fragment);
+//		transaction.replace(R.id.search_conten,fragment);
+		transaction.add(R.id.search_conten,fragment);//不使用replace主要是为了在Fragment进行切换时，不对键盘产生变换
 		transaction.commit();
 	}
 	@InjectInit
@@ -238,16 +241,16 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 		LogUtils.toDebugLog("init()", "走到了init()方法");
 		
 		imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-		//CustomToast.show(activity, "init()方法中键盘升起来", "键盘升起来");
 		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+		//CustomToast.show(activity, "init()方法中键盘升起来", "键盘升起来");
 		
-		initData();
+//		initData();
 		et_home_search.setHint(R.string.search_all_hint);
 		AnimUtils.startTopInAnim(activity, v.ll_search_top_menu, 300,et_home_search);
 	}
 	private void initData() {
 		/*refreshCurrentList(GlobalValue.URL_USER_QUERYS, null, 0, null);
-		refreshCurrentList(GlobalValue.URL_ADVERTISEMENT_SEARCH, null, 1, null);*/
+		  refreshCurrentList(GlobalValue.URL_ADVERTISEMENT_SEARCH, null, 1, null);*/
 	}
 	
 	
@@ -302,7 +305,9 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 	 * @param query
 	 */
 	private void startSearch(String query) {
+		//点击搜索时，将EditText中的文字置为空，则保证了搜索结果页返回回来的时候，看到的是HotAndHistoryFragment的页面
 		et_home_search.setText("");
+		
 		isPuzzy=false;
 		SearchBrandListOkHttpFragment fragment = new SearchBrandListOkHttpFragment();
 		Bundle args = new Bundle();
@@ -336,8 +341,7 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 			String search_name=((TextView)view).getText().toString();
 
 			//文字发生变化时，也会将键盘缩回去
-//			InputMethodManager imm = (InputMethodManager) getActivity()
-//					.getSystemService(Context.INPUT_METHOD_SERVICE);
+//			InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 //			imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 //			imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
 			/*InputMethodManager imm_next = (InputMethodManager) getActivity()
@@ -388,8 +392,8 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 		if (!isTrue) {
 			isTrue=true;
 		}
-//		imm = (InputMethodManager) getActivity()
-//				.getSystemService(Context.INPUT_METHOD_SERVICE);
+		
+//		imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
 		//CustomToast.show(activity, "onPuzzCallBack中Item", "收起键盘");
 		
@@ -410,6 +414,12 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 		changeText(s, start, before, count);
 	}
 	
+	/**
+	 * 广播接收器
+	 * 
+	 * @author Yeun.Zhang
+	 *
+	 */
 	class ToggleKeyBoardBroadCastReceiver extends BroadcastReceiver{
 
 		@Override
@@ -418,12 +428,13 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 				System.out.println("全局搜索页收到搜索结果页消失前发送的广播了");
 				//imm =(InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 				//imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
-				//et_home_search.requestFocus();
+				et_home_search.requestFocus();
 				
 				/*
 				 * 强制将键盘弹起
 				 */
-				imm.showSoftInput(et_home_search, InputMethodManager.SHOW_FORCED);
+//				imm.showSoftInput(et_home_search, InputMethodManager.SHOW_FORCED);
+			    imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 			}
 		}
 	 }
@@ -441,4 +452,5 @@ public class SearchFragment extends BaseFragment implements OnCallBack,OnPuzzyCl
 		imm.hideSoftInputFromWindow(et_home_search.getWindowToken(), 0);
 		super.back();
 	}
+	
 }

@@ -265,7 +265,7 @@ public class GlobalValue {
 	 */
 	public static String URL_SECRETARY_SAVE = "http://" + IP + "/secretary";
 	/**
-	 * 获取当前银行卡
+	 * 添加推送的RegisterID
 	 */
 	public static String URL_PUSH_TOKEN = "http://" + IP + "/push-token";
 	/**

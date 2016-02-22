@@ -124,6 +124,8 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 		
 		//此方法暂无任何具体操作
 		initInformation();
+		
+		LogUtils.toDebugLog("times", "MineFragment: "+System.currentTimeMillis());
 	}
 	private void initInformation() {
 //		InformationBiz biz=new InformationBiz();
@@ -182,8 +184,11 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 		//1.使用消息中心的网络接口前去访问 活动 和 迈界 消息，当返回的列表中的某一项的data.getIs_read()有值时 ，
 		//即可将通知首页小圆点的显示
 	
+		
 		String activityMessageUrl = GlobalValue.URL_USER_MESSAGE_LIST+ GlobalValue.MESSAGE.activity;
 		String    majieMessageUrl = GlobalValue.URL_USER_MESSAGE_LIST+ GlobalValue.MESSAGE.maijie;
+		
+		String  messageCount = GlobalValue.URL_USER_MESSAGE_LIST;
 		
 //		refreshCurrentList(activityMessageUrl, null, 0, null);
 //		LogUtils.toDebugLog("infos", "去拿关于活动的信息");

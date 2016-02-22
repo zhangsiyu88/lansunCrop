@@ -173,7 +173,7 @@ public class SplashActivity extends FragmentActivity {
 					FastHttpHander.ajaxGet( url+"longitude="+GlobalValue.gps.getWgLon()+"&latitude="+GlobalValue.gps.getWgLat(), null, config,
 							SplashActivity.this);
 				}
-			}else{//关掉了 GPS定位和网络定位  
+			}else{//关掉了 GPS定位和网络定位  //
 				if(location!=null&&(location.getAMapException().getErrorCode() == 4
 						||location.getAMapException().getErrorCode() == 6
 						||location.getAMapException().getErrorCode() == 9
@@ -188,7 +188,12 @@ public class SplashActivity extends FragmentActivity {
 				
 				Log.i("Location是不是为空？", "location居然是空！！！location == null");
 				Log.i("首页GPS", "location为空时走默认地址: 人民广场");
+				
 				if(App.app.getData("firstEnter").isEmpty()){
+					/**
+					 * @type TAG
+					 * 标记：未获得精确定位的权限
+					 */
 					App.app.setData("gpsIsNotAccurate","true");
 				}
 				
@@ -493,8 +498,7 @@ public class SplashActivity extends FragmentActivity {
 											Log.i("cityName()的值为",App.app.getData("cityName"));
 											Log.i("select_cityCode()的值为",App.app.getData("select_cityCode"));
 											Log.i("select_cityName()的值为",App.app.getData("select_cityName"));
-											
-											
+											App.app.setData("isPos", "true");
 											
 											finish();
 											startActivity(new Intent(SplashActivity.this,MainActivity.class));
@@ -527,6 +531,8 @@ public class SplashActivity extends FragmentActivity {
 												//将GPS设置为人民广场在高德地图中的经纬度
 												GlobalValue.gps = new Gps(31.230431, 121.473705);
 												
+												App.app.setData("isPos", "false");
+												
 												finish();
 												startActivity(new Intent(SplashActivity.this,MainActivity.class));
 											}
@@ -558,6 +564,8 @@ public class SplashActivity extends FragmentActivity {
 											App.app.setData("select_cityName",
 													code.getCity());
 											
+											App.app.setData("isPos", "true");
+											
 											timer.schedule(new TimerTask() {
 												@Override
 												public void run() {
@@ -575,6 +583,9 @@ public class SplashActivity extends FragmentActivity {
 												DialogInterface dialog,
 												int which) {
 											dialog.dismiss();
+											
+											App.app.setData("isPos", "false");
+											
 											timer.schedule(new TimerTask() {
 												@Override
 												public void run() {

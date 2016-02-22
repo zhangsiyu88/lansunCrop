@@ -40,6 +40,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
+import cn.jpush.android.api.JPushInterface;
+
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectAll;
@@ -115,6 +117,7 @@ public class PersonCenterFragment extends BaseFragment{
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.activity_person_cent, null);
 		iv_activity_back=(RecyclingImageView)rootView.findViewById(R.id.iv_activity_back);
+		tv_my_phone_num = (TextView)rootView.findViewById(R.id.tv_my_phone_num);
 		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
 	}
@@ -122,7 +125,15 @@ public class PersonCenterFragment extends BaseFragment{
 	@InjectInit
 	private void init() {
 		v.fl_comments_right_iv.setVisibility(View.GONE);
-
+		
+		if(App.app.getData("user_phone")!=null){
+			String data = App.app.getData("user_phone");
+			String substring_head = data.substring(0, 3);
+			String substring_tail = data.substring(7, 11);
+			data =substring_head+"****"+substring_tail;
+			tv_my_phone_num.setText(data);
+		}
+		
 		if (!TextUtils.isEmpty(GlobalValue.user.getNickname())&&!GlobalValue.user.getNickname().equals("null")&&!GlobalValue.user.getNickname().contains("null")) {
 			v.tv_person_center_nickname.setText(GlobalValue.user.getNickname());
 		}else{
@@ -200,10 +211,11 @@ public class PersonCenterFragment extends BaseFragment{
 			fragment = new EditUserFragment();
 			break;
 		case R.id.tv_person_center_exit://点击退出登录时，要求跳至  登录页_Dick语
-			GlobalValue.user = null;
-			GlobalValue.isFirst = true;//即为三无状态，那么就需要成为是第一次进入的用户状态，也就会是需要自己加卡那个页面
-			clearTokenAndSercet();
-			GlobalValue.mySecretary = null;
+			
+			//停止推送的信息
+		    JPushInterface.stopPush(getActivity().getApplicationContext());
+		    
+		    
 			
 			/*由于初始化时，主界面同时加载了4个界面，由服务Service去拿的GlobalValue.user信息是二次网络访问，
 			      导致MineFragment已经加载完成，而头像和昵称来不及从GlobalValue.user中拿到值（只针对之前是登录状态的情况）,
@@ -212,14 +224,21 @@ public class PersonCenterFragment extends BaseFragment{
 				App.app.setData("user_avatar", "");
 				App.app.setData("user_nickname", "");
 			
+				
+			GlobalValue.user = null;
+			GlobalValue.isFirst = true;//即为三无状态，那么就需要成为是第一次进入的用户状态，也就会是需要自己加卡那个页面
+			
+			clearTokenAndSercet();
+			GlobalValue.mySecretary = null;
 			/**
 			 * 2015-10-24修改退出时清除信息
 			 */
-			GlobalValue.mySecretary=null;
-			fragment = new RegisterFragment();
-			Bundle bundle=new Bundle();
-			bundle.putString("fragment_name", PersonCenterFragment.class.getSimpleName());
-			fragment.setArguments(bundle);
+			if(GlobalValue.user == null && GlobalValue.isFirst == true){
+				fragment = new RegisterFragment();
+				Bundle bundle=new Bundle();
+				bundle.putString("fragment_name", PersonCenterFragment.class.getSimpleName());
+				fragment.setArguments(bundle);
+			}
 			
 			App.app.setData("isEmbrassStatus", "");//保证用户知道自己是退出错误的异常登陆状态时，可以再恢复回去进行正常的体验操作
 			/*back();此处无需back，因为主动跳往登录界面*/
@@ -232,6 +251,7 @@ public class PersonCenterFragment extends BaseFragment{
 
 	private Uri imageUri;
 	private ProgressDialog dialogpg;
+	private TextView tv_my_phone_num;
 	public void upDataHead() {
 		View view = inflater.inflate(R.layout.photo_choose_dialog, null);
 		carema = (Button) view.findViewById(R.id.camera);

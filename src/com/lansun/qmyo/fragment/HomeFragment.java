@@ -61,6 +61,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -138,7 +139,8 @@ import com.squareup.okhttp.Response;
  * @author Yeun
  * 
  */
-@SuppressLint("InflateParams") public class HomeFragment extends BaseFragment {
+@SuppressLint("InflateParams") 
+public class HomeFragment extends BaseFragment {
 
 	@InjectAll
 	Views v;
@@ -209,6 +211,9 @@ import com.squareup.okhttp.Response;
 		//Log.i("token", App.app.getData("access_token"));	
 	}
 
+    
+    
+    
 	@Override
 	public void onResume() {
 		if(v.snow_view!=null){
@@ -285,11 +290,6 @@ import com.squareup.okhttp.Response;
 
 	/**
 	 * 打开极文url
-	 * 
-	 * @param arg0
-	 * @param arg1
-	 * @param arg2
-	 * @param arg3
 	 */
 	private void itemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {//args2 == position
 
@@ -323,16 +323,6 @@ import com.squareup.okhttp.Response;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		
-		broadCastReceiver = new HomeRefreshBroadCastReceiver();
-		System.out.println("首页 注册广播 ing");
-		filter = new IntentFilter();
-		filter.addAction("com.lansun.qmyo.refreshHome");
-		filter.addAction("com.lansun.qmyo.refreshTheIcon");
-		filter.addAction("com.lansun.qmyo.ChangeTheLGPStatus");
-		filter.addAction("com.lansun.qmyo.refreshHomeList");
-		getActivity().registerReceiver(broadCastReceiver, filter);
-		
-		
 		if(!(App.app.getData("select_cityCode").equals(App.app.getData("cityCode")))){
 			//如果是当前定位城市 不是 你所选中的城市，那么前往访问的就是： 默认城市中的默认position
 			isSameCity = false;
@@ -344,6 +334,27 @@ import com.squareup.okhttp.Response;
 			isSameCity = true;
 		}
 		
+		LayoutInflater inflater  = LayoutInflater.from(activity);
+//		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+		LogUtils.toDebugLog("times", "3.5: "+System.currentTimeMillis());
+		rootView = inflater.inflate(R.layout.activity_home_old, null, false);  //填充其home界面，由于activity_home.xml已被修改为了含ScrollView的界面，故使用原有的xml布局
+		LogUtils.toDebugLog("times", "3.6: "+System.currentTimeMillis());
+		
+		/*head =  rootView.findViewById(R.id.head_banner);*/
+		Handler_Inject.injectFragment(this, rootView);//当前的fragment里面使用 自动去注入组件
+		refresh_footer = inflater.inflate(R.layout.refresh_footer, null);
+		LogUtils.toDebugLog("times", "4: "+System.currentTimeMillis());
+		
+		
+		
+		broadCastReceiver = new HomeRefreshBroadCastReceiver();
+		System.out.println("首页 注册广播 ing");
+		filter = new IntentFilter();
+		filter.addAction("com.lansun.qmyo.refreshHome");
+		filter.addAction("com.lansun.qmyo.refreshTheIcon");
+		filter.addAction("com.lansun.qmyo.ChangeTheLGPStatus");
+		filter.addAction("com.lansun.qmyo.refreshHomeList");
+		getActivity().registerReceiver(broadCastReceiver, filter);
 		/**
 		 * 判断是否需要进行版本的更新
 		 */
@@ -357,33 +368,17 @@ import com.squareup.okhttp.Response;
 		InternetConfig config = new InternetConfig();
 		config.setKey(10);
 		LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
-//		params.put("key", "Android");
-//		params.put("version", "1");
-		//FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION + info.versionCode , config, this);
-//		FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION+"?key=Android&version="+1 ,params, config, this);
 		FastHttpHander.ajaxGet(GlobalValue.UPDATE_NOTIFICATION + "?key=Android&version="+info.versionCode , config, this);
-//		FastHttpHander.ajaxGet("http://api.andrew.qmyo.net/version/info/?key=Android&version=12", config, this);
 		
-		
-		intent = new Intent("com.lansun.qmyo.fragment.newbrand");
-		
+//		intent = new Intent("com.lansun.qmyo.fragment.newbrand");
 		Log.e("token",App.app.getData("access_token"));
 		if(GlobalValue.gps!=null){
 			Log.e("gps",""+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
 		}
+
+		//Pos1
 		
-		LayoutInflater inflater  = LayoutInflater.from(activity);
-//		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-//				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-		
-		
-		
-		rootView = inflater.inflate(R.layout.activity_home_old, null, false);  //填充其home界面，由于activity_home.xml已被修改为了含ScrollView的界面，故使用原有的xml布局
-		
-		/*head =  rootView.findViewById(R.id.head_banner);*/
-		Handler_Inject.injectFragment(this, rootView);//当前的fragment里面使用 自动去注入组件
-		
-		
+		//
 		lv_home_list.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -403,8 +398,6 @@ import com.squareup.okhttp.Response;
 				FragmentEntity event = new FragmentEntity();
 				event.setFragment(fragment);
 				EventBus.getDefault().post(event);
-				
-				
 			}
 		});
 		lv_home_list.setNoHeader(true);
@@ -442,14 +435,15 @@ import com.squareup.okhttp.Response;
 				}
 			}
 		});
+		LogUtils.toDebugLog("times", "5: "+System.currentTimeMillis());
 		
 		
-		refresh_footer = inflater.inflate(R.layout.refresh_footer, null);
 
 		//根据用户状态来判断是否弹出Dialog,为了保证模糊的背景为正常的首页界面图像，故现在将其放到首页轮播图加载出来之后，才判断弹窗
 //		ToggleDialogByUserStatus();
 		
 		super.onCreate(savedInstanceState);
+		
 	}
 
 	private void ToggleDialogByUserStatus() {
@@ -475,7 +469,6 @@ import com.squareup.okhttp.Response;
 	}
 	
 	
-	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -494,8 +487,7 @@ import com.squareup.okhttp.Response;
 			v.iv_top_card.setVisibility(View.GONE);
 			mFromBankCardFragment = false;//使者用完后，要马上清除
 		}
-		
-
+		LogUtils.toDebugLog("times", "6: "+System.currentTimeMillis());
 		return rootView;
 	}
 	boolean canscoll = false;
@@ -521,11 +513,11 @@ import com.squareup.okhttp.Response;
 		v.et_home_search.setFocusable(false);
 		if (TextUtils.isEmpty(App.app.getData("access_token"))/*没有拿到access_Token,isFirst也为true的时候，则跳至体验搜索页*/
 				&& GlobalValue.isFirst) {
-			ExperienceSearchFragment fragment = new ExperienceSearchFragment();
-			FragmentEntity event = new FragmentEntity();
-			event.setFragment(fragment);
-			EventBus.getDefault().post(event);
-			return;
+//			ExperienceSearchFragment fragment = new ExperienceSearchFragment();
+//			FragmentEntity event = new FragmentEntity();
+//			event.setFragment(fragment);
+//			EventBus.getDefault().post(event);
+//			return;
 
 		} else {//可能我有access_token,可能我不是第一次进来
 			v.et_home_search.setHint(R.string.please_enter_search_brand);
@@ -580,6 +572,7 @@ import com.squareup.okhttp.Response;
 
 			head = inflater.inflate(R.layout.activity_home_banner, null);
 			TextView tv_home_hot_v16 = (TextView) head.findViewById(R.id.home_hot_v16);
+			pb_loading = (ProgressBar) head.findViewById(R.id.pb_loading);
 			
 			if(!isSameCity){
 				tv_home_hot_v16.setText("当前城市暂未开通服务");
@@ -835,10 +828,8 @@ import com.squareup.okhttp.Response;
 			refreshKey = 1;
 			refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_home_list);//这个地方需要进行去服务器访问数据，                                                           setKey为1      
 		}
+		LogUtils.toDebugLog("times", "HomeFragment的init(): "+System.currentTimeMillis());
 		
-		
-
-
 	}
 	
 	/**
@@ -954,6 +945,7 @@ import com.squareup.okhttp.Response;
 	 * 当前定位城市与选中城市是否一致
 	 */
 	private boolean isSameCity;
+	private ProgressBar pb_loading;
 
 	public int getLocation(View v) {
 		int[] loc = new int[4];
@@ -1182,16 +1174,18 @@ import com.squareup.okhttp.Response;
 					}
 
 				} else {//如果选择的城市是China的城市,换句话说,常规进来的界面是走下面的代码的
-					
+					pb_loading.setVisibility(View.GONE);
 					LogUtils.toDebugLog("result", "result(1)中拿到首页下面的HomeList内容了");
 					lv_home_list.onLoadMoreFished();
 					lv_home_list.onRefreshFinshed(true);
 					
+					
+					//当前的定位城市和选择的城市不是同一个城市时，暂时将底部列表关闭掉
 					if(!isSameCity){
 						lv_home_list.onLoadMoreOverFished();
 					}
-					list = Handler_Json.JsonToBean(ActivityList.class,r.getContentAsString());
 					
+					list = Handler_Json.JsonToBean(ActivityList.class,r.getContentAsString());
 					if(isDeleteShopData){
 						shopDataList.clear();
 						isDeleteShopData=!isDeleteShopData;
@@ -1466,6 +1460,9 @@ import com.squareup.okhttp.Response;
 				case 10:
 					ToggleDialogByUserStatus();
 					break;	
+				case 20:
+					refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_home_list);
+					break;	
 				default:
 					/**
 					 * mScroller.setmDuration(3000);
@@ -1691,7 +1688,13 @@ import com.squareup.okhttp.Response;
 			}
 			if(intent.getAction().equals("com.lansun.qmyo.refreshHomeList")){
 				
-				refreshCurrentList(refreshUrl, refreshParams, refreshKey,lv_home_list);
+				new Timer().schedule(new TimerTask() {
+					@Override
+					public void run() {
+						handler.sendEmptyMessage(20);
+						
+					}
+				}, 1000);
 				
 				v.iv_card.setVisibility(View.GONE);//原本右边银行卡不可见
 				v.iv_top_card.setVisibility(View.GONE);//滑动出现的右边银行卡不可见

@@ -98,6 +98,7 @@
     <string name="login">登录</string>
     <string name="card_login">点击注册登录</string>
     <string name="register">注册</string>
+    <string name="register_click">点击注册</string>
     <string name="dai_use">待使用</string>
     <string name="used">已使用</string>
     <string name="failure">已失效</string>
@@ -111,6 +112,7 @@
     <string name="mine_head">头像</string>
     <string name="mine_nickname">昵称</string>
     <string name="mine_reset_pwd">重置登录密码</string>
+    <string name="mine_phone">手机号码</string>
     <string name="mine_edit_person_info">完善个人信息</string>
     <string name="mine_qr_code">我的二维码</string>
     <string name="edit">编辑</string>
@@ -269,7 +271,8 @@
     <string name="experience_now">开始玩转</string>
     <string name="re_login">重新登入？</string>
     <string name="tiyan_cuccess">体验成功</string>
-      <string name="tiyan_cuccess_welcome">小迈在此恭候多时咯</string>
+    <string name="tiyan_cuccess_welcome">小迈在此恭候多时咯</string>
+    <string name="tiyan_cuccess_welcome_tip">不用找，优惠到，随身小秘帮您挑~</string>
      <string name="tiyan_cuccess_getcard">Get it！</string>
      
     <string name="activity_collection">活动收藏</string>
@@ -381,7 +384,7 @@
     <string name="common_problem">常见问题</string>
     <string name="user_agreement">用户协议</string>
     <string name="v16">V16</string>
-    <string name="please_enter_card">搜索/添加银行卡</string>
+    <string name="please_enter_card">搜索银行卡</string>
     <string name="change_email">更改电子邮箱</string>
     <string name="email_faild">邮箱格式错误</string>
     <string name="change_truename">更改真实姓名</string>

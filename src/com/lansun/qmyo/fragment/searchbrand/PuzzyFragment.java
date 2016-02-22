@@ -68,8 +68,12 @@ public class PuzzyFragment extends BaseFragment implements PuzzyItemClickCallBac
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		
-		InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+		/**
+		 * 此处无需针对键盘做额外操作，因为从HotFragment过来时，键盘没有消失掉
+			InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+		 * 
+		 */
 		
 		View view=inflater.inflate(R.layout.puzzy_fragment, container,false);
 		initView(view);
@@ -134,6 +138,12 @@ public class PuzzyFragment extends BaseFragment implements PuzzyItemClickCallBac
 			}
 		}
 	}
+	/**
+	 * 模糊搜索结果列表进行的点击操作的回调函数
+	 * 
+	 * @author Yeun.Zhang
+	 *
+	 */
 	public interface OnPuzzyClickCallBack{
 		void onPuzzCallBack(String sel_name);
 	}

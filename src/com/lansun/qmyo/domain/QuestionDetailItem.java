@@ -10,9 +10,24 @@ public class QuestionDetailItem {
 	private String type;
 
 	private String status;
+	
+	/*
+	 * 最近一条回复内容
+	 */
+	private String answer;
+	
+	
 
+	
 	private int is_read;
-
+	
+	
+	public String getAnswer() {
+		return answer;
+	}
+	public void setAnswer(String answer) {
+		this.answer = answer;
+	}
 	public void setId(String id){
 	this.id = id;
 	}

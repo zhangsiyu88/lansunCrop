@@ -51,8 +51,7 @@ import com.lansun.qmyo.R;
 
 /**
  * 关于迈界
- * 
- * @author bhxx
+ * @author Yeun.zhang
  * 
  */
 public class AboutFragment extends BaseFragment {
@@ -79,7 +78,6 @@ public class AboutFragment extends BaseFragment {
 		Handler_Inject.injectOrther(this, rootView);
 		
 		LogUtils.toDebugLog("", "MainBankcard的值为：  "+ App.app.getData("MainBankcard"));
-//		CustomToast.show(activity, "MainBankcard的值为：", App.app.getData("MainBankcard"));
 		
 		return rootView;
 	}
@@ -103,8 +101,6 @@ public class AboutFragment extends BaseFragment {
 		
 		//初始化包含所有AppCache和ImageLoader中的缓存值
 		initAllCacheSize();
-		
-		
 	}
 
 	@SuppressLint("NewApi") @SuppressWarnings("deprecation")

@@ -286,11 +286,11 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 					CustomToast.show(activity, "bankList = null", "BankList为空！");
 //					PullToRefreshManager.getInstance().onFooterRefreshComplete();
 				}
-				
 			}
 		});
 		
 		return rootView;
+		
 	}
 
 	private void initView(View rootView) {
@@ -366,15 +366,14 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 			setEmptityView(0);
 			v.puzz_floor.setVisibility(View.GONE); //模糊搜索结果层设置为不可见
 			del_search_content.setVisibility(View.GONE);
-			lv_search_bank_card.setVisibility(View.GONE);  //搜索结果列表设置为不可见
+			lv_search_bank_card.setVisibility(View.GONE);  //搜索结果列表设置为不可见   搜索列表层和Tip语句提示层其实是放在同一个FrameLayout中
 			et_home_search.requestFocus();
 			v.tv_search_cancle.setText(R.string.cancle);
 			v.tv_search_cancle.setTextColor(Color.parseColor("#939393"));
 		} else {
 			del_search_content.setVisibility(View.VISIBLE);
 			v.tv_search_cancle.setText(R.string.search);
-			v.tv_search_cancle.setTextColor(getResources().getColor(
-					R.color.app_green1));
+			v.tv_search_cancle.setTextColor(getResources().getColor(R.color.app_green1));
 			query_name=et_home_search.getText().toString().trim();
 			getPuzzyData(query_name);
 		}
@@ -416,7 +415,14 @@ public class SearchBankCardFragment extends BaseFragment implements TextWatcher,
 			}
 		}
 	}
+	
+	/**
+	 * 关于银行卡的模糊搜索
+	 * 
+	 * @param query
+	 */
 	private void getPuzzyData(String query) {
+		//puzz_floor模糊搜索层，包含了模糊搜索的RecyclerView
 		lv_search_bank_card.setVisibility(View.GONE); //结果层设置为空
 		v.puzz_floor.setVisibility(View.VISIBLE); //模糊搜索结果页设置为可见
 		

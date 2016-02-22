@@ -185,7 +185,8 @@ public class SharedDialog implements OnClickListener {
 		params.alpha = 0.2f;
 		activity.getWindow().setAttributes(params);
 
-		window.setOutsideTouchable(false);
+		window.setOutsideTouchable(true);
+		
 		window.update();
 		// 设置popWindow弹出窗体可点击，这句话必须添加，并且是true
 		window.setFocusable(true);

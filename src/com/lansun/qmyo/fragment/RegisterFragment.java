@@ -2,10 +2,31 @@ package com.lansun.qmyo.fragment;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Timer;
-import java.util.TimerTask;
 
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.animation.LinearInterpolator;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
+import android.widget.TextView;
 import cn.jpush.android.api.JPushInterface;
+
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
 import com.android.pc.ioc.inject.InjectAll;
@@ -20,13 +41,14 @@ import com.android.pc.ioc.view.TimeButton;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
+import com.lansun.qmyo.MainFragment;
+import com.lansun.qmyo.R;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.domain.BankCardData;
 import com.lansun.qmyo.domain.ErrorInfo;
 import com.lansun.qmyo.domain.Token;
 import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.event.entity.FragmentEntity;
-
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryCardShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryInvestmentShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryLifeShowFragment;
@@ -38,38 +60,9 @@ import com.lansun.qmyo.utils.CommitStaticsinfoUtils;
 import com.lansun.qmyo.utils.FixedSpeedScroller;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
-import com.lansun.qmyo.view.CloudView;
 import com.lansun.qmyo.view.CustomToast;
-import com.lansun.qmyo.MainFragment;
-import com.lansun.qmyo.R;
 import com.ryanharter.viewpager.PagerAdapter;
 import com.ryanharter.viewpager.ViewPager;
-
-import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.PixelFormat;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v4.app.Fragment;
-import android.text.TextUtils;
-import android.text.format.Time;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.View.OnTouchListener;
-import android.view.animation.LinearInterpolator;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.ImageView.ScaleType;
 
 /**
  * 注册界面
@@ -110,6 +103,7 @@ import android.widget.ImageView.ScaleType;
 	private RecyclingImageView iv_activity_back;
 	private boolean mIsFromRegisterAndHaveNothingThenGoToRegister = false;
 	private View rootView;
+	private boolean toRegister = false;
 	class Views {
 		private View fl_register_recode, rl_register_dialog, fl_register_pwd;
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
@@ -199,6 +193,7 @@ import android.widget.ImageView.ScaleType;
 		if (getArguments() != null) {
 			isReset = getArguments().getBoolean("isReset");
 			isJustLogin = getArguments().getBoolean("isJustLogin");
+			toRegister = getArguments().getBoolean("toRegister");
 			isResetPsw = getArguments().getBoolean("isResetPsw");
 			isFromMyBankcardFragToRigisterFrag  = getArguments().getBoolean("isFromMyBankcardFragToRigisterFrag");
 			boolean isFromHome = getArguments().getBoolean("isFromHome");
@@ -234,6 +229,10 @@ import android.widget.ImageView.ScaleType;
 //				v.tv_register_reg_login.setVisibility(View.GONE);//将右上角的注册gone掉
 				v.btn_register_reg_login.setText(getString(R.string.login));
 				v.et_register_pwd.setHint("输入密码");
+				
+				if(toRegister){
+					click(v.tv_register_reg_login);
+				}
 			}
 			if (isResetPsw) {
 				App.app.setData("isResetPsw", "true");//这个的作用是为了控制拦截物理返回键的作用
@@ -600,13 +599,10 @@ import android.widget.ImageView.ScaleType;
 					return;
 				}
 
+				App.app.setData("user_phone",phone);
 				
 				GlobalValue.user = Handler_Json.JsonToBean(User.class,r.getContentAsString());//----> 登录成功后，便拿到了返回的 user信息 
 				Log.i("打出包含secret的返回信息内容",r.getContentAsString());
-				
-				
-					
-				
 				
 				if (GlobalValue.user != null) {
 					Log.i("","用户的status状态为： "+GlobalValue.user.getStatus());
@@ -644,7 +640,6 @@ import android.widget.ImageView.ScaleType;
 				CommitStaticsinfoUtils.commitStaticsinfo(2);
 				
 				
-				
 				/*back();*/
 				InternetConfig config1 = new InternetConfig();
 				config1.setKey(6);
@@ -652,6 +647,19 @@ import android.widget.ImageView.ScaleType;
 				head1.put("Authorization", "Bearer " + token.getToken());
 				config1.setHead(head1);
 				FastHttpHander.ajaxGet(GlobalValue.URL_BANKCARD_CHOSEN, config1, this);
+				
+				
+				/**
+				 * 参数: access_token   &  secret
+				 */
+				if(!TextUtils.isEmpty(App.app.getData("access_token"))){
+					if(!TextUtils.isEmpty(App.app.getData("secret"))){
+				        //推送的服务被关闭掉之后，之前启动推送的服务
+							JPushInterface.resumePush(getActivity().getApplicationContext());
+							JPushInterface.init(activity.getApplicationContext());
+					}
+				}
+				
 				
 				
 				//App.app.setData("access_token", token.getToken());
@@ -664,6 +672,7 @@ import android.widget.ImageView.ScaleType;
 				if(r.getContentAsString().contains("true")){
 					/*CustomToast.show(activity, "已绑定推送服务","小迈会为您提供更多惊喜哦");*/
 				}
+				
 				break;
 			case 5:
 				if ("true".equals(r.getContentAsString())) {
@@ -937,7 +946,6 @@ import android.widget.ImageView.ScaleType;
 		Log.i("我拿到的registration_id为： ",JPushInterface.getRegistrationID(activity));
 
 		/*FastHttpHander.ajaxForm(GlobalValue.URL_PUSH_TOKEN, params, null,config, this);*/
-
 		FastHttpHander.ajax(GlobalValue.URL_PUSH_TOKEN, params, config, this);
 	}
 

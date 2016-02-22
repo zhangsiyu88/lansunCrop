@@ -115,6 +115,19 @@ import com.lansun.qmyo.view.CustomToast;
 	            Log.v("locationservice", "request error");
 	            return;
 	        }
+	        
+//	        if(aMapLocation.getLatitude()==0||aMapLocation.getLongitude()==0){
+//	        	CustomToast.show(this, "迈界提示", "请前往权限页面打开定位权限");
+//	        }
+	        
+	        if(aMapLocation.getLatitude()!=0 && aMapLocation.getLongitude()!=0){
+				if(App.app.getData("firstEnter").isEmpty()){
+					App.app.setData("gpsIsNotAccurate","");//将gps的提醒标签置为空
+					App.app.setData("firstEnter","notblank");//但此时已不是第一次进入
+				}
+			}
+	        
+	        
 	        //locationList是一个自定义实现的泛型类，
 	        //用于实现定长固定列表的功能。
 	       /* locationList.addElement(aMapLocation);
@@ -133,11 +146,13 @@ import com.lansun.qmyo.view.CustomToast;
 				//Gps的值不做更新，维持之前写定的Gps的值
 	    		Log.d("更新的坐标","更新的操作在进行，但Gps值并未替换");
 			}else{
-				//如果是当前定位城市 正是 你所选中的城市，那么前往访问的就是：当前定位到的position值
-				correctGpsCoordinateAndSetData(aMapLocation.getLatitude(),aMapLocation.getLongitude());
-				Log.d("更新的坐标","高德更新的坐标:"+aMapLocation.getLatitude()+","+aMapLocation.getLongitude());
-				Log.d("更新的坐标","修整为固定小数点后六位的坐标:"+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
-				
+				if(App.app.getData("isPos")!=null &&
+						!(App.app.getData("isPos").equals("false"))){
+					//如果是当前定位城市 正是 你所选中的城市，那么前往访问的就是：当前定位到的position值
+					correctGpsCoordinateAndSetData(aMapLocation.getLatitude(),aMapLocation.getLongitude());
+					Log.d("更新的坐标","高德更新的坐标:"+aMapLocation.getLatitude()+","+aMapLocation.getLongitude());
+					Log.d("更新的坐标","修整为固定小数点后六位的坐标:"+GlobalValue.gps.getWgLat()+","+GlobalValue.gps.getWgLon());
+				}
 			}
 	        //Toast.makeText(App.app, "坐标已更新。。。", Toast.LENGTH_SHORT).show();
 	        

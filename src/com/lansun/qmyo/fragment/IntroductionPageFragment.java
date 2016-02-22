@@ -153,10 +153,19 @@ public class IntroductionPageFragment extends BaseFragment implements
 	}
 
 	private void click(View view) {
-		MainFragment fragment = new MainFragment();
+		/*MainFragment fragment = new MainFragment();
 		FragmentEntity event = new FragmentEntity();
 		event.setFragment(fragment);
-		EventBus.getDefault().post(event);
+		EventBus.getDefault().post(event);*/
+		
+		 if (TextUtils.isEmpty(App.app.getData("access_token"))/*没有拿到access_Token,isFirst也为true的时候，则跳至体验搜索页*/
+					&& GlobalValue.isFirst) {
+			ExperienceSearchFragment fragment = new ExperienceSearchFragment();
+			FragmentEntity event = new FragmentEntity();
+			event.setFragment(fragment);
+			EventBus.getDefault().post(event);
+			return;
+		}
 	}
 
 	ViewPagerAdapter adapter = new ViewPagerAdapter();

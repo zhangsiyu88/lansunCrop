@@ -21,14 +21,18 @@ import com.android.pc.util.Handler_Inject;
 import com.lansun.qmyo.R.drawable;
 import com.lansun.qmyo.app.App;
 import com.lansun.qmyo.event.entity.FragmentEntity;
+import com.lansun.qmyo.fragment.ActivityDetailFragment;
 import com.lansun.qmyo.fragment.BaseFragment;
+import com.lansun.qmyo.fragment.ExperienceSearchFragment;
 import com.lansun.qmyo.fragment.FoundFragment;
 import com.lansun.qmyo.fragment.HomeFragment;
 import com.lansun.qmyo.fragment.MineFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
 import com.lansun.qmyo.fragment.SecretaryFragment;
+import com.lansun.qmyo.fragment.StoreDetailFragment;
 import com.lansun.qmyo.service.LocationService;
 import com.lansun.qmyo.utils.LogUtils;
+import com.lansun.qmyo.utils.NotifyUtils;
 import com.lansun.qmyo.utils.gooview.GooViewListener;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.MainViewPager;
@@ -45,10 +49,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager.BackStackEntry;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -113,6 +119,11 @@ public class MainFragment extends Fragment {
 	private RelativeLayout bottom;
 	private LinearLayout bottom_menu;
 	private View rootView;
+	
+	/**
+	 * 启动定位服务的标签位
+	 */
+	boolean launchPos = false;
 	class Views {
 		@InjectBinder(method = "click", listeners = OnClick.class)
 		private RelativeLayout fl_home_top_menu, rl_top_r_top_menu, rl_bg,rl_top_bg;
@@ -141,14 +152,24 @@ public class MainFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		notifyViewInfo();
 		
+		LogUtils.toDebugLog("NotifyUtils", "NotifyUtils.sendNotifictionCounts()");
+		NotifyUtils.mContext = activity;
+		NotifyUtils.sendNotifictionCounts();
+		
+	}
+	private void notifyViewInfo() {
 		if(getArguments()!= null){//从GpsFragment页面传送过来信号，需要重启定位的服务
-			boolean launchPos = (boolean)getArguments().get("restartGps");
-			if(launchPos){
-				activity.startService(new Intent(activity,LocationService.class));
-				LogUtils.toDebugLog("launchPos", "从GpsFragment传来重启location的信号");
+			if(getArguments().get("restartGps")!=null){
+				launchPos = (boolean)getArguments().get("restartGps");
+				LogUtils.toDebugLog("launchPos", "launchPos的值："+launchPos);
+				if(launchPos){
+					activity.startService(new Intent(activity,LocationService.class));
+					LogUtils.toDebugLog("launchPos", "从GpsFragment传来重启location的信号");
+				}
+			  }
 			}
-		}
 		
 		 //进入活动详情时，就需要做好后面用户发表评论的准备工作了
 		new Thread(new Runnable() {
@@ -171,15 +192,7 @@ public class MainFragment extends Fragment {
 			}
 		}).start();
 		
-		if(savedInstanceState!= null){
-			//vp_mainfrag = savedInstanceState.getParcelable("vp_mainfrag");
-			/*
-			 * 在退出后台时，并未进行下面数据的保存
-			 * rootView = savedInstanceState.getParcelable("rootView");
-				fragList = savedInstanceState.getParcelable("fragList");
-				manager = savedInstanceState.getParcelable("manager");
-				transaction = savedInstanceState.getParcelable("transaction");*/
-		}
+
 		manager=getChildFragmentManager();
 		broadCastReceiver = new MainFragmentBroadCastReceiver();
 		System.out.println("MainFragment中注册广播 ing");
@@ -190,6 +203,7 @@ public class MainFragment extends Fragment {
 		filter.addAction("com.lansun.qmyo.hideTheBottomMenu");
 		filter.addAction("com.lansun.qmyo.recoverTheBottomMenu");
 		filter.addAction("com.lansun.qmyo.restartGPS");
+		filter.addAction("com.lansun.qmyo.message");
 		getActivity().registerReceiver(broadCastReceiver, filter);
 		
 		
@@ -212,15 +226,18 @@ public class MainFragment extends Fragment {
 			Bundle savedInstanceState) {
 		this.inflater = inflater;
 		rootView = inflater.inflate(R.layout.activity_mainfrag, container,false);
+		Handler_Inject.injectFragment(this, rootView);
+		
 		vp_mainfrag = (MainViewPager) rootView.findViewById(R.id.vp_mainfrag);
 		point = (TextView) rootView.findViewById(R.id.point);
 		bottom_menu =  (LinearLayout)rootView.findViewById(R.id.bottom_menu);
 		bottom =  (RelativeLayout)rootView.findViewById(R.id.bottom);
 		
-		Handler_Inject.injectFragment(this, rootView);
 		activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN|WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 		initView(rootView);
+		LogUtils.toDebugLog("times", "2: "+System.currentTimeMillis());
 		initFrag();
+		LogUtils.toDebugLog("times", "3: "+System.currentTimeMillis());
 		
 		/**
 		 * 由其他页面跳转至主界面的四大页面中的指定页面时，执行下面的操作
@@ -235,20 +252,12 @@ public class MainFragment extends Fragment {
 				break;
 			case 1:
 				click(v.bottom_secretary);
-				/*
-				 * 点击私人秘书页面时，发送广播通知秘书页进行访问，判断秘书信息是否已录入
-				 */
+				/*点击私人秘书页面时，发送广播通知秘书页进行访问，判断秘书信息是否已录入*/
 				Timer timer = new Timer();
 				timer.schedule(new TimerTask() {
-
 					@Override
 					public void run() {
-						handler.sendEmptyMessage(0);
-					}
-				}, 500);
-				
-				
-
+						handler.sendEmptyMessage(0);} }, 500);
 				break;
 			case 2:
 				click(v.bottom_found);
@@ -265,63 +274,23 @@ public class MainFragment extends Fragment {
 	 * onCreatView中调用此方法
 	 */
 	private void initView(View rootView) {
-//			//1.获取消息页发来的广播，根据广播内容得知底部的小绿点是否显示
-//		
-//			//2.若显示需给其设置上触摸滑动监听
-//	    if(true){
-//	    	visiable = point.getVisibility()==0;
-//	    }
-//				
-//		if (visiable) {
-//			point.setText("");
-//			point.setTag(0);
-//			
-//			/*
-//			 * 初始化监听者，方便对圆形按钮进行GooViewListener
-//			 * 之随意在这一步就进行初始化，谁拿到数据谁进行初始化任务，另外从时效原则上来说也是必须的
-//			 */
-//			GooViewListener mGooListener = new GooViewListener(activity, point) {
-//				@Override
-//				public void onDisappear(PointF mDragCenter) {
-//					super.onDisappear(mDragCenter);
-//					activity.runOnUiThread(new Runnable() {
-//						@Override
-//						public void run() {
-//							CustomToast.show(activity, "提示", "所有消息置为已读");
-//						}
-//					});
-//					/*Utils.showToast(mContext,"Cheers! We have get rid of it!");*/
-//				}
-//				@Override
-//				public void onReset(boolean isOutOfRange) {
-//					super.onReset(isOutOfRange);
-//					/*Utils.showToast(mContext,isOutOfRange ? "Are you regret?" : "Try again!");*/
-//				}
-//			};
-//			//为这个绿色小点设置触摸监听,为了使RedCircleButton被触摸时进行属于自己的动画表示
-//			point.setOnTouchListener(mGooListener);
-//		}
-		}
+	}
 	
 	/**
 	 * onCreatView中调用此方法
 	 */
 	private void initFrag(){
 		fragList = new ArrayList<BaseFragment>();
-		fragList.add(new HomeFragment());
+		fragList.add(new HomeFragment());//new 的操作在编译后为非原子性的，故在此处仅仅是将HomeFragment所只指向的内存单元存入fragList中
 		fragList.add(new SecretaryFragment());
 		fragList.add(new FoundFragment());
 		fragList.add(new MineFragment());
-		
-		/*fragList.add(new FoundFragment());
-		fragList.add(new FoundFragment());
-		fragList.add(new FoundFragment());
-		fragList.add(new FoundFragment());*/
 		
 		vp_mainfrag.setOffscreenPageLimit(4);
 		vp_mainfrag.setAdapter(new MyFragAdapter(manager));
 		//vp_mainfrag.setAdapter(new MyFragAdapter(manager));
 		vp_mainfrag.setOnPageChangeListener(new MyOnPageChangeListener());
+		LogUtils.toDebugLog("times", "initFrag(): "+System.currentTimeMillis());
 	}
 	/**
 	 * 以注解的形式拿到所有的xml布局中的控件
@@ -428,6 +397,12 @@ public class MainFragment extends Fragment {
 	}
 
 	
+	/**
+	 * extends FragmentPagerAdapter,针对Fragment专用的Adapter
+	 * 
+	 * @author Yeun.Zhang
+	 *
+	 */
 	class MyFragAdapter extends FragmentPagerAdapter{
 		
 		public MyFragAdapter(FragmentManager fm) {
@@ -558,7 +533,7 @@ public class MainFragment extends Fragment {
 		}
 	}
 	
-class MainFragmentBroadCastReceiver extends BroadcastReceiver{
+    class MainFragmentBroadCastReceiver extends BroadcastReceiver{
 
 		@Override
 		public void onReceive(Context ctx, Intent intent) {
@@ -679,31 +654,42 @@ class MainFragmentBroadCastReceiver extends BroadcastReceiver{
 	    }else if(intent.getAction().equals("com.lansun.qmyo.restartGPS")){
 	    	activity.startService(new Intent(activity,LocationService.class));
 			LogUtils.toDebugLog("launchPos", "从GpsFragment未点击其他按键，由返回按键转回，传来重启location的信号");
-	     }
+			
+	     }else if(intent.getAction().equals("com.lansun.qmyo.message")){
+	    	 
+	        activity.sendBroadcast(new Intent("com.lansun.qmyo.ChangeTheLGPStatus"));//通知绿点展示
+	        int messageCounts = intent.getIntExtra("messageCounts", 0);
+	        
+			click(v.bottom_mine);//模拟点击进入到我的页面
+			LogUtils.toDebugLog("message", "拿到推送的信息，点击后跳转至  我的 页面");
+			LogUtils.toDebugLog("message", "拿到的消息数目有： "+ messageCounts);
+		}
 		}
 	 }
 
-		@Override
-		public void onDestroy() {
+	@Override
+	public void onDestroy() {
 			getActivity().unregisterReceiver(broadCastReceiver);
 			super.onDestroy();
 		}
-		/**
-		 * 存储当前控件被清除前那一瞬希望保留的内容
-		 * @see android.support.v4.app.FragmentActivity#onSaveInstanceState(android.os.Bundle)
-		 */
-		@Override
-		public void onSaveInstanceState(Bundle outState) {
-			super.onSaveInstanceState(outState);
-			
-			//outState.putParcelable("vp_mainfrag", vp_mainfrag);
-			
-			/* 
-			 * 下面的变量都没有实现Praceable接口，不可被序列化保存和传递
-			 * 
-			 * outState.putParcelable("rootView", (Parcelable) rootView);
-			outState.putParcelable("fragList", (Parcelable)fragList);
-			outState.putParcelable("manager", (Parcelable)manager);
-			outState.putParcelable("transaction", (Parcelable)transaction);*/
-		}
+	
+	
+	/**
+	 * 存储当前控件被清除前那一瞬希望保留的内容
+	 * @see android.support.v4.app.FragmentActivity#onSaveInstanceState(android.os.Bundle)
+	 */
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		
+		//outState.putParcelable("vp_mainfrag", vp_mainfrag);
+		
+		/* 
+		 * 下面的变量都没有实现Praceable接口，不可被序列化保存和传递
+		 * 
+		 * outState.putParcelable("rootView", (Parcelable) rootView);
+		outState.putParcelable("fragList", (Parcelable)fragList);
+		outState.putParcelable("manager", (Parcelable)manager);
+		outState.putParcelable("transaction", (Parcelable)transaction);*/
+	}
 }

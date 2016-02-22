@@ -102,8 +102,6 @@
        	android:layout_width="fill_parent"
 	    android:layout_height="fill_parent" >
         
-       
-        
 	    <com.android.pc.ioc.view.AbLetterFilterListView
 	        android:id="@+id/letterView"
 	        android:layout_width="fill_parent"
@@ -132,15 +130,12 @@
 	       
 	         <ImageView 
 	             style="@style/w_wrap_h_wrap"
-	             android:background="@drawable/overseas_no"
-	             />
+	             android:background="@drawable/overseas_no"/>
 	         
 	         <TextView 
 	              style="@style/w_wrap_h_wrap"
-	              android:text="海外板块即将起航，敬请期待！"
-	             />
+	              android:text="海外板块即将起航，敬请期待！"/>
         </LinearLayout>
-    
     </FrameLayout>
 
 </LinearLayout>

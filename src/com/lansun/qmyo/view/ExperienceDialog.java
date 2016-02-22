@@ -64,6 +64,7 @@ public class ExperienceDialog extends BlurDialogFragment {//BlurDialogFragment
 	.displayer(new FadeInBitmapDisplayer(300))
 	.displayer(new RoundedBitmapDisplayer(10)).build();
 	
+	public int CLICK_SIMGLE = 0;
 	public String mCardId ;
 	public String mCardHeadPhotoUrl ;
 	public String mCardDesc ;
@@ -160,7 +161,10 @@ public class ExperienceDialog extends BlurDialogFragment {//BlurDialogFragment
 			InternetConfig config = new InternetConfig();
 			config.setKey(0);
 			/*FastHttpHander.ajaxForm(GlobalValue.URL_AUTH_TEMPORARY, config,this);*/
-			FastHttpHander.ajax(GlobalValue.URL_AUTH_TEMPORARY, config, this);
+		    if(CLICK_SIMGLE == 0){
+		    	FastHttpHander.ajax(GlobalValue.URL_AUTH_TEMPORARY, config, this);
+		    	CLICK_SIMGLE++;
+		    }
 			break;
 			
 		case R.id.tv_expe_relogin:
@@ -180,13 +184,14 @@ public class ExperienceDialog extends BlurDialogFragment {//BlurDialogFragment
 		if (r.getStatus() == FastHttp.result_ok) {
 			switch (r.getKey()) {
 			case 0:
+				CLICK_SIMGLE = 0;
 				GlobalValue.isFirst = false;
 				Secret secret = Handler_Json.JsonToBean(Secret.class,r.getContentAsString());
 				App.app.setData("exp_secret", secret.getSecret());
 				
 				Log.i("临时用户拿到exp_secret","临时用户拿到的exp_secret为："+App.app.getData("exp_secret"));
 				
-				CustomToast.show(App.app, R.string.tip4,R.string.tiyan_cuccess_welcome);
+
 				
 				// 再次前往获取临时的access_token
 				InternetConfig config = new InternetConfig();
@@ -203,7 +208,7 @@ public class ExperienceDialog extends BlurDialogFragment {//BlurDialogFragment
 				}*/
 				
 				
-				dismiss();
+//				dismiss();
 				break;
 
 			case 1:// 获取当前信用卡
@@ -247,12 +252,7 @@ public class ExperienceDialog extends BlurDialogFragment {//BlurDialogFragment
 				Log.i("作为体验用户实际提交上去的银行卡的ID为：","作为体验用户实际提交上去的银行卡的ID为："+cardId);
 				params.put("bankcard_id", cardId + "");
 				
-				
-				
-				
 				FastHttpHander.ajax(GlobalValue.URL_BANKCARD_ADD, params, config2, this);
-				
-				
 				
 				
 				App.app.setData("ExperienceBankcardId", String.valueOf(cardId));
@@ -277,9 +277,15 @@ public class ExperienceDialog extends BlurDialogFragment {//BlurDialogFragment
 				mActivity.sendBroadcast(new Intent("com.lansun.qmyo.refreshHomeList"));
 				System.out.println("ExperienceDialog 发送列表局部刷新的广播了");
 				
+				//将随机分配的银行卡拿到手后，还得将银行卡的id绑定到用户上去
+//				CustomToast.show(App.app, R.string.tip4,R.string.tiyan_cuccess_welcome);
+				CustomToast.show(App.app, R.string.tip4,R.string.tiyan_cuccess_welcome_tip);
+				
+				dismiss();
 				break;
 			}
 		} else {
+			CLICK_SIMGLE = 0;
 			CustomToast.show(App.app, R.string.tip, R.string.loading_faild);
 		}
 

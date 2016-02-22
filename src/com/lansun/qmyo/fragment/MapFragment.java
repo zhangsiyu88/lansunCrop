@@ -55,6 +55,7 @@ import com.android.pc.util.Gps;
 import com.android.pc.util.Handler_Inject;
 import com.lansun.qmyo.adapter.CommonAdapter;
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.R;
@@ -135,15 +136,14 @@ public class MapFragment extends BaseFragment implements LocationSource,
 		mListener = listener;
 		if (aMapManager == null) {
 			aMapManager = LocationManagerProxy.getInstance(activity);
-			aMapManager.requestLocationData(LocationProviderProxy.AMapNetwork,
-					2000, 10, this);
+			aMapManager.requestLocationData(LocationProviderProxy.AMapNetwork,2000, 10, this);
 		}
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		stopLocation();// 停止定位
+		//stopLocation();// 停止定位
 	}
 
 	/**
@@ -207,6 +207,40 @@ public class MapFragment extends BaseFragment implements LocationSource,
 			Double geoLat = aLocation.getLatitude();
 			Double geoLng = aLocation.getLongitude();
 		}
+		
+		
+		if(aMapLocation.getLatitude()!=0 && aMapLocation.getLongitude()!=0){
+			if(App.app.getData("firstEnter").isEmpty()){
+				App.app.setData("gpsIsNotAccurate","");//将gps的提醒标签置为空
+				App.app.setData("firstEnter","notblank");//但此时已不是第一次进入
+			}
+		}
+		
+		
+		 if(aMapLocation.getLatitude()==0||aMapLocation.getLongitude()==0){
+			 DialogUtil.createTipAlertDialog(activity,
+						"您还未开启精确定位哦\n\r请前往应用权限页开启",
+						new DialogUtil.TipAlertDialogCallBack() {
+							@Override
+							public void onPositiveButtonClick(DialogInterface dialog, int which) {
+								
+								  Intent localIntent = new Intent("android.settings.APPLICATION_DETAILS_SETTINGS");
+						          localIntent.setData(Uri.fromParts("package", "com.lansun.qmyo", null));
+						          activity.startActivity(localIntent);//前往权限设置的页面
+						          
+						          
+						          dialog.dismiss();
+							}
+
+							@Override
+							public void onNegativeButtonClick(
+									DialogInterface dialog, int which) {
+								dialog.dismiss();
+							}
+						});
+				}
+	        
+	        
 	}
 
 	private void click(View view) {

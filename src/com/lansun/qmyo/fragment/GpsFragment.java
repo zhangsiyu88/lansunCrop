@@ -132,6 +132,13 @@ public class GpsFragment extends BaseFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		
+		/*
+		 * 进入GPSFragment中时，默认用户已经同意进行定位操作
+		 * 即离开当前GPSFragment页面后，重新开启的定位服务应该是可以复写真实的坐标值
+		 */
+		App.app.setData("isPos", "true");
+		
 		this.inflater = inflater;
 		View rootView = inflater.inflate(R.layout.city_list, null);
 		Handler_Inject.injectFragment(this, rootView);
@@ -169,7 +176,9 @@ public class GpsFragment extends BaseFragment {
 		mainActivity.stopLocationService();
 		
 		/* 由于下方代码的locationData()方法中的AMap核心代码是全局单例的形式，当单例未被关闭时，会导致下方代码无效的情况，故移至界面搭建完成后再执行
-		 * locationData();*/
+		 * locationData();
+		 * 代码移至290行前后
+		 * */
 		
 		
 		//headerView是 当前城市定位:一栏和下面的两个GridView(见下面)

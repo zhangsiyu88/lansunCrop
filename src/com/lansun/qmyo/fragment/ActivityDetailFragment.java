@@ -81,13 +81,14 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.lidroid.xutils.http.client.multipart.MultipartEntity.CallBackInfo;
+import com.lansun.qmyo.MapActivity;
 import com.lansun.qmyo.R;
 import com.umeng.socialize.media.GooglePlusShareContent;
 
 /**
  * 活动详情 TODO 
  * 
- * @author bhxx
+ * @author 
  * 
  */
 public class ActivityDetailFragment extends BaseFragment {
@@ -645,13 +646,19 @@ public class ActivityDetailFragment extends BaseFragment {
 			bus.post(entity);
 			break;                              					暂时去除我的优惠券的 展示，在xml中将其注解掉，以免出现闪现的现象   */
 		case R.id.iv_activity_detail_map:// 地图功能
-			fragment = new MapFragment();
-			args = new Bundle();
-			args.putString("shopname", data.getShop().getName());
-			args.putString("shopaddress", data.getShop().getAddress());
-			fragment.setArguments(args);
-			entity.setFragment(fragment);
-			bus.post(entity);
+//			fragment = new MapFragment();
+//			args = new Bundle();
+//			args.putString("shopname", data.getShop().getName());
+//			args.putString("shopaddress", data.getShop().getAddress());
+//			fragment.setArguments(args);
+//			entity.setFragment(fragment);
+//			bus.post(entity);
+			
+			Intent _intent = new Intent(activity,MapActivity.class);
+			_intent.putExtra("shopname", data.getShop().getName());
+			_intent.putExtra("shopaddress", data.getShop().getAddress());
+			activity.startActivity(_intent);
+			
 			break;
 		case R.id.ll_activity_collection: // 活动详情收藏
 			

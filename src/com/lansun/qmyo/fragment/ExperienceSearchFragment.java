@@ -12,6 +12,8 @@ import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentManager.BackStackEntry;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +42,7 @@ import com.lansun.qmyo.domain.User;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.R;
@@ -90,13 +93,31 @@ public class ExperienceSearchFragment extends BaseFragment {
 		FragmentEntity event = new FragmentEntity();
 		switch (view.getId()) {
 		case R.id.btn_experience_jump:
-			GlobalValue.isFirst = false;//走的时候已将isFirst设置为false
-			v.btn_experience_jump.setTextColor(Color.WHITE);
-			v.btn_experience_jump.setBackgroundResource(R.drawable.main_btn_shape_pressed);
+			
+	    GlobalValue.isFirst = false;//走的时候已将isFirst设置为false
+//	    v.btn_experience_jump.setTextColor(Color.WHITE);
+//	    v.btn_experience_jump.setBackgroundResource(R.drawable.main_btn_shape_pressed);
+			
+//	    FragmentManager supportFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
+//			for (int i = 0; i < supportFragmentManager.getBackStackEntryCount(); i++) {
+//				BackStackEntry entry = supportFragmentManager.getBackStackEntryAt(i);
+//				if(entry.getName().equals(ExperienceSearchFragment.class.getName())){
+//					supportFragmentManager.popBackStack(entry.getName(), 1);
+//					LogUtils.toDebugLog("pop", "剔除ExperienceSearchFragment");
+//				}
+//			}
 			/*fragment = new HomeFragment();*/
 			fragment = new MainFragment(0);
+			LogUtils.toDebugLog("times", "1: "+System.currentTimeMillis());
+			
 			break;
 		case R.id.ll_experience_login:
+			
+//			 FragmentManager supportFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
+//				for (int i = 0; i < supportFragmentManager.getBackStackEntryCount(); i++) {
+//					BackStackEntry entry = supportFragmentManager.getBackStackEntryAt(i);
+//				LogUtils.toDebugLog("pop", ""+entry.getName());
+//			}
 			fragment = new RegisterFragment();
 			Boolean isJustLogin = true;
 			Bundle bundle = new Bundle();
@@ -104,7 +125,22 @@ public class ExperienceSearchFragment extends BaseFragment {
 			fragment.setArguments(bundle);
 			break;
 		case R.id.rl_experience_search_card:
-			fragment = new SearchBankCardFragment();
+			
+//			 FragmentManager supportFragmentManager1 = ((FragmentActivity) activity).getSupportFragmentManager();
+//				for (int i = 0; i < supportFragmentManager1.getBackStackEntryCount(); i++) {
+//					BackStackEntry entry = supportFragmentManager1.getBackStackEntryAt(i);
+//				LogUtils.toDebugLog("pop", ""+entry.getName());
+//			}
+			
+			
+			fragment = new RegisterFragment();
+			Boolean _isJustLogin = true;
+			Boolean _toRegister = true;
+			Bundle _bundle = new Bundle();
+			_bundle.putBoolean("isJustLogin", _isJustLogin);
+			_bundle.putBoolean("toRegister", _toRegister);
+			fragment.setArguments(_bundle);
+//			fragment = new SearchBankCardFragment();
 			break;
 		}
 		if (fragment != null) {

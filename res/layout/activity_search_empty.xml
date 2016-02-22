@@ -8,7 +8,7 @@
     android:orientation="vertical" >
 
     <TextView
-        style="@style/text_style_nomal_28"
+        style="@style/text_style_nomal_30"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/margin_top_100"
         android:text="@string/lv_empty"
@@ -24,9 +24,14 @@
     <TextView
         android:id="@+id/tv_found_secretary"
         style="@style/text_style_nomal_28"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:paddingLeft="35dp"
+        android:paddingRight="31dp"
         android:layout_marginBottom="@dimen/margin_top_100"
         android:layout_marginTop="@dimen/margin_top_20"
         android:text="@string/found_secretary"
-        android:textColor="@color/app_green1" />
+        android:textColor="@color/app_white" 
+        android:background="@drawable/circle_edit_background"/>
 
 </LinearLayout>

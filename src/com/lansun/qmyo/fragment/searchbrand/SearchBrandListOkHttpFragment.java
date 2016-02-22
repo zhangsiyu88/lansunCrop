@@ -63,6 +63,7 @@ import com.lansun.qmyo.MainFragment;
 import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.SearchAdapter;
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.base.BackHandedFragment;
 import com.lansun.qmyo.biz.ServiceAllBiz;
 import com.lansun.qmyo.domain.ActivityList;
 import com.lansun.qmyo.domain.ActivityListData;
@@ -94,7 +95,7 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-@SuppressLint("InflateParams") public class SearchBrandListOkHttpFragment extends BaseFragment implements OnClickListener,TextWatcher{
+@SuppressLint("InflateParams") public class SearchBrandListOkHttpFragment extends BackHandedFragment implements OnClickListener,TextWatcher{
 	private final String TAG=SearchBrandListOkHttpFragment.class.getSimpleName();
 	private String HODLER_TYPE = "000000";
 	private boolean isPull = false;
@@ -152,8 +153,6 @@ import com.squareup.okhttp.Response;
 	private boolean justFirstClick = true;
 	private boolean isFromNoNetworkViewTip = false;
 	
-	
-	
 	/**
 	 * 处理okhttp的网络返回请求
 	 */
@@ -195,12 +194,14 @@ import com.squareup.okhttp.Response;
 //						lv_search_content.onLoadMoreOverFished();
 						
 						if(first_enter == 0){//数据少于10条，且是第一次进来刷的就少于10条，将尾部去除，且不弹出吐司,加上小秘书提示图
+							lv_search_content.setNoHeader(true);//一进来少于10条，则无法刷新操作
 				            lv_search_content.onLoadMoreOverFished();
 				            lv_search_content.addFooterView(emptyView);
 				          }else{
 				            //DO-OP
 				          }
 						lv_search_content.setAdapter(searchBankcardAdapter);
+						
 						
 						insertDataCurrentTimeMillis = System.currentTimeMillis();
 						Log.d("全局搜索测试", "数据放到界面上的时间点 "+insertDataCurrentTimeMillis);
@@ -889,8 +890,7 @@ import com.squareup.okhttp.Response;
 			} else {
 				query = et_home_search.getText().toString().trim();
 
-				InputMethodManager imm = (InputMethodManager) activity
-						.getSystemService(Context.INPUT_METHOD_SERVICE);
+				InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 //				startSearch();
 				setEmptityView(first, 0);
@@ -1583,6 +1583,10 @@ import com.squareup.okhttp.Response;
 		LogUtils.toDebugLog("broadcast", "SearchBrandListOkHttpFragment  发送弹起键盘的广播");
 		super.back();
 	}
-    
+	@Override
+	public boolean onBackPressed() {
+		back();
+		return true;
+	}
 	
 }

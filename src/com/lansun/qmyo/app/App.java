@@ -68,17 +68,27 @@ public class App extends Application {
 	
 	@Override
 	public void onCreate() {
-		
+		/*
+		 * 初始化微信分享
+		 */
 		api = WXAPIFactory.createWXAPI(this, "wxd930ea5d5a258f4f", false);
-		
 		SpeechUtility.createUtility(getApplicationContext(), SpeechConstant.APPID +"=567209d1"); 
+		Ioc.getIoc().init(this); // ----------------------------------------------
 		
-		Ioc.getIoc().init(this); // -----------------------------------------------fadsfs
+		
 		
 		JPushInterface.init(getApplicationContext());
+		
+		//只有在登录的情况下，App才能享受推送的服务推送
+		/*if(!TextUtils.isEmpty(App.app.getData("access_token"))){
+			if(!TextUtils.isEmpty(App.app.getData("secret"))){
+			JPushInterface.init(getApplicationContext());
+			}
+		}*/
+		
 //		Log.i("很明显，程序一旦某机上安装成功，便获取到唯一的RegisterId","");
 		super.onCreate();
-		initHistory();  // -----------------------------------------------fadsfs
+		initHistory();  // ----------------------------------------------
 		initImageLoader(getApplicationContext());
 		
 		app = this;

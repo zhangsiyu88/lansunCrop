@@ -60,7 +60,6 @@ public class SwipeListMineMessageAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
 	HashSet<Integer> mRemoved = new HashSet<Integer>();
 	HashSet<SwipeLayout> mUnClosedLayouts = new HashSet<SwipeLayout>();
-	private int mPosition;
 	public ItemClickCallback itemClickcallback ;
 
 	public SwipeListMineMessageAdapter(Context ctx , ArrayList<HashMap<String, String>> dataList){
@@ -88,11 +87,7 @@ public class SwipeListMineMessageAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
-		
-		HashMap<String, String> data = mDataList.get(position);
-		mPosition = position;
-		
-		ViewHolder viewHold;
+		final ViewHolder viewHold;
 		if (convertView != null) {
 			viewHold = (ViewHolder) convertView.getTag();
 		}else {
@@ -109,14 +104,16 @@ public class SwipeListMineMessageAdapter extends BaseAdapter {
 		});
 		
 		
-		viewHold.tv_search_activity_time.setText(data.get("tv_search_activity_time"));
-		viewHold.tv_message_item_desc.setText(data.get("tv_message_item_desc"));
-		viewHold.tv_message_item_name.setText(data.get("tv_message_item_name"));
+		viewHold.tv_search_activity_time.setText(mDataList.get(position).get("tv_search_activity_time"));
+		viewHold.tv_message_item_desc.setText(mDataList.get(position).get("tv_message_item_desc"));
+		viewHold.tv_message_item_name.setText(mDataList.get(position).get("tv_message_item_name"));
 		
 		
-		if (Integer.parseInt(data.get("tv_message_item_count")) > 0) {
+		if (Integer.parseInt(mDataList.get(position).get("tv_message_item_count")) > 0) {
 			viewHold.tv_message_item_count.setVisibility(View.GONE);
-			viewHold.tv_message_item_count.setText("");
+//			viewHold.tv_message_item_count.setText("");
+		}else{
+			viewHold.tv_message_item_count.setVisibility(View.VISIBLE);
 		}
 		
 		if (position + 1 == mDataList.size()) {

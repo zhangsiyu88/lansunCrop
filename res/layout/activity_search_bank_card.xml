@@ -38,9 +38,7 @@
             layout="@layout/search_menu" />
     </RelativeLayout>
 
-    <View style="@style/line_style_1"
-         />
-
+    <View style="@style/line_style_1"/>
 
 
     <!-- 模糊搜索层的内容 -->
@@ -62,9 +60,7 @@
 
     <View style="@style/line_style_1" />
 
-    <FrameLayout style="@style/w_match_h_match" 
-        >
-
+    <FrameLayout style="@style/w_match_h_match" >
         <!-- listView 银行卡的展示 -->
         <com.lansun.qmyo.view.BankcardListView
             android:id="@+id/lv_search_bank_card"

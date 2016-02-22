@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginTop="@dimen/margin_top_12"
-            android:background="@drawable/circle_background_gray"
+            android:background="@drawable/circle_background_green"
             android:gravity="center" >
 
             <TextView
@@ -37,6 +37,7 @@
             android:background="@drawable/search_1" />
 
         <RelativeLayout
+            android:layout_marginTop="25dp"
             android:id="@+id/rl_experience_search_card"
             android:layout_width="@dimen/search_width"
             android:layout_height="@dimen/search_height"
@@ -44,7 +45,7 @@
             android:layout_centerHorizontal="true"
             android:background="@drawable/circle_edit_background" >
 
-            <LinearLayout
+           <!--  <LinearLayout
                 style="@style/w_wrap_h_wrap"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true" >
@@ -58,6 +59,22 @@
                     style="@style/text_style_nomal_28"
                     android:layout_marginLeft="10dp"
                     android:text="@string/please_enter_card"
+                    android:textColor="@color/app_white" />
+            </LinearLayout> -->
+             <LinearLayout
+               
+                style="@style/w_wrap_h_wrap"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true" >
+
+                <ImageView
+                    style="@style/w_wrap_h_wrap"
+                    />
+                <TextView
+                    android:id="@+id/tv_search_card"
+                    style="@style/text_style_nomal_28"
+                    android:layout_marginLeft="10dp"
+                    android:text="@string/register_click"
                     android:textColor="@color/app_white" />
             </LinearLayout>
         </RelativeLayout>
@@ -109,8 +126,10 @@
             android:background="@drawable/selector_main_btn_shape"
             android:gravity="center"
             android:layout_gravity="center_horizontal"
-            android:text="        体验迈界推荐银行卡        "
-            android:textColor="#939393" /><!-- @string/experience_jump_now -->
+            android:text="        先行体验        "
+            android:textColor="@drawable/selector_main_btn_shape_text" 
+            
+            /><!-- @string/experience_jump_now -->
     </LinearLayout>
 
 </RelativeLayout>
