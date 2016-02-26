@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -23,6 +24,7 @@ import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 import cn.jpush.android.api.JPushInterface;
@@ -60,17 +62,20 @@ import com.lansun.qmyo.utils.CommitStaticsinfoUtils;
 import com.lansun.qmyo.utils.FixedSpeedScroller;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
+import com.lansun.qmyo.view.CloudView;
 import com.lansun.qmyo.view.CustomToast;
+import com.ryanharter.viewpager.NoTouchViewPager;
 import com.ryanharter.viewpager.PagerAdapter;
 import com.ryanharter.viewpager.ViewPager;
 
 /**
  * 注册界面
  * 
- * @author bhxx
+ * @author 
  * 
  */
-@SuppressLint("InflateParams") public class RegisterFragment extends BaseFragment{
+@SuppressLint("InflateParams") 
+public class RegisterFragment extends BaseFragment{
 	@InjectAll
 	Views v;
 	private String code;
@@ -81,7 +86,7 @@ import com.ryanharter.viewpager.ViewPager;
 	private boolean isHasExpSecretWhenClickToRegister = true;
 	private boolean isJustLogin;
 	private boolean isFromMyBankcardFragToRigisterFrag = false;
-
+	private boolean initTime = true;
 
 	private boolean mIsFromHome = false;
 	private boolean mIsFromEightPart = false;
@@ -104,6 +109,7 @@ import com.ryanharter.viewpager.ViewPager;
 	private boolean mIsFromRegisterAndHaveNothingThenGoToRegister = false;
 	private View rootView;
 	private boolean toRegister = false;
+	private int resume_item_num = 300*1000;
 	class Views {
 		private View fl_register_recode, rl_register_dialog, fl_register_pwd;
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
@@ -121,9 +127,9 @@ import com.ryanharter.viewpager.ViewPager;
 		/*@InjectBinder(listeners = { OnClick.class }, method = "click")
 		private RecyclingImageView iv_activity_back;*/
 
-		//private CloudView iv_register_bg;
+//		private CloudView iv_register_bg;
 		
-		private ViewPager vp_sercretary_bg_pager;
+		private NoTouchViewPager vp_sercretary_bg_pager;
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState){
@@ -143,10 +149,11 @@ import com.ryanharter.viewpager.ViewPager;
 		Handler_Inject.injectFragment(this, rootView);
 
 		activity.getWindow().setSoftInputMode(
-				  WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
+				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
 				| WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 		
 		adapter = new SecretaryBgPagerAdapter();
+		v.vp_sercretary_bg_pager.setOffscreenPageLimit(4);
 		v.vp_sercretary_bg_pager.setAdapter(adapter);
         v.vp_sercretary_bg_pager.setOnTouchListener(new OnTouchListener() {
 			@Override
@@ -154,19 +161,19 @@ import com.ryanharter.viewpager.ViewPager;
 				return true;
 			}
 		});
-		try {
-			Field mField = ViewPager.class.getDeclaredField("mScroller");
-			mField.setAccessible(true);//允许暴力反射
-			mScroller = new FixedSpeedScroller(v.vp_sercretary_bg_pager.getContext(),new LinearInterpolator());//CycleInterpolator(Float.MAX_VALUE)
-			mScroller.setmDuration(15000);
-			mField.set(v.vp_sercretary_bg_pager, mScroller);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		//mScroller.setmDuration(8000);
-		handler.removeCallbacksAndMessages(null);
-		handler.postDelayed(new InternalTask(), 0);
-		v.vp_sercretary_bg_pager.setCurrentItem(1000*300);
+//		try {
+//			Field mField = NoTouchViewPager.class.getDeclaredField("mScroller");
+//			mField.setAccessible(true);//允许暴力反射
+//			mScroller = new FixedSpeedScroller(v.vp_sercretary_bg_pager.getContext(),new LinearInterpolator());//CycleInterpolator(Float.MAX_VALUE)
+//			mScroller.setmDuration(15000);
+//			mField.set(v.vp_sercretary_bg_pager, mScroller);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		//mScroller.setmDuration(8000);
+//		handler.removeCallbacksAndMessages(null);
+//		handler.postDelayed(new InternalTask(), 0);
+//		v.vp_sercretary_bg_pager.setCurrentItem(1000*300);
 		
 
 //		activity.getWindow().setSoftInputMode(
@@ -621,6 +628,10 @@ import com.ryanharter.viewpager.ViewPager;
 						LinkedHashMap<String, String> params = new LinkedHashMap<>();
 						FastHttpHander.ajaxGet(GlobalValue.URL_GET_ACCESS_TOKEN+ App.app.getData("secret"), config, this);
 						CustomToast.show(activity, "迈界欢迎您", "不用找，优惠到，随身小秘帮您挑~");
+						
+						InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+						imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+						
 						App.app.setData("isExperience", "false");//将体验用户标示置为 false
 						App.app.getData("isEmbrassStatus").equals("");//此时用户状态不再是尴尬的状态时
 						
@@ -659,9 +670,6 @@ import com.ryanharter.viewpager.ViewPager;
 							JPushInterface.init(activity.getApplicationContext());
 					}
 				}
-				
-				
-				
 				//App.app.setData("access_token", token.getToken());
 
 				/*back();*///先于弹窗提醒之前,将界面跳转至上一页(由体验用户去登陆时)
@@ -671,8 +679,9 @@ import com.ryanharter.viewpager.ViewPager;
 				// GlobalValue.user = Handler_Json.JsonToBean(User.class,r.getContentAsString());
 				if(r.getContentAsString().contains("true")){
 					/*CustomToast.show(activity, "已绑定推送服务","小迈会为您提供更多惊喜哦");*/
+					LogUtils.toDebugLog("Jpush", "绑定推送服务更换RegisterID完成");
+					Toast.makeText(activity, "^_^", Toast.LENGTH_SHORT).show();
 				}
-				
 				break;
 			case 5:
 				if ("true".equals(r.getContentAsString())) {
@@ -954,8 +963,28 @@ import com.ryanharter.viewpager.ViewPager;
 		
 		/**
 		 * 背景上的云暂关闭掉
-		 **/ //v.iv_register_bg.threadFlag = true;
-
+		 **/ 
+//		v.iv_register_bg.threadFlag = true;
+		
+		try {
+			Field mField = NoTouchViewPager.class.getDeclaredField("mScroller");
+			mField.setAccessible(true);//允许暴力反射
+			mScroller = new FixedSpeedScroller(v.vp_sercretary_bg_pager.getContext(),new LinearInterpolator());//CycleInterpolator(Float.MAX_VALUE)
+			mScroller.setmDuration(15000);
+			mField.set(v.vp_sercretary_bg_pager, mScroller);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		handler.removeCallbacksAndMessages(null);
+		if(initTime){
+			v.vp_sercretary_bg_pager.setCurrentItem(1000*300);
+	        initTime = !initTime;
+		}else{
+			v.vp_sercretary_bg_pager.setAdapter(null);
+			v.vp_sercretary_bg_pager.setAdapter(adapter);
+			v.vp_sercretary_bg_pager.setCurrentItem(resume_item_num+1);
+		}
+		handler.postDelayed(new InternalTask(), 0);
 		super.onResume();
 	}
 
@@ -963,7 +992,14 @@ import com.ryanharter.viewpager.ViewPager;
 	public void onPause() {//在Fragmentment暂停的时候，将背景设置成单图
 		/**///v.iv_register_bg.threadFlag = false;
 		//v.iv_register_bg.setBackgroundResource(R.drawable.cloud_1);
+//		int nextIndex = v.vp_sercretary_bg_pager.getCurrentItem()+1;
+//		v.vp_sercretary_bg_pager.setCurrentItem(nextIndex);
+		
+		int currentItem = v.vp_sercretary_bg_pager.getCurrentItem();
+		resume_item_num  = currentItem;
+//		v.vp_sercretary_bg_pager.invalidate();
 		super.onPause();
+		
 	}
 	@Override
 	public void onDestroy() {
@@ -974,55 +1010,54 @@ import com.ryanharter.viewpager.ViewPager;
 	
 	
 	
-	   class SecretaryBgPagerAdapter extends PagerAdapter {
-		   
-				@Override
-				public int getCount() {
-					return Integer.MAX_VALUE;
-				}
+    class SecretaryBgPagerAdapter extends PagerAdapter {
+	   
+			@Override
+			public int getCount() {
+				return Integer.MAX_VALUE;
+			}
 
-				@Override
-				public boolean isViewFromObject(View view, Object object) {
-					return view == object;
-				}
-				@Override
-				public Object instantiateItem(ViewGroup container, int position) {
-					ImageView imageView = new ImageView(activity);
-					imageView.setScaleType(ScaleType.CENTER_CROP);
-					if(position%2==0){
-						imageView.setBackgroundResource(R.drawable.cloud_1);
-					}else{
-						imageView.setBackgroundResource(R.drawable.cloud_2);
-					}
-					container.addView(imageView);
-					return imageView;
-				}
-				@Override
-				public void destroyItem(ViewGroup container, int position, Object object) {
-					container.removeView((View) object);
-				}
+			@Override
+			public boolean isViewFromObject(View view, Object object) {
+				return view == object;
 			}
-		   
-			@SuppressLint("HandlerLeak")
-			class InternalHandler extends Handler{
-				@Override
-				public void handleMessage(Message msg) {
-							int nextIndex = v.vp_sercretary_bg_pager.getCurrentItem()+1;
-							v.vp_sercretary_bg_pager.setCurrentItem(nextIndex);
-							handler.postDelayed(new InternalTask(), 15000);//自己给自己发信息
+			@Override
+			public Object instantiateItem(ViewGroup container, int position) {
+				ImageView imageView = new ImageView(activity);
+				imageView.setScaleType(ScaleType.CENTER_CROP);
+				if(position%2==0){
+					imageView.setBackgroundResource(R.drawable.cloud_1);
+				}else{
+					imageView.setBackgroundResource(R.drawable.cloud_2);
 				}
+				container.addView(imageView);
+				return imageView;
 			}
-			class InternalTask implements Runnable{
-				@Override
-				public void run() {
-					handler.sendEmptyMessage(0);
-				}
+			@Override
+			public void destroyItem(ViewGroup container, int position, Object object) {
+				container.removeView((View) object);
 			}
+		}
+	   
+	@SuppressLint("HandlerLeak")
+	class InternalHandler extends Handler{
+		@Override
+		public void handleMessage(Message msg) {
+			int nextIndex = v.vp_sercretary_bg_pager.getCurrentItem()+1;
+			v.vp_sercretary_bg_pager.setCurrentItem(nextIndex);
+			handler.postDelayed(new InternalTask(), 15000);//自己给自己发信息
+		}
+	}
 	
-			/**
-			 * 针对七大秘书页面进行的延迟发送广播操作
-			 */
-			private void sendBroadcastDelay(){
-				getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshTheIcon"));
-			}
+	class InternalTask implements Runnable{
+		@Override
+		public void run() {
+			handler.sendEmptyMessage(0);
+		}
+	}
+
+		/** 针对七大秘书页面进行的延迟发送广播操作*/
+		private void sendBroadcastDelay(){
+			getActivity().sendBroadcast(new Intent("com.lansun.qmyo.refreshTheIcon"));
+		}
 }

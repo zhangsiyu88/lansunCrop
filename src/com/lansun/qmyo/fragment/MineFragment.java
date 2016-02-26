@@ -59,6 +59,7 @@ import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.LogUtils;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.NotifyUtils;
 import com.lansun.qmyo.view.CircularImage;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.UpdateAppVersionDialog;
@@ -101,7 +102,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 	private MineFragmentBroadCastReceiver broadCastReceiver = null;
 	private IntentFilter filter;
 	public boolean isFirstReceiveBroadcast = true;
-	private View rootView; 
+	private View rootView;
 	
 	
 	@Override
@@ -109,13 +110,16 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 		//App.app.setData("firstEnterBankcardAndAddAnotherBankcard","");
 		super.onCreate(savedInstanceState);
 		
+		
+		NotifyUtils.getInstance().sendNotifictionCounts();
+		
 		if(broadCastReceiver == null){
 			broadCastReceiver = new MineFragmentBroadCastReceiver();
 			System.out.println("我的  页面在注册广播 ing");
 			filter = new IntentFilter();
 			filter.addAction("com.lansun.qmyo.refreshTheIcon");
 			filter.addAction("com.lansun.qmyo.refreshAvatar_NickName");
-			
+			filter.addAction("com.lansun.qmyo.message");
 			getActivity().registerReceiver(broadCastReceiver, filter);
 		}else{
 			//NO-OP
@@ -273,8 +277,13 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 				fragment = new PersonCenterFragment();
 			} else {
 				fragment = new RegisterFragment();
-				Bundle bundle=new Bundle();
+				Boolean _isJustLogin = true;
+				Boolean _toRegister = true;
+				Bundle bundle = new Bundle();
+				bundle.putBoolean("isJustLogin", _isJustLogin);
+				bundle.putBoolean("toRegister", _toRegister);
 				bundle.putString("fragment_name",MineFragment.class.getSimpleName());
+				fragment.setArguments(bundle);
 				fragment.setArguments(bundle);
 			}
 			break;
@@ -592,15 +601,52 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 							
 						}
 					}
-					
 				}else if(intent.getAction().equals("com.lansun.qmyo.refreshAvatar_NickName")){
 					loadNickAndAvatar();
+				}else if(intent.getAction().equals("com.lansun.qmyo.message")){
+					LogUtils.toDebugLog("notify", "MinFragment接收到message的广播");
+					showCounts(v.have_secretary, Integer.valueOf(NotifyUtils.getInstance().getSecretaryMessageCounts()));
+			        showCounts(v.have_information, Integer.valueOf(NotifyUtils.getInstance().getMaije_ActivtyMessageCounts()));
+			        
+					
+					
+					/*if(Integer.valueOf(NotifyUtils.getSecretaryMessageCounts()) > 0){
+						v.have_secretary.setVisibility(View.VISIBLE);
+						if(Integer.valueOf(NotifyUtils.getSecretaryMessageCounts()) > 99){
+							v.have_secretary.setText("99+");
+						}else{
+							v.have_secretary.setText(NotifyUtils.getSecretaryMessageCounts());
+						}
+					}
+					if(Integer.valueOf(NotifyUtils.getMaije_ActivtyMessageCounts()) > 0){
+						v.have_information.setVisibility(View.VISIBLE);
+						if(Integer.valueOf(NotifyUtils.getMaije_ActivtyMessageCounts()) > 99){
+							v.have_information.setText("99+");
+						}else{
+							v.have_information.setText(NotifyUtils.getMaije_ActivtyMessageCounts());
+						}
+					}*/
 				}
+					
 				
 //				isFirstReceiveBroadcast=false;
 			}
 		}
 	}
+	
+	public void showCounts(TextView v,int counts){
+		if(counts>99){
+			v.setVisibility(View.VISIBLE);
+			v.setText("99+");
+		}else if(counts>0&&counts<100){
+			v.setVisibility(View.VISIBLE);
+			v.setText(String.valueOf(counts));
+		}else if(counts == 0){
+			v.setVisibility(View.GONE);
+		}
+	 }
+	
+	
 	@Override
 	public void onDestroy() {
 		activity.unregisterReceiver(broadCastReceiver);

@@ -10,45 +10,49 @@ import com.android.pc.ioc.db.annotation.Id;
 /**
  * 活动信息
  * 
- * @author bhxx
+ * @author Yeun.zhang
  * 
  */
 public class Message implements Serializable {
-	private String maijie;
-	private String activity;
-	private String comment;
-	private String secretary;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private int maijie;
+	private int activity;
+	private int comment;
+	private int secretary;
 
 	public String getMaijie() {
-		return maijie;
+		return String.valueOf(maijie);
 	}
 
 	public void setMaijie(String maijie) {
-		this.maijie = maijie;
+		this.maijie = Integer.valueOf(maijie);
 	}
 
 	public String getActivity() {
-		return activity;
+		return String.valueOf(activity);
 	}
 
 	public void setActivity(String activity) {
-		this.activity = activity;
+		this.activity = Integer.valueOf(activity);
 	}
 
 	public String getComment() {
-		return comment;
+		return String.valueOf(comment);
 	}
 
 	public void setComment(String comment) {
-		this.comment = comment;
+		this.comment = Integer.valueOf(comment);
 	}
 
 	public String getSecretary() {
-		return secretary;
+		return String.valueOf(secretary);
 	}
 
 	public void setSecretary(String secretary) {
-		this.secretary = secretary;
+		this.secretary = Integer.valueOf(secretary);
 	}
 
 }

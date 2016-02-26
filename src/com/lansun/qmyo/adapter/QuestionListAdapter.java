@@ -170,8 +170,8 @@ public class QuestionListAdapter extends BaseAdapter {
 				
 				SpannableString sp_answer=new SpannableString("回复:");
 				SpannableString sp_answer_content=new SpannableString(Html.fromHtml
-						("<font style='font-size:12pt' color='#939393'>"+"   "+GlobalValue.mySecretary.getName()+
-								mList.get(position).getAnswer()+"</font>"));//已收到您的任务指派哦,2小时内必有回复,请耐心等待哟。如果您对收到的回答不满意,还可以继续追问哦~
+						("<font style='font-size:12pt' color='#939393'>"+"   "+
+								mList.get(position).getAnswer()+"</font>"));//GlobalValue.mySecretary.getName()+"已收到您的任务指派哦,2小时内必有回复,请耐心等待哟。如果您对收到的回答不满意,还可以继续追问哦~"
 				SpannableStringBuilder answer=new SpannableStringBuilder();
 				answer.append(sp_answer).append(sp_answer_content);
 				holder.tv_answer.setText(answer);

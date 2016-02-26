@@ -17,6 +17,9 @@ import android.widget.TextView;
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectInit;
+import com.android.pc.ioc.inject.InjectListener;
+import com.android.pc.ioc.inject.InjectMethod;
+import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
 import com.google.gson.Gson;
 import com.lansun.qmyo.MainFragment;
@@ -24,12 +27,14 @@ import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.QuestionListAdapter;
 import com.lansun.qmyo.adapter.QuestionListAdapter.OnItemClickCallBack;
 import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.base.BackHandedFragment;
 import com.lansun.qmyo.domain.QuestionDetailItem;
 import com.lansun.qmyo.domain.SecretaryQuestions;
 import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
+import com.lansun.qmyo.utils.NotifyUtils;
 import com.lansun.qmyo.view.ActivityMyListView;
 import com.lansun.qmyo.view.ActivityMyListView.OnRefreshListener;
 import com.lansun.qmyo.view.CustomToast;
@@ -444,4 +449,12 @@ public class MineSecretaryListFragment extends BaseFragment implements OnItemCli
 //			swiperefresh.setRefreshing(false);
 //		}
 //	}
+	
+	@Override
+	@InjectMethod(@InjectListener(ids = 2131427431, listeners = OnClick.class))
+	protected void back() {
+		NotifyUtils.getInstance().sendNotifictionCounts();
+		super.back();
+	}
+
 }

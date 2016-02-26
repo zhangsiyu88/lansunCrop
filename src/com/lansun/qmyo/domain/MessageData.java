@@ -2,6 +2,15 @@ package com.lansun.qmyo.domain;
 
 public class MessageData {
 
+	private String id;
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	private String title;
 	private String content;
 	private int is_read;

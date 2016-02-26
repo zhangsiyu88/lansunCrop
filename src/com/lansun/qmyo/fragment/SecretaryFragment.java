@@ -94,6 +94,7 @@ import com.lansun.qmyo.fragment.secretary_detail.SecretaryPartyShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryShoppingShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryStudentShowFragment;
 import com.lansun.qmyo.fragment.secretary_detail.SecretaryTravelShowFragment;
+import com.lansun.qmyo.listener.CloudFlyListener;
 import com.lansun.qmyo.net.OkHttp;
 import com.lansun.qmyo.override.CircleImageView;
 import com.lansun.qmyo.utils.DataUtils;
@@ -102,6 +103,7 @@ import com.lansun.qmyo.utils.FastBlurBitmap;
 import com.lansun.qmyo.utils.FixedSpeedScroller;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
+import com.lansun.qmyo.utils.NotifyUtils;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.view.CloudView;
 import com.lansun.qmyo.view.CustomToast;
@@ -112,7 +114,8 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1) public class SecretaryFragment extends BaseFragment {
+@SuppressLint("HandlerLeak") @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1) 
+public class SecretaryFragment extends BaseFragment implements CloudFlyListener{
 	private String secretary_size;
 	private CircleImageView iv_secretary_head;
 	private LinearLayout ll_secretary_setting;
@@ -134,7 +137,7 @@ import com.squareup.okhttp.Response;
 		//private CloudView iv_register_bg;
 		
 //		private ViewPager vp_sercretary_bg_pager;
-		private NoTouchViewPager vp_sercretary_bg_pager;
+		private  NoTouchViewPager vp_sercretary_bg_pager;
 		
 		
 		
@@ -199,6 +202,8 @@ import com.squareup.okhttp.Response;
 	 */
 	private SecretaryBgPagerAdapter adapter;
 	private FixedSpeedScroller mScroller;
+	private boolean initTime = true;
+	private int resume_item_num = 300*1000;
 	
 	
 	private void setSecretaryInformation(){
@@ -227,27 +232,10 @@ import com.squareup.okhttp.Response;
 		adapter = new SecretaryBgPagerAdapter();
 		v.vp_sercretary_bg_pager.setAdapter(adapter);
 		v.vp_sercretary_bg_pager.setOnTouchListener(new OnTouchListener() {
-			
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				return true;
-			}
-		});
-		try {
-//			Field mField = ViewPager.class.getDeclaredField("mScroller");
-			Field mField = NoTouchViewPager.class.getDeclaredField("mScroller");
-			mField.setAccessible(true);//允许暴力反射
-			mScroller = new FixedSpeedScroller(v.vp_sercretary_bg_pager.getContext(),new LinearInterpolator());//CycleInterpolator(Float.MAX_VALUE)
-			mScroller.setmDuration(15000);
-			mField.set(v.vp_sercretary_bg_pager, mScroller);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		//mScroller.setmDuration(8000);
-		handler.removeCallbacksAndMessages(null);
-		handler.postDelayed(new InternalTask(), 0);
-		v.vp_sercretary_bg_pager.setCurrentItem(1000*300);
-		
+			} });
 		
 		v.iv_secretary_icon.setPressed(true);
 	    initView(rootView);
@@ -263,6 +251,7 @@ import com.squareup.okhttp.Response;
 		filter.addAction("com.lansun.qmyo.checkMySecretary");
 		filter.addAction("com.lansun.qmyo.refreshMySecretary");
 		filter.addAction("com.lansun.qmyo.showFirstCommitSecretaryAskGuide");
+		filter.addAction("com.lansun.qmyo.message");
 		getActivity().registerReceiver(broadCastReceiver, filter);
 
 		super.onCreate(savedInstanceState);
@@ -477,11 +466,28 @@ import com.squareup.okhttp.Response;
 	public void onResume() {
 		v.iv_secretary_icon.setPressed(true);
 		
-		if(handler!=null&&v.vp_sercretary_bg_pager!=null){
-			//handler.postDelayed(new InternalTask(), 0);
-			//v.vp_sercretary_bg_pager.setCurrentItem(1000*300);
-			LogUtils.toDebugLog("cloud", "开启云的滚动");
+		try {
+			Field mField = NoTouchViewPager.class.getDeclaredField("mScroller");
+			mField.setAccessible(true);//允许暴力反射
+			mScroller = new FixedSpeedScroller(v.vp_sercretary_bg_pager.getContext(),new LinearInterpolator());//CycleInterpolator(Float.MAX_VALUE)
+			mScroller.setmDuration(15000);
+			mField.set(v.vp_sercretary_bg_pager, mScroller);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+		handler.removeCallbacksAndMessages(null);
+		
+		if(initTime){
+			v.vp_sercretary_bg_pager.setCurrentItem(1000*300);
+	        initTime = !initTime;
+		}else{
+			v.vp_sercretary_bg_pager.setAdapter(null);
+			v.vp_sercretary_bg_pager.setAdapter(adapter);
+			v.vp_sercretary_bg_pager.setCurrentItem(resume_item_num+1);
+		}
+		handler.postDelayed(new InternalTask(), 0);
+		
+		
 		//v.iv_register_bg.threadFlag = true;
 		super.onResume();
 	}
@@ -492,10 +498,13 @@ import com.squareup.okhttp.Response;
 				R.color.text_nomal));*/
 		//v.iv_register_bg.threadFlag = false;
 		
-		if(handler!=null){
-			//handler.removeCallbacksAndMessages(null);
-			LogUtils.toDebugLog("cloud", "关闭云的滚动");
-		}
+		int currentItem = v.vp_sercretary_bg_pager.getCurrentItem();
+		resume_item_num  = currentItem;
+//		v.vp_sercretary_bg_pager.invalidate();
+		super.onPause();
+		
+		
+		
 		justOneTimes = true;
 		super.onPause();
 	}
@@ -560,6 +569,8 @@ import com.squareup.okhttp.Response;
 				//CustomToast.show(activity, "权限更新成功", "已获取最新令牌");
 				App.app.setData("access_token", token.getToken());
 				
+				//当获取新的令牌的时候，前往后台获取一次未读信息的数目
+//				NotifyUtils.getInstance().sendNotifictionCounts();
 				
 				/**
 				 * 大前提： App.app.getData("LastRefreshTokenTime")不为 空
@@ -635,13 +646,35 @@ import com.squareup.okhttp.Response;
 					}
 					
 				   }else if(intent.getAction().equals("com.lansun.qmyo.refreshMySecretary")){
-				
-				setSecretaryInformation();
-
-
-			}
-		}
+					   	setSecretaryInformation();
+			       }else if(intent.getAction().equals("com.lansun.qmyo.message")){
+			   		   showCounts(v.have_information, Integer.valueOf(NotifyUtils.getInstance().getSecretaryMessageCounts()));
+						/*if(Integer.valueOf(NotifyUtils.getSecretaryMessageCounts()) > 0){
+							v.have_information.setVisibility(View.VISIBLE);
+							if(Integer.valueOf(NotifyUtils.getSecretaryMessageCounts()) > 99){
+								v.have_information.setText("99+");
+							}else{
+								v.have_information.setText(NotifyUtils.getSecretaryMessageCounts());
+							}
+							
+						}*/
+			    	   
+					}
+		   }
 	 }
+	 
+	 
+	 public void showCounts(TextView v,int counts){
+			if(counts>99){
+				v.setVisibility(View.VISIBLE);
+				v.setText("99+");
+			}else if(counts>0&&counts<100){
+				v.setVisibility(View.VISIBLE);
+				v.setText(String.valueOf(counts));
+			}else if(counts == 0){
+				v.setVisibility(View.GONE);
+			}
+		 }
 	 
 	 @Override
 	public void onDestroy() {
@@ -782,5 +815,15 @@ import com.squareup.okhttp.Response;
 			public void run() {
 				handler.sendEmptyMessage(0);
 			}
+		}
+
+
+		@Override
+		public void rehightCloud() {
+//			handler.removeCallbacksAndMessages(null);
+//			v.vp_sercretary_bg_pager.setAdapter(null);
+//			v.vp_sercretary_bg_pager.setAdapter(adapter);
+//			v.vp_sercretary_bg_pager.setCurrentItem(300*1000);
+//			handler.postDelayed(new InternalTask(), 0);
 		}
 }

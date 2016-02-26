@@ -26,6 +26,7 @@
     <string name="home_hot_v16">热门活动推荐</string>
     <string name="cancle">取消</string>
     <string name="changecity">城市切换</string>
+    <string name="green_point_counts">99+</string>
     
     <string name="hot_search">热门搜索</string>
     <string name="history_search">历史搜索</string>
@@ -72,6 +73,7 @@
     <string name="qq_friend">QQ好友</string>
     <string name="tx_wb">腾讯微博</string>
     <string name="xl_wb">新浪微博</string>
+    <string name="total_read">Are you 确定?将所有消息置为已读~</string>
     <string name="rapley_counts">回复(%1$s)</string>
     <string name="rapley_counts1">全部回复(%1$s)</string>
     <string name="tele_address">地址：%1$s</string>
@@ -79,6 +81,7 @@
     <string name="tele_address2">办公地址：%1$s</string>
     <string name="telephone"><Data><![CDATA[<font color="#6F6F6F">联系电话： </font>%1$s]]></Data></string>
     <string name="telephone_nothave_now"><Data><![CDATA[<font color="#6F6F6F">联系电话：%1$s </font>]]></Data></string>
+    <string name="home_list_exception"><Data><![CDATA[网络异常，请<font color="#9DC14F">%1$s</font>或重新进入]]></Data></string>
     
     <string name="all_desc"><Data>回复<![CDATA[<font color="#9DC14F">@%1$s </font>:%2$s]]></Data></string>
     
@@ -89,6 +92,8 @@
     <string name="xy_card">银行卡</string>
     <string name="yhq">优惠券</string>
     <string name="message_center">消息中心</string>
+    <string name="total_message_isread">全部已读</string>
+    
     <string name="mine_secretary">我的私人秘书</string>
     <string name="mine_history">最近浏览</string>
     <string name="mine_comments">我的评论</string>
@@ -99,6 +104,7 @@
     <string name="card_login">点击注册登录</string>
     <string name="register">注册</string>
     <string name="register_click">点击注册</string>
+    <string name="register_click_first">初次到来，点击注册</string>
     <string name="dai_use">待使用</string>
     <string name="used">已使用</string>
     <string name="failure">已失效</string>
@@ -542,7 +548,7 @@
      <string name="login_to_report">总裁大大,举报要登录的哟</string>
      <string name="login_to_comment">总裁大大,请先登录再发表高见哟</string>
      <string name="login_to_getmessage">总裁大大,登录才可接收消息哟</string>
-     <string name="login_to_enjoysecretaryyourself">总裁大大,体验专属私人秘书服务需要登录的哟</string>
+     <string name="login_to_enjoysecretaryyourself">总裁大大,体验专属私人秘书服务\n\r需要登录的哟</string>
      <string name="pump">您可以继续追问哦</string>
 
 </resources>

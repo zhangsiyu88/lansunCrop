@@ -25,6 +25,17 @@
             android:layout_centerVertical="true"
             android:text="@string/message_center"
             android:textColor="@color/app_green2" />
+        
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/tv_all_message_isread"
+            style="@style/w_wrap_h_wrap"
+            android:layout_alignParentRight="true"
+            android:text="@string/total_message_isread"
+            android:layout_marginRight="@dimen/l_r_35"
+            android:layout_centerVertical="true"
+            android:textColor="@color/app_green2"/><!-- style="@style/text_style_small_20" -->
+        
     </RelativeLayout>
 
     <View
@@ -54,8 +65,8 @@
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
                     android:gravity="center"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
+                    android:paddingLeft="1dp"
+                    android:paddingRight="1dp"
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
                     android:text="@string/activity"
@@ -67,6 +78,14 @@
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:background="@color/line_bg" />
+                 <TextView
+		            android:id="@+id/activity_point"
+		            android:layout_centerVertical="true"
+		            android:layout_toRightOf="@id/tv_message_activity"
+		            style="@style/text_green_point_big"
+		            android:textSize="10sp"
+		            android:visibility="gone"
+		            /> <!-- android:text=""     android:textColor="@android:color/white"     -->
             </RelativeLayout>
 
             <RelativeLayout
@@ -80,11 +99,20 @@
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
                     android:gravity="center"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
+                    android:paddingLeft="1dp"
+                    android:paddingRight="1dp"
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
                     android:text="@string/maijie" />
+                
+                 <TextView
+		            android:id="@+id/maijie_point"
+		            android:layout_centerVertical="true"
+		            android:layout_toRightOf="@id/tv_message_maijie"
+		            style="@style/text_green_point_big"
+		            android:textSize="10sp"
+		            android:visibility="gone"
+		            /> <!-- android:text=""   android:textColor="@android:color/white"   android:visibility="gone"  -->
             </RelativeLayout>
         </LinearLayout>
 

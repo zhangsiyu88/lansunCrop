@@ -900,7 +900,7 @@ import com.squareup.okhttp.Response;
 		case R.id.del_search_content:
 			activity.sendBroadcast(new Intent("com.lansun.qmyo.toggleSoftKeyboard"));
 			LogUtils.toDebugLog("broadcast", "SearchBrandListOkHttpFragment  发送弹起键盘的广播");
-			et_home_search.setText("");
+//			et_home_search.setText("");此处可能涉及到焦点获取，键盘欲弹起的标签位
 			getFragmentManager().popBackStack();//纳入最大的宿主activity的fragments集合的框架中
 			break;
 			

@@ -1,20 +1,17 @@
 package com.lansun.qmyo.fragment;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ActionBarDrawerToggle.Delegate;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.Html;
@@ -26,15 +23,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
@@ -42,16 +36,16 @@ import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
 import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
-import com.android.pc.ioc.internet.AjaxCallBack;
 import com.android.pc.ioc.internet.FastHttp;
 import com.android.pc.ioc.internet.FastHttpHander;
 import com.android.pc.ioc.internet.InternetConfig;
 import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Gps;
-import com.android.pc.util.Handler_File;
 import com.android.pc.util.Handler_Inject;
 import com.android.pc.util.Handler_Json;
+import com.lansun.qmyo.MapActivity;
+import com.lansun.qmyo.R;
 import com.lansun.qmyo.adapter.ActivityDetailPagerAdapter;
 import com.lansun.qmyo.adapter.MaiCommentAdapter2;
 import com.lansun.qmyo.adapter.TipAdapter;
@@ -65,12 +59,14 @@ import com.lansun.qmyo.event.entity.FragmentEntity;
 import com.lansun.qmyo.fragment.comment.MaiCommentListFragmentUpdate;
 import com.lansun.qmyo.utils.AnimUtils;
 import com.lansun.qmyo.utils.DialogUtil;
+import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
-import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
+import com.lansun.qmyo.view.ActionSheetDialog;
+import com.lansun.qmyo.view.ActionSheetDialog.OnSheetItemClickListener;
+import com.lansun.qmyo.view.ActionSheetDialog.SheetItemColor;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ExpandTabView;
-import com.lansun.qmyo.view.MyListView;
 import com.lansun.qmyo.view.MySubListView;
 import com.lansun.qmyo.view.SharedDialog;
 import com.lansun.qmyo.view.TelDialog;
@@ -80,10 +76,6 @@ import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
-import com.lidroid.xutils.http.client.multipart.MultipartEntity.CallBackInfo;
-import com.lansun.qmyo.MapActivity;
-import com.lansun.qmyo.R;
-import com.umeng.socialize.media.GooglePlusShareContent;
 
 /**
  * 活动详情 TODO 
@@ -167,6 +159,8 @@ public class ActivityDetailFragment extends BaseFragment {
 		filter.addAction("com.lansun.qmyo.refreshActivityDetailPageAndClick");
 		getActivity().registerReceiver(broadCastReceiver, filter);
 		
+		//直接打开推送信息进入活动详情页，此时活动详情页需要通知前面的消息中心页面，刷新之前的数据列表页面，将未读信息的提示去掉
+		activity.sendBroadcast(new Intent("com.lansun.qmyo.notifyMessageCenterList"));
 		return rootView;
 	}
 	
@@ -666,13 +660,49 @@ public class ActivityDetailFragment extends BaseFragment {
 
 			break;
 		case R.id.tv_activity_shop_telephone:
-			if (!TextUtils.isEmpty(data.getShop().getTelephone())) {
-				TelDialog dialog = new TelDialog();
-				Bundle args1 = new Bundle();
-				args1.putString("phone", data.getShop().getTelephone());
-				dialog.setArguments(args1);
-				dialog.show(getFragmentManager(), "tel");
+//			if (!TextUtils.isEmpty(data.getShop().getTelephone())) {
+//				TelDialog dialog = new TelDialog();
+//				Bundle args1 = new Bundle();
+//				args1.putString("phone", data.getShop().getTelephone());
+//				dialog.setArguments(args1);
+//				dialog.show(getFragmentManager(), "tel");
+//			}
+			
+			//先将SheetItem的数据存到链表中，作为数据容器
+			//当我再Dialog中进行addSheetItem时，依次取出对应的List中的数据放进去
+			//这样根据点击Item的位置就可以拿到list中对应位置的
+			ActionSheetDialog actionSheetDialog = new ActionSheetDialog(activity);
+			ActionSheetDialog builder = actionSheetDialog.builder();
+			builder.setTitle("请选择号码")
+			.setCancelable(false)
+			.setCanceledOnTouchOutside(false);
+			
+			
+			int phonenum_counts =1;
+			String[] items = new String[]{};
+			String multiPhoneNum = data.getShop().getTelephone();
+			if(multiPhoneNum.contains(";")){
+				phonenum_counts =2;
+				int indexOfSign = multiPhoneNum.indexOf(";");
+				final String firstNum = multiPhoneNum.substring(0, indexOfSign);
+				final String secondNum = multiPhoneNum.substring(indexOfSign+1, multiPhoneNum.length());
+				items = new String[]{firstNum,secondNum};
+			}else{
+				items = new String[]{multiPhoneNum};
 			}
+			for(int i=0;i<phonenum_counts;i++){
+				final String phoneNum =items[i];
+				//构建每次的要展开的Dialog
+				builder.addSheetItem(phoneNum, SheetItemColor.Green,new OnSheetItemClickListener() {
+					@Override
+					public void onClick(int which) {
+						Intent intent = new Intent(Intent.ACTION_CALL,Uri.parse("tel:"+phoneNum));  
+						startActivity(intent);  				
+					}
+				});
+			}
+			//构造完成后进行展示
+			builder.show();
 			break;
 		}
 	}

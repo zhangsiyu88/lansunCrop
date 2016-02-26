@@ -3,12 +3,14 @@ package com.lansun.qmyo.view;
 import com.lansun.qmyo.R;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -47,7 +49,10 @@ public class CloudView extends SurfaceView implements SurfaceHolder.Callback,
 		sfh.setFormat(PixelFormat.TRANSPARENT);
 		sfh.addCallback(this);
 		paint = new Paint();
-		paint.setDither(true);
+//		paint.setDither(true);
+		paint.setAntiAlias(true);
+		paint.setStyle(Style.FILL_AND_STROKE);   //设置画笔风格，空心或者实心。 
+		paint.setStrokeWidth(5);  // 设置空心的边框宽度。 
 	}
 
 	public CloudView(Context context, AttributeSet attrs) {
@@ -76,6 +81,14 @@ public class CloudView extends SurfaceView implements SurfaceHolder.Callback,
 		thread.start();
 	}
 	
+	 private Bitmap decodeResource(Resources resources, int id) {
+         TypedValue value = new TypedValue();
+         resources.openRawResource(id, value);
+         BitmapFactory.Options opts = new BitmapFactory.Options();
+         opts.inTargetDensity = value.density;
+         return BitmapFactory.decodeResource(resources, id, opts);
+ }
+	
 	public void initBitmap() {
 //		BitmapFactory.Options options = new BitmapFactory.Options();
 //		DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
@@ -87,10 +100,17 @@ public class CloudView extends SurfaceView implements SurfaceHolder.Callback,
 //		
 //		options.inDensity = TypedValue.DENSITY_NONE;
 //		options.inTargetDensity = TypedValue.DENSITY_NONE ;
-		background = BitmapFactory.decodeResource(getResources(),
-				R.drawable.cloud_1);
-		background2 = BitmapFactory.decodeResource(getResources(),
-				R.drawable.cloud_2);
+		
+	
+		
+//		background = BitmapFactory.decodeResource(getResources(),
+//				R.drawable.cloud_1);
+//		background2 = BitmapFactory.decodeResource(getResources(),
+//				R.drawable.cloud_2);
+		
+		background = decodeResource(getResources(),R.drawable.cloud_1);
+		background2 = decodeResource(getResources(),R.drawable.cloud_2);
+		
 		scalex = screen_width / background.getWidth();
 		scaley = screen_height / background.getHeight();
 		bg_y = screen_height;

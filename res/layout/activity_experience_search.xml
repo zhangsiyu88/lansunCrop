@@ -73,8 +73,7 @@
                 <TextView
                     android:id="@+id/tv_search_card"
                     style="@style/text_style_nomal_28"
-                    android:layout_marginLeft="10dp"
-                    android:text="@string/register_click"
+                    android:text="@string/register_click_first"
                     android:textColor="@color/app_white" />
             </LinearLayout>
         </RelativeLayout>

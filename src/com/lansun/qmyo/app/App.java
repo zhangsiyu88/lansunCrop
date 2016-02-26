@@ -75,8 +75,6 @@ public class App extends Application {
 		SpeechUtility.createUtility(getApplicationContext(), SpeechConstant.APPID +"=567209d1"); 
 		Ioc.getIoc().init(this); // ----------------------------------------------
 		
-		
-		
 		JPushInterface.init(getApplicationContext());
 		
 		//只有在登录的情况下，App才能享受推送的服务推送

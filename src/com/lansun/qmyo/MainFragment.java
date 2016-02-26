@@ -3,41 +3,12 @@ package com.lansun.qmyo;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import jp.wasabeef.blurry.Blurry;
-
-import com.amap.api.mapcore2d.fa;
-import com.android.pc.ioc.event.EventBus;
-import com.android.pc.ioc.image.RecyclingImageView;
-import com.android.pc.ioc.inject.InjectAll;
-import com.android.pc.ioc.inject.InjectBinder;
-import com.android.pc.ioc.inject.InjectInit;
-import com.android.pc.ioc.view.listener.OnClick;
-import com.android.pc.util.Handler_File;
-import com.android.pc.util.Handler_Inject;
-
-import com.lansun.qmyo.R.drawable;
-import com.lansun.qmyo.app.App;
-import com.lansun.qmyo.event.entity.FragmentEntity;
-import com.lansun.qmyo.fragment.ActivityDetailFragment;
-import com.lansun.qmyo.fragment.BaseFragment;
-import com.lansun.qmyo.fragment.ExperienceSearchFragment;
-import com.lansun.qmyo.fragment.FoundFragment;
-import com.lansun.qmyo.fragment.HomeFragment;
-import com.lansun.qmyo.fragment.MineFragment;
-import com.lansun.qmyo.fragment.RegisterFragment;
-import com.lansun.qmyo.fragment.SecretaryFragment;
-import com.lansun.qmyo.fragment.StoreDetailFragment;
-import com.lansun.qmyo.service.LocationService;
-import com.lansun.qmyo.utils.LogUtils;
-import com.lansun.qmyo.utils.NotifyUtils;
-import com.lansun.qmyo.utils.gooview.GooViewListener;
-import com.lansun.qmyo.view.CustomToast;
-import com.lansun.qmyo.view.MainViewPager;
-
-import android.R.integer;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -47,34 +18,52 @@ import android.graphics.PointF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentManager.BackStackEntry;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.pc.ioc.image.RecyclingImageView;
+import com.android.pc.ioc.inject.InjectAll;
+import com.android.pc.ioc.inject.InjectBinder;
+import com.android.pc.ioc.inject.InjectInit;
+import com.android.pc.ioc.internet.FastHttpHander;
+import com.android.pc.ioc.internet.InternetConfig;
+import com.android.pc.ioc.view.listener.OnClick;
+import com.android.pc.util.Handler_File;
+import com.android.pc.util.Handler_Inject;
+import com.lansun.qmyo.app.App;
+import com.lansun.qmyo.fragment.ActivityDetailFragment;
+import com.lansun.qmyo.fragment.BaseFragment;
+import com.lansun.qmyo.fragment.FoundFragment;
+import com.lansun.qmyo.fragment.HomeFragment;
+import com.lansun.qmyo.fragment.MessageCenterFragment;
+import com.lansun.qmyo.fragment.MineFragment;
+import com.lansun.qmyo.fragment.MineSecretaryListFragment;
+import com.lansun.qmyo.fragment.RegisterFragment;
+import com.lansun.qmyo.fragment.SecretaryFragment;
+import com.lansun.qmyo.service.LocationService;
+import com.lansun.qmyo.utils.GlobalValue;
+import com.lansun.qmyo.utils.LogUtils;
+import com.lansun.qmyo.utils.NotifyUtils;
+import com.lansun.qmyo.utils.gooview.GooViewListener;
+import com.lansun.qmyo.view.CustomToast;
+import com.lansun.qmyo.view.MainViewPager;
 
 
 
-public class MainFragment extends Fragment {
+
+public class MainFragment extends Fragment  {
 	
 	public LayoutInflater inflater;
 	private FragmentManager manager;
@@ -124,6 +113,7 @@ public class MainFragment extends Fragment {
 	 * 启动定位服务的标签位
 	 */
 	boolean launchPos = false;
+	private static SecretaryFragment secretaryFragment;
 	class Views {
 		@InjectBinder(method = "click", listeners = OnClick.class)
 		private RelativeLayout fl_home_top_menu, rl_top_r_top_menu, rl_bg,rl_top_bg;
@@ -155,8 +145,10 @@ public class MainFragment extends Fragment {
 		notifyViewInfo();
 		
 		LogUtils.toDebugLog("NotifyUtils", "NotifyUtils.sendNotifictionCounts()");
-		NotifyUtils.mContext = activity;
-		NotifyUtils.sendNotifictionCounts();
+	    NotifyUtils.mContext = activity;
+		NotifyUtils.getInstance().sendNotifictionCounts();
+//		NotifyUtils notifyUtils = new NotifyUtils(activity).getInstance();
+//		notifyUtils.sendNotifictionCounts();
 		
 	}
 	private void notifyViewInfo() {
@@ -204,6 +196,12 @@ public class MainFragment extends Fragment {
 		filter.addAction("com.lansun.qmyo.recoverTheBottomMenu");
 		filter.addAction("com.lansun.qmyo.restartGPS");
 		filter.addAction("com.lansun.qmyo.message");
+		filter.addAction("com.lansun.qmyo.Click2MineFragment");
+		filter.addAction("com.lansun.qmyo.Click2MineSecretaryListFragment");
+		filter.addAction("com.lansun.qmyo.Click2MessageCenterFragment");
+		filter.addAction("com.lansun.qmyo.Click2ActivityDetailFragment");
+		filter.addAction("com.lansun.qmyo.Click2RegisterFragment");
+		
 		getActivity().registerReceiver(broadCastReceiver, filter);
 		
 		
@@ -282,7 +280,8 @@ public class MainFragment extends Fragment {
 	private void initFrag(){
 		fragList = new ArrayList<BaseFragment>();
 		fragList.add(new HomeFragment());//new 的操作在编译后为非原子性的，故在此处仅仅是将HomeFragment所只指向的内存单元存入fragList中
-		fragList.add(new SecretaryFragment());
+		secretaryFragment = new SecretaryFragment();
+		fragList.add(secretaryFragment);
 		fragList.add(new FoundFragment());
 		fragList.add(new MineFragment());
 		
@@ -330,6 +329,7 @@ public class MainFragment extends Fragment {
 		case R.id.bottom_secretary:
 			//vp_mainfrag.setCurrentItem(1);
 			vp_mainfrag.setCurrentItem(1,false);
+			
 			/*
 			 * 点击私人秘书页面时，发送广播通知秘书页进行访问，判断秘书信息是否已录入
 			 */
@@ -341,6 +341,7 @@ public class MainFragment extends Fragment {
 			setBottomTextColor(v.tv_secretary_icon,v.tv_home_icon, v.tv_found_icon, v.tv_mine_icon);
 			setBottomIconColorForced(v.iv_secretary_icon,v.iv_home_icon, v.iv_found_icon, v.iv_mine_icon,
 					R.drawable.bottom_press_2,R.drawable.bottom_1,R.drawable.bottom_3,R.drawable.bottom_4);
+			secretaryFragment.rehightCloud();
 			break;
 		case R.id.bottom_found:
 			//vp_mainfrag.setCurrentItem(2);
@@ -538,22 +539,29 @@ public class MainFragment extends Fragment {
 		@Override
 		public void onReceive(Context ctx, Intent intent) {
 			if(intent.getAction().equals("com.lansun.qmyo.ChangeTheLGPStatus")){
-				
-				
-			System.out.println("首页收到更新绿色小圆点的广播了");
+				int messageCounts = 0;
+				messageCounts = intent.getIntExtra("messageCounts", messageCounts);
+			    System.out.println("首页收到更新绿色小圆点的广播了");
 			//1.获取消息页发来的广播，根据广播内容得知底部的小绿点是否显示
-				
 			//2.若显示需给其设置上触摸滑动监听
 		    if(true){
-		    	/*visiable = point.getVisibility()==0;*/
 		    	visiable = true;
 		    	point.setVisibility(View.VISIBLE);
 		    }
-					
 			if (visiable) {
-				point.setText("");
-				point.setTag(0);
-				
+				if(messageCounts==0){
+					point.setVisibility(View.GONE);
+					point.setText("");
+					point.setTag(0);
+				}else if(messageCounts>99){
+					point.setVisibility(View.VISIBLE);
+					point.setText("99+");
+					point.setTag(0);
+				}else{
+					point.setVisibility(View.VISIBLE);
+					point.setText(String.valueOf(messageCounts));
+					point.setTag(0);
+				}
 				/*
 				 * 初始化监听者，方便对圆形按钮进行GooViewListener
 				 * 之随意在这一步就进行初始化，谁拿到数据谁进行初始化任务，另外从时效原则上来说也是必须的
@@ -568,45 +576,26 @@ public class MainFragment extends Fragment {
 								CustomToast.show(activity, "提示", "所有消息置为已读");
 							}
 						});
-						/*Utils.showToast(mContext,"Cheers! We have get rid of it!");*/
 					}
 					@Override
 					public void onReset(boolean isOutOfRange) {
 						super.onReset(isOutOfRange);
-						/*Utils.showToast(mContext,isOutOfRange ? "Are you regret?" : "Try again!");*/
 					}
 				};
-				//为这个绿色小点设置触摸监听,为了使RedCircleButton被触摸时进行属于自己的动画表示
-				point.setOnTouchListener(mGooListener);
+//				point.setOnTouchListener(mGooListener);-----------------------关闭掉滑动闪爆的效果
 			}
-				
-				
 			}else if(intent.getAction().equals("com.lansun.qmyo.DeleteTheLGPStatus")){
-				
 				point.setVisibility(View.GONE);//将底部的小绿点关掉不显示
 				
 			}else if(intent.getAction().equals("com.lansun.qmyo.checkMySecretary")){
-				
-				/*Blurry.with(getActivity())
-	            .radius(25)
-	            .sampling(2)
-	            .async()
-	            .animate(500)
-	            .onto((ViewGroup)rootView);*/
-				
+			/*Blurry.with(getActivity()).radius(25).sampling(2).async().animate(500).onto((ViewGroup)rootView);*/
 			}else if(intent.getAction().equals("com.lansun.qmyo.hideTheBottomMenu")){
-			
-/*				AlphaAnimation alpha = new AlphaAnimation(1f, 0f);
+				/*AlphaAnimation alpha = new AlphaAnimation(1f, 0f);
 				alpha.setAnimationListener(new AnimationListener() {
-					
 					@Override
-					public void onAnimationStart(Animation animation) {
-					}
-					
+					public void onAnimationStart(Animation animation) { }
 					@Override
-					public void onAnimationRepeat(Animation animation) {
-					}
-					
+					public void onAnimationRepeat(Animation animation) { }
 					@Override
 					public void onAnimationEnd(Animation animation) {
 						Blurry.with(getActivity())
@@ -639,14 +628,14 @@ public class MainFragment extends Fragment {
 				System.out.println("首页收到模糊整体背景的广播了");
 				
 		}else if(intent.getAction().equals("com.lansun.qmyo.recoverTheBottomMenu")){
-//			AlphaAnimation alpha = new AlphaAnimation(0f, 1f);
-//	        alpha.setDuration(300);
-//	        bottom_menu.startAnimation(alpha);
-//			//bottom_menu.setVisibility(View.VISIBLE);
+			/*AlphaAnimation alpha = new AlphaAnimation(0f, 1f);
+	        alpha.setDuration(300);
+	        bottom_menu.startAnimation(alpha);*/
+			//bottom_menu.setVisibility(View.VISIBLE);
 			
 			Blurry.delete((ViewGroup)rootView);
 			System.out.println("首页收到解除之前模糊整体背景的广播了");
-/*			v.bottom_home.setVisibility(View.VISIBLE);
+			/*v.bottom_home.setVisibility(View.VISIBLE);
 			v.bottom_found.setVisibility(View.VISIBLE);
 			v.bottom_mine.setVisibility(View.VISIBLE);
 			v.bottom_secretary.setVisibility(View.VISIBLE);
@@ -656,14 +645,58 @@ public class MainFragment extends Fragment {
 			LogUtils.toDebugLog("launchPos", "从GpsFragment未点击其他按键，由返回按键转回，传来重启location的信号");
 			
 	     }else if(intent.getAction().equals("com.lansun.qmyo.message")){
-	    	 
-	        activity.sendBroadcast(new Intent("com.lansun.qmyo.ChangeTheLGPStatus"));//通知绿点展示
-	        int messageCounts = intent.getIntExtra("messageCounts", 0);
+	    	 int messageCounts = intent.getIntExtra("messageCounts", 0);
+	    	 Intent intent_changeLGP = new Intent("com.lansun.qmyo.ChangeTheLGPStatus");
+	    	 intent_changeLGP.putExtra("messageCounts", messageCounts);
+	         activity.sendBroadcast(intent_changeLGP);//通知绿点展示
 	        
-			click(v.bottom_mine);//模拟点击进入到我的页面
-			LogUtils.toDebugLog("message", "拿到推送的信息，点击后跳转至  我的 页面");
+//			click(v.bottom_mine);//模拟点击进入到我的页面
+//			LogUtils.toDebugLog("message", "拿到推送的信息，点击后跳转至  我的 页面");
 			LogUtils.toDebugLog("message", "拿到的消息数目有： "+ messageCounts);
-		}
+			
+		  }else if(intent.getAction().equals("com.lansun.qmyo.Click2MineFragment")){
+		    click(v.bottom_mine);//模拟点击进入到我的页面
+		  }else if(intent.getAction().equals("com.lansun.qmyo.Click2MineSecretaryListFragment")){
+			click(v.bottom_mine);//模拟点击进入到我的页面
+			((MainActivity)activity).startFragmentAdd(new MineSecretaryListFragment());
+		  }else if(intent.getAction().equals("com.lansun.qmyo.Click2MessageCenterFragment")){
+	    	click(v.bottom_mine);//模拟点击进入到我的页面
+	    	((MainActivity)activity).startFragmentAdd(new MessageCenterFragment());
+		   }else if(intent.getAction().equals("com.lansun.qmyo.Click2ActivityDetailFragment")){
+	    	click(v.bottom_mine);
+	    	((MainActivity)activity).startFragmentAdd(new MessageCenterFragment());
+	    	String activity_id = intent.getStringExtra("activity_id");
+	    	String shop_id = intent.getStringExtra("shop_id");
+	    	Bundle args = new Bundle();
+	    	args.putString("activityId", activity_id);
+	    	args.putString("shopId", shop_id);
+	    	ActivityDetailFragment activityDetailFrag = new ActivityDetailFragment();
+			activityDetailFrag.setArguments(args);
+	    	((MainActivity)activity).startFragmentAdd(activityDetailFrag);
+	    	
+	    	LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
+			params.put("type", "activity");
+			params.put("message_id", "");
+			params.put("activity_id", activity_id);
+			params.put("shop_id", shop_id);
+			
+			InternetConfig config = new InternetConfig();
+			config.setKey(2);
+			HashMap<String, Object> head = new HashMap<>();
+			head.put("Authorization", "Bearer " + App.app.getData("access_token"));
+			config.setHead(head);
+			FastHttpHander.ajaxGet(GlobalValue.URL_USER_MESSAGE+"/info?", params, config, this);
+		   }else if(intent.getAction().equals("com.lansun.qmyo.Click2RegisterFragment")){
+			    click(v.bottom_mine);//模拟点击进入到我的页面
+			    Fragment fragment = new RegisterFragment();
+				Boolean _isJustLogin = true;
+//				Boolean _toRegister = true;
+//				_bundle.putBoolean("toRegister", _toRegister);
+				Bundle _bundle = new Bundle();
+				_bundle.putBoolean("isJustLogin", _isJustLogin);
+				fragment.setArguments(_bundle);
+				((MainActivity)activity).startFragmentAdd(fragment);
+			  }
 		}
 	 }
 

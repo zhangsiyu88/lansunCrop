@@ -99,6 +99,9 @@ public class SwipeListMineMessageAdapter extends BaseAdapter {
 		convertView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				if (Integer.parseInt(mDataList.get(position).get("tv_message_item_count")) == 0) {
+					viewHold.tv_message_item_count.setVisibility(View.GONE);
+				}
 				itemClickcallback.listItemClick(position);
 			}
 		});
@@ -110,7 +113,9 @@ public class SwipeListMineMessageAdapter extends BaseAdapter {
 		
 		
 		if (Integer.parseInt(mDataList.get(position).get("tv_message_item_count")) > 0) {
+			
 			viewHold.tv_message_item_count.setVisibility(View.GONE);
+			mDataList.get(position).put("tv_message_item_count", String.valueOf(1));
 //			viewHold.tv_message_item_count.setText("");
 		}else{
 			viewHold.tv_message_item_count.setVisibility(View.VISIBLE);

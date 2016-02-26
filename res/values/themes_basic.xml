@@ -163,6 +163,36 @@
         <item name="android:textSize">@dimen/text_size_20</item>
         <item name="android:textColor">#939393</item>
     </style>
+    
+    <!-- 小绿点的style  -->
+    <style name="text_green_point_little" parent="w_wrap_h_wrap">
+        <item name="android:text">@string/green_point_counts</item>
+        <item name="android:textSize">@dimen/text_size_20</item>
+        <item name="android:textColor">#fff</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/circle_shape_infor_c1</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:paddingTop">3dp</item>
+        <item name="android:paddingBottom">3dp</item>
+    </style><!--  -->
+    
+    <!-- 小绿点的style  -->
+    <style name="text_green_point_big" parent="w_wrap_h_wrap">
+        <item name="android:text">@string/green_point_counts</item>
+        <item name="android:textSize">@dimen/text_size_20</item>
+        <item name="android:textColor">#fff</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/circle_shape_infor_c2</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style><!--  -->
+    
+    
+    
+    
 
     <style name="text_style_big_34" parent="w_wrap_h_wrap">
         <item name="android:textSize">@dimen/text_size_34</item>

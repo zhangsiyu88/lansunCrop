@@ -41,8 +41,8 @@
         <TextView
             android:gravity="center"
             android:id="@+id/tv_message_item_count"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
             android:layout_alignParentRight="true"
             android:background="@drawable/circle_shape_infor_center" 
             android:layout_alignTop="@id/tv_message_item_desc"

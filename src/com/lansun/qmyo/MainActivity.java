@@ -31,8 +31,10 @@ import com.lansun.qmyo.fragment.ExperienceSearchFragment;
 import com.lansun.qmyo.fragment.FoundFragment;
 import com.lansun.qmyo.fragment.HomeFragment;
 import com.lansun.qmyo.fragment.IntroductionPageFragment;
+import com.lansun.qmyo.fragment.MessageCenterFragment;
 import com.lansun.qmyo.fragment.MineBankcardFragment;
 import com.lansun.qmyo.fragment.MineFragment;
+import com.lansun.qmyo.fragment.MineSecretaryListFragment;
 import com.lansun.qmyo.fragment.PersonCenterFragment;
 import com.lansun.qmyo.fragment.QuestionDetailFragment;
 import com.lansun.qmyo.fragment.RegisterFragment;
@@ -64,14 +66,18 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
+		LogUtils.toDebugLog("jpush", "准备判断用户身份");
 		if(!TextUtils.isEmpty(App.app.getData("access_token"))){
 			if(!TextUtils.isEmpty(App.app.getData("secret"))){
+				LogUtils.toDebugLog("jpush", "已为登录用户");
+				JPushInterface.resumePush(getApplicationContext());
 		        //因非登录状态，关闭了推送的服务；若为已登录用户，即可进行推送消息的测试
 			if(JPushInterface.isPushStopped(getApplicationContext())){
 				JPushInterface.resumePush(getApplicationContext());
+				LogUtils.toDebugLog("jpush", "重启推送的后台服务");
 			}
-		}
-	 }	
+		  }
+	    }	
 		BlueWare.withApplicationToken("CF43C23A15E1A23535E729F918BE02EB10").start(this.getApplication());
 		if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
 			finish();
@@ -382,7 +388,8 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 				mBackHandedFragment.onBackPressed();
 				return;
 		}else if(fragment.getClass().getName().equals(QuestionDetailFragment.class.getName())){
-				mBackHandedFragment.onBackPressed();
+			getSupportFragmentManager().popBackStack();
+//				mBackHandedFragment.onBackPressed();
 				return;
 		}else if(fragment.getClass().getName().equals(MineBankcardFragment.class.getName())){
 				mBackHandedFragment.onBackPressed();
@@ -390,7 +397,15 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 		}else if(fragment.getClass().getName().equals(SearchBrandListOkHttpFragment.class.getName())){
 				mBackHandedFragment.onBackPressed();
 				return;
-		}
+		}else if(fragment.getClass().getName().equals(MessageCenterFragment.class.getName())){
+				mBackHandedFragment.onBackPressed();
+				return;
+		}else if(fragment.getClass().getName().equals(MineSecretaryListFragment.class.getName())){
+			getSupportFragmentManager().popBackStack();
+			NotifyUtils.getInstance().sendNotifictionCounts();
+			
+				return;
+	}
 		 LogUtils.toDebugLog("finish", "Main的Activity中" +
 					"onBackPressed()"+
 					"执行一次finish()");

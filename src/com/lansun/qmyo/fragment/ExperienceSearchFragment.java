@@ -1,51 +1,30 @@
 package com.lansun.qmyo.fragment;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.DialogInterface;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentManager.BackStackEntry;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.inject.InjectAll;
 import com.android.pc.ioc.inject.InjectBinder;
-import com.android.pc.ioc.inject.InjectHttp;
 import com.android.pc.ioc.inject.InjectInit;
-import com.android.pc.ioc.inject.InjectLayer;
-import com.android.pc.ioc.internet.FastHttp;
-import com.android.pc.ioc.internet.FastHttpHander;
-import com.android.pc.ioc.internet.InternetConfig;
-import com.android.pc.ioc.internet.ResponseEntity;
 import com.android.pc.ioc.view.listener.OnClick;
 import com.android.pc.util.Handler_Inject;
-import com.android.pc.util.Handler_Json;
 import com.lansun.qmyo.MainActivity;
 import com.lansun.qmyo.MainFragment;
-import com.lansun.qmyo.app.App;
-import com.lansun.qmyo.domain.User;
+import com.lansun.qmyo.R;
 import com.lansun.qmyo.event.entity.FragmentEntity;
-import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.LogUtils;
-import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
-import com.lansun.qmyo.view.CustomToast;
-import com.lansun.qmyo.R;
 
 /**
  * 编辑用户信息的Fragment
@@ -58,6 +37,7 @@ public class ExperienceSearchFragment extends BaseFragment {
 	@InjectAll
 	Views v;
 	private String name;
+	private ExperienceSearchBroadcast experienceSearchBroadcast;
 
 	class Views {
 		@InjectBinder(listeners = { OnClick.class }, method = "click")
@@ -68,6 +48,16 @@ public class ExperienceSearchFragment extends BaseFragment {
 
 	}
 
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		experienceSearchBroadcast = new ExperienceSearchBroadcast();
+		System.out.println("MainFragment中注册广播 ing");
+		IntentFilter filter = new IntentFilter();
+		filter.addAction("com.lansun.qmyo.Click2RegisterFragment");
+		activity.registerReceiver(experienceSearchBroadcast, filter);
+		super.onCreate(savedInstanceState);
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -148,5 +138,27 @@ public class ExperienceSearchFragment extends BaseFragment {
 			EventBus.getDefault().post(event);
 		}
 	}
+	
+	class ExperienceSearchBroadcast extends BroadcastReceiver{
 
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if(intent.getAction().equals("com.lansun.qmyo.Click2RegisterFragment")){
+				Fragment fragment = new RegisterFragment();
+				Boolean _isJustLogin = true;
+//					Boolean _toRegister = true;
+//					_bundle.putBoolean("toRegister", _toRegister);
+				Bundle _bundle = new Bundle();
+				_bundle.putBoolean("isJustLogin", _isJustLogin);
+				fragment.setArguments(_bundle);
+				((MainActivity)activity).startFragmentAdd(fragment);
+			}
+		}
+	}
+
+	@Override
+	public void onDestroy() {
+		activity.unregisterReceiver(experienceSearchBroadcast);
+		super.onDestroy();
+	}
 }

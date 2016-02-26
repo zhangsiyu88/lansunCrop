@@ -34,6 +34,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -323,6 +324,10 @@ public class HomeFragment extends BaseFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		
+		trueData = App.app.getData("access_token");
+//		App.app.setData("access_token","eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyMTUwIiwiaXNzIjoiaHR0cDpcL1wvYXBwYXBpLnFteW8ub3JnXC90b2tlblwvcnN5aDlhcWRjYSIsImlhdCI6IjE0NTYzODU5OTUiLCJleHAiOiIxNDU2Mzg5NTk1IiwibmJmIjoiMTQ1NjM4NTk5NSIsImp0aSI6ImE4MjFkNTIwODNmYzFjNTI1ZmQ3MjEzODU3ZDc5N2EyIn0.SPAiDlU-YyvjgamWqgPUxTorRYFdLXyFb5S1qxDk3E4");
+		
+		
 		if(!(App.app.getData("select_cityCode").equals(App.app.getData("cityCode")))){
 			//如果是当前定位城市 不是 你所选中的城市，那么前往访问的就是： 默认城市中的默认position
 			isSameCity = false;
@@ -571,7 +576,7 @@ public class HomeFragment extends BaseFragment {
 			}
 
 			head = inflater.inflate(R.layout.activity_home_banner, null);
-			TextView tv_home_hot_v16 = (TextView) head.findViewById(R.id.home_hot_v16);
+			tv_home_hot_v16 = (TextView) head.findViewById(R.id.home_hot_v16);
 			pb_loading = (ProgressBar) head.findViewById(R.id.pb_loading);
 			
 			if(!isSameCity){
@@ -946,6 +951,8 @@ public class HomeFragment extends BaseFragment {
 	 */
 	private boolean isSameCity;
 	private ProgressBar pb_loading;
+	private TextView tv_home_hot_v16;
+	private String trueData;
 
 	public int getLocation(View v) {
 		int[] loc = new int[4];
@@ -1119,6 +1126,8 @@ public class HomeFragment extends BaseFragment {
 				//loadPhoto(photoUrl, iv_home_ad);
 				break;
 			case 1:// 极文列表
+				tv_home_hot_v16.setOnClickListener(null);
+				tv_home_hot_v16.setText("热门活动推荐");
 				
 				//LogUtils.toDebugLog("AppUpdate", "result(1)中决定是否弹出弹窗： GlobalValue.isWaitingForUpdateApp: "+GlobalValue.isWaitingForUpdateApp);
 				
@@ -1243,10 +1252,21 @@ public class HomeFragment extends BaseFragment {
 				break;
 			}
 		} else {
+			
 			progress_text.setText(R.string.net_error_refresh);
+			if(r.getKey() == 1){
+				pb_loading.setVisibility(View.GONE);
+				tv_home_hot_v16.setText(Html.fromHtml(String.format(getString(R.string.home_list_exception), "刷新页面")));
+				tv_home_hot_v16.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						App.app.setData("access_token", trueData);
+						refreshCurrentList(refreshUrl, refreshParams, 1, lv_home_list); 
+						pb_loading.setVisibility(View.VISIBLE);     
+						tv_home_hot_v16.setText("小迈获取惊喜中~");  }  });
+			}
 		}
 	}
-
 
 	public void click(View v) {
 		EventBus bus = EventBus.getDefault();

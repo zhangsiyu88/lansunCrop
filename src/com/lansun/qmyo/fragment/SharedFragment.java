@@ -95,7 +95,6 @@ public class SharedFragment extends BaseFragment {
 		this.inflater = inflater;
 		
 		//getActivity().getWindow().setFormat(PixelFormat.TRANSLUCENT);
-		
 		View rootView = inflater.inflate(R.layout.activity_shared, null);
 		Handler_Inject.injectFragment(this, rootView);
 		return rootView;
@@ -110,8 +109,7 @@ public class SharedFragment extends BaseFragment {
 		
 		/*setShareContent(getString(R.string.app_name),getString(R.string.shared_comtent), R.drawable.share_app);*/
 		/*setShareContent(getString(R.string.app_name),getString(R.string.the_new_shared_comtent), R.drawable.share_app);*/
-		setShareContent("推荐一个找优惠的应用","在这里可以找到世界各地最惊喜的活动，你也试试", R.drawable.share_app_0222);
-		
+		setShareContent("推荐一个找优惠的应用","在这里可以找到世界各地最惊喜的活动，你也试试", R.drawable.share_app_0223);
 		
 	}
 
