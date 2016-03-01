@@ -110,8 +110,16 @@ public class MessageCenterFragment extends BackHandedFragment implements ItemCli
 	private String id;
 
 	private MessageCenterBroadcast broadCastReceiver;
+
+	private int mTag = 0;
 	
 	
+	public MessageCenterFragment() {
+	}
+	
+	public MessageCenterFragment(int message) {
+		mTag = message;
+	}
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -211,6 +219,16 @@ public class MessageCenterFragment extends BackHandedFragment implements ItemCli
 
 	@InjectInit
 	private void init() {
+		
+		//推送消息推送过来后，点击为maijie标签的要跳转到maijie的消息列表上
+		if(mTag == 1){
+			changeTextColor(v.tv_message_maijie);
+			refreshUrl = GlobalValue.URL_USER_MESSAGE_LIST+ GlobalValue.MESSAGE.maijie;
+			refreshKey = 0;
+			refreshCurrentList(refreshUrl, null, refreshKey, lv_message_list);
+			index=1;
+			return;
+		}
 		refreshUrl = GlobalValue.URL_USER_MESSAGE_LIST+ GlobalValue.MESSAGE.activity;
 		refreshKey = 0;
 		refreshCurrentList(refreshUrl, null, refreshKey, lv_message_list);
@@ -621,7 +639,11 @@ public class MessageCenterFragment extends BackHandedFragment implements ItemCli
 			  }
 			else if(intent.getAction().equals("com.lansun.qmyo.notifyMessageCenterList")){
 				//接收来自活动详情页面的广播通知，刷新当前的页面列表
-				init();
+				if(index==0){
+					click(v.tv_message_activity);
+				}else{
+					click(v.tv_message_maijie);
+				}
 				NotifyUtils.getInstance().sendNotifictionCounts();
 			}
 		}

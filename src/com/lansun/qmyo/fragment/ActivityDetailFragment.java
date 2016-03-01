@@ -672,10 +672,12 @@ public class ActivityDetailFragment extends BaseFragment {
 			//当我再Dialog中进行addSheetItem时，依次取出对应的List中的数据放进去
 			//这样根据点击Item的位置就可以拿到list中对应位置的
 			ActionSheetDialog actionSheetDialog = new ActionSheetDialog(activity);
+//			actionSheetDialog.setCanceledOnTouchOutside(true);
+//			actionSheetDialog.setCancelable(true);
 			ActionSheetDialog builder = actionSheetDialog.builder();
 			builder.setTitle("请选择号码")
-			.setCancelable(false)
-			.setCanceledOnTouchOutside(false);
+			.setCancelable(true)
+			.setCanceledOnTouchOutside(true);
 			
 			
 			int phonenum_counts =1;

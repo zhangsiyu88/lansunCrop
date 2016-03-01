@@ -635,13 +635,14 @@ public class RegisterFragment extends BaseFragment{
 						App.app.setData("isExperience", "false");//将体验用户标示置为 false
 						App.app.getData("isEmbrassStatus").equals("");//此时用户状态不再是尴尬的状态时
 						
-						pushToken(GlobalValue.user.getMobile());//-------------------------------------------> 进行极光推送的token ！！
+//						pushToken(GlobalValue.user.getMobile());//-------------------------------------------> 进行极光推送的token ！！
 					}
 				}
 				break;
 			case 3:// 拿到了token，燥起来
 				token = Handler_Json.JsonToBean(Token.class,r.getContentAsString());
 				App.app.setData("access_token", token.getToken());
+				pushToken(GlobalValue.user.getMobile());//-------------------------------------------> 进行极光推送的token ！！
 				Log.d("token", "token : "+token.getToken());
 				
 				
@@ -960,7 +961,6 @@ public class RegisterFragment extends BaseFragment{
 
 	@Override
 	public void onResume() {
-		
 		/**
 		 * 背景上的云暂关闭掉
 		 **/ 

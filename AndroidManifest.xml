@@ -29,9 +29,9 @@
        
        
        <!--  包名为com.lansun.qmyo 本人(Yeun's LansunCorp  PC上)申请开发模式下的高德地图的key -->
-       <!--  <meta-data
+         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="e5b6027255bb77d1aa285e5cec53c134" />  -->
+            android:value="e5b6027255bb77d1aa285e5cec53c134" /> 
        
          <!--  包名为com.lansun.qmyo 本人(Yeun's  PC上)申请开发模式下的高德地图的key -->
          <!--  <meta-data
@@ -41,9 +41,9 @@
         
        
         <!--  包名为com.lansun.qmyo  申请    发布版本模式下的高德地图的key -->
-	    <meta-data
+	    <!-- <meta-data
 	            android:name="com.amap.api.v2.apikey"
-	            android:value="a81d22502d5958d33c95c7e32f97c656" /> 
+	            android:value="a81d22502d5958d33c95c7e32f97c656" />  -->
 	           
 	   
 	    <!-- 后台开启的高德定位服务 -->
@@ -176,7 +176,7 @@
             android:enabled="true"
             android:exported="false" 
             android:process=":MPush"
-            ><!-- android:process=":MPush" -->
+            ><!--  -->
             <intent-filter>
                 <action android:name="cn.jpush.android.intent.REGISTER" />
                 <action android:name="cn.jpush.android.intent.REPORT" />
@@ -190,8 +190,8 @@
             android:name="cn.jpush.android.service.DaemonService"
             android:enabled="true"
             android:exported="true" 
-            android:process=":MPush"
-            ><!--   -->
+            android:process=":MPush" 
+            ><!--  -->
             <intent-filter>
                 <action android:name="cn.jpush.android.intent.DaemonService" />
                 <category android:name="com.lansun.qmyo" />
@@ -253,6 +253,159 @@
 	     <!-- Required  . Enable it you can get statistics data with channel -->
         <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
         <meta-data android:name="JPUSH_APPKEY" android:value="dec54ebb0514c3529b7f99ae" />
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        <!-- 融云 -->
+         <!-- 会话列表 Activity -->
+        <activity
+            android:name=".ConversationListActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="com.lansun.qmyo.app.App"
+                    android:pathPrefix="/conversationlist"
+                    android:scheme="rong" />
+            </intent-filter>
+        </activity>
+
+        <!-- 会话 Activity -->
+        <activity
+            android:name=".ConversationActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="com.lansun.qmyo.app.App"
+                    android:pathPrefix="/conversation/"
+                    android:scheme="rong" />
+            </intent-filter>
+        </activity>
+
+        <!-- begin imlib request -->
+
+        <activity
+            android:name="io.rong.voipkit.activity.CallSideActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="com.lansun.qmyo.app.App"
+                    android:pathPrefix="/VoIPCall"
+                    android:scheme="rong" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="io.rong.voipkit.activity.CalledSideActivity"
+            android:excludeFromRecents="true"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="com.lansun.qmyo.app.App"
+                    android:pathPrefix="/VoIPAccept"
+                    android:scheme="rong" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name="io.rong.imlib.ipc.RongService"
+            android:process=":ipc" >
+        </service>
+        <service android:name="io.rong.imlib.ReConnectService" />
+
+        <receiver android:name="io.rong.imlib.ipc.PushMessageReceiver" >
+            <intent-filter>
+                <action android:name="io.rong.push.message" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="io.rong.imkit.RongActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="io.rong.imkit.tools.SelectPictureActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="io.rong.imkit.tools.PreviewPictureActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="io.rong.imkit.tools.RongWebviewActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="io.rong.imkit.widget.provider.TakingPicturesActivity"
+            android:screenOrientation="portrait" />
+
+        <service
+            android:name="io.rong.push.PushService"
+            android:process="io.rong.push" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <action android:name="io.rong.push" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="io.rong.push.CommandService"
+            android:process="io.rong.push" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <action android:name="io.rong.command" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name="io.rong.push.PushReceiver"
+            android:process="io.rong.push" >
+            <intent-filter>
+                <action android:name="io.rong.imlib.action.push.heartbeat" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="io.rong.imlib.HeartbeatReceiver"
+            android:process=":ipc" />
+
+        <meta-data
+            android:name="RONG_CLOUD_APP_KEY"
+            android:value="p5tvi9dstypd4" />
+        <!-- end -->
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
            
     </application>
 

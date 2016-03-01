@@ -1255,15 +1255,19 @@ public class HomeFragment extends BaseFragment {
 			
 			progress_text.setText(R.string.net_error_refresh);
 			if(r.getKey() == 1){
-				pb_loading.setVisibility(View.GONE);
-				tv_home_hot_v16.setText(Html.fromHtml(String.format(getString(R.string.home_list_exception), "刷新页面")));
-				tv_home_hot_v16.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						App.app.setData("access_token", trueData);
-						refreshCurrentList(refreshUrl, refreshParams, 1, lv_home_list); 
-						pb_loading.setVisibility(View.VISIBLE);     
-						tv_home_hot_v16.setText("小迈获取惊喜中~");  }  });
+				//仅当用户已经是  体验用户  或者是   登录用户  的时候
+				if ("true".equals(App.app.getData("isExperience"))||
+				(!TextUtils.isEmpty(App.app.getData("access_token"))&&!TextUtils.isEmpty(App.app.getData("secret"))) ){
+					pb_loading.setVisibility(View.GONE);
+					tv_home_hot_v16.setText(Html.fromHtml(String.format(getString(R.string.home_list_exception), "刷新页面")));
+					tv_home_hot_v16.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							App.app.setData("access_token", trueData);
+							refreshCurrentList(refreshUrl, refreshParams, 1, lv_home_list); 
+							pb_loading.setVisibility(View.VISIBLE);     
+							tv_home_hot_v16.setText("小迈获取惊喜中~");  }  });
+			   }
 			}
 		}
 	}

@@ -212,7 +212,7 @@ public class PersonCenterFragment extends BaseFragment{
 			break;
 		case R.id.tv_person_center_exit://点击退出登录时，要求跳至  登录页_Dick语
 			
-			//停止推送的信息
+//			//停止推送的信息
 		    JPushInterface.stopPush(getActivity().getApplicationContext());
 		    
 		    

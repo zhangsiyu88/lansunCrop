@@ -12,7 +12,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/core.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gson-2.2.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/httpmime-4.1.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/jpush-sdk-release1.8.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/NavigationApi_1.2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/okio-1.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/SocialSDK_QQZone_1.jar"/>
@@ -28,7 +27,8 @@
 	<classpathentry exported="true" kind="lib" path="libs/xUtils-2.6.14.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/Msc.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/volly-1.0.11.jar"/>
-	<classpathentry kind="lib" path="libs/oneapm-android-agent.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/oneapm-android-agent.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jpush-android-2.0.6.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="output" path="bin/classes"/>

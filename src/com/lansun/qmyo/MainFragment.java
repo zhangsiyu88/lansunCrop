@@ -661,7 +661,8 @@ public class MainFragment extends Fragment  {
 			((MainActivity)activity).startFragmentAdd(new MineSecretaryListFragment());
 		  }else if(intent.getAction().equals("com.lansun.qmyo.Click2MessageCenterFragment")){
 	    	click(v.bottom_mine);//模拟点击进入到我的页面
-	    	((MainActivity)activity).startFragmentAdd(new MessageCenterFragment());
+	    	int MESSAGE_MAIJIE = 1;
+	    	((MainActivity)activity).startFragmentAdd(new MessageCenterFragment(MESSAGE_MAIJIE));//希望初始化至迈界的消息列表页面
 		   }else if(intent.getAction().equals("com.lansun.qmyo.Click2ActivityDetailFragment")){
 	    	click(v.bottom_mine);
 	    	((MainActivity)activity).startFragmentAdd(new MessageCenterFragment());

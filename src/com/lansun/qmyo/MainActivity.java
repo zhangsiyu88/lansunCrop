@@ -569,6 +569,7 @@ public class MainActivity extends FragmentActivity implements BackHanderInterfac
 			
 		}
 		
+		
 		System.exit(0);
 		super.onDestroy();
 	}

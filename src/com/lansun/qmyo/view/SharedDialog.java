@@ -180,22 +180,21 @@ public class SharedDialog implements OnClickListener {
 		window = new PopupWindow(view, WindowManager.LayoutParams.MATCH_PARENT,
 				WindowManager.LayoutParams.WRAP_CONTENT);
 		
-		
 		WindowManager.LayoutParams params = activity.getWindow().getAttributes();
 		params.alpha = 0.2f;
 		activity.getWindow().setAttributes(params);
 
+		// 设置popWindow弹出窗体可点击，这句话必须添加，并且是true
+		window.setFocusable(true);
 		window.setOutsideTouchable(true);
 		
 		window.update();
-		// 设置popWindow弹出窗体可点击，这句话必须添加，并且是true
-		window.setFocusable(true);
 
 		window.setAnimationStyle(R.style.mypopwindow_anim_style);
-		// 实例化一个ColorDrawable颜色为半透明
-		/*ColorDrawable dw = new ColorDrawable(Color.BLACK);
-		window.setBackgroundDrawable(dw);*/
 		
+		// 实例化一个ColorDrawable颜色为半透明
+		ColorDrawable dw = new ColorDrawable(0xb0000000);
+		window.setBackgroundDrawable(dw);
 
 		// 在底部显示
 		window.showAtLocation(v, Gravity.BOTTOM, 0, 0);
@@ -214,8 +213,6 @@ public class SharedDialog implements OnClickListener {
 				}
 			}
 		};
-		
-		
 
 		window.setOnDismissListener(new OnDismissListener() {
 

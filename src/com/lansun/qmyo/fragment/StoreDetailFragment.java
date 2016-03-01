@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -59,11 +60,14 @@ import com.lansun.qmyo.fragment.ActivityFragment.ActivityRefreshBroadCastReceive
 import com.lansun.qmyo.utils.DialogUtil;
 import com.lansun.qmyo.utils.GlobalValue;
 import com.lansun.qmyo.utils.DialogUtil.TipAlertDialogCallBack;
+import com.lansun.qmyo.view.ActionSheetDialog;
 import com.lansun.qmyo.view.CustomToast;
 import com.lansun.qmyo.view.ImageGalleryDialog;
 import com.lansun.qmyo.view.MySubListView;
 import com.lansun.qmyo.view.SharedDialog;
 import com.lansun.qmyo.view.TelDialog;
+import com.lansun.qmyo.view.ActionSheetDialog.OnSheetItemClickListener;
+import com.lansun.qmyo.view.ActionSheetDialog.SheetItemColor;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
@@ -220,13 +224,50 @@ public class StoreDetailFragment extends BaseFragment {
 			EventBus.getDefault().post(entity);
 			break;
 		case R.id.tv_store_details_telephone://打电话
-			if (!TextUtils.isEmpty(shopTelephone)) {
+			/*if (!TextUtils.isEmpty(shopTelephone)) {
 				TelDialog telDialog = new TelDialog();
 				Bundle args1 = new Bundle();
 				args1.putString("phone", shopTelephone);
 				telDialog.setArguments(args1);
 				telDialog.show(getFragmentManager(), "tel");
+			}*/
+			//先将SheetItem的数据存到链表中，作为数据容器
+			//当我再Dialog中进行addSheetItem时，依次取出对应的List中的数据放进去
+			//这样根据点击Item的位置就可以拿到list中对应位置的
+			ActionSheetDialog actionSheetDialog = new ActionSheetDialog(activity);
+//			actionSheetDialog.setCanceledOnTouchOutside(true);
+//			actionSheetDialog.setCancelable(true);
+			ActionSheetDialog builder = actionSheetDialog.builder();
+			builder.setTitle("请选择号码")
+			.setCancelable(true)
+			.setCanceledOnTouchOutside(true);
+			
+			
+			int phonenum_counts =1;
+			String[] items = new String[]{};
+			String multiPhoneNum = shopTelephone;
+			if(multiPhoneNum.contains(";")){
+				phonenum_counts =2;
+				int indexOfSign = multiPhoneNum.indexOf(";");
+				final String firstNum = multiPhoneNum.substring(0, indexOfSign);
+				final String secondNum = multiPhoneNum.substring(indexOfSign+1, multiPhoneNum.length());
+				items = new String[]{firstNum,secondNum};
+			}else{
+				items = new String[]{multiPhoneNum};
 			}
+			for(int i=0;i<phonenum_counts;i++){
+				final String phoneNum =items[i];
+				//构建每次的要展开的Dialog
+				builder.addSheetItem(phoneNum, SheetItemColor.Green,new OnSheetItemClickListener() {
+					@Override
+					public void onClick(int which) {
+						Intent intent = new Intent(Intent.ACTION_CALL,Uri.parse("tel:"+phoneNum));  
+						startActivity(intent);  				
+					}
+				});
+			}
+			//构造完成后进行展示
+			builder.show();
 			break;
 		}
 	}

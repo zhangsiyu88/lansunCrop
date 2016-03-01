@@ -25,6 +25,9 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import cn.jpush.android.api.JPushInterface;
 
 import com.android.pc.ioc.event.EventBus;
 import com.android.pc.ioc.image.RecyclingImageView;
@@ -376,6 +379,7 @@ public class MineFragment extends BaseFragment implements RequestCallBack{
 			break;
 		case R.id.rl_mine_about:
 			fragment = new AboutFragment();
+			Toast.makeText(getActivity(), "registerID: "+ JPushInterface.getRegistrationID(activity),Toast.LENGTH_SHORT).show();
 			break;
 			
 /*			Intent intentToGrab = new Intent(activity,GrabRedPackActivity.class);
